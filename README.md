@@ -10,7 +10,8 @@
 * saved project background materials to `/Users/paul/Documents/HM_MouseMating/communication/190910 Labmeeting Verpaarungsstudie.pdf`
 * saved project raw data to `/Users/paul/Documents/HM_MouseMating/analysis/raw_data/190719 Rohdaten Verpaarungsprojekt.xlsx`
 * created `/scripts/inspect_data.R`
-* got a mouse shape with CC0 License from [here](https://www.svgrepo.com/svg/142184/mouse-mammal-animal-shape), stored at `/manuscript/figure_drafts/mouse-mammal-animal-shape-svgrepo-com.svg`
+* got a mouse shape with CC0 License from [here](https://www.svgrepo.com/svg/142184/mouse-mammal-animal-shape), stored at `/manuscript/figure_drafts/mouse-mammal-animal-shape-svgrepo-com.svg`, also go many other shapes
+* finished draft figure at `/manuscript/figure_drafts/fig_foo.svg`
 
 
 ## Todo queue
@@ -18,6 +19,7 @@
 * [ ] redo slide plots Inkscape
   * use `/figure_drafts/221123_figure_sketch_1.jpeg`
   * use `/figure_drafts/221123_figure_sketch_2.png`
+  * use `/figure_drafts/221123 Anzahl nach Gruppen.pptx`
 
 * [ ] do time series ANOVA in R
   * [ ] clean-up `/raw_data/190719 Rohdaten Verpaarungsprojekt.xlsx`
