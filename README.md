@@ -12,23 +12,39 @@
 * created `/scripts/inspect_data.R`
 * got a mouse shape with CC0 License from [here](https://www.svgrepo.com/svg/142184/mouse-mammal-animal-shape), stored at `/manuscript/figure_drafts/mouse-mammal-animal-shape-svgrepo-com.svg`, also go many other shapes
 * finished draft figure at `/manuscript/figure_drafts/fig_foo.svg`
+* commit `a3c8514a6f62bcc73f20c4484e7bd154da5224b9`
+
+## 12-12-2022
+
+* finish draft figure in biorender
+* see `/Users/paul/Documents/HM_MouseMating/manuscript/figure_drafts_biorender/221212_mouse_mating.pdf`
+* see `/Users/paul/Documents/HM_MouseMating/manuscript/figure_drafts_biorender/221212_mouse_mating.png`
+* got cleaned data from Sebasian
+* see `/Users/paul/Documents/HM_MouseMating/analysis/raw_data/221212 Verpaarungsprojekt.xlsx`
+
+## 14-12-2022
+
+* received `/Users/paul/Documents/HM_MouseMating/analysis/raw_data/221212 Verpaarungsprojekt.xlsx`
+* changed all dates to iso dates for import into R
+* start import and data inspection in `/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R`
+
 
 
 ## Todo queue
 
-* [ ] redo slide plots Inkscape
-  * use `/figure_drafts/221123_figure_sketch_1.jpeg`
-  * use `/figure_drafts/221123_figure_sketch_2.png`
-  * use `/figure_drafts/221123 Anzahl nach Gruppen.pptx`
-
+* possibly get f0 data in long format 
 * [ ] do time series ANOVA in R
-  * [ ] clean-up `/raw_data/190719 Rohdaten Verpaarungsprojekt.xlsx`
+  * [x] clean-up `/raw_data/190719 Rohdaten Verpaarungsprojekt.xlsx`
+  * [ ] use `/Users/paul/Documents/HM_MouseMating/analysis/raw_data/221212 Verpaarungsprojekt.xlsx`
   * [ ] for read-in in `/scripts/inspect_data.R`
 
 
 ## Considerations
 
 * AH: _"Hier die Übersicht der Maiting study. Im Prinzip wäre es schön, wenn du die Plots aus den Folien in R erstellst (etwas hübscher machen) und eine geeignete Statistik drüber laufen lässt für die time series ANOVA."_
+
+* for modelling consider _"A guide to creating design matrices for gene expression experiments. https://bioconductor.org/packages/release/workflows/vignettes/RNAseq123/inst/doc/designmatrices.html. Viewed 25 Nov 2022."_, section 6.1
+
 
 
 
