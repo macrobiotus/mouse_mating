@@ -27,6 +27,7 @@
 * received `/Users/paul/Documents/HM_MouseMating/analysis/raw_data/221212 Verpaarungsprojekt.xlsx`
 * changed all dates to iso dates for import into R
 * start import and data inspection in `/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R`
+* commit `228332fe7e02aef770543cd566786018adea8f91`
 
 
 
