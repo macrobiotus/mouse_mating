@@ -27,17 +27,20 @@
 * received `/Users/paul/Documents/HM_MouseMating/analysis/raw_data/221212 Verpaarungsprojekt.xlsx`
 * changed all dates to iso dates for import into R
 * start import and data inspection in `/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R`
-* commit `228332fe7e02aef770543cd566786018adea8f91`
+* commit `aa0f3bce64991cf869676d03be66eddf1693415d`
 
+## 19-12-2022
 
+* reshaping raw data in `221214_mice_pairing_resahped.xlsx`
+* read data into `inspect_data.R`
 
 ## Todo queue
 
-* possibly get f0 data in long format 
+* [ ] identify and plot relavant data 
+* build a usable data structure
 * [ ] do time series ANOVA in R
-  * [x] clean-up `/raw_data/190719 Rohdaten Verpaarungsprojekt.xlsx`
-  * [ ] use `/Users/paul/Documents/HM_MouseMating/analysis/raw_data/221212 Verpaarungsprojekt.xlsx`
-  * [ ] for read-in in `/scripts/inspect_data.R`
+
+* use [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/) 
 
 
 ## Considerations
