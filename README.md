@@ -33,11 +33,20 @@
 
 * reshaping raw data in `221214_mice_pairing_resahped.xlsx`
 * read data into `inspect_data.R`
+* commit `dd2d532533ed7656314a1c010c76edbb5c8f724c`
+
+## 20-12-2022
+
+* in `inspect_data.R`
+  * starting data inspection and plotting
+  * commit prior to chnaging plotting code
+  * commit ``
+
 
 ## Todo queue
 
 * [ ] identify and plot relavant data 
-* build a usable data structure
+* [ ] build a usable data structure
 * [ ] do time series ANOVA in R
 
 * use [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/) 
