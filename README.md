@@ -53,7 +53,8 @@
   * commit prior to changing plotting code
   * commit `2f56668823fb3f6494c916343eca3d5a77cadb11`
   * restructured code and code comments to indicate how to proceed
-  * commmit ``
+  * minor edits to ANOVA tests 
+  * commmit `2f3c0a4993746162f2cb56ab9aeee9f2329eac99`
 
 
 ## Todo queue
