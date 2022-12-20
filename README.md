@@ -1,8 +1,19 @@
 # On Mouse Mating work 
 
-**Central questions**
-* Influence of parental weight for offspring weight gain?
+## Project goals
+
+### Central questions 
+
+* Determine the Influence of parental weight for offspring weight gain.
 * Should mothers loose weight before becoming pregnant?
+
+## Formulated goals
+
+* Test the following hypotheses:
+  * _"Pre-pregnant maternal weight loss leads to heavier offspring especially when father gets HFD."_
+  * _"Leanest children result when both parents taking the same diet, either HFD x HFD or chow x chow."_
+  * _"Offspring resulting from HFD x chow mating are heavier than HFD x HFD"._
+* Rebuild plots from slides in `/Users/paul/Documents/HM_MouseMating/communication/190910 Labmeeting Verpaarungsstudie.pdf`
 
 ## 23-11-2022
 
@@ -39,14 +50,17 @@
 
 * in `inspect_data.R`
   * starting data inspection and plotting
-  * commit prior to chnaging plotting code
-  * commit ``
+  * commit prior to changing plotting code
+  * commit `2f56668823fb3f6494c916343eca3d5a77cadb11`
+  * restructured code and code comments to indicate how to proceed
+  * commmit ``
 
 
 ## Todo queue
 
 * [ ] identify and plot relavant data 
 * [ ] build a usable data structure
+  * [ ] possibly recode dietary variables
 * [ ] do time series ANOVA in R
 
 * use [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/) 
