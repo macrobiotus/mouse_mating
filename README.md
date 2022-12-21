@@ -60,13 +60,15 @@
 
 * in `inspect_data.R`
   *  starting to explore polynomials
-* commit 
+* commit `dd2d532533ed7656314a1c010c76edbb5c8f724c`
 
 
 ## Todo queue
 
-* [ ] read on tiem series ANOVA
-* [ ] read on modelling multivaruate polynomials
+* [ ] read on time series ANOVA
+* [ ] do time series ANOVA
+* [ ] read GLMER with appropriate link function - poly
+* [ ] read on modelling multivariate polynomials
 * [ ] identify and plot relavant data 
 * [ ] build a usable data structure
 * [ ] possibly recode dietary variables
@@ -80,6 +82,12 @@
 * AH: _"Hier die Übersicht der Maiting study. Im Prinzip wäre es schön, wenn du die Plots aus den Folien in R erstellst (etwas hübscher machen) und eine geeignete Statistik drüber laufen lässt für die time series ANOVA."_
 
 * for modelling consider _"A guide to creating design matrices for gene expression experiments. https://bioconductor.org/packages/release/workflows/vignettes/RNAseq123/inst/doc/designmatrices.html. Viewed 25 Nov 2022."_, section 6.1
+
+## Further reading
+
+* on multivariate polynomials
+  * Kahle D. 2013. mpoly: Multivariate Polynomials in R. The R Journal 5: 162.
+
 
 
 
