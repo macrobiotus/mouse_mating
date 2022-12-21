@@ -60,7 +60,8 @@
 
 * in `inspect_data.R`
   *  starting to explore polynomials
-* commit `dd2d532533ed7656314a1c010c76edbb5c8f724c`
+* commit `26f841e6b4bb024466ea8171cb9953ab97a85340`
+* plotted multivariate linear model with polynomials in ggplot
 
 
 ## Todo queue
