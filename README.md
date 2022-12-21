@@ -54,14 +54,22 @@
   * commit `2f56668823fb3f6494c916343eca3d5a77cadb11`
   * restructured code and code comments to indicate how to proceed
   * minor edits to ANOVA tests 
-  * commmit `2f3c0a4993746162f2cb56ab9aeee9f2329eac99`
+  * commmit `bde3eb9b08451332e0b539fadc964cb4dd0af11a`
+
+## 21-12-2022
+
+* in `inspect_data.R`
+  *  starting to explore polynomials
+* commit 
 
 
 ## Todo queue
 
+* [ ] read on tiem series ANOVA
+* [ ] read on modelling multivaruate polynomials
 * [ ] identify and plot relavant data 
 * [ ] build a usable data structure
-  * [ ] possibly recode dietary variables
+* [ ] possibly recode dietary variables
 * [ ] do time series ANOVA in R
 
 * use [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/) 
