@@ -62,14 +62,23 @@
   *  starting to explore polynomials
 * commit `26f841e6b4bb024466ea8171cb9953ab97a85340`
 * plotted multivariate linear model with polynomials in ggplot
+* commit `c725d55d68521c737bf668f35153099fc1a145d3`
+
+## 21-12-2022
+
+* in `inspect_data.R`
+  * extending model formula to inlcude diets
+  * commit prior to chnaging plotting code to use `ggplot()` `c725d55d68521c737bf668f35153099fc1a145d3`
+  * commit prior to removing `ggeffects()` plots and using only `ggplot()`
 
 
 ## Todo queue
 
+* [ ] improve plotting code
+* [ ] build full model with parameters as in test model
+* [ ] read on model interpretation of multivariate polynomials
 * [ ] read on time series ANOVA
 * [ ] do time series ANOVA
-* [ ] read GLMER with appropriate link function - poly
-* [ ] read on modelling multivariate polynomials
 * [ ] identify and plot relavant data 
 * [ ] build a usable data structure
 * [ ] possibly recode dietary variables
@@ -88,6 +97,9 @@
 
 * on multivariate polynomials
   * Kahle D. 2013. mpoly: Multivariate Polynomials in R. The R Journal 5: 162.
+
+* On contrast coding: `https://marissabarlaz.github.io/portfolio/contrastcoding/#what-is-a-contrast`
+  
 
 
 
