@@ -71,7 +71,9 @@
   * commit prior to chnaging plotting code to use `ggplot()` `c725d55d68521c737bf668f35153099fc1a145d3`
   * commit prior to removing `ggeffects()` plots and using only `ggplot()` `6b19c55a12fea4c3651811373fbfc1e66f5f9d93`
   * test model is finished, without random effects
-  * commit  
+  * commit `cb00b9c4b993dfc7396c8425dbe4774ca8da4644`
+  * finished preliminary analysis
+  * commit ``
 
 
 ## Todo queue
