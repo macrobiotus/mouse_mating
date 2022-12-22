@@ -78,11 +78,10 @@
 
 ## Todo queue
 
+* [ ] check application of raw polynomials - will the coefficentsi be different?
 * [ ] read on time series ANOVA
 * [ ] do time series ANOVA
-* [ ] do time series ANOVA in R - possibly using `ggbetweenstats()`
-
-* use [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/) 
+* [ ] do time series ANOVA in R - possibly using `ggbetweenstats()` of [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/) 
 
 
 ## Considerations
