@@ -78,9 +78,8 @@
 
 ## Todo queue
 
-* [ ] check application of raw polynomials - will the coefficentsi be different?
 * [ ] read on time series ANOVA
-* [ ] do time series ANOVA
+* [ ] do time series ANOVA in R using longtidinal data technique as described [here](https://stats.stackexchange.com/questions/197607/how-to-test-difference-between-times-series-does-time-series-anova-exist). Uses package `nlme::glm()`
 * [ ] do time series ANOVA in R - possibly using `ggbetweenstats()` of [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/) 
 
 
