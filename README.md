@@ -73,20 +73,14 @@
   * test model is finished, without random effects
   * commit `cb00b9c4b993dfc7396c8425dbe4774ca8da4644`
   * finished preliminary analysis
-  * commit ``
+  * commit `b938ce5972986f9fedfa66bd842158f57775611e`
 
 
 ## Todo queue
 
-* [ ] improve plotting code
-* [ ] build full model with parameters as in test model
-* [ ] read on model interpretation of multivariate polynomials
 * [ ] read on time series ANOVA
 * [ ] do time series ANOVA
-* [ ] identify and plot relavant data 
-* [ ] build a usable data structure
-* [ ] possibly recode dietary variables
-* [ ] do time series ANOVA in R
+* [ ] do time series ANOVA in R - possibly using `ggbetweenstats()`
 
 * use [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/) 
 
