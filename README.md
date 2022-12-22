@@ -69,7 +69,9 @@
 * in `inspect_data.R`
   * extending model formula to inlcude diets
   * commit prior to chnaging plotting code to use `ggplot()` `c725d55d68521c737bf668f35153099fc1a145d3`
-  * commit prior to removing `ggeffects()` plots and using only `ggplot()`
+  * commit prior to removing `ggeffects()` plots and using only `ggplot()` `6b19c55a12fea4c3651811373fbfc1e66f5f9d93`
+  * test model is finished, without random effects
+  * commit  
 
 
 ## Todo queue
