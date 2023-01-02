@@ -74,7 +74,13 @@
   * commit `cb00b9c4b993dfc7396c8425dbe4774ca8da4644`
   * finished preliminary analysis
   * commit `b938ce5972986f9fedfa66bd842158f57775611e`
+  * updated what to do next, commit `4d7dac255f96aab9c04e0c0671db21509fd7cc85`
 
+  
+## 02-01-2022
+
+* in `inspect_data.R`
+  * clean script
 
 ## Todo queue
 
