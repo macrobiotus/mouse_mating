@@ -80,7 +80,10 @@
 ## 02-01-2022
 
 * in `inspect_data.R`
-  * clean script
+  * cleaned script
+  * revised polynomial regression
+  * implemented mixed effect modelling
+  * implemented ANOVA-equivalent using OLS regression
 
 ## Todo queue
 
