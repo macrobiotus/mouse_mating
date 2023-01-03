@@ -84,13 +84,15 @@
   * revised polynomial regression
   * implemented mixed effect modelling
   * implemented ANOVA-equivalent using OLS regression
+* commit `34ea85a9cc6fd748bc8c1eee6d0b389771666570`
 
 ## Todo queue
 
-* [ ] read on time series ANOVA
-* [ ] do time series ANOVA in R using longtidinal data technique as described [here](https://stats.stackexchange.com/questions/197607/how-to-test-difference-between-times-series-does-time-series-anova-exist). Uses package `nlme::glm()`
-* [ ] do time series ANOVA in R - possibly using `ggbetweenstats()` of [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/) 
-
+* in `inspect_data.R`
+  * [ ] learn how to interpret polynomials
+  * [ ] correct models
+  * [ ] correct lmer plot
+  * [ ] answer questions
 
 ## Considerations
 
