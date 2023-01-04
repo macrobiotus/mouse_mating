@@ -86,6 +86,13 @@
   * implemented ANOVA-equivalent using OLS regression
 * commit `34ea85a9cc6fd748bc8c1eee6d0b389771666570`
 
+## 03-01-2023
+
+* starting implemnting reporting of `inspect_data.R`
+  * spun using `knitr::spin("/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R")`
+  * after corceting errors using `rmarkdown::render("/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R", output_format = "html_notebook", output_dir = here("script_spun")`
+
+
 ## Todo queue
 
 * in `inspect_data.R`
@@ -93,6 +100,7 @@
   * [ ] correct models
   * [ ] correct lmer plot
   * [ ] answer questions
+  * [ ] clean and structure code for export
 
 ## Considerations
 
