@@ -86,7 +86,7 @@
   * implemented ANOVA-equivalent using OLS regression
 * commit `34ea85a9cc6fd748bc8c1eee6d0b389771666570`
 
-## 03-01-2023
+## 04-01-2023
 
 * starting implemnting reporting of `inspect_data.R`
   * spun using `knitr::spin("/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R")`
