@@ -91,6 +91,9 @@
 * starting implemnting reporting of `inspect_data.R`
   * spun using `knitr::spin("/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R")`
   * after corceting errors using `rmarkdown::render("/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R", output_format = "html_notebook", output_dir = here("script_spun")`
+* in `inspect_data.R` 
+  * added `bartlett.test()` to test equal variance across groups
+* 
 
 
 ## Todo queue
