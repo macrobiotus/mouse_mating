@@ -75,7 +75,6 @@
   * finished preliminary analysis
   * commit `b938ce5972986f9fedfa66bd842158f57775611e`
   * updated what to do next, commit `4d7dac255f96aab9c04e0c0671db21509fd7cc85`
-
   
 ## 02-01-2023
 
@@ -93,17 +92,22 @@
   * after corceting errors using `rmarkdown::render("/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R", output_format = "html_notebook", output_dir = here("script_spun")`
 * in `inspect_data.R` 
   * added `bartlett.test()` to test equal variance across groups
-* 
-
+* commit `bcc98482c45ea662c6df800ecbe6be65d6a19594`
 
 ## Todo queue
 
 * in `inspect_data.R`
-  * [ ] learn how to interpret polynomials
-  * [ ] correct models
-  * [ ] correct lmer plot
+  * [ ] improve modelling as per ISME - see communications folder 09.01.2023:
+  * [ ] improve implement random effect modelling
+  * [ ] select splines / polynomials based on AIC
+  * [ ] implemnet backwards selection using GLMER
+  * [ ] inspect model residuals
+  * [ ] list variance explianed by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
   * [ ] answer questions
   * [ ] clean and structure code for export
+* in manuscript
+  * add methods  
+  * add ISME consulting personell to acknowledgements
 
 ## Considerations
 
