@@ -102,14 +102,20 @@
  * in `inspect_data.R`
    * added analysis remarks to all section
    * restructured data inspection of full data
+   * addded code outline as per Appendix for data inspection and regression setup (gls)from Zuur et al. 
+   * commit `6d5fb92e0bb80b1d4c34eb742ea2cc72e738cdde`
+   * added Chapter 5 steps to GLS modelling section (last part of script.
+   * started modelling using `nlme::lme()` - need to abort for AH
+   * see comments in code (line 593) and also wehre to continue reading in book
+   * commit ``   
    
  
 
 ## Todo queue
 
 * [ ] in `inspect_data.R` - keep in mind serial correlation
-  * [ ] outline and
-  * [ ] implement modelling steps  as in Chapter 5 **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
+  * [x] outline and
+  * [ ] implement modelling steps as in Appendix **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
   * [ ] outline and
   * [ ] implement modelling validation steps as in Chapter 5 **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
  
