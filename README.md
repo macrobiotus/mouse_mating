@@ -99,6 +99,10 @@
  * read Appendix and read Chapter 5 of **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
  * found helpful hint on modeleling, in addition to Chapter 5 on [webpage (saved in Zotero)/](https://stats.stackexchange.com/questions/71087/analysis-of-a-time-series-with-a-fixed-and-random-factor-in-r)
  * updated todo queue
+ * in `inspect_data.R`
+   * added analysis remarks to all section
+   * restructured data inspection of full data
+   
  
 
 ## Todo queue
@@ -126,8 +130,6 @@
   * [ ] implemnet backwards selection using GLMER
   * [ ] inspect model residuals
   * [ ] list variance explianed by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
-
-
 
 ## Considerations
 
