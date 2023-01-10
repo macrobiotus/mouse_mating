@@ -64,7 +64,7 @@
 * plotted multivariate linear model with polynomials in ggplot
 * commit `c725d55d68521c737bf668f35153099fc1a145d3`
 
-## 21-12-2022
+## 22-12-2022
 
 * in `inspect_data.R`
   * extending model formula to inlcude diets
@@ -94,33 +94,59 @@
   * added `bartlett.test()` to test equal variance across groups
 * commit `bcc98482c45ea662c6df800ecbe6be65d6a19594`
 
+## 10-01-2023
+
+ * read Appendix and read Chapter 5 of **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
+ * found helpful hint on modeleling, in addition to Chapter 5 on [webpage (saved in Zotero)/](https://stats.stackexchange.com/questions/71087/analysis-of-a-time-series-with-a-fixed-and-random-factor-in-r)
+ * updated todo queue
+ 
+
 ## Todo queue
 
-* in `inspect_data.R`
-  * [ ] improve modelling as per ISME - see communications folder 09.01.2023:
+* [ ] in `inspect_data.R` - keep in mind serial correlation
+  * [ ] outline and
+  * [ ] implement modelling steps  as in Chapter 5 **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
+  * [ ] outline and
+  * [ ] implement modelling validation steps as in Chapter 5 **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
+ 
+* [ ] in `inspect_data.R` - finalize first snalyss 
+  * [ ] answer questions
+  * [ ] possibly add clasiification tree
+  * [ ] clean and structure code for export
+
+* in manuscript
+  * add methods  
+  * add ISME consulting personell to acknowledgements: 
+    * Maciej Rosolowski <maciej.rosolowski@imise.uni-leipzig.de>
+    * Maryam Yahiaoui-Doktor <maryam.Yahiaoui-Doktor@imise.uni-leipzig.de> and 
+
+* [ ] in `inspect_data.R` - verify modelling as per ISME with random effect modelling - see communications folder 09.01.2023
   * [ ] improve implement random effect modelling
   * [ ] select splines / polynomials based on AIC
   * [ ] implemnet backwards selection using GLMER
   * [ ] inspect model residuals
   * [ ] list variance explianed by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
-  * [ ] answer questions
-  * [ ] clean and structure code for export
-* in manuscript
-  * add methods  
-  * add ISME consulting personell to acknowledgements
+
+
 
 ## Considerations
 
 * AH: _"Hier die Übersicht der Maiting study. Im Prinzip wäre es schön, wenn du die Plots aus den Folien in R erstellst (etwas hübscher machen) und eine geeignete Statistik drüber laufen lässt für die time series ANOVA."_
 
-* for modelling consider _"A guide to creating design matrices for gene expression experiments. https://bioconductor.org/packages/release/workflows/vignettes/RNAseq123/inst/doc/designmatrices.html. Viewed 25 Nov 2022."_, section 6.1
 
 ## Further reading
+
+### Serial correlations and model verification
+* **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
+
+### Not relevant anymore 
 
 * on multivariate polynomials
   * Kahle D. 2013. mpoly: Multivariate Polynomials in R. The R Journal 5: 162.
 
 * On contrast coding: `https://marissabarlaz.github.io/portfolio/contrastcoding/#what-is-a-contrast`
+
+* for modelling consider _"A guide to creating design matrices for gene expression experiments. https://bioconductor.org/packages/release/workflows/vignettes/RNAseq123/inst/doc/designmatrices.html. Viewed 25 Nov 2022."_, section 6.1
   
 
 
