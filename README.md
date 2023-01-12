@@ -107,10 +107,8 @@
    * added Chapter 5 steps to GLS modelling section (last part of script.
    * started modelling using `nlme::lme()` - need to abort for AH
    * see comments in code (line 593) and also wehre to continue reading in book
-   * commit ``   
+   * commit `c3eddd7baa0cba9f45c99d5b291f07636244b0d1`   
    
- 
-
 ## Todo queue
 
 * [ ] in `inspect_data.R` - keep in mind serial correlation
@@ -118,10 +116,17 @@
   * [ ] implement modelling steps as in Appendix **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
   * [ ] outline and
   * [ ] implement modelling validation steps as in Chapter 5 **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
+
+* [ ] in `inspect_data.R` - verify modelling as per ISME with random effect modelling - see communications folder 09.01.2023 - and see the verious tutorial, and the `lme4` book.
+  * [ ] improve implement random effect modelling
+  * [ ] select splines / polynomials based on AIC
+  * [ ] implemnet backwards selection using GLMER
+  * [ ] inspect model residuals
+  * [ ] list variance explianed by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
  
-* [ ] in `inspect_data.R` - finalize first snalyss 
+* [ ] in `inspect_data.R` - finalize first analyss 
   * [ ] answer questions
-  * [ ] possibly add clasiification tree
+  * [ ] possibly add classification tree
   * [ ] clean and structure code for export
 
 * in manuscript
@@ -130,12 +135,6 @@
     * Maciej Rosolowski <maciej.rosolowski@imise.uni-leipzig.de>
     * Maryam Yahiaoui-Doktor <maryam.Yahiaoui-Doktor@imise.uni-leipzig.de> and 
 
-* [ ] in `inspect_data.R` - verify modelling as per ISME with random effect modelling - see communications folder 09.01.2023
-  * [ ] improve implement random effect modelling
-  * [ ] select splines / polynomials based on AIC
-  * [ ] implemnet backwards selection using GLMER
-  * [ ] inspect model residuals
-  * [ ] list variance explianed by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
 
 ## Considerations
 
