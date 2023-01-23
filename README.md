@@ -111,9 +111,26 @@
 
 ## 23-01-2023
 
+* [x] in `inspect_data.R` - verified modelling as per ISME with random effect modelling - see communications folder 09.01.2023 - and see the verious tutorial, and the `lme4` book.
+  * [x] improve implement random effect modelling
+  * [x] inspect model residuals
+  * [ ] ~~select splines / polynomials based on AIC~~ **(splines won't work in `lme4`)**
+  * [ ] ~~implemnet backwards selection using GLMER~~ **(used manual forward selection as in Bates (2015) and Zuur et al. (2005))**  
 
-   
+  
 ## Todo queue
+
+* [x] in `inspect_data.R`
+  * [ ] confirm modelling with HI-MAG stats support group
+  * [ ] list variance explained by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
+  * [ ] clean and structure code for export
+  * [ ] answer questions
+
+* in manuscript
+  * add methods  
+  * add ISME consulting personell to acknowledgements: 
+    * Maciej Rosolowski <maciej.rosolowski@imise.uni-leipzig.de>
+    * Maryam Yahiaoui-Doktor <maryam.Yahiaoui-Doktor@imise.uni-leipzig.de> and 
 
 * [ ] in `inspect_data.R` - keep in mind serial correlation
   * [x] outline and
@@ -121,23 +138,8 @@
   * [ ] outline and
   * [ ] implement modelling validation steps as in Chapter 5 **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
 
-* [ ] in `inspect_data.R` - verify modelling as per ISME with random effect modelling - see communications folder 09.01.2023 - and see the verious tutorial, and the `lme4` book.
-  * [ ] improve implement random effect modelling
-  * [ ] select splines / polynomials based on AIC
-  * [ ] implemnet backwards selection using GLMER
-  * [ ] inspect model residuals
-  * [ ] list variance explianed by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
- 
-* [ ] in `inspect_data.R` - finalize first analyss 
-  * [ ] answer questions
+* [ ] in `inspect_data.R` - possibly play around further 
   * [ ] possibly add classification tree
-  * [ ] clean and structure code for export
-
-* in manuscript
-  * add methods  
-  * add ISME consulting personell to acknowledgements: 
-    * Maciej Rosolowski <maciej.rosolowski@imise.uni-leipzig.de>
-    * Maryam Yahiaoui-Doktor <maryam.Yahiaoui-Doktor@imise.uni-leipzig.de> and 
 
 
 ## Considerations
