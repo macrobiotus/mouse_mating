@@ -108,6 +108,10 @@
    * started modelling using `nlme::lme()` - need to abort for AH
    * see comments in code (line 593) and also wehre to continue reading in book
    * commit `c3eddd7baa0cba9f45c99d5b291f07636244b0d1`   
+
+## 23-01-2023
+
+
    
 ## Todo queue
 
