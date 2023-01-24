@@ -116,21 +116,34 @@
   * [x] inspect model residuals
   * [ ] ~~select splines / polynomials based on AIC~~ **(splines won't work in `lme4`)**
   * [ ] ~~implemnet backwards selection using GLMER~~ **(used manual forward selection as in Bates (2015) and Zuur et al. (2005))**  
+* commit `b8519802e991060688c2a88a6a88c5b3fbe2f9a8`
+
+## 24-01-2023
+
+* [x] in `inspect_data.R`
+  * [x] confirm modelling with HI-MAG stats support group
+  * [x] names of stats poeple and add to paper **Elmar Spiegel** and **Roman Le Glut**, **Maciej Rosolowski**
+  * [x] updated next steps
+  * commit 
 
   
 ## Todo queue
 
 * [x] in `inspect_data.R`
-  * [ ] confirm modelling with HI-MAG stats support group
+  * [ ] use conditional AICs to inpect models - lines `547` and `580`
+  * [ ] plot the best models using ggplot - or a curve plt from the `effects` package
   * [ ] list variance explained by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
   * [ ] clean and structure code for export
   * [ ] answer questions
 
 * in manuscript
   * add methods  
-  * add ISME consulting personell to acknowledgements: 
-    * Maciej Rosolowski <maciej.rosolowski@imise.uni-leipzig.de>
-    * Maryam Yahiaoui-Doktor <maryam.Yahiaoui-Doktor@imise.uni-leipzig.de> and 
+  * add IMISE consulting personell to acknowledgements: 
+    * **Maciej Rosolowski** <maciej.rosolowski@imise.uni-leipzig.de>
+    * Maryam Yahiaoui-Doktor <maryam.Yahiaoui-Doktor@imise.uni-leipzig.de>
+  * add HM consulting personell to paper
+    * **Elmar Spiegel**  
+    * Roman Le Glut
 
 * [ ] in `inspect_data.R` - keep in mind serial correlation
   * [x] outline and
