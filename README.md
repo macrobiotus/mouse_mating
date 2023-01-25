@@ -145,7 +145,7 @@
   
 ## Todo queue
 
-* [ ] in `inspect_data.R`
+* [ ] in `main_analysis.R `
   * [ ] find mothers with weight loss
   * [ ] add weight loss as factor to modelling data
   * [ ] sort models sytematically
@@ -153,7 +153,8 @@
   * [ ] build and re-evaluate models with reagrds to sex-sepecific weight gain - sex needs to be included or evaluated
   * [ ] to understand effect of polynomials and sex - plot random-conditioned fixed effects using the `effects` package  
   * [ ] answer last question
-  * [ ] sort script for rendering  
+  * [ ] sort script for rendering
+  * commit `a15882ff26cce382f95bd3db40ab7b8bf9225261`
  
 * in manuscript
   * add methods  
@@ -167,9 +168,10 @@
 ## Ideas not yet pursued
 
 * [ ] implement modelling steps as in Appendix **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology*** 
-* [ ] in `inspect_data.R` - possibly play around further 
+* [ ] in `main_analysis.R ` - possibly play around further 
   * [ ] possibly add classification tree
   * [ ] list variance explained by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
+  * [ ] rewrite everything succeinctly as in DINCH mice?
  
 ## Considerations
 
