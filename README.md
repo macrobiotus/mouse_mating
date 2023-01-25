@@ -141,6 +141,7 @@
   * re-sorted modelling table - about to delete models
   * commit `8fe8a92c37807244ed2729c3a437d9a80b11bf37`
 * updated plotting 
+ * commmit `44162126b0b991a18a3a67ae653246ffbcc22158` 
   
 ## Todo queue
 
@@ -149,10 +150,11 @@
   * [ ] add weight loss as factor to modelling data
   * [ ] sort models sytematically
   * [ ] build and re-evaluate models with reagrds to maternal weight loss
-  * [ ] build and re-evaluate models with reagrds to sex-sepecific weight gain
-  * [ ] to understand effect of polynomials - plot random-conditioned fixed effects using the `effects` package  
-  * [ ] sort script for rendering   
-
+  * [ ] build and re-evaluate models with reagrds to sex-sepecific weight gain - sex needs to be included or evaluated
+  * [ ] to understand effect of polynomials and sex - plot random-conditioned fixed effects using the `effects` package  
+  * [ ] answer last question
+  * [ ] sort script for rendering  
+ 
 * in manuscript
   * add methods  
   * add IMISE consulting personell to acknowledgements: 
@@ -166,10 +168,9 @@
 
 * [ ] implement modelling steps as in Appendix **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology*** 
 * [ ] in `inspect_data.R` - possibly play around further 
-* [ ] possibly add classification tree
-* [ ] list variance explained by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
-* [ ] answer questions
-
+  * [ ] possibly add classification tree
+  * [ ] list variance explained by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
+ 
 ## Considerations
 
 * AH: _"Hier die Übersicht der Maiting study. Im Prinzip wäre es schön, wenn du die Plots aus den Folien in R erstellst (etwas hübscher machen) und eine geeignete Statistik drüber laufen lässt für die time series ANOVA."_
