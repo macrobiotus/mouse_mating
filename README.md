@@ -132,25 +132,26 @@
   * [x] use conditional AICs to inpect models - lines `547` and `580`
   * [x] plot the best models using ggplot
   * [x] basic modelling script done - now needs to be cleaned and expanded to answer the question posed in the introduction
+
 * commit `d5871657c9665c01aa421bb58015cb6dbb77635c`
 * created `main_analysis.R` for refining lme4 solution and starts answering questions
 * commit `d5871657c9665c01aa421bb58015cb6dbb77635c`
-
 * [x] in `main_analysis.R` 
- * added more model fomulae with dietary interactions
- * re-sorted modelling table - about to delete models
-
-  
-
+  * added more model fomulae with dietary interactions
+  * re-sorted modelling table - about to delete models
+  * commit `8fe8a92c37807244ed2729c3a437d9a80b11bf37`
+* updated plotting 
   
 ## Todo queue
 
 * [ ] in `inspect_data.R`
-  * expand script to answer questions
-  * [ ] plot random-conditioned fixed effects using the  `effects` package - **not used so far but added notes**
-  * [ ] list variance explained by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
-  * [ ] clean and structure code for export
-  * [ ] answer questions
+  * [ ] find mothers with weight loss
+  * [ ] add weight loss as factor to modelling data
+  * [ ] sort models sytematically
+  * [ ] build and re-evaluate models with reagrds to maternal weight loss
+  * [ ] build and re-evaluate models with reagrds to sex-sepecific weight gain
+  * [ ] to understand effect of polynomials - plot random-conditioned fixed effects using the `effects` package  
+  * [ ] sort script for rendering   
 
 * in manuscript
   * add methods  
@@ -161,20 +162,17 @@
     * **Elmar Spiegel**  
     * Roman Le Glut
 
-* [ ] in `inspect_data.R` - keep in mind serial correlation
-  * [x] outline and
-  * [ ] implement modelling steps as in Appendix **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
-  * [ ] outline and
-  * [ ] implement modelling validation steps as in Chapter 5 **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
+## Ideas not yet pursued
 
+* [ ] implement modelling steps as in Appendix **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology*** 
 * [ ] in `inspect_data.R` - possibly play around further 
-  * [ ] possibly add classification tree
-
+* [ ] possibly add classification tree
+* [ ] list variance explained by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
+* [ ] answer questions
 
 ## Considerations
 
 * AH: _"Hier die Übersicht der Maiting study. Im Prinzip wäre es schön, wenn du die Plots aus den Folien in R erstellst (etwas hübscher machen) und eine geeignete Statistik drüber laufen lässt für die time series ANOVA."_
-
 
 ## Further reading
 
