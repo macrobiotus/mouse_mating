@@ -126,12 +126,19 @@
   * [x] updated next steps
   * commit 
 
+## 25-01-2023
+
+* [x] in `inspect_data.R`
+  * [x] use conditional AICs to inpect models - lines `547` and `580`
+  * [x] plot the best models using ggplot
+  * [x] basic modelling script done - now needs to be cleaned and expanded to answer the question posed in the introduction
+
   
 ## Todo queue
 
-* [x] in `inspect_data.R`
-  * [ ] use conditional AICs to inpect models - lines `547` and `580`
-  * [ ] plot the best models using ggplot - or a curve plt from the `effects` package
+* [ ] in `inspect_data.R`
+  * expand script to answer questions
+  * [ ] plot random-conditioned fixed effects using the  `effects` package - **not used so far but added notes**
   * [ ] list variance explained by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
   * [ ] clean and structure code for export
   * [ ] answer questions
