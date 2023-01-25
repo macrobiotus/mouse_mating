@@ -132,6 +132,15 @@
   * [x] use conditional AICs to inpect models - lines `547` and `580`
   * [x] plot the best models using ggplot
   * [x] basic modelling script done - now needs to be cleaned and expanded to answer the question posed in the introduction
+* commit `d5871657c9665c01aa421bb58015cb6dbb77635c`
+* created `main_analysis.R` for refining lme4 solution and starts answering questions
+* commit `d5871657c9665c01aa421bb58015cb6dbb77635c`
+
+* [x] in `main_analysis.R` 
+ * added more model fomulae with dietary interactions
+ * re-sorted modelling table - about to delete models
+
+  
 
   
 ## Todo queue
