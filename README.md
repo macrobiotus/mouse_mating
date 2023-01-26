@@ -141,7 +141,11 @@
   * re-sorted modelling table - about to delete models
   * commit `8fe8a92c37807244ed2729c3a437d9a80b11bf37`
 * updated plotting 
- * commmit `44162126b0b991a18a3a67ae653246ffbcc22158` 
+* commit `39b035178f0277d89b0d3b568b1fdd9e0e2489aa`
+
+## 26-01-2023
+
+* uodated ToDo - added new ideas
   
 ## Todo queue
 
@@ -151,10 +155,12 @@
   * [ ] sort models sytematically
   * [ ] build and re-evaluate models with reagrds to maternal weight loss
   * [ ] build and re-evaluate models with reagrds to sex-sepecific weight gain - sex needs to be included or evaluated
-  * [ ] to understand effect of polynomials and sex - plot random-conditioned fixed effects using the `effects` package  
+  * [ ] to understand effect of polynomials and sex - plot random-conditioned fixed effects using the `effects` package
+  * adress high VIFs -  by recoding factor variable - 
+  * adress high VIFS -  by ignoring factor variable (`https://stackoverflow.com/questions/33397689/multi-collinearity-for-categorical-variables`)
+  * adress high VIFS - by centering time varieble (?) 
   * [ ] answer last question
   * [ ] sort script for rendering
-  * commit `a15882ff26cce382f95bd3db40ab7b8bf9225261`
  
 * in manuscript
   * add methods  
