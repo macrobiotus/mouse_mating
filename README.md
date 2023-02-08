@@ -149,7 +149,16 @@
 
 ## 30-01-2023
 
-* uodated ToDo - added new ideas
+* updated ToDo - added new ideas
+
+## 08-02-2023
+
+* working in `main_analysis.R` 
+  * restructured script 
+  * commit `cd6a930f3a39199744609742bd7470c5a49240e7`
+
+  
+
   
 ## Todo queue
 
