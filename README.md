@@ -156,28 +156,32 @@
 * working in `main_analysis.R` 
   * restructured script 
   * commit `cd6a930f3a39199744609742bd7470c5a49240e7`
-
-  
+  * starting to work on freshly defined Objective 2 
+  * finished Objective 2, as per `gam06` in section
+  * updated `README.md` below
+  * commit ``
 
   
 ## Todo queue
 
 * [ ] in `main_analysis.R `
-  * [ ] find mothers with weight loss
-  * [ ] add weight loss as factor to modelling data
-  * [ ] sort models sytematically
-  * [ ] plot fixed and random effects as with DINCH mice
-  * [ ] consider usding splines or GAM
-  * [ ] build and re-evaluate models with reagrds to maternal weight loss
-  * [ ] build and re-evaluate models with reagrds to sex-sepecific weight gain - sex needs to be included or evaluated
-  * [ ] to understand effect of polynomials and sex - plot random-conditioned fixed effects using the `effects` package
-  * adress high VIFs - by recoding factor variable 
-  * adress high VIFS - by ignoring factor variable (`https://stackoverflow.com/questions/33397689/multi-collinearity-for-categorical-variables`)
-  * adress high VIFS - **by centering time variable** (?) 
-  * [ ] answer last question
-  * [ ] sort script for rendering
-  * [ ] possibly rewrite script as done for DINCH mis, also using `GGpairs`
-
+  * [ ] finish Objectives 2 and 3 with new structure
+  * [ ] erase old strcuture
+  * [ ] check if some of the follwing still needs doing 
+     * [ ] find mothers with weight loss
+     * [ ] add weight loss as factor to modelling data
+     * [ ] sort models sytematically
+     * [ ] plot fixed and random effects as with DINCH mice
+     * [x] started: consider using splines or GAM
+     * [ ] build and re-evaluate models with reagrds to maternal weight loss
+     * [ ] build and re-evaluate models with reagrds to sex-sepecific weight gain - sex needs to be included or evaluated
+     * [ ] to understand effect of polynomials and sex - plot random-conditioned fixed effects using the `effects` package
+     * [ ] adress high VIFs - by recoding factor variable 
+     * [ ] adress high VIFS - by ignoring factor variable (`https://stackoverflow.com/questions/33397689/multi-collinearity-for-categorical-variables`)
+     * [ ] address high VIFS - **by centering time variable** (?) 
+     * [ ] answer last question
+     * [ ] sort script for rendering
+  
 * in manuscript
   * add methods  
   * add IMISE consulting personell to acknowledgements: 
@@ -189,11 +193,11 @@
 
 ## Ideas not yet pursued
 
-* [ ] implement modelling steps as in Appendix **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology*** 
+* [x] implement modelling steps as in Appendix **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology*** 
 * [ ] in `main_analysis.R ` - possibly play around further 
   * [ ] possibly add classification tree
   * [ ] list variance explained by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
-  * [ ] rewrite everything succeinctly as in DINCH mice?
+  * [x] started: rewrite everything succeinctly as in DINCH mice?
  
 ## Considerations
 
