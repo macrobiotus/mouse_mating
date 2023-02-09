@@ -159,7 +159,13 @@
   * starting to work on freshly defined Objective 2 
   * finished Objective 2, as per `gam06` in section
   * updated `README.md` below
-  * commit ``
+  * commit `84d6d5f422af4bd33b7a7babcda8bb81032eb750`
+
+## 09-02-2023
+
+* working in `main_analysis.R` 
+  * improved GAM and found better one - with interaction
+  * after reading lower section this [website](https://marissabarlaz.github.io/portfolio/gam/#visualizing-gam-results).
 
   
 ## Todo queue
