@@ -166,6 +166,9 @@
 * working in `main_analysis.R` 
   * improved GAM and found better one - with interaction
   * after reading lower section this [website](https://marissabarlaz.github.io/portfolio/gam/#visualizing-gam-results).
+  * commit `1a4172ed230ff5007a050afe746d5bfc9ce7f55f`
+  * finished Objective 3, as per `gam10` in section
+  * commit ``
 
   
 ## Todo queue
