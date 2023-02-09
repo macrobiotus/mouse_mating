@@ -168,7 +168,10 @@
   * after reading lower section this [website](https://marissabarlaz.github.io/portfolio/gam/#visualizing-gam-results).
   * commit `1a4172ed230ff5007a050afe746d5bfc9ce7f55f`
   * finished Objective 3, as per `gam10` in section
-  * commit ``
+  * commit `137527f7afd1ed32581f8d87e6f38425b866e5d9`
+  * starting on Objective 1
+  * alamost deone define "mothers who have lost weight" - positing that thes have the curviest weight gain curve
+  * commit ''
 
   
 ## Todo queue
