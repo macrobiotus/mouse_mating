@@ -176,27 +176,33 @@
 ## 10-02-2023
 
 * working in `main_analysis.R` 
-  * ready to model for objecyive 1, got data
-
+  * started modelling for for Objective 1
+     * done for mother's weight loss only 
+     * done for mother's weight loss and fathers diet
+     * see `gam14`
+     * reporting results in chat
+     * emailling about results
+ * all initial 3 Objecktives analysed. 
+ * commit ``
   
 ## Todo queue
 
 * [ ] in `main_analysis.R `
-  * [ ] finish Objectives 2 and 3 with new structure
+  * [x] finish Objectives 2 and 3 with new structure
   * [ ] erase old strcuture
   * [ ] check if some of the follwing still needs doing 
-     * [ ] find mothers with weight loss
-     * [ ] add weight loss as factor to modelling data
-     * [ ] sort models sytematically
-     * [ ] plot fixed and random effects as with DINCH mice
+     * [x] find mothers with weight loss
+     * [x] add weight loss as factor to modelling data
+     * [x] sort models sytematically
+     * [x] plot fixed and random effects as with DINCH mice
      * [x] started: consider using splines or GAM
-     * [ ] build and re-evaluate models with reagrds to maternal weight loss
+     * [x] build and re-evaluate models with reagrds to maternal weight loss
      * [ ] build and re-evaluate models with reagrds to sex-sepecific weight gain - sex needs to be included or evaluated
      * [ ] to understand effect of polynomials and sex - plot random-conditioned fixed effects using the `effects` package
      * [ ] adress high VIFs - by recoding factor variable 
      * [ ] adress high VIFS - by ignoring factor variable (`https://stackoverflow.com/questions/33397689/multi-collinearity-for-categorical-variables`)
      * [ ] address high VIFS - **by centering time variable** (?) 
-     * [ ] answer last question
+     * [x] answer last question
      * [ ] sort script for rendering
   
 * in manuscript
