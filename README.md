@@ -171,7 +171,12 @@
   * commit `137527f7afd1ed32581f8d87e6f38425b866e5d9`
   * starting on Objective 1
   * alamost deone define "mothers who have lost weight" - positing that thes have the curviest weight gain curve
-  * commit ''
+  * commit `5064bf141548c4981a17bbd7596b98d8ac007f65`
+
+## 10-02-2023
+
+* working in `main_analysis.R` 
+  * ready to model for objecyive 1, got data
 
   
 ## Todo queue
