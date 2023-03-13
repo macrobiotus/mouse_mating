@@ -183,7 +183,15 @@
      * reporting results in chat
      * emailling about results
  * all initial 3 Objecktives analysed. 
- * commit ``
+ * commit `b9b23a3c341912b0f2ea478432ce004b6bfc1950`
+
+## 13-02-2023
+
+* after meeting with Nora, we agreed that writing can start regardeless of RNA-Seq data
+* re-ran code in `main_analysis.R`to line 1027
+* started drafting in word document (`????_main_text_short_verdion.docx`)
+* saved everythimg beyond line 1027 of `main_analysis.R` to `scratch_code_main_analysis.R`
+
   
 ## Todo queue
 
