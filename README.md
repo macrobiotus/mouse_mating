@@ -1,8 +1,8 @@
-# On Mouse Mating work 
+# On Mouse Mating work
 
 ## Project goals
 
-### Central questions 
+### Central questions
 
 * Determine the Influence of parental weight for offspring weight gain.
 * Should mothers loose weight before becoming pregnant?
@@ -75,7 +75,7 @@
   * finished preliminary analysis
   * commit `b938ce5972986f9fedfa66bd842158f57775611e`
   * updated what to do next, commit `4d7dac255f96aab9c04e0c0671db21509fd7cc85`
-  
+
 ## 02-01-2023
 
 * in `inspect_data.R`
@@ -107,7 +107,7 @@
    * added Chapter 5 steps to GLS modelling section (last part of script.
    * started modelling using `nlme::lme()` - need to abort for AH
    * see comments in code (line 593) and also wehre to continue reading in book
-   * commit `c3eddd7baa0cba9f45c99d5b291f07636244b0d1`   
+   * commit `c3eddd7baa0cba9f45c99d5b291f07636244b0d1`
 
 ## 23-01-2023
 
@@ -124,7 +124,7 @@
   * [x] confirm modelling with HI-MAG stats support group
   * [x] names of stats poeple and add to paper **Elmar Spiegel** and **Roman Le Glut**, **Maciej Rosolowski**
   * [x] updated next steps
-  * commit 
+  * commit
 
 ## 25-01-2023
 
@@ -136,11 +136,11 @@
 * commit `d5871657c9665c01aa421bb58015cb6dbb77635c`
 * created `main_analysis.R` for refining lme4 solution and starts answering questions
 * commit `d5871657c9665c01aa421bb58015cb6dbb77635c`
-* [x] in `main_analysis.R` 
+* [x] in `main_analysis.R`
   * added more model fomulae with dietary interactions
   * re-sorted modelling table - about to delete models
   * commit `8fe8a92c37807244ed2729c3a437d9a80b11bf37`
-* updated plotting 
+* updated plotting
 * commit `39b035178f0277d89b0d3b568b1fdd9e0e2489aa`
 
 ## 26-01-2023
@@ -153,17 +153,17 @@
 
 ## 08-02-2023
 
-* working in `main_analysis.R` 
-  * restructured script 
+* working in `main_analysis.R`
+  * restructured script
   * commit `cd6a930f3a39199744609742bd7470c5a49240e7`
-  * starting to work on freshly defined Objective 2 
+  * starting to work on freshly defined Objective 2
   * finished Objective 2, as per `gam06` in section
   * updated `README.md` below
   * commit `84d6d5f422af4bd33b7a7babcda8bb81032eb750`
 
 ## 09-02-2023
 
-* working in `main_analysis.R` 
+* working in `main_analysis.R`
   * improved GAM and found better one - with interaction
   * after reading lower section this [website](https://marissabarlaz.github.io/portfolio/gam/#visualizing-gam-results).
   * commit `1a4172ed230ff5007a050afe746d5bfc9ce7f55f`
@@ -175,26 +175,41 @@
 
 ## 10-02-2023
 
-* working in `main_analysis.R` 
+* working in `main_analysis.R`
   * started modelling for for Objective 1
-     * done for mother's weight loss only 
+     * done for mother's weight loss only
      * done for mother's weight loss and fathers diet
      * see `gam14`
      * reporting results in chat
      * emailling about results
- * all initial 3 Objecktives analysed. 
+ * all initial 3 Objecktives analysed.
  * commit `b9b23a3c341912b0f2ea478432ce004b6bfc1950`
 
 ## 13-02-2023
 
 * after meeting with Nora, we agreed that writing can start regardeless of RNA-Seq data
 * re-ran code in `main_analysis.R`to line 1027
-* started drafting in word document (`????_main_text_short_verdion.docx`)
+* started drafting in word document (`????_main_text_short_version.docx`)
 * saved everythimg beyond line 1027 of `main_analysis.R` to `scratch_code_main_analysis.R`
+* saved work space
+* commit `72efe63015822d83450c4b5a4cc0acfea946f2dd`
+* minor chnages in `main_analysis.R` fot rendering
 
-  
+## 25-04-2023
+
+* started working on manuscript outline, openeing main analysis, leikley for minor chnages and package installs
+
+## 28-04-2023
+
+* startted outlining across multiple documents
+* likely continuing coding next and scaffolding in parallel
+* main document is  `[...] main_text_scaffolding`
+* but see others
+
 ## Todo queue
 
+* [ ] in `????_main_text_short_version.docx`
+  * continue editing
 * [ ] in `main_analysis.R `
   * [x] finish Objectives 2 and 3 with new structure
   * [ ] erase old strcuture
@@ -212,14 +227,14 @@
      * [ ] address high VIFS - **by centering time variable** (?) 
      * [x] answer last question
      * [ ] sort script for rendering
-  
+
 * in manuscript
-  * add methods  
-  * add IMISE consulting personell to acknowledgements: 
+  * add methods
+  * add IMISE consulting personell to acknowledgements:
     * **Maciej Rosolowski** <maciej.rosolowski@imise.uni-leipzig.de>
     * Maryam Yahiaoui-Doktor <maryam.Yahiaoui-Doktor@imise.uni-leipzig.de>
   * add HM consulting personell to paper
-    * **Elmar Spiegel**  
+    * **Elmar Spiegel**
     * Roman Le Glut
 
 ## Ideas not yet pursued
@@ -229,7 +244,7 @@
   * [ ] possibly add classification tree
   * [ ] list variance explained by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
   * [x] started: rewrite everything succeinctly as in DINCH mice?
- 
+
 ## Considerations
 
 * AH: _"Hier die Übersicht der Maiting study. Im Prinzip wäre es schön, wenn du die Plots aus den Folien in R erstellst (etwas hübscher machen) und eine geeignete Statistik drüber laufen lässt für die time series ANOVA."_
@@ -239,18 +254,10 @@
 ### Serial correlations and model verification
 * **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
 
-### Not relevant anymore 
+### Not relevant anymore
 
 * on multivariate polynomials
   * Kahle D. 2013. mpoly: Multivariate Polynomials in R. The R Journal 5: 162.
-
 * On contrast coding: `https://marissabarlaz.github.io/portfolio/contrastcoding/#what-is-a-contrast`
-
 * for modelling consider _"A guide to creating design matrices for gene expression experiments. https://bioconductor.org/packages/release/workflows/vignettes/RNAseq123/inst/doc/designmatrices.html. Viewed 25 Nov 2022."_, section 6.1
-  
-
-
-
-
-
 
