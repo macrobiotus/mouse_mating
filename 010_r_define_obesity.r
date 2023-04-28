@@ -19,6 +19,30 @@
 #'     code_folding: show
 #' ---
 
+# _1.) Packages ----
+
+library("here")     # environment management - use package "here" in conjunction with a RStudio project
+library("renv")     # environment can be snap shot
+
+library("readxl")   # table I/O
+library("janitor")  # data cleaning 
+
+library("dplyr")    # pipes and more
+library("magrittr") # even more pipes
+
+library("plotrix")
+library("lattice")
+library("ggplot2")
+library("ggrepel")  
+
+library("lme4")     # Linear Mixed Effects Models
+library("lmerTest") # Tests in Linear Mixed Effects Models
+library("mgcv")     # General Additive Model
+
+library("effects")     # Model inspection
+library("performance") # Model inspection
+library("cAIC4")       # Model selection 
+
 
 
 # -> Find F0 mice with weight loss and add to F1 data as factor.
@@ -143,3 +167,12 @@ mice_f1_slct_o1 %<>% rename(mother_gain = gain)
 
 # Is analysis of mother_gain possible - is it defined at all? 
 mice_f1_slct_o1 %>% pull(mother_gain) %>% summary() # only low mice there - no data to analyse? 
+
+
+
+# Snapshot environment ----
+sessionInfo()
+save.image(file = here("scripts", "010_r_define_obesity.RData"))
+renv::snapshot()
+
+

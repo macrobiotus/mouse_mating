@@ -19,8 +19,21 @@
 #'     code_folding: show
 #' ---
 
+# Prepare environment  ---- 
 
+rm(list=ls())
+gc()
 
+# _1.) Packages ----
+
+library("here")     # environment management - use package "here" in conjunction with a RStudio project
+library("renv")     # environment can be snap shot
+
+library("readxl")   # table I/O
+
+library("janitor")  # data cleaning 
+library("dplyr")    # pipes and more
+library("magrittr") # even more pipes
 
 
 #'
@@ -93,4 +106,11 @@ mice_f1_slct %>% print(n = Inf)
 
 # __b) Re-code factor week as numerical days ----
 mice_f1_slct %<>% mutate(day = readr::parse_number(as.character(week)) * 7) 
+
+
+# Snapshot environment ----
+sessionInfo()
+save.image(file = here("scripts", "000_r_format_data.RData"))
+renv::snapshot()
+
 

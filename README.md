@@ -201,10 +201,19 @@
 
 ## 28-04-2023
 
-* startted outlining across multiple documents
+* started outlining across multiple documents
 * likely continuing coding next and scaffolding in parallel
 * main document is  `[...] main_text_scaffolding`
 * but see others
+* starting to code and write in parallel
+* main text document with growing manuscript is in `/Users/paul/Documents/HM_MouseMating/manuscript/230428_main_text_scaffolding.docx`
+* starting to code in parallel, while adjusting existing code with script that correspond to text, namely:
+  * `000_r_format_data.r`
+  * `010_r_define_obesity.r`
+  * `020_r_h1.r`
+  * `030_r_h2.r`
+  * ` 030_r_h3.r`             
+* commmit `506381bbbeb6429dba2b4d9bb13aedfa645024be`
 
 ## Todo queue
 
