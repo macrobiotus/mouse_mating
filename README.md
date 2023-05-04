@@ -197,7 +197,7 @@
 
 ## 25-04-2023
 
-* started working on manuscript outline, openeing main analysis, leikley for minor chnages and package installs
+* started working on manuscript outline, opening main analysis, likely for minor chnages and package installs
 
 ## 28-04-2023
 
@@ -214,6 +214,14 @@
   * `030_r_h2.r`
   * ` 030_r_h3.r`             
 * commmit `506381bbbeb6429dba2b4d9bb13aedfa645024be`
+
+## 04-05-2023
+
+* finished an approved manuscript introduction in `/Users/paul/Documents/HM_MouseMating/manuscript/230504_main_text_scaffolding.docx`
+* finished initial version of `000_r_format_data.r`
+* starting to work in `010_r_define_obesity.r`
+* commit ``
+
 
 ## Todo queue
 

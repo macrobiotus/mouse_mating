@@ -24,7 +24,7 @@
 rm(list=ls())
 gc()
 
-# _1.) Packages ----
+# _1.) Load Packages ----
 
 library("here")     # environment management - use package "here" in conjunction with a RStudio project
 library("renv")     # environment can be snap shot
@@ -36,13 +36,7 @@ library("dplyr")    # pipes and more
 library("magrittr") # even more pipes
 
 
-#'
-#' # Data read-in, cleaning, formatting
-#'
-
 # Data read-in, cleaning, formatting ----
-
-#' ## Get data
 
 # _1.) Get data ----
 
@@ -50,7 +44,6 @@ xlsx_path <- here("raw_data", "221214_mice_pairing_reshaped.xlsx")
 mice_f0 <- read_excel(xlsx_path, sheet = "Parental (F0)",  na = c("","-",  "NA")) %>% clean_names()
 mice_f1 <- read_excel(xlsx_path, sheet = "Offspring (F1)", na = c("","-", "NO", "NA")) %>% clean_names()
 
-#' ## Type correction
 
 # _2.) Type correction  ----
 
@@ -77,40 +70,66 @@ mice_f1 %<>% mutate(animal_id = factor(animal_id))
 glimpse(mice_f0)
 glimpse(mice_f1)
 
-# _3.) Save intermediate data ----
+
+# _3.) Data re-coding ----
+
+# __a) Recode variables to CamelCase ---- 
+
+mice_f0 %<>% clean_names(case = "upper_camel")
+mice_f1 %<>% clean_names(case = "upper_camel")
+
+# __b) Add generational information to data ---- 
+
+mice_f0 %<>% mutate("Generation" = as.factor("f0"))
+mice_f1 %<>% mutate("Generation" = as.factor("f1"))
+
+# __c) Re-code measurement timing - factor week to numerical days ----
+
+mice_f0 %<>% mutate("MeasurementDay" = readr::parse_number(as.character(Week)) * 7)
+mice_f1 %<>% mutate("MeasurementDay" = readr::parse_number(as.character(Week)) * 7)
+
+glimpse(mice_f0)
+glimpse(mice_f1)
+
+
+# __d) Re-code further variables  ----
+
+# *** not used - implement as needed ***
+
+# mice_f0 %<>%   
+# mice_f1 %<>%
+
+
+# _4.) Save intermediate data ----
 
 saveRDS(mice_f0, file = here("rds_storage", "mice_f0.rds"))
 saveRDS(mice_f1, file = here("rds_storage", "mice_f1.rds"))
 
 
-# _4.) Data merging ----
+# 5.) Data sub-setting ----
 
-# [use section if f0 data needs to be joined with f1 data]
-
-#' ## Data re-coding
-
-# _5.) Data re-coding ----
-
-# __a) Subset variables for further use ----
+# *** not used - implement as needed ***
 
 # check which variables are available for selection
 glimpse(mice_f1)
+glimpse(mice_f0)
 
-# select all variables that could be relavnt for modelling
-mice_f1_slct <- mice_f1 %>% 
-  dplyr::select(animal_id, animal_sex, body_weight_g, mother_diet, father_diet, week, mother_id, father_id) 
+# select all variables that could be relevant for modelling
+
+mice_f0_slct <- mice_f0 # 
+mice_f1_slct <- mice_f1 # %>%  dplyr::select(animal_id, animal_sex, body_weight_g, mother_diet, father_diet, week, mother_id, father_id) 
 
 # check selected variables
+glimpse(mice_f0_slct)
 glimpse(mice_f1_slct)
-mice_f1_slct %>% print(n = Inf)
 
-# __b) Re-code factor week as numerical days ----
-mice_f1_slct %<>% mutate(day = readr::parse_number(as.character(week)) * 7) 
 
+# Save finished data ----
+
+saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0.rds"))
+saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1.rds"))
 
 # Snapshot environment ----
 sessionInfo()
 save.image(file = here("scripts", "000_r_format_data.RData"))
 renv::snapshot()
-
-

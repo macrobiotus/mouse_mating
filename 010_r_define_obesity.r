@@ -19,7 +19,14 @@
 #'     code_folding: show
 #' ---
 
-# _1.) Packages ----
+# Prepare environment  ---- 
+
+# _1.) Collect garbage ----
+
+rm(list=ls())
+gc()
+
+# _2.) Packages ----
 
 library("here")     # environment management - use package "here" in conjunction with a RStudio project
 library("renv")     # environment can be snap shot
@@ -43,6 +50,15 @@ library("effects")     # Model inspection
 library("performance") # Model inspection
 library("cAIC4")       # Model selection 
 
+# Data read-in, cleaning, formatting ----
+
+# _1.) Get data ----
+
+mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0.rds"))
+mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1.rds"))
+
+
+# OLD CODE BELOW ---
 
 
 # -> Find F0 mice with weight loss and add to F1 data as factor.
