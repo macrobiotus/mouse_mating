@@ -54,8 +54,8 @@ library("cAIC4")       # Model selection
 
 # _1.) Get data ----
 
-mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0.rds"))
-mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1.rds"))
+mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_with_obesity.rds"))
+mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_with_obesity.rds"))
 
 
 # OLD CODE BELOW ---

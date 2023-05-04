@@ -220,13 +220,12 @@
 * finished an approved manuscript introduction in `/Users/paul/Documents/HM_MouseMating/manuscript/230504_main_text_scaffolding.docx`
 * finished initial version of `000_r_format_data.r`
 * starting to work in `010_r_define_obesity.r`
-* commit ``
-
+* commit `18e41585b59a17220bf14eecbbbb0161f847e7c0`
 
 ## Todo queue
 
-* [ ] in `????_main_text_short_version.docx`
-  * continue editing
+* [ ] in `????_main_text_sacfolding.docx` - update methods and results with script ``010_r_define_obesity.r`
+* [ ] add to dos above this line but keep keep in mind the todos below until they can be erased
 * [ ] in `main_analysis.R `
   * [x] finish Objectives 2 and 3 with new structure
   * [ ] erase old strcuture

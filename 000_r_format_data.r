@@ -123,11 +123,10 @@ mice_f1_slct <- mice_f1 # %>%  dplyr::select(animal_id, animal_sex, body_weight_
 glimpse(mice_f0_slct)
 glimpse(mice_f1_slct)
 
-
 # Save finished data ----
 
-saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0.rds"))
-saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1.rds"))
+saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct.rds"))
+saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct.rds"))
 
 # Snapshot environment ----
 sessionInfo()

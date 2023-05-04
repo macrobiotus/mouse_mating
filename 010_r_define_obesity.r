@@ -42,6 +42,8 @@ library("lattice")
 library("ggplot2")
 library("ggrepel")  
 
+library("modeest")
+
 library("lme4")     # Linear Mixed Effects Models
 library("lmerTest") # Tests in Linear Mixed Effects Models
 library("mgcv")     # General Additive Model
@@ -50,140 +52,230 @@ library("effects")     # Model inspection
 library("performance") # Model inspection
 library("cAIC4")       # Model selection 
 
+# _3.) Functions ----
+
+# _a ) Calculate derivatives of polynomials ----
+# - from https://stackoverflow.com/questions/40438195/function-for-polynomials-of-arbitrary-order-symbolic-method-preferred/40442584#40442584
+
+g <- function (x, pc, nderiv = 0L) {
+  ## check missing aruments
+  if (missing(x) || missing(pc)) stop ("arguments missing with no default!")
+  ## polynomial order p
+  p <- length(pc) - 1L
+  ## number of derivatives
+  n <- nderiv
+  ## earlier return?
+  if (n > p) return(rep.int(0, length(x)))
+  ## polynomial basis from degree 0 to degree `(p - n)`
+  X <- outer(x, 0:(p - n), FUN = "^")
+  ## initial coefficients
+  ## the additional `+ 1L` is because R vector starts from index 1 not 0
+  beta <- pc[n:p + 1L]
+  ## factorial multiplier
+  beta <- beta * factorial(n:p) / factorial(0:(p - n))
+  ## matrix vector multiplication
+  drop(X %*% beta)
+}
+
+polynom_curvature <- function (x, pc) {
+  d1 <- g(x, pc, 1L)           # 1st derivative
+  d2 <- g(x, pc, 2L)           # 2nd derivative
+  d2 / (1 + d1 * d1) ^ (3 / 2) # curvature: 
+}
+
+
 # Data read-in, cleaning, formatting ----
 
 # _1.) Get data ----
 
-mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0.rds"))
-mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1.rds"))
+mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_slct.rds"))
+mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct.rds"))
+
+# _2.) Inspect data ----
+
+# Plot f0 and f1  weights by measurement day 
+
+xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measuerment age")
+xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weight at measuerment age")
 
 
-# OLD CODE BELOW ---
+# Define Obesity ----
+
+# _a) Model 2nd degree polynomials ----
+
+F0_BodyWeight_Models <-  mice_f0_slct %>% group_by(AnimalId) %>% do(model = lm(BodyWeightG ~ as.numeric(MeasurementDay)+I(as.numeric(MeasurementDay)^2), data = .))
+F1_BodyWeight_Models <-  mice_f1_slct %>% group_by(AnimalId) %>% do(model = lm(BodyWeightG ~ as.numeric(MeasurementDay)+I(as.numeric(MeasurementDay)^2), data = .)) 
+
+# _a) Inspect models ----
+
+# - not all models are perfect, or the polynomial warranted, but as expected from curves
+lapply(F0_BodyWeight_Models$model, summary) 
+lapply(F1_BodyWeight_Models$model, summary) 
+
+# _c) Isolate values for curvature calculations ----
+
+# For function `polynom_curvature`
+
+# - Isolate coefficients from model lists 
 
 
-# -> Find F0 mice with weight loss and add to F1 data as factor.
+F0_BodyWeight_Models_Coefficients <- lapply(F0_BodyWeight_Models[[2]], coefficients) 
+F1_BodyWeight_Models_Coefficients <- lapply(F1_BodyWeight_Models[[2]], coefficients) 
 
-# _1.) Add analysis-specific variables ----
+# - Isolate measurement days 
 
-# __a) Distinguish mothers with and without weight loss prior to pregnancy ----
+F0_BodyWeight_Models_MDays <- split(as.numeric(mice_f0_slct$MeasurementDay), mice_f0_slct$AnimalId)
+F1_BodyWeight_Models_MDays <- split(as.numeric(mice_f1_slct$MeasurementDay), mice_f1_slct$AnimalId)
 
-# find mothers that have lost weight: 
-glimpse(mice_f0) 
+# _d) Get curvatures of polynomials at each time point ----
 
-# - finding potential mothers - done.
-mice_f0_females <- mice_f0 %>% filter(animal_sex == "f")
+# With function `polynom_curvature`
+F0_PCurvature <- Map(polynom_curvature, F0_BodyWeight_Models_MDays, F0_BodyWeight_Models_Coefficients)
+F1_PCurvature <- Map(polynom_curvature, F1_BodyWeight_Models_MDays, F1_BodyWeight_Models_Coefficients)
 
-# - defining start of pregnancy for each mouse - in weeks - relative to birth date - done.
-mice_f0_females <- mice_f0_females %>% mutate(mating_week = difftime(mating_date[2], animal_birth[1], units = "weeks")) %>%
-  mutate(mating_week = round(as.numeric(mating_week), digits = 0)) %>% 
-  relocate(mating_week, .before = mating_date)
-# - check if all mothers are the same age at mating - yes.
-mice_f0_females %>% pull(mating_week) %>% unique() 
+# _e) Sum curvature of animals' polynomials across all time point ----
+
+# Smallest values have most curved grow curve
+F0_PCurvature_Results <- lapply(F0_PCurvature, sum) %>% unlist 
+F1_PCurvature_Results <- lapply(F1_PCurvature, sum) %>% unlist 
+
+# _f) Check if curvature calculatoins make sense
+
+# Show animal's id's and summed curvatures
+sort(F0_PCurvature_Results)
+sort(F1_PCurvature_Results)
+
+# Plot f0 and f1 weights by measurement day
+
+# Including sums of 2nd curvatures
+xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measuerment age, inlcuding curvature summary",
+       panel=function(x, y,...){
+         panel.xyplot(x,y,...)
+         panel.text(80,17, cex = 0.75, labels = signif(F0_PCurvature_Results[panel.number()]), digits = 4) })
+
+xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weight at measuerment age, inlcuding curvature summary",
+       panel=function(x, y,...){
+         panel.xyplot(x,y,...)
+         panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4) })
+
+# Separate obese from non-obese mice ----
+
+# _a) Finding modes for splitting data in obese and non-obese ----
+
+plot(density(F0_PCurvature_Results), main = "F0 weight gain curvatures - Estimated mode")
+abline(v = naive(F0_PCurvature_Results,bw = 0.001), col = 2)
+
+plot(density(F1_PCurvature_Results), main = "F1 weight gain curvatures - Estimated mode")
+abline(v = naive(F1_PCurvature_Results, bw = 0.01), col = 2)
+
+# Storing modes
+
+F0_Mode <- naive(F0_PCurvature_Results,bw = 0.001)
+F1_Mode <- naive(F1_PCurvature_Results, bw = 0.01)
+
+# _b) Defining F0 animals with high or low weight gain ----
+
+# Not yet obesity statuts - see methods
+
+F0_HiGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results >= F0_Mode) ]   
+F0_LoGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results < F0_Mode) ]   
+
+# _c) Defining F1 animals with high or low weight gain 
+
+# Not yet obesity status - see methods
+
+F1_HiGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results >= F1_Mode) ]   
+F1_LoGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results < F1_Mode) ]   
+
+# _d) Mark mice in f0 table ----
+
+# based on hi and low weight gain - can't get to work mutate and case_when
+
+mice_f0_slct["WeightGain"] <- NA
+mice_f0_slct[which(as.character(mice_f0_slct[["AnimalId"]]) %in% F0_HiGain), ]["WeightGain"] <- "hi"
+mice_f0_slct[which(as.character(mice_f0_slct[["AnimalId"]]) %in% F0_LoGain), ]["WeightGain"] <- "lo"
+mice_f0_slct[["WeightGain"]] <- as.factor(mice_f0_slct[["WeightGain"]])
+mice_f0_slct$WeightGain %>% summary()
+
+# _e) Mark mice in f1 table ----
+
+# based on hi and low weight gain - can't get to work mutate and case_when
+
+mice_f1_slct["WeightGain"] <- NA
+mice_f1_slct[which(as.character(mice_f1_slct[["AnimalId"]]) %in% F1_HiGain), ]["WeightGain"] <- "hi"
+mice_f1_slct[which(as.character(mice_f1_slct[["AnimalId"]]) %in% F1_LoGain), ]["WeightGain"] <- "lo"
+mice_f1_slct[["WeightGain"]] <- as.factor(mice_f1_slct[["WeightGain"]])
+mice_f1_slct$WeightGain %>% summary()
+
+# _f) Define obese f0 mice ----
+
+# Mark f0 with any HFD (also mixed diet) and hi weight gain are classified obese - all others are not obese! 
+
+mice_f0_slct %<>% mutate(Obesity = case_when(
+  (Diet == "HFD" & WeightGain == "hi") ~ "Obese",
+  (Diet == "Mix" & WeightGain == "hi") ~ "Obese",
+  (Diet == "HFD" & WeightGain == "lo") ~ "NotObese", 
+  TRUE ~ "NotObese"))
+mice_f0_slct[["Obesity"]] <- as.factor(mice_f0_slct[["Obesity"]])
+mice_f0_slct$Obesity %>% summary()
+
+# _f) Define obese f1 mice ----
+
+# Mark f1 with  hi weight gain as obese - all others are not obese! 
+
+mice_f1_slct %<>% mutate(Obesity = case_when(
+  (WeightGain == "hi") ~ "Obese",
+  (WeightGain == "lo") ~ "NotObese", 
+  TRUE ~ "NotObese"))
+mice_f1_slct[["Obesity"]] <- as.factor(mice_f1_slct[["Obesity"]])
+mice_f1_slct$Obesity %>% summary()
 
 
-# - plotting individual weights and overall weights of mice up until mating - some may have lost weight - but not many.  
-lattice::xyplot(body_weight_g ~ week, groups = animal_id, data = mice_f0_females, panel =   
-                  function(x, y, ..., subscripts, groups) {
-                    for (lev in levels(groups)) {
-                      ok <- groups == lev
-                      panel.xyplot(x[ok], y[ok], type = "smooth", col = lev)
-                    }
-                    panel.xyplot(x, y, type = "smooth", col = "red", lwd = 3)
-                  })
+# _g) Add f0 obesity status to f1 data ----
 
-# - how to identify mice who have lost more weight then others? Compare smooths?
-#   see here ? https://fromthebottomoftheheap.net/2017/10/10/difference-splines-i/
+F0_ObeseMothers <- mice_f0_slct %>% filter(Obesity == "Obese" & AnimalSex == "f") %>% pull("AnimalId")  %>% unique
+F0_ObeseFathers <- mice_f0_slct %>% filter(Obesity == "Obese" & AnimalSex == "m") %>% pull("AnimalId")  %>% unique
 
-#  attempting to scale weight 
-center_this <- function(x){(x - mean(x, na.rm=TRUE))}
-center_and_scale_that <- function(x){(x - mean(x, na.rm=TRUE)) / sd(x, na.rm=TRUE)}
+# - no obese fathers, only some obese mothers
 
+mice_f0_slct %>% filter(WeightGain == "hi" & AnimalSex == "m")
 
-# - again for better overview - plotting scaled individual weights and overall weights of mice up until mating - on scaled data
+# - also no males who have gained lots of weight
 
-mice_f0_females %<>% mutate(body_weight_g_scaled = center_this(body_weight_g))
-mice_f0_females %<>% mutate(body_weight_g_scaled = center_and_scale_that(body_weight_g))
+# - adding only mothers obesity status to F1
+mice_f1_slct["ObeseMother"] <- FALSE
+mice_f1_slct[which(as.character(mice_f1_slct[["MotherId"]]) %in% F0_ObeseMothers), ]["ObeseMother"] <- TRUE
+mice_f1_slct[["ObeseMother"]] <- as.logical(mice_f1_slct[["ObeseMother"]])
+mice_f1_slct$ObeseMother %>% summary()
 
 
-mice_f0_females %<>% group_by(animal_id) %>% mutate(body_weight_g_scaled = center_this(body_weight_g))
-mice_f0_females %<>% group_by(animal_id) %>% mutate(body_weight_g_scaled = center_this(body_weight_g))
+# Plotting out final data ----
 
-lattice::xyplot(body_weight_g_scaled ~ week, groups = animal_id, data = mice_f0_females, panel =   
-                  function(x, y, ..., subscripts, groups) {
-                    for (lev in levels(groups)) {
-                      ok <- groups == lev
-                      panel.xyplot(x[ok], y[ok], type = "smooth", col = lev)
-                    }
-                    panel.xyplot(x, y, type = "smooth", col = "red", lwd = 3)
-                  })
+# a) Plotting f0 weight at measurement age, including sex and obesity status ----
 
-# -> sort mothers mice grow curves by second derivatives of polynomials - half the data that is more curvy is the weight loss group
 
-# https://stackoverflow.com/questions/48692150/calculate-derivatives-curvature-of-a-polynomial
-# https://stackoverflow.com/questions/40438195/function-for-polynomials-of-arbitrary-order-symbolic-method-preferred/40442584#40442584
+xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measurement age, inlcuding sex and obesity status",
+       panel=function(x, y,...){
+         panel.xyplot(x,y,...)
+         panel.text(80,18, cex = 0.75, labels = mice_f0_slct$AnimalSex[panel.number()])
+         panel.text(80,17, cex = 0.75, labels = mice_f0_slct$Obesity[panel.number()]) })
 
-# - get list og polynomial models
-#   using raw polynomials so thet I can use the function for getting second derivatives of data
+# b) Plotting f1 weight at measurement age, including sex and obesity status ----
 
-body_weight_models = mice_f0_females %>% group_by(animal_id) %>% do(model = lm(body_weight_g_scaled ~ as.numeric(week)+I(as.numeric(week)^2), data = .))
+xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weight at measurement age, inlcuding sex and obesity status",
+       panel=function(x, y,...){
+         panel.xyplot(x,y,...)
+         panel.text(80,18, cex = 0.75, labels = mice_f1_slct$AnimalSex[panel.number()])
+         panel.text(80,14, cex = 0.75, labels = mice_f1_slct$Obesity[panel.number()]) })
 
-#   check models
-lapply(body_weight_models$model, summary) # not all data are curves, but that is ok
-# lapply(body_weight_models$model, plot)    # far from perfect, but will do for data selection
 
-#   isolate coefficients from model list
-pc_lst <- lapply(body_weight_models[[2]], coef) 
-week_lst <- split(as.numeric(mice_f0_females$week), mice_f0_females$animal_id)
+# Save finished data ----
 
-#   get curevature of polynomial at each time pont
-result <- Map(polynom_curvature, week_lst, pc_lst)
+saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
+saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
 
-#   sum curvature of polynomial at each time point - smallest values have most curved grow curve
-result_unlist <- lapply(result, sum) %>% unlist 
-
-#    check if these orders make sense - yes they do. These numerical values ...
-sort(result_unlist) 
-
-# ... approximately correspond to order of plot labels 
-lattice::xyplot(body_weight_g_scaled ~ week, groups = animal_id, data = mice_f0_females, panel =   
-                  function(x, y, ..., subscripts, groups) {
-                    for (lev in levels(groups)) {
-                      ok <- groups == lev
-                      panel.xyplot(x[ok], y[ok], type = "smooth", col = lev)
-                      panel.text(x[ok], y[ok], labels = lev, pos=3)
-                    }
-                    panel.xyplot(x, y, type = "smooth", col = "red", lwd = 3)
-                  })
-
-# these numerical values - can be split 50:50 to define mice who have lost weight - i.e. - have the most curved body weight curve
-sort(result_unlist) 
-
-# cut into above and below median
-summary(result_unlist)
-f0_mothers_hi_gain <- names(result_unlist)[which(result_unlist >= median(result_unlist)) ]   
-f0_mothers_lo_gain <- names(result_unlist)[which(result_unlist <= median(result_unlist)) ]
-
-# mark mice in f0 table - based on hi and lo weight gain
-mice_f0_females %<>% mutate(gain = case_when(
-  any(animal_id %in% f0_mothers_lo_gain) == TRUE ~ "lo",
-  any(animal_id %in% f0_mothers_hi_gain) == TRUE ~ "hi")) %>% 
-  relocate(gain, .after = animal_id) %>% mutate(gain = as.factor(gain))
-
-mice_f0_females$gain %>% summary()
-
-# __b) Distinguish between offsprings whose mothers have or havn't lost weight ----
-
-# get data for this objective 
-mice_f1_slct_o1 <- mice_f1_slct
-
-# mark mice in f1 table - based on hi and lo weight gain
-mice_f1_slct_o1 <- left_join(mice_f1_slct_o1, {mice_f0_females %>% dplyr::select(animal_id, gain) %>% distinct}, by = c("mother_id" =  "animal_id"))
-summary(mice_f1_slct_o1$gain)
-mice_f1_slct_o1 %<>% rename(mother_gain = gain) 
-
-# Is analysis of mother_gain possible - is it defined at all? 
-mice_f1_slct_o1 %>% pull(mother_gain) %>% summary() # only low mice there - no data to analyse? 
-
+# Update methods text
+# move to next manuscript and modelling section 
 
 
 # Snapshot environment ----
