@@ -233,21 +233,37 @@ mice_f1_slct$Obesity %>% summary()
 
 # _g) Add f0 obesity status to f1 data ----
 
+# ***Weight data is available for mothers - using HFD AND weight gain as  proxy variables for obesity ***
+
 F0_ObeseMothers <- mice_f0_slct %>% filter(Obesity == "Obese" & AnimalSex == "f") %>% pull("AnimalId")  %>% unique
-F0_ObeseFathers <- mice_f0_slct %>% filter(Obesity == "Obese" & AnimalSex == "m") %>% pull("AnimalId")  %>% unique
 
-# - no obese fathers, only some obese mothers
+# **** No weight data appears to be available for fathers - using HFD as a proxy variable for obesity ****
 
-mice_f0_slct %>% filter(WeightGain == "hi" & AnimalSex == "m")
+F0_ObeseFathers <- mice_f0_slct %>% filter(PartnerDiet == "HFD" ) %>% pull("MatingWith")  %>% unique
 
-# - also no males who have gained lots of weight
 
-# - adding only mothers obesity status to F1
+# - adding mothers' obesity status to F1
 mice_f1_slct["ObeseMother"] <- FALSE
 mice_f1_slct[which(as.character(mice_f1_slct[["MotherId"]]) %in% F0_ObeseMothers), ]["ObeseMother"] <- TRUE
 mice_f1_slct[["ObeseMother"]] <- as.logical(mice_f1_slct[["ObeseMother"]])
 mice_f1_slct$ObeseMother %>% summary()
 
+# - adding farthers' obesity status to F1
+mice_f1_slct["ObeseFather"] <- FALSE
+mice_f1_slct[which(as.character(mice_f1_slct[["FatherId"]]) %in% F0_ObeseFathers), ]["ObeseFather"] <- TRUE
+mice_f1_slct[["ObeseFather"]] <- as.logical(mice_f1_slct[["ObeseFather"]])
+mice_f1_slct$ObeseFather %>% summary()
+
+# - adding parents' obesity status to F1
+
+mice_f1_slct %<>% mutate(ObeseParents = case_when(
+  (ObeseMother == TRUE  & ObeseFather == FALSE) ~ "MotherObese",
+  (ObeseMother == FALSE & ObeseFather == TRUE)  ~ "FatherObese",
+  (ObeseMother == TRUE  & ObeseFather == TRUE)  ~ "MotherFatherObese",
+  (ObeseMother == FALSE & ObeseFather == FALSE) ~ "MotherFatherNotObese",
+  TRUE ~ NA))
+mice_f1_slct[["ObeseParents"]] <- as.factor(mice_f1_slct[["ObeseParents"]])
+mice_f1_slct$ObeseParents %>% summary()
 
 # Plotting out final data ----
 
@@ -262,25 +278,26 @@ xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b",
 
 # b) Plotting f1 weight at measurement age, including sex and obesity status ----
 
-xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weight at measurement age, inlcuding sex and obesity status",
+xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weights at measurement ages, with sex and obesity status, and parents obesity status",
        panel=function(x, y,...){
          panel.xyplot(x,y,...)
-         panel.text(80,18, cex = 0.75, labels = mice_f1_slct$AnimalSex[panel.number()])
-         panel.text(80,14, cex = 0.75, labels = mice_f1_slct$Obesity[panel.number()]) })
-
+         panel.text(80,13, cex = 0.75, labels = mice_f1_slct$AnimalSex[panel.number()])
+         panel.text(80,16, cex = 0.75, labels = mice_f1_slct$Obesity[panel.number()])
+         panel.text(80,19, cex = 0.75, labels = mice_f1_slct$ObeseParents[panel.number()])
+         })
 
 # Save finished data ----
 
 saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
 saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
 
-# Update methods text
-# move to next manuscript and modelling section 
-
-
 # Snapshot environment ----
 sessionInfo()
 save.image(file = here("scripts", "010_r_define_obesity.RData"))
 renv::snapshot()
+
+# -> Update methods text
+# -> move to next manuscript and modelling section 
+
 
 

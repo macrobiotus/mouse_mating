@@ -71,6 +71,15 @@ glimpse(mice_f0)
 glimpse(mice_f1)
 
 
+
+# _3.) Check data for completeness ----
+
+# Why are there no males in the f0?
+fathers_animal_id <- c("8344", "8005", "8005", "8345", "8345", "8335", "8335", "8346", "8337")
+mice_f0$animal_id %in% fathers_animal_id
+
+# -> only coded as Partner
+
 # _3.) Data re-coding ----
 
 # __a) Recode variables to CamelCase ---- 

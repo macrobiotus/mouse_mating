@@ -221,6 +221,8 @@
 * finished initial version of `000_r_format_data.r`
 * starting to work in `010_r_define_obesity.r`
 * commit `18e41585b59a17220bf14eecbbbb0161f847e7c0`
+* revised obesity definition script to include parents obesity status
+* commit ``
 
 ## Todo queue
 
