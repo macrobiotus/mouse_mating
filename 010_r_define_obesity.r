@@ -56,7 +56,7 @@ library("gtsummary")
 
 # _3.) Functions ----
 
-# _a ) Calculate derivatives of polynomials ----
+# Calculate derivatives of polynomials ----
 # - from https://stackoverflow.com/questions/40438195/function-for-polynomials-of-arbitrary-order-symbolic-method-preferred/40442584#40442584
 
 g <- function (x, pc, nderiv = 0L) {
@@ -103,13 +103,13 @@ xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b",
 
 # Define Obesity ----
 
-# _a) Model 2nd degree polynomials ----
+# _1.) Model 2nd degree polynomials ----
 
 # not using poly() to coomodate function calculateing derivatives
 F0_BodyWeight_Models <-  mice_f0_slct %>% group_by(AnimalId) %>% do(model = lm(BodyWeightG ~ as.numeric(MeasurementDay)+I(as.numeric(MeasurementDay)^2), data = .))
 F1_BodyWeight_Models <-  mice_f1_slct %>% group_by(AnimalId) %>% do(model = lm(BodyWeightG ~ as.numeric(MeasurementDay)+I(as.numeric(MeasurementDay)^2), data = .)) 
 
-# _b) Inspect models ----
+# _2.) Inspect models ----
 
 # - not all models are perfect, or the polynomial warranted, but as expected from curves
 lapply(F0_BodyWeight_Models$model, summary) 
@@ -139,7 +139,7 @@ xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, strip = FAL
 
 
 
-# _c) Isolate values for curvature calculations ----
+# _3.) Isolate values for curvature calculations ----
 
 # For function `polynom_curvature`
 
@@ -153,19 +153,19 @@ F1_BodyWeight_Models_Coefficients <- lapply(F1_BodyWeight_Models[[2]], coefficie
 F0_BodyWeight_Models_MDays <- split(as.numeric(mice_f0_slct$MeasurementDay), mice_f0_slct$AnimalId)
 F1_BodyWeight_Models_MDays <- split(as.numeric(mice_f1_slct$MeasurementDay), mice_f1_slct$AnimalId)
 
-# _d) Get curvatures of polynomials at each time point ----
+# _4.) Get curvatures of polynomials at each time point ----
 
 # With function `polynom_curvature`
 F0_PCurvature <- Map(polynom_curvature, F0_BodyWeight_Models_MDays, F0_BodyWeight_Models_Coefficients)
 F1_PCurvature <- Map(polynom_curvature, F1_BodyWeight_Models_MDays, F1_BodyWeight_Models_Coefficients)
 
-# _e) Sum curvature of animals' polynomials across all time point ----
+# _5.) Sum curvature of animals' polynomials across all time point ----
 
 # Smallest values have most curved grow curve
 F0_PCurvature_Results <- lapply(F0_PCurvature, sum) %>% unlist 
 F1_PCurvature_Results <- lapply(F1_PCurvature, sum) %>% unlist 
 
-# _f) Check if curvature calculatoins make sense
+# _6.) Check if curvature calculatoins make sense
 
 # Show animal's id's and summed curvatures
 sort(F0_PCurvature_Results)
@@ -186,7 +186,7 @@ xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b",
 
 # Separate obese from non-obese mice ----
 
-# _a) Finding modes for splitting data in obese and non-obese ----
+# _1.) Finding modes for splitting data in obese and non-obese ----
 
 plot(density(F0_PCurvature_Results), main = "F0 weight gain curvatures - Estimated mode")
 abline(v = naive(F0_PCurvature_Results,bw = 0.001), col = 2)
@@ -199,21 +199,21 @@ abline(v = naive(F1_PCurvature_Results, bw = 0.01), col = 2)
 F0_Mode <- naive(F0_PCurvature_Results,bw = 0.001)
 F1_Mode <- naive(F1_PCurvature_Results, bw = 0.01)
 
-# _b) Defining F0 animals with high or low weight gain ----
+# _2.) Defining F0 animals with high or low weight gain ----
 
 # Not yet obesity statuts - see methods
 
 F0_HiGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results >= F0_Mode) ]   
 F0_LoGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results < F0_Mode) ]   
 
-# _c) Defining F1 animals with high or low weight gain 
+# _3.) Defining F1 animals with high or low weight gain 
 
 # Not yet obesity status - see methods
 
 F1_HiGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results >= F1_Mode) ]   
 F1_LoGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results < F1_Mode) ]   
 
-# _d) Mark mice in f0 table ----
+# _4.) Mark mice in f0 table ----
 
 # based on hi and low weight gain - can't get to work mutate and case_when
 
@@ -223,7 +223,7 @@ mice_f0_slct[which(as.character(mice_f0_slct[["AnimalId"]]) %in% F0_LoGain), ]["
 mice_f0_slct[["WeightGain"]] <- as.factor(mice_f0_slct[["WeightGain"]])
 mice_f0_slct$WeightGain %>% summary()
 
-# _e) Mark mice in f1 table ----
+# _5.) Mark mice in f1 table ----
 
 # based on hi and low weight gain - can't get to work mutate and case_when
 
@@ -233,7 +233,7 @@ mice_f1_slct[which(as.character(mice_f1_slct[["AnimalId"]]) %in% F1_LoGain), ]["
 mice_f1_slct[["WeightGain"]] <- as.factor(mice_f1_slct[["WeightGain"]])
 mice_f1_slct$WeightGain %>% summary()
 
-# _f) Define obese f0 mice ----
+# _6.) Define obese f0 mice ----
 
 # Mark f0 with any HFD (also mixed diet) and hi weight gain are classified obese - all others are not obese! 
 
@@ -245,7 +245,7 @@ mice_f0_slct %<>% mutate(Obesity = case_when(
 mice_f0_slct[["Obesity"]] <- as.factor(mice_f0_slct[["Obesity"]])
 mice_f0_slct$Obesity %>% summary()
 
-# _f) Define obese f1 mice ----
+# _7.) Define obese f1 mice ----
 
 # Mark f1 with  hi weight gain as obese - all others are not obese! 
 
@@ -256,8 +256,7 @@ mice_f1_slct %<>% mutate(Obesity = case_when(
 mice_f1_slct[["Obesity"]] <- as.factor(mice_f1_slct[["Obesity"]])
 mice_f1_slct$Obesity %>% summary()
 
-
-# _g) Add f0 obesity status to f1 data ----
+# _8.) Add f0 obesity status to f1 data ----
 
 # ***Weight data is available for mothers - using HFD AND weight gain as  proxy variables for obesity ***
 
@@ -267,14 +266,15 @@ F0_ObeseMothers <- mice_f0_slct %>% filter(Obesity == "Obese" & AnimalSex == "f"
 
 F0_ObeseFathers <- mice_f0_slct %>% filter(PartnerDiet == "HFD" ) %>% pull("MatingWith")  %>% unique
 
-
 # - adding mothers' obesity status to F1
+
 mice_f1_slct["ObeseMother"] <- FALSE
 mice_f1_slct[which(as.character(mice_f1_slct[["MotherId"]]) %in% F0_ObeseMothers), ]["ObeseMother"] <- TRUE
 mice_f1_slct[["ObeseMother"]] <- as.logical(mice_f1_slct[["ObeseMother"]])
 mice_f1_slct$ObeseMother %>% summary()
 
 # - adding farthers' obesity status to F1
+
 mice_f1_slct["ObeseFather"] <- FALSE
 mice_f1_slct[which(as.character(mice_f1_slct[["FatherId"]]) %in% F0_ObeseFathers), ]["ObeseFather"] <- TRUE
 mice_f1_slct[["ObeseFather"]] <- as.logical(mice_f1_slct[["ObeseFather"]])
@@ -293,8 +293,7 @@ mice_f1_slct$ObeseParents %>% summary()
 
 # Summarizing final data ----
 
-# a) Plotting f0 weight at measurement age, including sex and obesity status ----
-
+# _1.) Plotting f0 weight at measurement age, including sex and obesity status ----
 
 xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measurement age, inlcuding sex and obesity status",
        panel=function(x, y,...){
@@ -302,7 +301,7 @@ xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b",
          panel.text(80,18, cex = 0.75, labels = mice_f0_slct$AnimalSex[panel.number()])
          panel.text(80,17, cex = 0.75, labels = mice_f0_slct$Obesity[panel.number()]) })
 
-# b) Plotting f1 weight at measurement age, including sex and obesity status ----
+# _2.) Plotting f1 weight at measurement age, including sex and obesity status ----
 
 xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weights at measurement ages, with sex and obesity status, and parents obesity status",
        panel=function(x, y,...){
@@ -312,7 +311,7 @@ xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b",
          panel.text(80,19, cex = 0.75, labels = mice_f1_slct$ObeseParents[panel.number()])
          })
 
-# c) Table summaries
+# _3.) Table summaries ----
 
 mice_f0_slct %>% 
   select(Group, BodyWeightG, MeasurementDay, AnimalSex, WeightGain, Obesity) %>% 
@@ -331,7 +330,6 @@ mice_f1_slct %>%
 mice_f0_slct %>% select(Group, Obesity) %>% count(Group, Obesity, sort = TRUE)
 
 # Save finished data ----
-
 saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
 saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
 

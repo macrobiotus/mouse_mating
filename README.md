@@ -227,12 +227,17 @@
 ## 05-05-2023
 
 * finished growth curve analysis - updated all scripts and manuscript file accodingly
-* commit ``
+* commit `18e41585b59a17220bf14eecbbbb0161f847e7c0`
+* finished logistic rgression for H1 in code and text
+* inserted draft code for H2 and H3
+
 
 ## Todo queue
 
 * [x] in `????_main_text_sacfolding.docx` - update methods and results with script ``010_r_define_obesity.r`
-* [ ] forulate H1 in mein text and implemnt it in `020_r_h1.r`
+* [x] formulate logistic H1 in mein text and implemnt it in `020_r_h1.r`
+* [ ] formulate logistic H2 and H3 in text and implemnet in code
+* [ ] check if other regressions shoul be made, e.g, based on weight or body fat
 * [ ] add to dos above this line but keep keep in mind the todos below until they can be erased
 * [ ] in `main_analysis.R `
   * [x] finish Objectives 2 and 3 with new structure
