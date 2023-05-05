@@ -57,13 +57,11 @@ library("cAIC4")       # Model selection
 mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_with_obesity.rds"))
 mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_with_obesity.rds"))
 
+# _x.) Check balance of modelling data and get a grapical or table summary  ----
+
+# - for manuscript 
 
 # OLD CODE BELOW ---
-
-
-
-
-
 
 # Snapshot environment ----
 sessionInfo()

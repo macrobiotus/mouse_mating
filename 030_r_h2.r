@@ -58,10 +58,13 @@ mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0.rds"))
 mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1.rds"))
 
 
-# OLD CODE BELOW ---
+# _x.) Check balance of modelling data and get a grapical or table summary  ----
 
+# - for manuscript 
+
+# OLD CODE BELOW ---
 
 # Snapshot environment ----
 sessionInfo()
-save.image(file = here("scripts", "030_r_h2.RData"))
+save.image(file = here("scripts", "020_r_h1.RData"))
 renv::snapshot()

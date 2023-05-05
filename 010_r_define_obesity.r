@@ -52,6 +52,8 @@ library("effects")     # Model inspection
 library("performance") # Model inspection
 library("cAIC4")       # Model selection 
 
+library("gtsummary")
+
 # _3.) Functions ----
 
 # _a ) Calculate derivatives of polynomials ----
@@ -103,21 +105,45 @@ xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b",
 
 # _a) Model 2nd degree polynomials ----
 
+# not using poly() to coomodate function calculateing derivatives
 F0_BodyWeight_Models <-  mice_f0_slct %>% group_by(AnimalId) %>% do(model = lm(BodyWeightG ~ as.numeric(MeasurementDay)+I(as.numeric(MeasurementDay)^2), data = .))
 F1_BodyWeight_Models <-  mice_f1_slct %>% group_by(AnimalId) %>% do(model = lm(BodyWeightG ~ as.numeric(MeasurementDay)+I(as.numeric(MeasurementDay)^2), data = .)) 
 
-# _a) Inspect models ----
+# _b) Inspect models ----
 
 # - not all models are perfect, or the polynomial warranted, but as expected from curves
 lapply(F0_BodyWeight_Models$model, summary) 
 lapply(F1_BodyWeight_Models$model, summary) 
+
+
+# - graphically, can only be done in lattice using poly() but result shoul be similar
+xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, strip = FALSE,
+      aspect = "xy", pch = 16, grid = TRUE,
+      panel = function(x, y, ...) {
+        panel.xyplot(x, y, ...)
+        fm <- lm(y ~ poly(x, 2))
+        panel.lines(x, fitted(fm), col.line = "black")
+      },
+      xlab = "Standardized age", ylab = "Height (cm)")
+
+# - graphically, can only be done in lattice using poly() but result shoul be similar
+xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, strip = FALSE,
+       aspect = "xy", pch = 16, grid = TRUE,
+       panel = function(x, y, ...) {
+         panel.xyplot(x, y, ...)
+         fm <- lm(y ~ poly(x, 2))
+         panel.lines(x, fitted(fm), col.line = "black")
+       },
+       xlab = "Standardized age", ylab = "Height (cm)")
+
+
+
 
 # _c) Isolate values for curvature calculations ----
 
 # For function `polynom_curvature`
 
 # - Isolate coefficients from model lists 
-
 
 F0_BodyWeight_Models_Coefficients <- lapply(F0_BodyWeight_Models[[2]], coefficients) 
 F1_BodyWeight_Models_Coefficients <- lapply(F1_BodyWeight_Models[[2]], coefficients) 
@@ -214,7 +240,7 @@ mice_f1_slct$WeightGain %>% summary()
 mice_f0_slct %<>% mutate(Obesity = case_when(
   (Diet == "HFD" & WeightGain == "hi") ~ "Obese",
   (Diet == "Mix" & WeightGain == "hi") ~ "Obese",
-  (Diet == "HFD" & WeightGain == "lo") ~ "NotObese", 
+  (Diet == "CD" & WeightGain == "lo") ~ "NotObese", 
   TRUE ~ "NotObese"))
 mice_f0_slct[["Obesity"]] <- as.factor(mice_f0_slct[["Obesity"]])
 mice_f0_slct$Obesity %>% summary()
@@ -265,7 +291,7 @@ mice_f1_slct %<>% mutate(ObeseParents = case_when(
 mice_f1_slct[["ObeseParents"]] <- as.factor(mice_f1_slct[["ObeseParents"]])
 mice_f1_slct$ObeseParents %>% summary()
 
-# Plotting out final data ----
+# Summarizing final data ----
 
 # a) Plotting f0 weight at measurement age, including sex and obesity status ----
 
@@ -286,6 +312,24 @@ xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b",
          panel.text(80,19, cex = 0.75, labels = mice_f1_slct$ObeseParents[panel.number()])
          })
 
+# c) Table summaries
+
+mice_f0_slct %>% 
+  select(Group, BodyWeightG, MeasurementDay, AnimalSex, WeightGain, Obesity) %>% 
+  tbl_summary(., missing = "no") %>%
+  as_gt() %>%
+  gt::gtsave(filename = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/010_r_define_obesity__mice_f0_slct__summary.docx") 
+
+
+mice_f1_slct %>% 
+  select(BodyWeightG, MeasurementDay, AnimalSex, WeightGain, Obesity, MotherDiet, FatherDiet, ObeseMother, ObeseFather) %>% 
+  tbl_summary(., missing = "no") %>%
+  as_gt() %>%
+  gt::gtsave(filename = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/010_r_define_obesity__mice_f1_slct__summary.docx") 
+
+# How many HFD mothers were not obese?
+mice_f0_slct %>% select(Group, Obesity) %>% count(Group, Obesity, sort = TRUE)
+
 # Save finished data ----
 
 saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
@@ -295,9 +339,4 @@ saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_with_obesity.rds"
 sessionInfo()
 save.image(file = here("scripts", "010_r_define_obesity.RData"))
 renv::snapshot()
-
-# -> Update methods text
-# -> move to next manuscript and modelling section 
-
-
 

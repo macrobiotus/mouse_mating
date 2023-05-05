@@ -222,11 +222,17 @@
 * starting to work in `010_r_define_obesity.r`
 * commit `18e41585b59a17220bf14eecbbbb0161f847e7c0`
 * revised obesity definition script to include parents obesity status
+* commit `ab82740ee5c3712dae66c66ebaf516d475f687aa`
+
+## 05-05-2023
+
+* finished growth curve analysis - updated all scripts and manuscript file accodingly
 * commit ``
 
 ## Todo queue
 
-* [ ] in `????_main_text_sacfolding.docx` - update methods and results with script ``010_r_define_obesity.r`
+* [x] in `????_main_text_sacfolding.docx` - update methods and results with script ``010_r_define_obesity.r`
+* [ ] forulate H1 in mein text and implemnt it in `020_r_h1.r`
 * [ ] add to dos above this line but keep keep in mind the todos below until they can be erased
 * [ ] in `main_analysis.R `
   * [x] finish Objectives 2 and 3 with new structure
