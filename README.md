@@ -238,6 +238,7 @@
 * [x] formulate logistic H1 in mein text and implemnt it in `020_r_h1.r`
 * [ ] formulate logistic H2 and H3 in text and implemnet in code
 * [ ] check if other regressions shoul be made, e.g, based on weight or body fat
+* [ ] used grouping factors and presponse to define defined targets fro anlysis of  DEGs in RNAseq data
 * [ ] add to dos above this line but keep keep in mind the todos below until they can be erased
 * [ ] in `main_analysis.R `
   * [x] finish Objectives 2 and 3 with new structure

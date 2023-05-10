@@ -1,7 +1,7 @@
 #' ---
 #' title: "Mice Mating Study"
 #' subtitle: "Modelling for Hypothesis 3"
-#' author: "Paul Czechowski `paul.czechowski@helmholtz-munich.de`"
+#' author: "Paul Czechowski ``paul.czechowski@helmholtz-munich.de``"
 #' date: "`r Sys.Date()`"
 #' output:
 #'  html_notebook:
@@ -18,7 +18,6 @@
 #'     number_sections: true
 #'     code_folding: show
 #' ---
-
 
 # Prepare environment  ---- 
 
@@ -56,20 +55,20 @@ library("cAIC4")       # Model selection
 library("gtsummary")
 library("modelsummary")
 
-###### ADJUST CODE ###############
 
-# Data read-in, cleaning, formatting ----
+# Get data ----
 
-# _1.) Get data ----
+mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_slct_with_H2variables.rds"))
+mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct_with_H2variables.rds"))
 
-mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
-mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
 
-# _2.) Select and shape data for question ----
+# Select and shape data for question ----
+
+### Unadjusted code below ######
 
 # Question is "obesity of any-sex-offspring is dependent on any-sex parents’ obesity"
 
-# __a) Get a factor that defines "any-sex parents’ obesity" ----
+# _1.) Get a factor that defines "any-sex parents’ obesity" ----
 
 # - check values used for logical factor definition 
 
@@ -79,13 +78,13 @@ mice_f1_slct %>% select(ObeseParents) %>% count(ObeseParents, sort = TRUE)
 # - define logical factors for parents
 
 mice_f1_slct %<>% mutate(ObeseParentsLgcl = case_when(
-  (ObeseParents == "FatherObese") ~ TRUE,
-  (ObeseParents == "MotherFatherNotObese") ~ FALSE,
-  (ObeseParents == "MotherObese") ~ TRUE, 
-  (ObeseParents == "MotherFatherObese") ~ TRUE))
+                        (ObeseParents == "FatherObese") ~ TRUE,
+                        (ObeseParents == "MotherFatherNotObese") ~ FALSE,
+                        (ObeseParents == "MotherObese") ~ TRUE, 
+                        (ObeseParents == "MotherFatherObese") ~ TRUE))
 
 
-# __b) Get a factor that defines "obesity of any-sex-offspring" ----
+# _2.) Get a factor that defines "obesity of any-sex-offspring" ----
 
 # - the one already there is cumbersome
 
@@ -97,11 +96,11 @@ mice_f1_slct %<>% mutate(ObesityLgcl = case_when(
   (Obesity == "Obese") ~ TRUE,
   (Obesity == "NotObese") ~ FALSE))
 
-# __c) Isolate data for modelling ----
+# _3.) Isolate data for modelling ----
+  
+mice_f1_model_data <- mice_f1_slct %>% select(AnimalId, ObesityLgcl, ObeseParentsLgcl) 
 
-mice_f1_model_data <-  mice_f1_slct %>% select(AnimalId, ObesityLgcl, ObeseParentsLgcl) 
-
-# Check balance of modelling data and get a graphical or table summary  ----
+# _4.) Check balance of modelling data and get a graphical or table summary  ----
 
 mice_f1_model_data %>% select(ObesityLgcl, ObeseParentsLgcl) %>% count(ObesityLgcl, ObeseParentsLgcl, sort = TRUE)
 mice_f1_model_data %>% select(ObesityLgcl, ObeseParentsLgcl) %>% table()
@@ -114,9 +113,9 @@ mice_f1_model_data %>% select(ObesityLgcl, ObeseParentsLgcl) %>% table()
 
 mod_0 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 summary(mod_0)
-confint(mod_0)
 
 # __b) Actual model ----
+
 mod_1 <- lme4::glmer(ObesityLgcl ~ ObeseParentsLgcl + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 summary(mod_1)
 
@@ -124,7 +123,16 @@ summary(mod_1)
 
 anova(mod_0, mod_1)
 
+
+# Save finished data ----
+saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_with_H3variables.rds"))
+saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_with_H3variables.rds"))
+
 # Snapshot environment ----
 sessionInfo()
-save.image(file = here("scripts", "030_r_h2.RData"))
+save.image(file = here("scripts", "040_r_h3.RData"))
 renv::snapshot()
+
+
+
+
