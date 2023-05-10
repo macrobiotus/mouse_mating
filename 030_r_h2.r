@@ -61,12 +61,9 @@ library("modelsummary")
 mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_slct_with_H1variables.rds"))
 mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct_with_H1variables.rds"))
 
+# Select and shape data for (Sub)question 1 ----
 
-# Select and shape data for question ----
-
-### Unadjusted code below ######
-
-# Question is "obesity of any-sex-offspring is dependent on any-sex parents’ obesity"
+# Hypothesis is "Obesity of any-sex-offspring is dependent on any-sex parents’ obesity"
 
 # _1.) Get a factor that defines "any-sex parents’ obesity" ----
 
@@ -123,6 +120,53 @@ summary(mod_1)
 
 anova(mod_0, mod_1)
 
+# Select and shape data for (Sub)question 2 ----
+
+
+# Hypothesis is "obesity of any-sex-offspring is dependent on both parents’ obesity"
+
+# _1.) Get a factor that defines "both parents’ obesity" ----
+
+# - check values used for logical factor definition 
+
+levels(mice_f1_slct$ObeseParents)
+mice_f1_slct %>% select(ObeseParents) %>% count(ObeseParents, sort = TRUE)
+
+# - define logical factors for parents
+
+mice_f1_slct %<>% mutate(BothObeseParentsLgcl = case_when(
+  (ObeseParents == "FatherObese") ~ FALSE,
+  (ObeseParents == "MotherFatherNotObese") ~ FALSE,
+  (ObeseParents == "MotherObese") ~ FALSE, 
+  (ObeseParents == "MotherFatherObese") ~ TRUE))
+
+
+# _2.) Isolate data for modelling ----
+
+mice_f1_model_data <- mice_f1_slct %>% select(AnimalId, ObesityLgcl, BothObeseParentsLgcl) 
+
+# _3.) Check balance of modelling data and get a graphical or table summary  ----
+
+mice_f1_model_data %>% select(ObesityLgcl, BothObeseParentsLgcl) %>% count(ObesityLgcl, BothObeseParentsLgcl, sort = TRUE)
+mice_f1_model_data %>% select(ObesityLgcl, BothObeseParentsLgcl) %>% table()
+
+# Model offsprings' obesity as function of parents obesity  ----
+
+# _1.) Most simple case: logistic regression ----
+
+# __a) Intercept-only model ----
+
+mod_2 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
+summary(mod_2)
+
+# __b) Actual model ----
+
+mod_3 <- lme4::glmer(ObesityLgcl ~ BothObeseParentsLgcl + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
+summary(mod_3)
+
+# __c) Test effect of parents obesity status ----
+
+anova(mod_2, mod_3)
 
 # Save finished data ----
 saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_with_H2variables.rds"))
@@ -130,7 +174,7 @@ saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_with_H2variables.
 
 # Snapshot environment ----
 sessionInfo()
-save.image(file = here("scripts", "030_r_h2.RData"))
+save.image(file = here("scripts", "020_r_h1.RData"))
 renv::snapshot()
 
 

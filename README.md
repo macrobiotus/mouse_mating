@@ -231,6 +231,11 @@
 * finished logistic rgression for H1 in code and text
 * inserted draft code for H2 and H3
 
+## 10-05-2023
+
+* inserted draft code for H2 and H3
+* commit `f370392e69bdb3aeb5c6d177e8efb21f58557314`
+
 
 ## Todo queue
 
