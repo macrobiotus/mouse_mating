@@ -172,50 +172,63 @@ plotrix::sizetree(mice_f1_model_data %>% dplyr::select(AnimalSex, ObeseParents, 
 # __a) No random effects ----
 mod_1 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents, data = mice_f1_model_data, method = "ML", family = "gaussian")
 
-# __b) Subject only as random effect ----
-mod_2 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents + s(AnimalId, bs = 're'), data = mice_f1_model_data, method = "ML", family = "gaussian")
+# __b) No random effects, but correlated errors ----
+mod_2 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents, data = mice_f1_model_data, method = "ML", correlation = coAR1(form = ~ MeasurementDay | AnimalId), family = "gaussian")
 
-# __c) Subject at each time  as random effect ----
-mod_3 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents + s(AnimalId, MeasurementDay, bs = 're'), data = mice_f1_model_data, method = "ML", family = "gaussian")
+# __c) Subject only as random effect ----
+mod_3 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents + s(AnimalId, bs = 're'), data = mice_f1_model_data, method = "ML", family = "gaussian")
 
-# __d) Adding time correlation to Subjscts random effects instead of complicated ranodm effect ----
-mod_4 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents + s(AnimalId, bs = 're'), correlation = coAR1(form = ~ MeasurementDay | AnimalId), data = mice_f1_model_data, method = "ML",  family = "gaussian")
+# __d) Subject at each time  as random effect ----
+mod_4 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents + s(AnimalId, MeasurementDay, bs = 're'), data = mice_f1_model_data, method = "ML", family = "gaussian")
 
-# _2.) Model summaries ----
+# __e) Adding time correlation to Subjscts random effects instead of complicated ranodm effect ----
+mod_5 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents + s(AnimalId, bs = 're'), correlation = coAR1(form = ~ MeasurementDay | AnimalId), data = mice_f1_model_data, method = "ML",  family = "gaussian")
+
+# _2.) Model rankings ----
+
+AIC(mod_1)
+AIC(mod_2)
+AIC(mod_3)
+AIC(mod_4)
+AIC(mod_5)
+
+# _3.) Model summaries ----
 
 summary(mod_1)
 summary(mod_2)
 summary(mod_3)
-summary(mod_4)
+summary(mod_4) # Deviance explained = 95.9%
+summary(mod_5)
 
-# _3.) Model appraisals ----
+# _4.) Model appraisals ----
 
 gratia::appraise(mod_1)                            # no more heteroscedasticity 
 gratia::appraise(mod_2)
-gratia::appraise(mod_3) # fits well- some inverse correlation in responses vs fitted values - perhaps negligible
-gratia::appraise(mod_4) # also quite good
+gratia::appraise(mod_3) 
+gratia::appraise(mod_4) # fits well- some inverse correlation in responses vs fitted values - perhaps negligible
+gratia::appraise(mod_5) 
 
 
-# _4.) Inspect smoother and confidence intervals ----
+# _5.) Inspect smoother and confidence intervals ----
 
 # show confidence intervals graphically (for now only)
 # - see https://stats.stackexchange.com/questions/33327/confidence-interval-for-gam-model
 # - see dahed lines in plot below
 
-plot.gam(mod_3, residuals = TRUE, rug = TRUE, pages = 1, all.terms = TRUE)
+plot.gam(mod_4, residuals = TRUE, rug = TRUE, pages = 1, all.terms = TRUE)
+confint(mod_4, parm = NULL, level = 0.95)
 
+# _6.) Inspect model predictions ----
 
-# _5.) Inspect model predictions ----
+mod_4_predictions  <- get_model_prdictions_with_mgcv(mod_4, mice_f1_model_data)
 
-mod_3_predictions  <- get_model_prdictions_with_mgcv(mod_3, mice_f1_model_data)
-
-ggplot(data = mod_3_predictions, aes(x = MeasurementDay, y = BodyWeightG, colour = AnimalId)) +
+ggplot(data = mod_4_predictions, aes(x = MeasurementDay, y = BodyWeightG, colour = AnimalId)) +
   geom_point(aes(y = BodyWeightG, group = AnimalId), alpha = 0.5) +
   geom_line(aes(y = fit, group = AnimalId), alpha = 0.5, linewidth = 0.2) +
   facet_wrap(ObeseParents ~ AnimalSex, ncol = 2) + 
   theme_bw() + 
   labs(title = "Offsprings body weight by sex and parents obesity statuts", 
-       subtitle = paste("R model formula: ", as.character(paste(deparse(formula(mod_3), width.cutoff = 500), collapse=""))),
+       subtitle = paste("R model formula: ", as.character(paste(deparse(formula(mod_4), width.cutoff = 500), collapse=""))),
        x="age [d]", y = "body weight [g]")
   
 

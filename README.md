@@ -237,6 +237,9 @@
 * commit `f370392e69bdb3aeb5c6d177e8efb21f58557314`
 * finished logistic regression for H1
 * finished well fitting GAM model - updated main text. 
+* commit `31fb7fdfb3f2a19da11322778f99166f5a663a32`
+
+
 
 
 ## Todo queue
