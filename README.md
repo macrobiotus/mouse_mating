@@ -235,6 +235,8 @@
 
 * inserted draft code for H2 and H3
 * commit `f370392e69bdb3aeb5c6d177e8efb21f58557314`
+* finished logistic regression for H1
+* finished well fitting GAM model - updated main text. 
 
 
 ## Todo queue

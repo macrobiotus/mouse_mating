@@ -61,11 +61,9 @@ library("modelsummary")
 mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_slct_with_H1variables.rds"))
 mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct_with_H1variables.rds"))
 
-# Select and shape data for (Sub)question 1 ----
+# Select and shape data for Subquestion 1: "Obesity in fathers" ----
 
-# Hypothesis is "Obesity of any-sex-offspring is dependent on any-sex parents’ obesity"
-
-# _1.) Get a factor that defines "any-sex parents’ obesity" ----
+# _1.) Get a factor that defines "parents’ obesity for each father" ----
 
 # - check values used for logical factor definition 
 
@@ -74,11 +72,11 @@ mice_f1_slct %>% select(ObeseParents) %>% count(ObeseParents, sort = TRUE)
 
 # - define logical factors for parents
 
-mice_f1_slct %<>% mutate(ObeseParentsLgcl = case_when(
+mice_f1_slct %<>% mutate(ObeseFatherLgcl = case_when(
                         (ObeseParents == "FatherObese") ~ TRUE,
                         (ObeseParents == "MotherFatherNotObese") ~ FALSE,
-                        (ObeseParents == "MotherObese") ~ TRUE, 
-                        (ObeseParents == "MotherFatherObese") ~ TRUE))
+                        (ObeseParents == "MotherObese") ~ FALSE, 
+                        (ObeseParents == "MotherFatherObese") ~ FALSE))
 
 
 # _2.) Get a factor that defines "obesity of any-sex-offspring" ----
@@ -87,45 +85,37 @@ mice_f1_slct %<>% mutate(ObeseParentsLgcl = case_when(
 
 levels(mice_f1_slct$Obesity)
 
-# - define logical factors for offspring                    
-
-mice_f1_slct %<>% mutate(ObesityLgcl = case_when(
-  (Obesity == "Obese") ~ TRUE,
-  (Obesity == "NotObese") ~ FALSE))
+# - already defined one in the previous script                     
 
 # _3.) Isolate data for modelling ----
   
-mice_f1_model_data <- mice_f1_slct %>% select(AnimalId, ObesityLgcl, ObeseParentsLgcl) 
+mice_f1_model_data <- mice_f1_slct %>% select(AnimalId, ObesityLgcl, ObeseFatherLgcl) 
 
 # _4.) Check balance of modelling data and get a graphical or table summary  ----
 
-mice_f1_model_data %>% select(ObesityLgcl, ObeseParentsLgcl) %>% count(ObesityLgcl, ObeseParentsLgcl, sort = TRUE)
-mice_f1_model_data %>% select(ObesityLgcl, ObeseParentsLgcl) %>% table()
+mice_f1_model_data %>% select(ObesityLgcl, ObeseFatherLgcl) %>% count(ObesityLgcl, ObeseFatherLgcl, sort = TRUE)
+mice_f1_model_data %>% select(ObesityLgcl, ObeseFatherLgcl) %>% table()
 
-# Model offsprings' obesity as function of parents obesity  ----
+# Logistic Regression: Model offsprings' obesity as function of Father's obesity  ----
 
-# 1.) Most simple case: logistic regression ----
 
-# __a) Intercept-only model ----
+# _1.) Intercept-only model ----
 
 mod_0 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 summary(mod_0)
 
-# __b) Actual model ----
+# _2.) Actual model ----
 
-mod_1 <- lme4::glmer(ObesityLgcl ~ ObeseParentsLgcl + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
+mod_1 <- lme4::glmer(ObesityLgcl ~ ObeseFatherLgcl + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 summary(mod_1)
 
-# __c) Test effect of parents obesity status ----
+# _3.) Test effect of parents obesity status ----
 
 anova(mod_0, mod_1)
 
-# Select and shape data for (Sub)question 2 ----
+# Select and shape data for Subquestion 2: "Obesity in mothers" ----
 
-
-# Hypothesis is "obesity of any-sex-offspring is dependent on both parents’ obesity"
-
-# _1.) Get a factor that defines "both parents’ obesity" ----
+# _1.) Get a factor that defines "parents’ obesity for each mother" ----
 
 # - check values used for logical factor definition 
 
@@ -134,39 +124,46 @@ mice_f1_slct %>% select(ObeseParents) %>% count(ObeseParents, sort = TRUE)
 
 # - define logical factors for parents
 
-mice_f1_slct %<>% mutate(BothObeseParentsLgcl = case_when(
+mice_f1_slct %<>% mutate(ObeseMotherLgcl = case_when(
   (ObeseParents == "FatherObese") ~ FALSE,
   (ObeseParents == "MotherFatherNotObese") ~ FALSE,
-  (ObeseParents == "MotherObese") ~ FALSE, 
-  (ObeseParents == "MotherFatherObese") ~ TRUE))
+  (ObeseParents == "MotherObese") ~ TRUE, 
+  (ObeseParents == "MotherFatherObese") ~ FALSE))
 
 
-# _2.) Isolate data for modelling ----
+# _2.) Get a factor that defines "obesity of any-sex-offspring" ----
 
-mice_f1_model_data <- mice_f1_slct %>% select(AnimalId, ObesityLgcl, BothObeseParentsLgcl) 
+# - the one already there is cumbersome
 
-# _3.) Check balance of modelling data and get a graphical or table summary  ----
+levels(mice_f1_slct$Obesity)
 
-mice_f1_model_data %>% select(ObesityLgcl, BothObeseParentsLgcl) %>% count(ObesityLgcl, BothObeseParentsLgcl, sort = TRUE)
-mice_f1_model_data %>% select(ObesityLgcl, BothObeseParentsLgcl) %>% table()
+# - already defined one in the previous script                     
 
-# Model offsprings' obesity as function of parents obesity  ----
+# _3.) Isolate data for modelling ----
 
-# _1.) Most simple case: logistic regression ----
+mice_f1_model_data <- mice_f1_slct %>% select(AnimalId, ObesityLgcl, ObeseMotherLgcl) 
 
-# __a) Intercept-only model ----
+# _4.) Check balance of modelling data and get a graphical or table summary  ----
 
-mod_2 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
-summary(mod_2)
+mice_f1_model_data %>% select(ObesityLgcl, ObeseMotherLgcl) %>% count(ObesityLgcl, ObeseMotherLgcl, sort = TRUE)
+mice_f1_model_data %>% select(ObesityLgcl, ObeseMotherLgcl) %>% table()
 
-# __b) Actual model ----
+# Logistic Regression: Model offsprings' obesity as function of parents obesity  ----
 
-mod_3 <- lme4::glmer(ObesityLgcl ~ BothObeseParentsLgcl + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
-summary(mod_3)
 
-# __c) Test effect of parents obesity status ----
+# _1.) Intercept-only model ----
 
-anova(mod_2, mod_3)
+mod_3 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
+summary(mod_0)
+
+# _2.) Actual model ----
+
+mod_4 <- lme4::glmer(ObesityLgcl ~ ObeseMotherLgcl + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
+summary(mod_4)
+
+# _3.) Test effect of parents obesity status ----
+
+anova(mod_3, mod_4)
 
 # Save finished data ----
 saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_with_H2variables.rds"))

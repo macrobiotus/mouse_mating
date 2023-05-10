@@ -61,7 +61,7 @@ library("modelsummary")
 mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
 mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
 
-# Select and shape data for (Sub)question 1 ----
+# Select and shape data for Subquestion 1: "Any-sex or both parents’ obesity" ----
 
 # Hypothesis is "Obesity of any-sex-offspring is dependent on any-sex parents’ obesity"
 
@@ -102,26 +102,24 @@ mice_f1_model_data <- mice_f1_slct %>% select(AnimalId, ObesityLgcl, ObeseParent
 mice_f1_model_data %>% select(ObesityLgcl, ObeseParentsLgcl) %>% count(ObesityLgcl, ObeseParentsLgcl, sort = TRUE)
 mice_f1_model_data %>% select(ObesityLgcl, ObeseParentsLgcl) %>% table()
 
-# Model offsprings' obesity as function of parents obesity  ----
+# Logistic regression: Model offsprings' obesity as function of parents obesity  ----
 
-# 1.) Most simple case: logistic regression ----
 
-# __a) Intercept-only model ----
+# _1.) Intercept-only model ----
 
 mod_0 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 summary(mod_0)
 
-# __b) Actual model ----
+# _2.) Actual model ----
 
 mod_1 <- lme4::glmer(ObesityLgcl ~ ObeseParentsLgcl + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 summary(mod_1)
 
-# __c) Test effect of parents obesity status ----
+# _3.) Test effect of parents obesity status ----
 
 anova(mod_0, mod_1)
 
-# Select and shape data for (Sub)question 2 ----
-
+# Select and shape data for Subquestion 2: "Both parents’ obesity only" ----
 
 # Hypothesis is "obesity of any-sex-offspring is dependent on both parents’ obesity"
 
@@ -150,21 +148,21 @@ mice_f1_model_data <- mice_f1_slct %>% select(AnimalId, ObesityLgcl, BothObesePa
 mice_f1_model_data %>% select(ObesityLgcl, BothObeseParentsLgcl) %>% count(ObesityLgcl, BothObeseParentsLgcl, sort = TRUE)
 mice_f1_model_data %>% select(ObesityLgcl, BothObeseParentsLgcl) %>% table()
 
-# Model offsprings' obesity as function of parents obesity  ----
+# Logistic Regression: Model offsprings' obesity as function of parents obesity  ----
 
-# _1.) Most simple case: logistic regression ----
-
-# __a) Intercept-only model ----
+# _1.) Intercept-only model ----
 
 mod_2 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 summary(mod_2)
 
-# __b) Actual model ----
+# _2.) Actual model ----
 
 mod_3 <- lme4::glmer(ObesityLgcl ~ BothObeseParentsLgcl + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 summary(mod_3)
 
-# __c) Test effect of parents obesity status ----
+round(exp(fixef(mod_3)), digits = 2)
+
+# _3.) Test effect of parents obesity status ----
 
 anova(mod_2, mod_3)
 
@@ -176,7 +174,4 @@ saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_with_H1variables.
 sessionInfo()
 save.image(file = here("scripts", "020_r_h1.RData"))
 renv::snapshot()
-
-
-
 
