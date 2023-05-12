@@ -241,15 +241,17 @@
 * some further inspections
 * commit `d58abc6aeb4c1719417b4aea3d858c1920763c43`
 
-## 11-05-2023
+## 12-05-2023
 
 * handed off work for RNA seq analysis to AH
 * analysis design follows
   * `/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_analysis_draft_1.png`
   * `/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_analysis_draft_2.png`
-
-
-
+  * testing if possible after chatting with AH
+  * tesing in script `040_r_h3.r`
+  * asdivsing AH to test conditions of factor "ObeseParents" while neglegting onesity status of offspring "ObesityLogical" - not enough data available
+  * see overview in "/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_data_vs_h3_model_outcomes.png"
+  
 
 ## Todo queue
 
@@ -257,10 +259,14 @@
 * [x] formulate logistic H1 in mein text and implemnt it in `020_r_h1.r`
 * [x] formulate logistic H2 and H3 in text and implemnet in code
 * [x] check if other regressions should be made, e.g, based on weight or body fat
-* [x] used grouping factors and presponse to define defined targets fro anlysis of  DEGs in RNAseq data - see 11-05-2023
-* [ ] implement RNAseq analysis as listed in files in 11-05-2023
-* [ ] get model interpretation from Elam Spiegel et al.
-* [ ] possibly extnd modelling and RNA seq analysis to dietary variables as noted in code or also in file `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`
+* [x] used grouping factors and presponse to define defined targets fro anlysis of DEGs in RNAseq data - see 11-05-2023
+* [ ] **manuscript and code** - implement RNAseq analysis as listed above at date 11-05-2023
+* [ ] **manuscript** - possibly check effects in tissues - extend hypotheses and Introductions
+* [ ] **manuscript** - get model interpretation from Elmar Spiegel et al.
+* [ ] **manuscript** -extend mansucript so tha RNA seq fousses only on males, and neglects offsprings obesity status
+* [ ] **manuscript and code**- possibly exetnd modelling and RNA seq analysis to tissues**
+   * [ ] as noted in code `/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_data_vs_h3_model_outcomes.png`
+   * [ ] as noted in file or also in file `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`
 * [ ] add to dos above this line but keep keep in mind the todos below until they can be erased
 * [ ] in `main_analysis.R `
   * [x] finish Objectives 2 and 3 with new structure

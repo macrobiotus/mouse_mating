@@ -33,6 +33,8 @@ library("renv")     # environment can be snap shot
 
 library("readxl")   # table I/O
 library("janitor")  # data cleaning 
+library("hablar")
+library("tidyr")
 
 library("dplyr")    # pipes and more
 library("magrittr") # even more pipes
@@ -43,6 +45,7 @@ library("ggplot2")
 library("ggrepel")  
 
 library("modeest")
+
 
 library("lme4")     # Linear Mixed Effects Models
 library("lmerTest") # Tests in Linear Mixed Effects Models
@@ -75,7 +78,6 @@ get_model_prdictions_with_mgcv = function(model_fit, model_data, ...){
   
   return(model_data_with_predictions)
 }
-
 
 
 # Get data ----
@@ -150,9 +152,9 @@ anova(mod_2, mod_3) # 2.192e-10 ***
 
 # _1.) Isolate data for modelling ----
 
-mice_f1_model_data <- mice_f1_slct %>% select(AnimalId, AnimalSex, MeasurementDay, BodyWeightG, ObeseParents) 
-relevel(mice_f1_model_data$AnimalSex, f)
-relevel(mice_f1_model_data$ObeseParents, MotherFatherNotObese)
+mice_f1_model_data <- mice_f1_slct %>% select(AnimalId, AnimalSex, MeasurementDay, BodyWeightG, ObesityLgcl, ObeseParents, MotherDiet, FatherDiet) 
+mice_f1_model_data$AnimalSex <- relevel(mice_f1_model_data$AnimalSex, "f")
+mice_f1_model_data$ObeseParents <- relevel(mice_f1_model_data$ObeseParents, "MotherFatherNotObese")
 
 # _2.) Check balance of modelling data and get a graphical or table summary  ----
 
@@ -162,7 +164,6 @@ mice_f1_model_data %>% select(MeasurementDay, ObeseParents) %>% table()
 plotrix::sizetree(mice_f1_model_data %>% dplyr::select(AnimalSex, ObeseParents)) 
 plotrix::sizetree(mice_f1_model_data %>% dplyr::select(AnimalSex, ObeseParents, MeasurementDay)) 
 plotrix::sizetree(mice_f1_model_data %>% dplyr::select(AnimalSex, ObeseParents, BodyWeightG)) 
-
 
 # GAM and body weight: Model offspring' body weight as function of parents obesity  ----
 
@@ -188,7 +189,6 @@ mod_5 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseP
 
 # __f) Reverting to d) but for each sex ----
 mod_6 <- gam(BodyWeightG ~  s(MeasurementDay, by = AnimalSex, k=5, bs="fs", m=2)  + ObeseParents + s(AnimalId, MeasurementDay, bs = 're'), data = mice_f1_model_data, method = "ML", family = "gaussian")
-
 
 
 # _2.) Model rankings ----
@@ -255,14 +255,48 @@ ggplot(data = mod_6_predictions, aes(x = MeasurementDay, y = BodyWeightG, colour
        subtitle = paste("R model formula: ", as.character(paste(deparse(formula(mod_6), width.cutoff = 500), collapse=""))),
        x="age [d]", y = "body weight [g]")
 
+# _7.) Check which data can be used for RNAseq ----
 
-# _7.) Export data as Excel file for RNAseq ----
 
-# _a) In below object explore (1) differential expression, (2) GO and KEGG terms,
+
+# __a) Read in RNA seq metadata, check, and format ----
+
+mice_f1_rna_seq <- readxl::read_excel("/Users/paul/Documents/HM_MouseMating/communication/190916 Probenliste Clariom S.xlsx")
+mice_f1_rna_seq %>% print(n = Inf) # inspect
+mice_f1_rna_seq %<>% clean_names(case = "upper_camel")
+mice_f1_rna_seq %<>% select(-c("X6"))
+mice_f1_rna_seq %<>% rename(DietGroup = X7)
+mice_f1_rna_seq %<>% tidyr::fill("Sex","ParentalDietMoFa", "DietGroup")
+mice_f1_rna_seq %<>% convert(fct(Animal, Tissue, Sex, ParentalDietMoFa, DietGroup))
+mice_f1_rna_seq_no_tissues <- mice_f1_rna_seq %>% select(-c(Sample, Tissue)) %>% distinct()
+
+# __b) Format data from modelling frame  ----
+
+mice_f1_model_data_uniques <- mice_f1_model_data %>% select(-c(BodyWeightG, MeasurementDay)) %>% distinct()
+
+
+# __c) Join both data sets to see wehat can be done with RNAseq data ---
+
+mice_f1_model_data_rna_seqed <- left_join(mice_f1_model_data_uniques, mice_f1_rna_seq_no_tissues, by = c("AnimalId" = "Animal")) 
+mice_f1_modeled_data_with_rna_seq_data <- mice_f1_model_data_rna_seqed %>% filter(Sex != "NA" & ParentalDietMoFa != "NA" & DietGroup != "NA")
+
+# __d) Check data prior to export
+
+mice_f1_modeled_data_with_rna_seq_data %>% select(ObesityLgcl, ObeseParents) %>% table()
+mice_f1_modeled_data_with_rna_seq_data
+
+
+
+# _8.) Export data as Excel file for RNAseq anslys ----
+
+# __a) In below object explore (1) differential expression, (2) GO and KEGG terms, 
 #     between individuals for (a) female or (b) male  animal sex or (c) both sexes in unison
-#     always between the fcator levles "MotherFatherObese" and "MotherFatherNotObese" of factor "ObeseParents".
+#     always between the factor levles "MotherFatherObese" and "MotherFatherNotObese" of factor "ObeseParents".
+#     for each obese or not obese offspring. See notes 12.05.2023 in Communications folder and README.md 
 
 saveRDS(mice_f1_model_data, file = here("rds_storage", "040_r_h3__mice_f1_model_data.rds"))
+saveRDS(mice_f1_modeled_data_with_rna_seq_data, file = here("rds_storage", "040_r_h3__mice_f1_modeled_data_with_rna_seq_data.rds"))
+
 mice_f1_model_data$ObeseParents
 
   

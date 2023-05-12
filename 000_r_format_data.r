@@ -70,8 +70,6 @@ mice_f1 %<>% mutate(animal_id = factor(animal_id))
 glimpse(mice_f0)
 glimpse(mice_f1)
 
-
-
 # _3.) Check data for completeness ----
 
 # Why are there no males in the f0?
