@@ -238,17 +238,29 @@
 * finished logistic regression for H1
 * finished well fitting GAM model - updated main text. 
 * commit `31fb7fdfb3f2a19da11322778f99166f5a663a32`
+* some further inspections
+* commit `d58abc6aeb4c1719417b4aea3d858c1920763c43`
+
+## 11-05-2023
+
+* handed off work for RNA seq analysis to AH
+* analysis design follows
+  * `/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_analysis_draft_1.png`
+  * `/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_analysis_draft_2.png`
 
 
 
 
 ## Todo queue
 
-* [x] in `????_main_text_sacfolding.docx` - update methods and results with script ``010_r_define_obesity.r`
+* [x] in `????_main_text_scafolding.docx` - update methods and results with script ``010_r_define_obesity.r`
 * [x] formulate logistic H1 in mein text and implemnt it in `020_r_h1.r`
-* [ ] formulate logistic H2 and H3 in text and implemnet in code
-* [ ] check if other regressions shoul be made, e.g, based on weight or body fat
-* [ ] used grouping factors and presponse to define defined targets fro anlysis of  DEGs in RNAseq data
+* [x] formulate logistic H2 and H3 in text and implemnet in code
+* [x] check if other regressions should be made, e.g, based on weight or body fat
+* [x] used grouping factors and presponse to define defined targets fro anlysis of  DEGs in RNAseq data - see 11-05-2023
+* [ ] implement RNAseq analysis as listed in files in 11-05-2023
+* [ ] get model interpretation from Elam Spiegel et al.
+* [ ] possibly extnd modelling and RNA seq analysis to dietary variables as noted in code or also in file `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`
 * [ ] add to dos above this line but keep keep in mind the todos below until they can be erased
 * [ ] in `main_analysis.R `
   * [x] finish Objectives 2 and 3 with new structure
@@ -259,8 +271,8 @@
      * [x] sort models sytematically
      * [x] plot fixed and random effects as with DINCH mice
      * [x] started: consider using splines or GAM
-     * [x] build and re-evaluate models with reagrds to maternal weight loss
-     * [ ] build and re-evaluate models with reagrds to sex-sepecific weight gain - sex needs to be included or evaluated
+     * [x] build and re-evaluate models with regards to maternal weight loss
+     * [ ] build and re-evaluate models with regards to sex-sepecific weight gain - sex needs to be included or evaluated
      * [ ] to understand effect of polynomials and sex - plot random-conditioned fixed effects using the `effects` package
      * [ ] adress high VIFs - by recoding factor variable 
      * [ ] adress high VIFS - by ignoring factor variable (`https://stackoverflow.com/questions/33397689/multi-collinearity-for-categorical-variables`)

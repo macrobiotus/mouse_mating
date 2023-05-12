@@ -151,6 +151,8 @@ anova(mod_2, mod_3) # 2.192e-10 ***
 # _1.) Isolate data for modelling ----
 
 mice_f1_model_data <- mice_f1_slct %>% select(AnimalId, AnimalSex, MeasurementDay, BodyWeightG, ObeseParents) 
+relevel(mice_f1_model_data$AnimalSex, f)
+relevel(mice_f1_model_data$ObeseParents, MotherFatherNotObese)
 
 # _2.) Check balance of modelling data and get a graphical or table summary  ----
 
@@ -184,13 +186,19 @@ mod_4 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseP
 # __e) Adding time correlation to Subjscts random effects instead of complicated ranodm effect ----
 mod_5 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents + s(AnimalId, bs = 're'), correlation = coAR1(form = ~ MeasurementDay | AnimalId), data = mice_f1_model_data, method = "ML",  family = "gaussian")
 
+# __f) Reverting to d) but for each sex ----
+mod_6 <- gam(BodyWeightG ~  s(MeasurementDay, by = AnimalSex, k=5, bs="fs", m=2)  + ObeseParents + s(AnimalId, MeasurementDay, bs = 're'), data = mice_f1_model_data, method = "ML", family = "gaussian")
+
+
+
 # _2.) Model rankings ----
 
 AIC(mod_1)
 AIC(mod_2)
 AIC(mod_3)
-AIC(mod_4)
+AIC(mod_4) # lowest
 AIC(mod_5)
+AIC(mod_6) # even lower
 
 # _3.) Model summaries ----
 
@@ -199,6 +207,7 @@ summary(mod_2)
 summary(mod_3)
 summary(mod_4) # Deviance explained = 95.9%
 summary(mod_5)
+summary(mod_6) # Deviance explained = 96.3%
 
 # _4.) Model appraisals ----
 
@@ -207,6 +216,7 @@ gratia::appraise(mod_2)
 gratia::appraise(mod_3) 
 gratia::appraise(mod_4) # fits well- some inverse correlation in responses vs fitted values - perhaps negligible
 gratia::appraise(mod_5) 
+gratia::appraise(mod_6) 
 
 
 # _5.) Inspect smoother and confidence intervals ----
@@ -217,9 +227,11 @@ gratia::appraise(mod_5)
 
 plot.gam(mod_4, residuals = TRUE, rug = TRUE, pages = 1, all.terms = TRUE)
 confint(mod_4, parm = NULL, level = 0.95)
+anova(mod_3, mod_4)
 
 # _6.) Inspect model predictions ----
 
+# unconditional = TRUE
 mod_4_predictions  <- get_model_prdictions_with_mgcv(mod_4, mice_f1_model_data)
 
 ggplot(data = mod_4_predictions, aes(x = MeasurementDay, y = BodyWeightG, colour = AnimalId)) +
@@ -230,8 +242,30 @@ ggplot(data = mod_4_predictions, aes(x = MeasurementDay, y = BodyWeightG, colour
   labs(title = "Offsprings body weight by sex and parents obesity statuts", 
        subtitle = paste("R model formula: ", as.character(paste(deparse(formula(mod_4), width.cutoff = 500), collapse=""))),
        x="age [d]", y = "body weight [g]")
-  
 
+
+mod_6_predictions  <- get_model_prdictions_with_mgcv(mod_6, mice_f1_model_data)
+
+ggplot(data = mod_6_predictions, aes(x = MeasurementDay, y = BodyWeightG, colour = AnimalId)) +
+  geom_point(aes(y = BodyWeightG, group = AnimalId), alpha = 0.5) +
+  geom_line(aes(y = fit, group = AnimalId), alpha = 0.5, linewidth = 0.2) +
+  facet_wrap(ObeseParents ~ AnimalSex, ncol = 2) + 
+  theme_bw() + 
+  labs(title = "Offsprings body weight by sex and parents obesity statuts", 
+       subtitle = paste("R model formula: ", as.character(paste(deparse(formula(mod_6), width.cutoff = 500), collapse=""))),
+       x="age [d]", y = "body weight [g]")
+
+
+# _7.) Export data as Excel file for RNAseq ----
+
+# _a) In below object explore (1) differential expression, (2) GO and KEGG terms,
+#     between individuals for (a) female or (b) male  animal sex or (c) both sexes in unison
+#     always between the fcator levles "MotherFatherObese" and "MotherFatherNotObese" of factor "ObeseParents".
+
+saveRDS(mice_f1_model_data, file = here("rds_storage", "040_r_h3__mice_f1_model_data.rds"))
+mice_f1_model_data$ObeseParents
+
+  
 # Save finished data ----
 saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_with_H3variables.rds"))
 saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_with_H3variables.rds"))
