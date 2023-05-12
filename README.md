@@ -259,7 +259,7 @@
 * [x] formulate logistic H1 in mein text and implemnt it in `020_r_h1.r`
 * [x] formulate logistic H2 and H3 in text and implemnet in code
 * [x] check if other regressions should be made, e.g, based on weight or body fat
-* [x] used grouping factors and presponse to define defined targets fro anlysis of DEGs in RNAseq data - see 11-05-2023
+* [x] used grouping factors and presponse to define defined targets fro anlysis of DEGs in RNAseq data - see 11-05-2023 - see screenshot  `/paul/Documents/HM_MouseMating/communication/230512_analysis_request.png`
 * [ ] **manuscript and code** - implement RNAseq analysis as listed above at date 11-05-2023
 * [ ] **manuscript** - possibly check effects in tissues - extend hypotheses and Introductions
 * [ ] **manuscript** - get model interpretation from Elmar Spiegel et al.
