@@ -127,7 +127,7 @@ summary(mod_3)
 exp(fixef(mod_3))
 round(exp(fixef(mod_3)), digits = 3)
 
-# _5.) Test logistic rgressions' fixed effects using ANOVA function and cAIC ----
+# _5.) Test logistic regressions' fixed effects using ANOVA function and cAIC ----
 
 # cAIC(mod_0) -- 0.34
 # cAIC(mod_1) -- 0.17
@@ -225,7 +225,7 @@ gratia::appraise(mod_6)
 # - see https://stats.stackexchange.com/questions/33327/confidence-interval-for-gam-model
 # - see dahed lines in plot below
 
-plot.gam(mod_4, residuals = TRUE, rug = TRUE, pages = 1, all.terms = TRUE)
+plot.gam(mod_6, residuals = TRUE, rug = TRUE, pages = 1, all.terms = TRUE)
 confint(mod_4, parm = NULL, level = 0.95)
 anova(mod_3, mod_4)
 
@@ -256,8 +256,6 @@ ggplot(data = mod_6_predictions, aes(x = MeasurementDay, y = BodyWeightG, colour
        x="age [d]", y = "body weight [g]")
 
 # _7.) Check which data can be used for RNAseq ----
-
-
 
 # __a) Read in RNA seq metadata, check, and format ----
 
