@@ -252,7 +252,17 @@
   * asdivsing AH to test conditions of factor "ObeseParents" while neglegting onesity status of offspring "ObesityLogical" - not enough data available
   * see overview in "/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_data_vs_h3_model_outcomes.png"
   
+## 15-May-2023
 
+  * emailled stats consulting unit
+  * non-relavent chnages to 3rd hypothesis R script 
+  * commit `ebc24c69c5658177b3253eb5c7d153ad4e50c88f`
+  
+## 16-May-2023
+
+ * updated code for data analysis caffee (DAC)
+ * DAC staff fine with model - interpret as linera - possibly check random effect
+ 
 ## Todo queue
 
 * [x] in `????_main_text_scafolding.docx` - update methods and results with script ``010_r_define_obesity.r`
@@ -262,8 +272,9 @@
 * [x] used grouping factors and presponse to define defined targets fro anlysis of DEGs in RNAseq data - see 11-05-2023 - see screenshot  `/paul/Documents/HM_MouseMating/communication/230512_analysis_request.png`
 * [ ] **manuscript and code** - implement RNAseq analysis as listed above at date 11-05-2023
 * [ ] **manuscript** - possibly check effects in tissues - extend hypotheses and Introductions
-* [ ] **manuscript** - get model interpretation from Elmar Spiegel et al.
-* [ ] **manuscript** -extend mansucript so tha RNA seq fousses only on males, and neglects offsprings obesity status
+* [x] **manuscript** - get model interpretation from Elmar Spiegel et al.
+* [ ] possibly check necessity of RE in GAM modelling ins script `040_r_h3.r`
+* [ ] **manuscript** - extend mansucript so tha RNA seq fousses only on males, and neglects offsprings obesity status
 * [ ] **manuscript and code**- possibly exetnd modelling and RNA seq analysis to tissues**
    * [ ] as noted in code `/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_data_vs_h3_model_outcomes.png`
    * [ ] as noted in file or also in file `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`
@@ -294,6 +305,7 @@
   * add HM consulting personell to paper
     * **Elmar Spiegel**
     * Roman Le Glut
+    * Kainat Khowaja
 
 ## Ideas not yet pursued
 

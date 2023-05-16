@@ -165,6 +165,11 @@ plotrix::sizetree(mice_f1_model_data %>% dplyr::select(AnimalSex, ObeseParents))
 plotrix::sizetree(mice_f1_model_data %>% dplyr::select(AnimalSex, ObeseParents, MeasurementDay)) 
 plotrix::sizetree(mice_f1_model_data %>% dplyr::select(AnimalSex, ObeseParents, BodyWeightG)) 
 
+# _3.) Data summmary ----
+
+mice_f1_model_data
+summary(mice_f1_model_data)
+
 # GAM and body weight: Model offspring' body weight as function of parents obesity  ----
 
 # https://fromthebottomoftheheap.net/2021/02/02/random-effects-in-gams/
@@ -189,7 +194,6 @@ mod_5 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseP
 
 # __f) Reverting to d) but for each sex ----
 mod_6 <- gam(BodyWeightG ~  s(MeasurementDay, by = AnimalSex, k=5, bs="fs", m=2)  + ObeseParents + s(AnimalId, MeasurementDay, bs = 're'), data = mice_f1_model_data, method = "ML", family = "gaussian")
-
 
 # _2.) Model rankings ----
 
@@ -218,7 +222,6 @@ gratia::appraise(mod_4) # fits well- some inverse correlation in responses vs fi
 gratia::appraise(mod_5) 
 gratia::appraise(mod_6) 
 
-
 # _5.) Inspect smoother and confidence intervals ----
 
 # show confidence intervals graphically (for now only)
@@ -242,7 +245,6 @@ ggplot(data = mod_4_predictions, aes(x = MeasurementDay, y = BodyWeightG, colour
   labs(title = "Offsprings body weight by sex and parents obesity statuts", 
        subtitle = paste("R model formula: ", as.character(paste(deparse(formula(mod_4), width.cutoff = 500), collapse=""))),
        x="age [d]", y = "body weight [g]")
-
 
 mod_6_predictions  <- get_model_prdictions_with_mgcv(mod_6, mice_f1_model_data)
 
@@ -272,7 +274,6 @@ mice_f1_rna_seq_no_tissues <- mice_f1_rna_seq %>% select(-c(Sample, Tissue)) %>%
 
 mice_f1_model_data_uniques <- mice_f1_model_data %>% select(-c(BodyWeightG, MeasurementDay)) %>% distinct()
 
-
 # __c) Join both data sets to see wehat can be done with RNAseq data ---
 
 mice_f1_model_data_rna_seqed <- left_join(mice_f1_model_data_uniques, mice_f1_rna_seq_no_tissues, by = c("AnimalId" = "Animal")) 
@@ -282,7 +283,6 @@ mice_f1_modeled_data_with_rna_seq_data <- mice_f1_model_data_rna_seqed %>% filte
 
 mice_f1_modeled_data_with_rna_seq_data %>% select(ObesityLgcl, ObeseParents) %>% table()
 mice_f1_modeled_data_with_rna_seq_data
-
 
 
 # _8.) Export data as Excel file for RNAseq anslys ----
@@ -297,7 +297,6 @@ saveRDS(mice_f1_modeled_data_with_rna_seq_data, file = here("rds_storage", "040_
 
 mice_f1_model_data$ObeseParents
 
-  
 # Save finished data ----
 saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_with_H3variables.rds"))
 saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_with_H3variables.rds"))
