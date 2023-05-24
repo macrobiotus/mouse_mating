@@ -269,6 +269,7 @@
  * attempting to run AHs code 
  * starting to adjust AH's code in `/Users/paul/Documents/HM_MouseMating/analysis/scripts/050_r_array_analysis_ah.r`
  * started adjusting manuscript for males and for array analysis
+ * cpmmit `acb29df43fb4e8688d9eb53e4b760d1e5352ca7b`
  
 ## Todo queue
 
@@ -278,7 +279,7 @@
 * [x] check if other regressions should be made, e.g, based on weight or body fat
 * [x] used grouping factors and presponse to define defined targets fro anlysis of DEGs in RNAseq data - see 11-05-2023 - see screenshot  `/paul/Documents/HM_MouseMating/communication/230512_analysis_request.png`
 * [x] **manuscript and code** - implement RNAseq analysis as listed above at date 12-05-2023
-* [ ] **manuscript and code** - adjust AH's array analysis and re-code obesity - keep in mind `/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_data_vs_h3_model_outcomes.png`
+* [ ] **manuscript and code** - adjust and re-design AH's array analysis to consider obesity variables  - keep in mind `/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_data_vs_h3_model_outcomes.png`
 * [ ] **manuscript** - possibly check effects in tissues - extend hypotheses and Introductions
 * [x] **manuscript** - get model interpretation from Elmar Spiegel et al.
 * [ ] possibly check necessity of RE in GAM modelling ins script `040_r_h3.r`

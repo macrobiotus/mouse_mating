@@ -129,6 +129,7 @@ p <- plot_ly(dataGG, x = ~PC1, y = ~PC2, z = ~PC3) %>%
 saveWidget(p, file = paste0(here("plots"),"/", "050_r_array_analysis__PCA-3D.html"), selfcontained = T, libdir = "lib")
 
 # Old code below - continue here after 24.05.2023 ---- 
+# - env should be up-to-date and re-run is painless if needed
 
 # PCAs for single tissue ############################# 
 
