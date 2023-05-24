@@ -284,7 +284,6 @@ mice_f1_modeled_data_with_rna_seq_data <- mice_f1_model_data_rna_seqed %>% filte
 mice_f1_modeled_data_with_rna_seq_data %>% select(ObesityLgcl, ObeseParents) %>% table()
 mice_f1_modeled_data_with_rna_seq_data
 
-
 # _8.) Export data as Excel file for RNAseq anslys ----
 
 # __a) In below object explore (1) differential expression, (2) GO and KEGG terms, 
