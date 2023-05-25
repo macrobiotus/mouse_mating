@@ -58,7 +58,10 @@ hmcol <- rev(colorRampPalette(RColorBrewer::brewer.pal(n=11, name="RdBu"))(50))
 
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/allTissues_normData.RData") # only if you are interrested to look into the normalized data
 
-saveRDS(normData, file = here("rds_storage", "050_r_array_analysis__normalized_data.rds"))
+# copy to stick to manuscript naming conventions
+FLAT <- normData; rm(normData)
+
+saveRDS(FLAT, file = here("rds_storage", "050_r_array_analysis__normalized_data.rds"))
 
 # _2.) Loading normalized data as ExpressionSet type - normalised individually for each tissue ----
 
@@ -67,22 +70,44 @@ saveRDS(normData, file = here("rds_storage", "050_r_array_analysis__normalized_d
 
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/normData4DGE.RData") #für jedes Gewebe die normalisierten Daten
 
-saveRDS(bAT_normData,    file = here("rds_storage", "050_r_array_analysis__normalized_data_bat.rds"))
-saveRDS(eWAT_normData,   file = here("rds_storage", "050_r_array_analysis__normalized_data_ewat.rds"))
-saveRDS(ingWAT_normData, file = here("rds_storage", "050_r_array_analysis__normalized_data_ingwat.rds"))
-saveRDS(Liv_normData,    file = here("rds_storage", "050_r_array_analysis__normalized_data_liv.rds"))
+# copy to stick to manuscript naming conventions
+BRAT <- bAT_normData; rm(bAT_normData)
+SCAT <- ingWAT_normData; rm(ingWAT_normData)
+LIAT <- Liv_normData; rm(Liv_normData)
+EVAT <- eWAT_normData; rm(eWAT_normData)
+
+saveRDS(BRAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_bat.rds"))
+saveRDS(SCAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_ewat.rds"))
+saveRDS(LIAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_ingwat.rds"))
+saveRDS(EVAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_liv.rds"))
 
 # _3.) Loading metadata from modelling (obesity variables) ----
 
 mice_f1_modeled_data_with_rna_seq_data <- readRDS(file = here("rds_storage", "040_r_h3__mice_f1_modeled_data_with_rna_seq_data.rds"))
 
-# _4.) Inspect data ----
+# _4.) Inspect and adjust data ----
+
+
+# __a.) Adjust names in full data ----
+
+colnames(FLAT) <- colnames(FLAT) %>% 
+  str_replace_all("bAT",    "BRAT") %>%
+  str_replace_all("ingWAT", "SCAT") %>% 
+  str_replace_all("liver",    "LIAT") %>% 
+  str_replace_all("eWAT",   "EVAT")
+
+
+
 
 # Using pData() to look at  phenotypes stored in the ExpressionSet
-pData(normData) # possibly merge with 
+pData(FLAT) %>% mutate(Tissue = case_when()) # continue here after 25.05.2023
+
+
+# possibly merge with 
+
 
 #with exprs() you get the expression values from the ExpressionSet
-exprs(normData)
+exprs(FLAT)
 
 # _4.) Merge data sets ----
 
