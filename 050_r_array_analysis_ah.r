@@ -44,8 +44,41 @@ library(FactoMineR)
 library(UpSetR)
 library(plotly)
 library(htmlwidgets)
+library(ggpubr)
 
-# _3.) Color code for plotting ----
+# _3.) Functions ----
+
+# rewrite metadata in exprssion data sets
+adjust_array_data = function(expression_set, model_variables){
+  
+  require(dplyr)
+  require(Biobase)
+  
+  # adjust column and row names names in expression data 
+  colnames(expression_set) <- colnames(expression_set) %>% 
+    str_replace_all("bAT",    "BRAT") %>%
+    str_replace_all("ingWAT", "SCAT") %>% 
+    str_replace_all("liver",  "LIAT") %>% 
+    str_replace_all("eWAT",   "EVAT")
+  
+  # adjust "Tissue" column values  in expression data 
+  pData(expression_set) %<>% mutate(Tissue = case_when(
+    Tissue == "bAT"    ~ "BRAT",
+    Tissue == "ingWAT" ~ "SCAT",
+    Tissue == "liver"  ~ "LIAT",
+    Tissue == "eWAT"   ~ "EVAT"))
+  
+  # merge obesity variables from modelling  to metadata from array experiments
+  pData(expression_set) <- left_join( 
+    (pData(expression_set) %>% select(-c(Sex, Parental_diet, Diet_mother, Diet_father, Group))),
+    (model_variables), by = c( "Animal" = "AnimalId"))
+  
+  return(expression_set)
+  
+}
+
+
+# _4.) Color code for plotting ----
 
 hmcol <- rev(colorRampPalette(RColorBrewer::brewer.pal(n=11, name="RdBu"))(50))
 
@@ -53,7 +86,7 @@ hmcol <- rev(colorRampPalette(RColorBrewer::brewer.pal(n=11, name="RdBu"))(50))
 
 # _1.) Loading normalized data as ExpressionSet type ----
 
-# Data are clariom S mouse arrays
+# Data are Clariom S mouse arrays
 # I removed strong outliers: A285_liver clustert zu bAT, A339_liver weit weg vom Rest
 
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/allTissues_normData.RData") # only if you are interrested to look into the normalized data
@@ -70,11 +103,11 @@ saveRDS(FLAT, file = here("rds_storage", "050_r_array_analysis__normalized_data.
 
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/normData4DGE.RData") #für jedes Gewebe die normalisierten Daten
 
-# copy to stick to manuscript naming conventions
-BRAT <- bAT_normData; rm(bAT_normData)
-SCAT <- ingWAT_normData; rm(ingWAT_normData)
-LIAT <- Liv_normData; rm(Liv_normData)
-EVAT <- eWAT_normData; rm(eWAT_normData)
+# copy to stick to manuscript naming conventions - corrcted as per AH 25.05.2023
+BRAT <- bAT_normData; rm(bAT_normData)        # brown adipose tissue
+SCAT <- ingWAT_normData; rm(ingWAT_normData)  # subcutabneous adipose tissue 
+LIAT <- Liv_normData; rm(Liv_normData)        # liver adipose tissue
+EVAT <- eWAT_normData; rm(eWAT_normData)      # visceral adipose tissue
 
 saveRDS(BRAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_bat.rds"))
 saveRDS(SCAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_ewat.rds"))
@@ -85,60 +118,78 @@ saveRDS(EVAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_
 
 mice_f1_modeled_data_with_rna_seq_data <- readRDS(file = here("rds_storage", "040_r_h3__mice_f1_modeled_data_with_rna_seq_data.rds"))
 
-# _4.) Inspect and adjust data ----
+# _4.) Adjust variable names and inspect data ----
+
+FLAT <- adjust_array_data(FLAT, mice_f1_modeled_data_with_rna_seq_data)
+BRAT <- adjust_array_data(BRAT, mice_f1_modeled_data_with_rna_seq_data)
+SCAT <- adjust_array_data(SCAT, mice_f1_modeled_data_with_rna_seq_data)
+LIAT <- adjust_array_data(LIAT, mice_f1_modeled_data_with_rna_seq_data)
+EVAT <- adjust_array_data(EVAT, mice_f1_modeled_data_with_rna_seq_data)
+
+# check, if you like, using
+# pData(BRAT)
+# exprs(BRAT)
 
 
-# __a.) Adjust names in full data ----
+# Principal Component Analysis ----
 
-colnames(FLAT) <- colnames(FLAT) %>% 
-  str_replace_all("bAT",    "BRAT") %>%
-  str_replace_all("ingWAT", "SCAT") %>% 
-  str_replace_all("liver",    "LIAT") %>% 
-  str_replace_all("eWAT",   "EVAT")
+# _1.) Get PC for all tissues
 
+PCA_FLAT <- prcomp( t (exprs(FLAT)), scale. = FALSE)
+percentVar <- round(100*PCA_FLAT$sdev^2 / sum(PCA_norm$sdev^2), 1)
 
+# _2.) Plot PCs in 2D for sevral variables types  ----
 
-
-# Using pData() to look at  phenotypes stored in the ExpressionSet
-pData(FLAT) %>% mutate(Tissue = case_when()) # continue here after 25.05.2023
-
-
-# possibly merge with 
-
-
-#with exprs() you get the expression values from the ExpressionSet
-exprs(FLAT)
-
-# _4.) Merge data sets ----
-
-# not done yet:
-# - possibly leftjoin info from
-#   mice_f1_modeled_data_with_rna_seq_data
-# - to 
-#   pData(normData)
-
-# Inspect  data - Tissue types ----
-
-# _1.) PCA of expression values ----
-
-PCA_norm <- prcomp(t(exprs(normData)), scale. = FALSE)
-percentVar <- round(100*PCA_norm$sdev^2/sum(PCA_norm$sdev^2),1)
-
-# _2.) Plot PCs in 2D for tissue types  ----
-
-p <- fviz_pca_ind(PCA_norm, label="none", habillage = factor(pData(normData)$Tissue),
+# "Overall expression differences between analysed tissues among f1 offspring"
+plot_pca_flat_a  <- fviz_pca_ind(PCA_FLAT, label="none", habillage = factor(pData(FLAT)$Tissue),
                    pointsize = 2,
-                   title = "",
                    palette = c("firebrick3","purple","steelblue3","gold3"),
                    legend.title = "Tissue",
-                   invisible="quali")+
-  labs(x = paste0("PC1: ",percentVar[1],"% variance"), 
-       y = paste0("PC2: ",percentVar[2],"% variance"))+
-  theme_test()+
+                   invisible = "none",
+                   addEllipses = FALSE, 
+                   title = "a") +
+  labs(x = paste0("PC1: ", percentVar[1], "% variance"), 
+       y = paste0("PC2: ", percentVar[2], "% variance"))+
+  theme_bw() +
   scale_shape_manual(values=c(19,19,19,19))
-p <- p + ggtitle("Overall expression differences between analysed tissues among f1 offspring")
 
-ggsave(path = here("plots"), filename = "050_r_array_analysis__PCA-2d.pdf",  width = 4, height = 3)
+# Overall expression differences and obesity status among f1 offspring
+plot_pca_flat_b <- fviz_pca_ind(PCA_FLAT, label="none", habillage = factor(pData(FLAT)$ObesityLgcl),
+                  pointsize = 2,
+                  palette = c("firebrick3","purple","steelblue3","gold3"),
+                  legend.title = "F1 Obesity",
+                  invisible = "none",
+                  addEllipses = FALSE, 
+                  title = "b") +
+  labs(x = paste0("PC1: ", percentVar[1], "% variance"), 
+       y = paste0("PC2: ", percentVar[2], "% variance"))+
+  theme_bw() +
+  scale_shape_manual(values=c(19,19,19,19))
+
+# Overall expression differences and obesity parental obesity status among f0
+plot_pca_flat_c <- fviz_pca_ind(PCA_FLAT, label="none", habillage = factor(pData(FLAT)$ObeseParents),
+                  pointsize = 2,
+                  palette = c("firebrick3","purple","steelblue3","gold3"),
+                  legend.title = "F0 Obesity",
+                  invisible = "none",
+                  addEllipses = FALSE, 
+                  title = "c") +
+  labs(x = paste0("PC1: ", percentVar[1], "% variance"), 
+       y = paste0("PC2: ", percentVar[2], "% variance"))+
+  theme_bw() +
+  scale_shape_manual(values=c(19,19,19,19))
+
+plot_pca_flat <- ggarrange(plot_pca_flat_a, plot_pca_flat_b, plot_pca_flat_c, nrow = 1, ncol = 3)
+
+ggsave(plot = plot_pca_flat, path = here("plots"), 
+       filename = "050_r_array_analysis__plot_pca_flat.pdf",  
+       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+ggsave(plot = plot_pca_flat, path = here("../manuscript/display_items"), 
+       filename = "050_r_array_analysis__plot_pca_flat_unassigned.pdf",  
+       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+
+# continue here after 26.05.2023 - commit first
+
 
 # _3.) PCA of expression values ----
 
