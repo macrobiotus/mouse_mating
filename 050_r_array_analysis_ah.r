@@ -188,7 +188,7 @@ ggsave(plot = plot_pca_flat, path = here("../manuscript/display_items"),
        filename = "050_r_array_analysis__plot_pca_flat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# continue here after 26.05.2023 - commit first
+# continue here after 26.05.2023 - commit first -- older code below ----
 
 
 # _3.) PCA of expression values ----

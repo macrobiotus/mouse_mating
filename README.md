@@ -276,9 +276,18 @@
  * updated manuscript with current analysis state
  * about to start PCA with added obesity factor highlight
  * started, and need to continue renaming of data - sample names - and tissue variable names - before continuing
- * commit ``
+ * commit `6f89b2156f9b3ce38c2590c7eea1388c80415929`
  
+## 26-May-2023
+
+ * implemneted overall PCA and updated manuscript 
+ * commit `2bded37dc8b779ae7cc113e8a72aa6a61d211341`
  
+## 30-May-2023
+
+* implmented 
+
+
 ## Todo queue
 
 * [x] in `????_main_text_scafolding.docx` - update methods and results with script ``010_r_define_obesity.r`
