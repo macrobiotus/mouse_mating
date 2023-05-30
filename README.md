@@ -285,7 +285,11 @@
  
 ## 30-May-2023
 
-* implmented 
+  * commit before continuing to step through code post initial PCA
+  * commit `1454b2f64bff271cbf955243ab6c0b5c3827926f`
+  * simplified PCA plotting code
+  * 
+
 
 
 ## Todo queue
