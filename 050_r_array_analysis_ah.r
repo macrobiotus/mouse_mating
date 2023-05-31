@@ -141,14 +141,62 @@ EVAT <- eWAT_normData; rm(eWAT_normData)      # visceral adipose tissue
 
 saveRDS(BRAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_bat.rds"))
 saveRDS(SCAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_ewat.rds"))
-saveRDS(LIAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_ingwat.rds"))
-saveRDS(EVAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_liv.rds"))
+saveRDS(LIAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_liv.rds" ))
+saveRDS(EVAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_ingwat.rds"))
 
-# _3.) Loading metadata from modelling (obesity variables) ----
+# _3.) Loading AHs DGE analysis results ----
+
+# __a) Load data ----
+
+base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/DGELists.RData") #lädt alle DGE Tabellen
+
+
+# __b) Define list with dietary variables ----
+
+DGEL_diet <- list(bAT_CD_HFD_VS_CD_CD, bAT_HFD_CD_VS_CD_CD, bAT_HFD_CD_VS_CD_HFD, bAT_HFD_HFD_VS_CD_CD, bAT_HFD_HFD_VS_CD_HFD,    
+ bAT_HFD_HFD_VS_HFD_CD, eWAT_CD_HFD_VS_CD_CD, eWAT_HFD_CD_VS_CD_CD, eWAT_HFD_CD_VS_CD_HFD, eWAT_HFD_HFD_VS_CD_CD, 
+ eWAT_HFD_HFD_VS_CD_HFD, eWAT_HFD_HFD_VS_HFD_CD, ingWAT_CD_HFD_VS_CD_CD, ingWAT_HFD_CD_VS_CD_CD, ingWAT_HFD_CD_VS_CD_HFD,
+ ingWAT_HFD_HFD_VS_CD_CD, ingWAT_HFD_HFD_VS_CD_HFD, ingWAT_HFD_HFD_VS_HFD_CD, Liv_CD_HFD_VS_CD_CD, Liv_HFD_CD_VS_CD_CD,
+ Liv_HFD_CD_VS_CD_HFD, Liv_HFD_HFD_VS_CD_CD, Liv_HFD_HFD_VS_CD_HFD, Liv_HFD_HFD_VS_HFD_CD) 
+
+names(DGEL_diet) <-  c("BRAT_CD_HFD_VS_CD_CD", "BRAT_HFD_CD_VS_CD_CD", "BRAT_HFD_CD_VS_CD_HFD", "BRAT_HFD_HFD_VS_CD_CD", "BRAT_HFD_HFD_VS_CD_HFD",     
+ "BRAT_HFD_HFD_VS_HFD_CD", "EVAT_CD_HFD_VS_CD_CD", "EVAT_HFD_CD_VS_CD_CD", "EVAT_HFD_CD_VS_CD_HFD", "EVAT_HFD_HFD_VS_CD_CD",  
+ "EVAT_HFD_HFD_VS_CD_HFD", "EVAT_HFD_HFD_VS_HFD_CD", "SCAT_CD_HFD_VS_CD_CD", "SCAT_HFD_CD_VS_CD_CD", "SCAT_HFD_CD_VS_CD_HFD", 
+ "SCAT_HFD_HFD_VS_CD_CD", "SCAT_HFD_HFD_VS_CD_HFD", "SCAT_HFD_HFD_VS_HFD_CD", "LIAT_CD_HFD_VS_CD_CD", "LIAT_HFD_CD_VS_CD_CD", 
+ "LIAT_HFD_CD_VS_CD_HFD", "LIAT_HFD_HFD_VS_CD_CD", "LIAT_HFD_HFD_VS_CD_HFD", "LIAT_HFD_HFD_VS_HFD_CD")
+
+# __c) ** CONTINUE HERE** Define list with obesity variables ---- 
+
+DGEL_obes <- DGEL_diet
+
+# Continue here after 31.05.2023 - 
+#  exchange dietary variables with parental obesity as per last scripts overview and manuscript tasks
+
+names(DGEL) <-  c("BRAT_CD_HFD_VS_CD_CD", "BRAT_HFD_CD_VS_CD_CD", "BRAT_HFD_CD_VS_CD_HFD", "BRAT_HFD_HFD_VS_CD_CD", "BRAT_HFD_HFD_VS_CD_HFD",     
+                  "BRAT_HFD_HFD_VS_HFD_CD", "EVAT_CD_HFD_VS_CD_CD", "EVAT_HFD_CD_VS_CD_CD", "EVAT_HFD_CD_VS_CD_HFD", "EVAT_HFD_HFD_VS_CD_CD",  
+                  "EVAT_HFD_HFD_VS_CD_HFD", "EVAT_HFD_HFD_VS_HFD_CD", "SCAT_CD_HFD_VS_CD_CD", "SCAT_HFD_CD_VS_CD_CD", "SCAT_HFD_CD_VS_CD_HFD", 
+                  "SCAT_HFD_HFD_VS_CD_CD", "SCAT_HFD_HFD_VS_CD_HFD", "SCAT_HFD_HFD_VS_HFD_CD", "LIAT_CD_HFD_VS_CD_CD", "LIAT_HFD_CD_VS_CD_CD", 
+                  "LIAT_HFD_CD_VS_CD_HFD", "LIAT_HFD_HFD_VS_CD_CD", "LIAT_HFD_HFD_VS_CD_HFD", "LIAT_HFD_HFD_VS_HFD_CD")
+
+
+
+# __d) Clean environmnet and save data ---- 
+
+rm(bAT_CD_HFD_VS_CD_CD, bAT_HFD_CD_VS_CD_CD, bAT_HFD_CD_VS_CD_HFD, bAT_HFD_HFD_VS_CD_CD, bAT_HFD_HFD_VS_CD_HFD,    
+   bAT_HFD_HFD_VS_HFD_CD, eWAT_CD_HFD_VS_CD_CD, eWAT_HFD_CD_VS_CD_CD, eWAT_HFD_CD_VS_CD_HFD, eWAT_HFD_HFD_VS_CD_CD, 
+   eWAT_HFD_HFD_VS_CD_HFD, eWAT_HFD_HFD_VS_HFD_CD, ingWAT_CD_HFD_VS_CD_CD, ingWAT_HFD_CD_VS_CD_CD, ingWAT_HFD_CD_VS_CD_HFD,
+   ingWAT_HFD_HFD_VS_CD_CD, ingWAT_HFD_HFD_VS_CD_HFD, ingWAT_HFD_HFD_VS_HFD_CD, Liv_CD_HFD_VS_CD_CD, Liv_HFD_CD_VS_CD_CD,
+   Liv_HFD_CD_VS_CD_HFD, Liv_HFD_HFD_VS_CD_CD, Liv_HFD_HFD_VS_CD_HFD, Liv_HFD_HFD_VS_HFD_CD)
+
+
+
+saveRDS(DGEL, file = here("rds_storage", "050_r_array_analysis__dge_lists_by_diet.rds"))
+
+# _4.) Loading metadata from modelling (obesity variables) ----
 
 mice_f1_modeled_data_with_rna_seq_data <- readRDS(file = here("rds_storage", "040_r_h3__mice_f1_modeled_data_with_rna_seq_data.rds"))
 
-# _4.) Adjust variable names and inspect data ----
+# _5.) Adjust variable names and inspect data ----
 
 FLAT <- adjust_array_data(FLAT, mice_f1_modeled_data_with_rna_seq_data)
 BRAT <- adjust_array_data(BRAT, mice_f1_modeled_data_with_rna_seq_data)
@@ -313,10 +361,10 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
 
 
 
+# **THEN CONTINUE HERE *** Obesity-related Volcano plot  ----
 
-# AH code below - continue here after 30.05.2023
+# AH code below - continue here after 31.05.2023 - also see in section 3 data read in - define Obesity variables from AH's diet variables
 
-# Volcano plot ############################# 
 pVal <- resultTable$adj.P.Val   #adj. p-Value für cutoffs verwenden
 CO1 <- 0.05                     #adj. p-Value cutoff
 CO2 <- 0.5                      #FC cutoff
@@ -324,7 +372,13 @@ CO2 <- 0.5                      #FC cutoff
 #(vielleicht mehr eingrenzen, um die Analysen zu vereinfachen)
 #FC cutoff kannst du evt. auf 0.75 hochnehmen (bei 1 bleibt nicht mehr so viel übrig), aber p-Wert ist besser
 
-load("Results_05.23/DGELists.RData") #lädt alle DGE Tabellen
+
+rm(list=ls())
+gc()
+
+
+# use DGEL[[n]]]
+
 resultTable <- eWAT_CD_HFD_VS_CD_CD #such dir die aus, die du plotten möchtest
 para2 <- "eWAT_CD_HFD_VS_CD_CD"      #variable für path zum speichern des plots
 

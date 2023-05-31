@@ -288,8 +288,14 @@
   * commit before continuing to step through code post initial PCA
   * commit `1454b2f64bff271cbf955243ab6c0b5c3827926f`
   * simplified PCA plotting code
-  * 
+  * ran all PCA plotting code started updating results in manuscript
+  * commit `fd09fd425f02e38d05edefdfe58919517a8d50d3`
+  
+## 31-May-2023
 
+  * started reading in AH's DGE results
+  * prepared re-coding dietarey variables in line 175 of array analysis script 
+  * commit ``
 
 
 ## Todo queue
@@ -299,8 +305,9 @@
 * [x] formulate logistic H2 and H3 in text and implemnet in code
 * [x] check if other regressions should be made, e.g, based on weight or body fat
 * [x] used grouping factors and presponse to define defined targets fro anlysis of DEGs in RNAseq data - see 11-05-2023 - see screenshot  `/paul/Documents/HM_MouseMating/communication/230512_analysis_request.png`
-* [ ] **manuscript and code** - adjust and re-design AH's array analysis to consider obesity variables  - keep in mind`/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_data_vs_h3_model_outcomes.png`
-* in PCA use obesity factor for overall differences and in tissue specifci PCAs
+* [x] **manuscript and code** - adjust and re-design AH's array analysis to consider obesity variables  - keep in mind`/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_data_vs_h3_model_outcomes.png`
+* in PCA use obesity factor for overall differences and in tissue specifcic PCAs
+* [ ] **manuscript and code** exchange dietary variables in array analysis script with parental obesity as per H3 scripts overview and manuscript tasks
 * [ ] **manuscript and code** - implement RNAseq analysis as listed above at date 12-05-2023
 * [ ] **manuscript** - possibly check effects in tissues - extend hypotheses and Introductions
 * [x] **manuscript** - get model interpretation from Elmar Spiegel et al.
