@@ -303,15 +303,20 @@
   * thinned clutter in thus file
   * commmit prior to implemnteing DGE in script 50 for obesity variables, instead of AH dietary variables
   * commit `5fd8790e5024bce8e05f885d08f219b1c736ef58`
-  
+  * sucesfully read in and inspected (normalized) array data
+  * added analysis ideas to script `050_r_array_analysis_ah.r`
+  * commit `3192f2500adfade9f3e3a72a76dd5b1427ddf9ba`
+  * tried modelling further but need to find other ideas - talk to TH
+  * script 50 is marked at site where analysis ought to be continued
 
 ## Todo queue
  
-  * [ ] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
-    * [ ] parental diet conforms exactly with dietary variables considered by AH for array data
-    * [ ] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
-    * [ ] the latter is needed but possibly the former data is the only one available
+  * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
+    * [x] parental diet conforms exactly with dietary variables considered by AH for array data
+    * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
+    * [x] the latter is needed but possibly the former data is the only one available
   * [ ] revise script `050_r_array_analysis_ah.r`:
+    * [ ] establish correlations between varaibles `ObesityLgcl` and possibly also `ObeseParents` and intensities - consult ITLN1 paper to find how AH does it - or check teams chat for package
     * [ ] try to reimplemnet DGE with `ObesityLgcl` and possibly also `ObeseParents`
     * [ ] adjust AH's Vulcano plot code for new DGE results
     * [ ] adjust AH's UpsetPlot code for new DGE results 

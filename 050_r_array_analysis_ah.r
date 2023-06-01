@@ -33,7 +33,7 @@ library(renv)
 library(magrittr)
 library(ggplot2)
 library(mgcv)
-library(parallel, lib.loc = "/Users/paul/Library/Caches/org.R-project.R/R/renv/sandbox/R-4.2/aarch64-apple-darwin20/84ba8b13"
+library(parallel, lib.loc = "/Users/paul/Library/Caches/org.R-project.R/R/renv/sandbox/R-4.2/aarch64-apple-darwin20/84ba8b13")
 library(stringr)
 library(tidyr)
 library(Biobase)
@@ -118,6 +118,27 @@ get_pca_plot = function(expr_data_pca, expr_data_raw, variable, legend_title, pl
   return(pca_plot)
   
 }
+
+# Getting model predictions with mgcv
+get_model_prdictions_with_mgcv = function(model_fit, model_data, ...){
+  
+  
+  # get predictions from merTools
+  model_preditcions <- predict.gam(object = model_fit, newdata = model_data,
+                                   se.fit = TRUE, terms = NULL,
+                                   exclude=NULL,
+                                   na.action = na.omit, unconditional = TRUE,
+  )
+  # diagnostic
+  message("Dim. of model pred.= ", dim(model_preditcions)[1], " ", dim(model_preditcions)[2])
+  message("Dim. of input data = ", dim(model_data)[1], " ", dim(model_data)[2] )
+  
+  # merge measured and predicted values for plotting
+  model_data_with_predictions <- cbind(model_data, model_preditcions)
+  
+  return(model_data_with_predictions)
+}
+
 
 # _5.) Color code for plotting ----
 
@@ -425,9 +446,7 @@ ggplot(FLAT_DT.m1) +
 
 # >>> Construction site below ----
 
-# revise all below - logical error
-
-# __d) Wrong: Inspect expression data raw intensities density  ----
+# __d) Inspect expression data raw intensities' density  ----
 
 # To check if distributions are different - hopefully they are a bit - yes perhaps in EVAT when Mother and Father are not Obese
 
@@ -449,7 +468,10 @@ ggplot(FLAT_DT.m1) +
   facet_wrap(.~Tissue) + 
   theme_bw()
 
-
+# >>> Snapshot environment ----
+sessionInfo()
+save.image(file = here("scripts", "050_r_array_analysis_ah.RData"))
+renv::snapshot()
 
 # _2.) Check models: In addition to PCA and to build up to DGE: Investigate overall tissue specific expression differences based on obesity variables ----
 
@@ -460,30 +482,42 @@ ggplot(FLAT_DT.m1) +
 # - check LIAT and MotherFatherObese across all genes
 # - also check Obesity Lgl
 
-parallel::makeForkCluster(nnodes = getOption("mc.cores", 6L))
+# parallel::makeForkCluster(nnodes = getOption("mc.cores", 6L))
 
-mod_0 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2)                            + ArrayTarget, data = FLAT_DT.m1, method = "ML", family = "gaussian")
+# selcet model data size for mdoel testing and code develpment - decrese number is code is getting too slow
+ArrayTargets <- sample(FLAT_DT.m1[["ArrayTarget"]], 500, replace=FALSE)
+model_data <- subset(FLAT_DT.m1, ArrayTarget %in% ArrayTargets) # subes to 100 of 20000 genes to speed up compuaterion
+unique(model_data[["Tissue"]])
 
+mod_0 <- gam(ObesityLgcl ~ s(Intensity, k=6, bs="tp", m=2) + Tissue, data = model_data, method = "ML", family = binomial(link = "logit"))
 
-mod_0 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2)                            + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
-mod_1 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2)              ObeseParents  + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
-mod_2 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2) + ObesityLgcl                + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
-mod_3 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2) + ObesityLgcl + ObeseParents + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
+summary(mod_0)
 
+gam.check(mod_0)
 
+gratia::appraise(mod_0)
+
+# mod_0_predictions  <- get_model_prdictions_with_mgcv(mod_0, model_data)
+# 
+# ggplot(data = mod_0_predictions, aes(x = ObesityLgcl, y = Intensity, colour = Tissue)) +
+#   geom_point(aes(y = Intensity,), alpha = 0.5)
+#   geom_line(aes(y = fit, group = AnimalId), alpha = 0.5, linewidth = 0.2) +
+#   facet_wrap(ObeseParents ~ AnimalSex, ncol = 2) + 
+#   theme_bw() + 
+#   labs(title = "Offsprings body weight by sex and parents obesity statuts", 
+#        subtitle = paste("R model formula: ", as.character(paste(deparse(formula(mod_4), width.cutoff = 500), collapse=""))),
+#        x="age [d]", y = "body weight [g]")
+# 
+# mod_0 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2)                            + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
+# mod_1 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2)              ObeseParents  + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
+# mod_2 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2) + ObesityLgcl                + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
+# mod_3 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2) + ObesityLgcl + ObeseParents + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
 
 # _3.) DGE: Investigate gene-specific and  tissue specific expression differences based on obesity variables ----
 
 # implement DGE as per some manual
 
-
 # >>> Construction site above ----
-
-
-# Snapshot environment ----
-sessionInfo()
-save.image(file = here("scripts", "050_r_array_analysis_ah.RData"))
-renv::snapshot()
 
 
 
@@ -497,7 +531,6 @@ CO2 <- 0.5                      #FC cutoff
 #vermutlich kannst du stringenter sein und als adj. P 0.01 nehmen, da wir sehr viele Hits haben
 #(vielleicht mehr eingrenzen, um die Analysen zu vereinfachen)
 #FC cutoff kannst du evt. auf 0.75 hochnehmen (bei 1 bleibt nicht mehr so viel übrig), aber p-Wert ist besser
-
 
 rm(list=ls())
 gc()
