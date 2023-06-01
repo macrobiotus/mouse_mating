@@ -28,7 +28,12 @@ gc()
 
 # _2.) Packages ----
 
+library(here)
+library(renv)
+library(magrittr)
 library(ggplot2)
+library(mgcv)
+library(parallel, lib.loc = "/Users/paul/Library/Caches/org.R-project.R/R/renv/sandbox/R-4.2/aarch64-apple-darwin20/84ba8b13"
 library(stringr)
 library(tidyr)
 library(Biobase)
@@ -50,7 +55,7 @@ library(usethis)
 
 # _3.) Increase meomeory if needed ----
 
-usethis::edit_r_environ()
+# usethis::edit_r_environ()
 
 # _4.) Functions ----
 
@@ -353,8 +358,6 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
        filename = "050_r_array_analysis__plot_pca_liat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# >>> Construction site below ----
-
 # Re-implement analysis of array intensities ----
 
 # _1.) Shape and check array intensity data ----
@@ -405,7 +408,7 @@ FLAT_DT.m1 <- melt(FLAT_DT,  id.vars = c("Sample", "Animal", "Tissue", "AnimalSe
 ggplot(FLAT_DT.m1) +
   # geom_density(aes(Intensity), stat = "bin", bins = 200) +
   geom_density(aes(Intensity, colour = ObesityLgcl), stat = "bin", bins = 200) +
-  ylab("Density of measurments across all other variables") +
+  ylab("Number of measurments across all other variables") +
   xlab("Intensity") +
   ggtitle("Intensities' availibilty and distribution for offsprings obesity") +
   facet_wrap(.~Tissue) + 
@@ -414,13 +417,17 @@ ggplot(FLAT_DT.m1) +
 ggplot(FLAT_DT.m1) +
   # geom_density(aes(Intensity), stat = "bin", bins = 200) +
   geom_density(aes(Intensity, colour = ObeseParents), stat = "bin", bins = 200) +
-  ylab("Denisty of measurments across all other variables") +
+  ylab("Number of measurments across all other variables") +
   xlab("Intensity") +
   ggtitle("Intensities' availibilty and distribution for parents obesity") +
   facet_wrap(.~Tissue) + 
   theme_bw()
 
-# __d) Inspect expression data raw intensities density  ----
+# >>> Construction site below ----
+
+# revise all below - logical error
+
+# __d) Wrong: Inspect expression data raw intensities density  ----
 
 # To check if distributions are different - hopefully they are a bit - yes perhaps in EVAT when Mother and Father are not Obese
 
@@ -443,7 +450,8 @@ ggplot(FLAT_DT.m1) +
   theme_bw()
 
 
-# _2.) In addition to PCA and to build up to DGE: Investigate overall tissue specific expression differences based on obesity variables ----
+
+# _2.) Check models: In addition to PCA and to build up to DGE: Investigate overall tissue specific expression differences based on obesity variables ----
 
 # Using some form of modeling 
 
@@ -451,6 +459,18 @@ ggplot(FLAT_DT.m1) +
 # - check EVAT of MotherFatherNotObese across all genes
 # - check LIAT and MotherFatherObese across all genes
 # - also check Obesity Lgl
+
+parallel::makeForkCluster(nnodes = getOption("mc.cores", 6L))
+
+mod_0 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2)                            + ArrayTarget, data = FLAT_DT.m1, method = "ML", family = "gaussian")
+
+
+mod_0 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2)                            + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
+mod_1 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2)              ObeseParents  + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
+mod_2 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2) + ObesityLgcl                + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
+mod_3 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2) + ObesityLgcl + ObeseParents + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
+
+
 
 # _3.) DGE: Investigate gene-specific and  tissue specific expression differences based on obesity variables ----
 
