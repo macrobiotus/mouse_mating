@@ -35,6 +35,7 @@ library(Biobase)
 library(BiocGenerics)
 library(gplots)
 library(dplyr)
+library(tibble)
 library(RColorBrewer)
 library(KernSmooth)
 library(data.table)
@@ -45,8 +46,13 @@ library(UpSetR)
 library(plotly)
 library(htmlwidgets)
 library(ggpubr)
+library(usethis) 
 
-# _3.) Functions ----
+# _3.) Increase meomeory if needed ----
+
+usethis::edit_r_environ()
+
+# _4.) Functions ----
 
 # rewrite metadata in expression data sets
 adjust_array_data = function(expression_set, model_variables) {
@@ -108,7 +114,7 @@ get_pca_plot = function(expr_data_pca, expr_data_raw, variable, legend_title, pl
   
 }
 
-# _4.) Color code for plotting ----
+# _5.) Color code for plotting ----
 
 hmcol <- rev(colorRampPalette(RColorBrewer::brewer.pal(n=11, name="RdBu"))(50))
 
@@ -198,14 +204,6 @@ rm(bAT_CD_HFD_VS_CD_CD, bAT_HFD_CD_VS_CD_CD, bAT_HFD_CD_VS_CD_HFD, bAT_HFD_HFD_V
    Liv_HFD_CD_VS_CD_HFD, Liv_HFD_HFD_VS_CD_CD, Liv_HFD_HFD_VS_CD_HFD, Liv_HFD_HFD_VS_HFD_CD)
 
 saveRDS(DGEL_diet, file = here("rds_storage", "050_r_array_analysis__dge_lists_by_diet.rds"))
-
-# _6.) Re-implemnet DGE with AH's array data to yield DGE discerned by obesity variables ----
-
-# -> Construction site below ----
-
-
-
-# -> Construction site above ----
 
 # Overall Principal Component Analysis ----
 
@@ -355,11 +353,121 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
        filename = "050_r_array_analysis__plot_pca_liat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
+# >>> Construction site below ----
+
+# Re-implement analysis of array intensities ----
+
+# _1.) Shape and check array intensity data ----
+
+# see https://hbctraining.github.io/DGE_workshop/lessons/01_DGE_setup_and_overview.html
+
+# __a) Check input data formats ----
+
+# see available expression data 
+FLAT; BRAT; SCAT; LIAT; EVAT
+
+# check full data set density
+pData(FLAT) # metadata - use `ObesityLgcl` and possibly `ObeseParents`
+pData(FLAT) %>% select(ObesityLgcl, ObeseParents) %>% table()
+exprs(FLAT)
+
+# check one of four tissue data sets - brown adipose tissue 
+pData(BRAT) # metadata - use `ObesityLgcl` and possibly `ObeseParents`
+pData(BRAT) %>% select(ObesityLgcl, ObeseParents) %>% table()
+exprs(BRAT)
+
+# __b) Covert expression set to data table for inspection ----
+
+# https://support.bioconductor.org/p/77432/
+
+# see expression set 
+FLAT                   # ExpressionSet of all data
+m_ints  <- exprs(FLAT) # isolate matrix of intensities
+d_phen  <- pData(FLAT) # isolat data.frame of phenotypic information.
+
+# get a data table of the exprssion set data above
+#  - see https://stackoverflow.com/questions/52431288/r-data-table-how-to-go-from-tibble-to-data-table-to-tibble-back
+FLAT_DT <- tibble::rownames_to_column( cbind(d_phen, t(m_ints)), var = "Sample") %>% as_tibble()  
+setDT(FLAT_DT)
+setkey(FLAT_DT, Sample)
+
+# pivot data table to long - can't be done for tibble due to memory constraints
+# - see https://cran.r-project.org/web/packages/data.table/vignettes/datatable-reshape.html
+
+FLAT_DT.m1 <- melt(FLAT_DT,  id.vars = c("Sample", "Animal", "Tissue", "AnimalSex", "ObesityLgcl", "ObeseParents", "MotherDiet", "FatherDiet", "Sex", "ParentalDietMoFa", "DietGroup"), 
+  variable.name = "ArrayTarget", value.name = "Intensity")
+
+
+# __c) Inspect expression data raw intensities distribution  ----
+
+# to check that equal amounts of data are available for comparison - they are not
+
+ggplot(FLAT_DT.m1) +
+  # geom_density(aes(Intensity), stat = "bin", bins = 200) +
+  geom_density(aes(Intensity, colour = ObesityLgcl), stat = "bin", bins = 200) +
+  ylab("Density of measurments across all other variables") +
+  xlab("Intensity") +
+  ggtitle("Intensities' availibilty and distribution for offsprings obesity") +
+  facet_wrap(.~Tissue) + 
+  theme_bw()
+
+ggplot(FLAT_DT.m1) +
+  # geom_density(aes(Intensity), stat = "bin", bins = 200) +
+  geom_density(aes(Intensity, colour = ObeseParents), stat = "bin", bins = 200) +
+  ylab("Denisty of measurments across all other variables") +
+  xlab("Intensity") +
+  ggtitle("Intensities' availibilty and distribution for parents obesity") +
+  facet_wrap(.~Tissue) + 
+  theme_bw()
+
+# __d) Inspect expression data raw intensities density  ----
+
+# To check if distributions are different - hopefully they are a bit - yes perhaps in EVAT when Mother and Father are not Obese
+
+ggplot(FLAT_DT.m1) +
+  # geom_density(aes(Intensity), stat = "bin", bins = 200) +
+  geom_density(aes(Intensity, colour = ObesityLgcl), stat = "density") +
+  ylab("Density of measurments across all other variables") +
+  xlab("Intensity") +
+  ggtitle("Intensities' density for offsprings obesity") +
+  facet_wrap(.~Tissue) + 
+  theme_bw()
+
+ggplot(FLAT_DT.m1) +
+  # geom_density(aes(Intensity), stat = "bin", bins = 200) +
+  geom_density(aes(Intensity, colour = ObeseParents), stat = "density") +
+  ylab("Denisty of measurments across all other variables") +
+  xlab("Intensity") +
+  ggtitle("Intensities' density for parents obesity") +
+  facet_wrap(.~Tissue) + 
+  theme_bw()
+
+
+# _2.) In addition to PCA and to build up to DGE: Investigate overall tissue specific expression differences based on obesity variables ----
+
+# Using some form of modeling 
+
+# from inspection 
+# - check EVAT of MotherFatherNotObese across all genes
+# - check LIAT and MotherFatherObese across all genes
+# - also check Obesity Lgl
+
+# _3.) DGE: Investigate gene-specific and  tissue specific expression differences based on obesity variables ----
+
+# implement DGE as per some manual
+
+
+# >>> Construction site above ----
+
+
+# Snapshot environment ----
+sessionInfo()
+save.image(file = here("scripts", "050_r_array_analysis_ah.RData"))
+renv::snapshot()
 
 
 
-
-# -> Construction and old code code below: Obesity-related Volcano plot  ----
+# >>> Construction and old code code below: Volcano plot  ----
 
 # AH code below - continue here after 31.05.2023 - also see in section 3 data read in - define Obesity variables from AH's diet variables
 
@@ -413,6 +521,8 @@ ggplot(data=resultTable, aes(x=logFC, y=-log10(pVal))) +
           axis.title.x = element_text(size = 15),
           axis.title.y = element_text(size = 15))
 ggsave(paste0("Results_05.23/",para2,"_Volcano.pdf"),width = 6, height = 6)
+
+# >>> Construction and old code code below: Upset plot  ----
 
  
 # Upset plots ############################# 
