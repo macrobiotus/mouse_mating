@@ -293,79 +293,48 @@
   
 ## 31-May-2023
 
-  * started reading in AH's DGE results
+  started reading in AH's DGE results
   * prepared re-coding dietarey variables in line 175 of array analysis script 
+  * commit `865e6c3ac30b286a40cc1c68b30711bfdcf936f4`
+
+## 01-06-2023
+  
+  * updated todo queue
+  * thinned clutter in thus file
+  * commmit prior to implemnteing DGE in script 50
   * commit ``
 
-
 ## Todo queue
-
-* [x] in `????_main_text_scafolding.docx` - update methods and results with script ``010_r_define_obesity.r`
-* [x] formulate logistic H1 in mein text and implemnt it in `020_r_h1.r`
-* [x] formulate logistic H2 and H3 in text and implemnet in code
-* [x] check if other regressions should be made, e.g, based on weight or body fat
-* [x] used grouping factors and presponse to define defined targets fro anlysis of DEGs in RNAseq data - see 11-05-2023 - see screenshot  `/paul/Documents/HM_MouseMating/communication/230512_analysis_request.png`
-* [x] **manuscript and code** - adjust and re-design AH's array analysis to consider obesity variables  - keep in mind`/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_data_vs_h3_model_outcomes.png`
-* in PCA use obesity factor for overall differences and in tissue specifcic PCAs
-* [ ] **manuscript and code** exchange dietary variables in array analysis script with parental obesity as per H3 scripts overview and manuscript tasks
-* [ ] **manuscript and code** - implement RNAseq analysis as listed above at date 12-05-2023
-* [ ] **manuscript** - possibly check effects in tissues - extend hypotheses and Introductions
-* [x] **manuscript** - get model interpretation from Elmar Spiegel et al.
-* [ ] possibly check necessity of RE in GAM modelling ins script `040_r_h3.r`
-* [ ] **manuscript** - extend mansucript so tha RNA seq fousses only on males, and neglects offsprings obesity status
-* [ ] **manuscript and code**- possibly exetnd modelling and RNA seq analysis to tissues**
-   * [ ] as noted in code `/Users/paul/Documents/HM_MouseMating/communication/230512_RNAseq_data_vs_h3_model_outcomes.png`
-   * [ ] as noted in file or also in file `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`
-* [ ] add to dos above this line but keep keep in mind the todos below until they can be erased
-* [ ] in `main_analysis.R `
-  * [x] finish Objectives 2 and 3 with new structure
-  * [ ] erase old strcuture
-  * [ ] check if some of the follwing still needs doing 
-     * [x] find mothers with weight loss
-     * [x] add weight loss as factor to modelling data
-     * [x] sort models sytematically
-     * [x] plot fixed and random effects as with DINCH mice
-     * [x] started: consider using splines or GAM
-     * [x] build and re-evaluate models with regards to maternal weight loss
-     * [ ] build and re-evaluate models with regards to sex-sepecific weight gain - sex needs to be included or evaluated
-     * [ ] to understand effect of polynomials and sex - plot random-conditioned fixed effects using the `effects` package
-     * [ ] adress high VIFs - by recoding factor variable 
-     * [ ] adress high VIFS - by ignoring factor variable (`https://stackoverflow.com/questions/33397689/multi-collinearity-for-categorical-variables`)
-     * [ ] address high VIFS - **by centering time variable** (?) 
-     * [x] answer last question
-     * [ ] sort script for rendering
-
-* in manuscript
-  * add methods
-  * add IMISE consulting personell to acknowledgements:
-    * **Maciej Rosolowski** <maciej.rosolowski@imise.uni-leipzig.de>
-    * Maryam Yahiaoui-Doktor <maryam.Yahiaoui-Doktor@imise.uni-leipzig.de>
-  * add HM consulting personell to paper
-    * **Elmar Spiegel**
-    * Roman Le Glut
-    * Kainat Khowaja
-
+ 
+  * [ ] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
+    * [ ] parental diet conforms exactly with dietary variables considered by AH for array data
+    * [ ] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
+    * [ ] the latter is needed but possibly the former data is the only one available
+  * [ ] revise script `050_r_array_analysis_ah.r`:
+    * [ ] try to reimplemnet DGE with `ObesityLgcl` and possibly also `ObeseParents`
+    * [ ] adjust AH's Vulcano plot code for new DGE results
+    * [ ] adjust AH's UpsetPlot code for new DGE results 
+    * [ ] **possibly** implement including other variables instead of body weight body fat
+    * [ ] **possibly** use AH's dietary varibles but recode to obesity variable
+    * [ ] **possibly** use AH's dietary variables neat
+  * [ ] in manuscript
+    * [ ] add IMISE consulting personell to acknowledgements:
+      * **Maciej Rosolowski** <maciej.rosolowski@imise.uni-leipzig.de>
+      * Maryam Yahiaoui-Doktor <maryam.Yahiaoui-Doktor@imise.uni-leipzig.de>
+    * [ ] add HM consulting personell to paper
+      * **Elmar Spiegel**
+      * Roman Le Glut
+      * Kainat Khowaja
+  * [ ] archive old scripts and data files
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R`
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/main_analysis.R`
+    
 ## Ideas not yet pursued
 
-* [x] implement modelling steps as in Appendix **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology*** 
-* [ ] in `main_analysis.R ` - possibly play around further 
-  * [ ] possibly add classification tree
-  * [ ] list variance explained by factors - as per [web page](https://github.com/timnewbold/MResEcologicalModelling/blob/4adab861b41934e460f1a3f9bad17a4398acb068/1StatisticalModels/WorkshopExercises.md) in Zotero.
-  * [x] started: rewrite everything succeinctly as in DINCH mice?
-
-## Considerations
-
-* AH: _"Hier die Übersicht der Maiting study. Im Prinzip wäre es schön, wenn du die Plots aus den Folien in R erstellst (etwas hübscher machen) und eine geeignete Statistik drüber laufen lässt für die time series ANOVA."_
+ * foo 
 
 ## Further reading
 
-### Serial correlations and model verification
-* **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
+### Modelling
 
-### Not relevant anymore
-
-* on multivariate polynomials
-  * Kahle D. 2013. mpoly: Multivariate Polynomials in R. The R Journal 5: 162.
-* On contrast coding: `https://marissabarlaz.github.io/portfolio/contrastcoding/#what-is-a-contrast`
-* for modelling consider _"A guide to creating design matrices for gene expression experiments. https://bioconductor.org/packages/release/workflows/vignettes/RNAseq123/inst/doc/designmatrices.html. Viewed 25 Nov 2022."_, section 6.1
-
+ * **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
