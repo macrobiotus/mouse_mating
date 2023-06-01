@@ -301,8 +301,9 @@
   
   * updated todo queue
   * thinned clutter in thus file
-  * commmit prior to implemnteing DGE in script 50
-  * commit ``
+  * commmit prior to implemnteing DGE in script 50 for obesity variables, instead of AH dietary variables
+  * commit `5fd8790e5024bce8e05f885d08f219b1c736ef58`
+  
 
 ## Todo queue
  
