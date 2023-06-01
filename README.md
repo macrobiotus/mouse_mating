@@ -307,7 +307,10 @@
   * added analysis ideas to script `050_r_array_analysis_ah.r`
   * commit `3192f2500adfade9f3e3a72a76dd5b1427ddf9ba`
   * tried modelling further but need to find other ideas - talk to TH
-  * script 50 is marked at site where analysis ought to be continued
+  * script 50 is marked at site where analysis ought to be continued - see this file below on what is to do further
+  * in summary: experimented with DGE modelling - about to start correlation analysis as in Omentin paper
+  * commit `5339189d3579e75926086fb8a81df7cf714bf840`
+  
 
 ## Todo queue
  
@@ -316,7 +319,9 @@
     * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
     * [x] the latter is needed but possibly the former data is the only one available
   * [ ] revise script `050_r_array_analysis_ah.r`:
-    * [ ] establish correlations between varaibles `ObesityLgcl` and possibly also `ObeseParents` and intensities - consult ITLN1 paper to find how AH does it - or check teams chat for package
+    * [ ] establish correlations between varaibles `ObesityLgcl` and possibly also `ObeseParents` and intensities - 
+       * [ ] consult ITLN1 paper to find how AH does it - or check teams chat for package
+       * [ ] possibly get numerical summaries of PCAs as noted in script 50
     * [ ] try to reimplemnet DGE with `ObesityLgcl` and possibly also `ObeseParents`
     * [ ] adjust AH's Vulcano plot code for new DGE results
     * [ ] adjust AH's UpsetPlot code for new DGE results 

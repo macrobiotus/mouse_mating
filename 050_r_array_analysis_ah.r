@@ -34,6 +34,7 @@ library(magrittr)
 library(ggplot2)
 library(mgcv)
 library(parallel, lib.loc = "/Users/paul/Library/Caches/org.R-project.R/R/renv/sandbox/R-4.2/aarch64-apple-darwin20/84ba8b13")
+library(RVAideMemoire)
 library(stringr)
 library(tidyr)
 library(Biobase)
@@ -379,6 +380,16 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
        filename = "050_r_array_analysis__plot_pca_liat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
+# >>> Optional code section below ----
+
+# Get numerical summaries of above PCAs ----
+
+# use the PCA graphics and results above to get numerical summaties of hwat can be sees
+# follow https://lauren-blake.github.io/Regulatory_Evol/analysis/gene_exp_corr.html
+# in section "Correlations"
+
+# >>> Optional code section above ----
+
 # Re-implement analysis of array intensities ----
 
 # _1.) Shape and check array intensity data ----
@@ -402,7 +413,7 @@ exprs(BRAT)
 
 # __b) Covert expression set to data table for inspection ----
 
-# https://support.bioconductor.org/p/77432/
+# see https://support.bioconductor.org/p/77432/
 
 # see expression set 
 FLAT                   # ExpressionSet of all data
@@ -468,12 +479,14 @@ ggplot(FLAT_DT.m1) +
   facet_wrap(.~Tissue) + 
   theme_bw()
 
-# >>> Snapshot environment ----
+# (>>> Snapshot environment) ----
 sessionInfo()
 save.image(file = here("scripts", "050_r_array_analysis_ah.RData"))
 renv::snapshot()
 
-# _2.) Check models: In addition to PCA and to build up to DGE: Investigate overall tissue specific expression differences based on obesity variables ----
+# see https://lauren-blake.github.io/Regulatory_Evol/analysis/gene_exp_corr.html
+
+# _3.) Check models: In addition to PCA and to build up to DGE: Investigate overall tissue specific expression differences based on obesity variables ----
 
 # Using some form of modeling 
 
