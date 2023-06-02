@@ -293,7 +293,7 @@
   
 ## 31-May-2023
 
-  started reading in AH's DGE results
+  * started reading in AH's DGE results
   * prepared re-coding dietarey variables in line 175 of array analysis script 
   * commit `865e6c3ac30b286a40cc1c68b30711bfdcf936f4`
 
@@ -301,17 +301,25 @@
   
   * updated todo queue
   * thinned clutter in thus file
-  * commmit prior to implemnteing DGE in script 50 for obesity variables, instead of AH dietary variables
+  * commit prior to implemnteing DGE in script 50 for obesity variables, instead of AH dietary variables
   * commit `5fd8790e5024bce8e05f885d08f219b1c736ef58`
-  * sucesfully read in and inspected (normalized) array data
+  * successfully read in and inspected (normalized) array data
   * added analysis ideas to script `050_r_array_analysis_ah.r`
   * commit `3192f2500adfade9f3e3a72a76dd5b1427ddf9ba`
   * tried modelling further but need to find other ideas - talk to TH
   * script 50 is marked at site where analysis ought to be continued - see this file below on what is to do further
   * in summary: experimented with DGE modelling - about to start correlation analysis as in Omentin paper
   * commit `5339189d3579e75926086fb8a81df7cf714bf840`
-  
 
+## 02-06-2023
+
+ * updated todo list
+ * isolated experimental model code
+ * tested DGE of `ObesityLgl` - none found
+ * started for DGE based on parents obesity
+ * got plan on what to do
+ * got package to annotate array targets
+ 
 ## Todo queue
  
   * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
@@ -319,6 +327,12 @@
     * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
     * [x] the latter is needed but possibly the former data is the only one available
   * [ ] revise script `050_r_array_analysis_ah.r`:
+    * [ ] **Day 1** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
+    * [ ] **Day 2** - inspect PCA signals  - overall and tissue specific - for obesity variables -> use to inform DGE 
+    * [ ] **Day 3** - get annotations - implement KEGG and GO - tissue specific - for DGE results -> see Tamoxifen project 
+    * [ ] **Day 4** - later: see how AH used upset plots 
+    * [ ] **Day 5** -  get Isolate model code - email Elmar on how to model outcomes directly - on cluster from intensity data by tissue and gene
+  * check if this is still valid
     * [ ] establish correlations between varaibles `ObesityLgcl` and possibly also `ObeseParents` and intensities - 
        * [ ] consult ITLN1 paper to find how AH does it - or check teams chat for package
        * [ ] possibly get numerical summaries of PCAs as noted in script 50

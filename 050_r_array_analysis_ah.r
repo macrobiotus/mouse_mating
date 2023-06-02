@@ -35,6 +35,14 @@ library(ggplot2)
 library(mgcv)
 library(parallel, lib.loc = "/Users/paul/Library/Caches/org.R-project.R/R/renv/sandbox/R-4.2/aarch64-apple-darwin20/84ba8b13")
 library(RVAideMemoire)
+library("GCSscore")
+library("DESeq2")
+library("pheatmap")
+library("oligoClasses") # to annotate array target
+library("pd.clariom.s.mouse") # still needed
+# for GO analysis
+library("org.Hs.eg.db")
+library("limma")
 library(stringr)
 library(tidyr)
 library(Biobase)
@@ -138,6 +146,33 @@ get_model_prdictions_with_mgcv = function(model_fit, model_data, ...){
   model_data_with_predictions <- cbind(model_data, model_preditcions)
   
   return(model_data_with_predictions)
+}
+
+# Convenience function to test Offsprings obesity status in all tissue samples
+get_dge_for_offspring_obesity = function(ExpSet){
+  
+  # message
+  message("Convenience function to test Offsprings obesity status in all tissue samples - analysis of factor \"ObesityLgcl\" is hard-coded.")
+  
+  # Checking sample size
+  message("Consider whether the sample size is appropraite for DGE, you shoul have at least six sample per group:")
+  pData(ExpSet) %>% dplyr::select(ObesityLgcl) %>% table() %>% print()
+  
+  # Creating design matrix and contrasts
+  design_offspr_obese <- model.matrix(~ ExpSet[["ObesityLgcl"]] - 1)
+  colnames(design_offspr_obese) <-c("NotObese", "Obese") 
+  contrast_offspr_obese <- makeContrasts("NotObese-Obese", levels = design_offspr_obese)
+  
+  # Creating and evaluating linear model of gene expression
+  fit1 <- lmFit(ExpSet, design_offspr_obese)
+  fit1c <- contrasts.fit(fit1, contrast_offspr_obese)
+  fit1c <- eBayes(fit1c)
+  
+  # message
+  message("Returning topTable() output:")
+  
+  return(topTable(fit1c))
+  
 }
 
 
@@ -390,7 +425,7 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
 
 # >>> Optional code section above ----
 
-# Re-implement analysis of array intensities ----
+# Re-implement analysis of array intensities  ----
 
 # _1.) Shape and check array intensity data ----
 
@@ -411,9 +446,16 @@ pData(BRAT) # metadata - use `ObesityLgcl` and possibly `ObeseParents`
 pData(BRAT) %>% select(ObesityLgcl, ObeseParents) %>% table()
 exprs(BRAT)
 
-# __b) Covert expression set to data table for inspection ----
+# __b) >>> Not done yet: Add array annoations to ExpreesionSet data ----
+
+# see https://bioconductor.org/packages/release/data/annotation/html/pd.clariom.s.mouse.html
+
+
+# __c) Covert expression set to data table for inspection ----
 
 # see https://support.bioconductor.org/p/77432/
+# see GSCOre manual
+# https://www.bioconductor.org/packages/release/bioc/vignettes/GCSscore/inst/doc/GCSscore.pdf
 
 # see expression set 
 FLAT                   # ExpressionSet of all data
@@ -433,7 +475,7 @@ FLAT_DT.m1 <- melt(FLAT_DT,  id.vars = c("Sample", "Animal", "Tissue", "AnimalSe
   variable.name = "ArrayTarget", value.name = "Intensity")
 
 
-# __c) Inspect expression data raw intensities distribution  ----
+# __d) Inspect expression data raw intensities distribution  ----
 
 # to check that equal amounts of data are available for comparison - they are not
 
@@ -455,9 +497,7 @@ ggplot(FLAT_DT.m1) +
   facet_wrap(.~Tissue) + 
   theme_bw()
 
-# >>> Construction site below ----
-
-# __d) Inspect expression data raw intensities' density  ----
+# __e) Inspect expression data raw intensities' density  ----
 
 # To check if distributions are different - hopefully they are a bit - yes perhaps in EVAT when Mother and Father are not Obese
 
@@ -479,36 +519,120 @@ ggplot(FLAT_DT.m1) +
   facet_wrap(.~Tissue) + 
   theme_bw()
 
-# (>>> Snapshot environment) ----
-sessionInfo()
-save.image(file = here("scripts", "050_r_array_analysis_ah.RData"))
-renv::snapshot()
+# >>> Construction site below ----
 
-# see https://lauren-blake.github.io/Regulatory_Evol/analysis/gene_exp_corr.html
+# 2.) DGE analysis using Limma ----
 
-# _3.) Check models: In addition to PCA and to build up to DGE: Investigate overall tissue specific expression differences based on obesity variables ----
+# see DESeq2 tutorial at https://colauttilab.github.io/RNA-Seq_Tutorial.html
+# see GCSCore tutaorial at https://www.bioconductor.org/packages/release/bioc/vignettes/GCSscore/inst/doc/GCSscore.pdf
+# see Limma slides at https://s3.amazonaws.com/assets.datacamp.com/production/course_6456/slides/chapter1.pdf
+# **use this!** - Limma slides at  https://kasperdanielhansen.github.io/genbioconductor/html/limma.html
 
-# Using some form of modeling 
+
+# __a) Define limma models matching manuscript hypotheses ----
+
+# ____  Test for DGE among obese and non-obese offspring ----
+
+# No DGE  detected across all tissues or in any tissue based on offsprings' obesity status
+
+test_dge_for_offspring_obesity(FLAT)
+test_dge_for_offspring_obesity(BRAT)
+test_dge_for_offspring_obesity(LIAT)
+test_dge_for_offspring_obesity(SCAT)
+test_dge_for_offspring_obesity(EVAT)
+
+
+# __b) Define limma models partially matching manuscript hypotheses (fall-back) ----
+
+# ____  Any parent obese vs. none obese, not considering offsprings obesity (contingency) ----
+
+# Checking sample size
+pData(FLAT) %>% dplyr::select(ObeseParents) %>% table()
+
+# building initial model
+design_parent_obese <- model.matrix(~ FLAT[["ObeseParents"]] - 1)
+colnames(design_parent_obese) <-c("MotherFatherNotObese", "FatherObese", "MotherFatherObese", "MotherObese") 
+fit_parent_obese <- lmFit(FLAT, design_parent_obese)
+
+contrast_parent_obese <- makeContrasts("AnyObesity-NoObesity"= MotherFatherNotObese - (FatherObese + MotherFatherObese + MotherObese)/3 , levels = design_parent_obese)
+
+fit_parent_obese_AnyVsNo <- contrasts.fit(fit_parent_obese, contrast_parent_obese)
+fit_parent_obese_AnyVsNo <- eBayes(fit_parent_obese_AnyVsNo)
+topTable(fit_parent_obese_AnyVsNo)
+
+# >>>> Continue here after 02.06.2023 ----
+
+# ____  Father obese vs. all other cases, not considering offsprings obesity ----
+contrast_father_obese <- makeContrasts("foo"=bar, levels = design_parent_obese)
+
+# ____  Mother obese vs. all other cases, not considering offsprings obesity ----
+contrast_mother_obese <- makeContrasts("foo"=bar, levels = design_parent_obese)
+
+# ____  Neither parent obese vs. all other cases, not considering offsprings obesity ----
+contrast_neither_obese <- makeContrasts("foo"=bar, levels = design_parent_obese)
+
+# __a) Overall expression differences between tissues
+
+pData(FLAT)
+table(FLAT$Tissue)
+
+design <- model.matrix(~ FLAT[["Tissue"]])
+fit <- lmFit(FLAT, design)
+fit <- eBayes(fit)
+topTable(fit)
+
+
+pData(FLAT)
+table(FLAT$ObesityLgcl)
+design <- model.matrix(~ FLAT[["ObesityLgcl"]] + FLAT[["ObeseParents"]])
+fit <- lmFit(FLAT, design)
+fit <- eBayes(fit)
+topTable(fit)
+
+pData(BRAT)
+table(EVAT$ObesityLgcl)
+design <- model.matrix(~ EVAT[["ObesityLgcl"]])
+fit <- lmFit(EVAT, design)
+fit <- eBayes(fit)
+topTable(fit)
+
+
+
+
+
+# >>> Constrcution site above ---- 
+
+# Experimental: DGE-analysis using GAMs - Investigate overall tissue specific expression differences based on obesity variables ----
 
 # from inspection 
 # - check EVAT of MotherFatherNotObese across all genes
 # - check LIAT and MotherFatherObese across all genes
 # - also check Obesity Lgl
 
+# _1.) Set up parallel computing ----
+
 # parallel::makeForkCluster(nnodes = getOption("mc.cores", 6L))
 
-# selcet model data size for mdoel testing and code develpment - decrese number is code is getting too slow
+# _2.) Select modelling data ----
+
+# select model data size for mdoel testing and code develpment - decrese number is code is getting too slow
 ArrayTargets <- sample(FLAT_DT.m1[["ArrayTarget"]], 500, replace=FALSE)
 model_data <- subset(FLAT_DT.m1, ArrayTarget %in% ArrayTargets) # subes to 100 of 20000 genes to speed up compuaterion
 unique(model_data[["Tissue"]])
 
-mod_0 <- gam(ObesityLgcl ~ s(Intensity, k=6, bs="tp", m=2) + Tissue, data = model_data, method = "ML", family = binomial(link = "logit"))
+# _3.) Build model ----
 
-summary(mod_0)
+# mod_0 <- gam(ObesityLgcl ~ s(Intensity, k=6, bs="tp", m=2) + Tissue + s(ArrayTarget, k=6, bs="tp"), data = model_data, method = "ML", family = binomial(link = "logit"))
 
-gam.check(mod_0)
+# _4.) Save model ----
 
-gratia::appraise(mod_0)
+# _5.) Check model ----
+
+# summary(mod_0)
+# gam.check(mod_0)
+# gratia::appraise(mod_0)
+
+# _6.) Inspect model predictions  ----
 
 # mod_0_predictions  <- get_model_prdictions_with_mgcv(mod_0, model_data)
 # 
@@ -521,17 +645,11 @@ gratia::appraise(mod_0)
 #        subtitle = paste("R model formula: ", as.character(paste(deparse(formula(mod_4), width.cutoff = 500), collapse=""))),
 #        x="age [d]", y = "body weight [g]")
 # 
-# mod_0 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2)                            + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
-# mod_1 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2)              ObeseParents  + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
-# mod_2 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2) + ObesityLgcl                + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
-# mod_3 <- bam(Intensity ~  s(Intensity, k=10, bs="tp", m=2) + ObesityLgcl + ObeseParents + ArrayTarget + s(Animal, bs = 're'), data = FLAT_DT.m1, method = "ML", family = "gaussian", nthreads = 6)
 
-# _3.) DGE: Investigate gene-specific and  tissue specific expression differences based on obesity variables ----
-
-# implement DGE as per some manual
-
-# >>> Construction site above ----
-
+# Snapshot environment) ----
+sessionInfo()
+save.image(file = here("scripts", "050_r_array_analysis_ah.RData"))
+renv::snapshot()
 
 
 # >>> Construction and old code code below: Volcano plot  ----
