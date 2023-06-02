@@ -327,8 +327,8 @@
     * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
     * [x] the latter is needed but possibly the former data is the only one available
   * [ ] revise script `050_r_array_analysis_ah.r`:
-    * [ ] **Day 1** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
-    * [ ] **Day 2** - inspect PCA signals  - overall and tissue specific - for obesity variables -> use to inform DGE 
+    * [ ] **Day 1** - **use to inform DGE and write this down** inspect PCA signals  - overall and tissue specific - for obesity variables -> ***use to inform DGE** 
+    * [ ] **Day 2** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
     * [ ] **Day 3** - get annotations - implement KEGG and GO - tissue specific - for DGE results -> see Tamoxifen project 
     * [ ] **Day 4** - later: see how AH used upset plots 
     * [ ] **Day 5** -  get Isolate model code - email Elmar on how to model outcomes directly - on cluster from intensity data by tissue and gene

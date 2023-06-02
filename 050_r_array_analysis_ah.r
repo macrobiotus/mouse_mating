@@ -39,7 +39,7 @@ library("GCSscore")
 library("DESeq2")
 library("pheatmap")
 library("oligoClasses") # to annotate array target
-library("pd.clariom.s.mouse") # still needed
+library("pd.clariom.s.mouse")
 # for GO analysis
 library("org.Hs.eg.db")
 library("limma")
@@ -415,7 +415,9 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
        filename = "050_r_array_analysis__plot_pca_liat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# >>> Optional code section below ----
+# >>>> Continue here after 02.06.2023 ----
+
+# >>> Unfinished code section below ----
 
 # Get numerical summaries of above PCAs ----
 
@@ -423,7 +425,12 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
 # follow https://lauren-blake.github.io/Regulatory_Evol/analysis/gene_exp_corr.html
 # in section "Correlations"
 
-# >>> Optional code section above ----
+# use these results to inform DGE
+# see DGE section to see aht models will be tested - try to match those modles here
+# report those models used here and in DGE and write down the results
+# possibly adjust DGE models
+
+# >>> Unfinished code section above ----
 
 # Re-implement analysis of array intensities  ----
 
@@ -560,7 +567,7 @@ fit_parent_obese_AnyVsNo <- contrasts.fit(fit_parent_obese, contrast_parent_obes
 fit_parent_obese_AnyVsNo <- eBayes(fit_parent_obese_AnyVsNo)
 topTable(fit_parent_obese_AnyVsNo)
 
-# >>>> Continue here after 02.06.2023 ----
+# >>>> (do all tissues for all questions - but for now report only on ones relevant in PCA - ecide on which results to keep)
 
 # ____  Father obese vs. all other cases, not considering offsprings obesity ----
 contrast_father_obese <- makeContrasts("foo"=bar, levels = design_parent_obese)
