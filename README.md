@@ -319,6 +319,13 @@
  * started for DGE based on parents obesity
  * got plan on what to do
  * got package to annotate array targets
+ * commit `0da0360e749065590b4656bce1753e3b85574544`
+
+## 05-06-2023
+ 
+ * finished getting DGE results
+ * commit ``
+ 
  
 ## Todo queue
  

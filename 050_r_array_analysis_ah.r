@@ -91,7 +91,7 @@ adjust_array_data = function(expression_set, model_variables) {
   )
   
   # merge obesity variables from modelling  to metadata from array experiments
-  pData(expression_set) <- left_join((pData(expression_set) %>% select(
+  pData(expression_set) <- left_join((pData(expression_set) %>% dplyr::select(
     -c(Sex, Parental_diet, Diet_mother, Diet_father, Group)
   )),
   (model_variables),
@@ -171,8 +171,52 @@ get_dge_for_offspring_obesity = function(ExpSet){
   # message
   message("Returning topTable() output:")
   
-  return(topTable(fit1c))
+  return(topTable(fit1c, p.value = 0.05, number = 50))
   
+}
+
+# Convenience function to test parents' obesity status in all tissue samples
+get_dge_for_parent_obesity = function(ExpSet){
+  
+  message("Convenience function to test parents' obesity status in all tissue samples - analysis of factor \"ObeseParents\" is hard-coded.")
+  
+  message("Consider whether the sample size is appropriate for DGE, you shoul have at least six samples per group:")
+  
+  pData(ExpSet) %>% dplyr::select(ObeseParents) %>% table() %>% print()
+  
+  message(paste0("Building initial model on data set \"", deparse(substitute(ExpSet))), "\".")   
+  
+  design_parent_obese <- model.matrix(~ ExpSet[["ObeseParents"]] - 1)
+  colnames(design_parent_obese) <-c("MotherFatherNotObese", "FatherObese", "MotherFatherObese", "MotherObese") 
+  fit_parent_obese <- lmFit(ExpSet, design_parent_obese)
+  
+  message("Defining and applying contrasts: One of \"MotherFatherNotObese\", \"FatherObese\", \"MotherFatherObese\", or \"MotherObese\" against all remening three levels.") 
+  
+  contrast_mfo  <- makeContrasts("MotherFatherObese" = MotherFatherObese - (MotherObese + FatherObese + MotherFatherNotObese)/3 , levels = design_parent_obese)
+  contrast_fob   <- makeContrasts("FatherObese" = FatherObese - (MotherObese + MotherFatherObese + MotherFatherNotObese)/3 , levels = design_parent_obese)
+  contrast_mob   <- makeContrasts("MotherObese" = MotherObese - (FatherObese + MotherFatherObese + MotherFatherNotObese)/3 , levels = design_parent_obese)
+  contrast_nob <- makeContrasts("MotherFatherNotObese" = MotherFatherNotObese - (FatherObese + MotherFatherObese + MotherFatherObese)/3 , levels = design_parent_obese)
+  
+  fit_mfo <- contrasts.fit(fit_parent_obese, contrast_mfo)
+  fit_fob <- contrasts.fit(fit_parent_obese, contrast_fob)
+  fit_mob <- contrasts.fit(fit_parent_obese, contrast_mob)
+  fit_nob <- contrasts.fit(fit_parent_obese, contrast_nob)
+  
+  fit_mfo_eb <- eBayes(fit_mfo)
+  fit_fob_eb <- eBayes(fit_fob)
+  fit_mob_eb <- eBayes(fit_mob)
+  fit_nob_eb <- eBayes(fit_nob)
+  
+  message("returning results list - check list names for top table identification.") 
+  
+  return(
+    list(
+      "MotherFatherObese" = topTable(fit_mfo_eb, p.value = 0.05, number = 50), 
+      "FatherObese" = topTable(fit_fob_eb, p.value = 0.05, number = 50),
+      "MotherObese" = topTable(fit_mob_eb, p.value = 0.05, number = 50), 
+      "MotherFatherNotObese" = topTable(fit_nob_eb, p.value = 0.05, number = 50)
+    )
+  )
 }
 
 
@@ -187,7 +231,7 @@ hmcol <- rev(colorRampPalette(RColorBrewer::brewer.pal(n=11, name="RdBu"))(50))
 # Data are Clariom S mouse arrays
 # I removed strong outliers: A285_liver clustert zu bAT, A339_liver weit weg vom Rest
 
-base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/allTissues_normData.RData") # only if you are interrested to look into the normalized data
+base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/allTissues_normData.RData") # only if you are interested to look into the normalized data
 
 # copy to stick to manuscript naming conventions
 FLAT <- normData; rm(normData)
@@ -445,12 +489,12 @@ FLAT; BRAT; SCAT; LIAT; EVAT
 
 # check full data set density
 pData(FLAT) # metadata - use `ObesityLgcl` and possibly `ObeseParents`
-pData(FLAT) %>% select(ObesityLgcl, ObeseParents) %>% table()
+pData(FLAT) %>% dplyr::select(ObesityLgcl, ObeseParents) %>% table()
 exprs(FLAT)
 
 # check one of four tissue data sets - brown adipose tissue 
 pData(BRAT) # metadata - use `ObesityLgcl` and possibly `ObeseParents`
-pData(BRAT) %>% select(ObesityLgcl, ObeseParents) %>% table()
+pData(BRAT) %>% dplyr::select(ObesityLgcl, ObeseParents) %>% table()
 exprs(BRAT)
 
 # __b) >>> Not done yet: Add array annoations to ExpreesionSet data ----
@@ -542,72 +586,25 @@ ggplot(FLAT_DT.m1) +
 
 # No DGE  detected across all tissues or in any tissue based on offsprings' obesity status
 
-test_dge_for_offspring_obesity(FLAT)
-test_dge_for_offspring_obesity(BRAT)
-test_dge_for_offspring_obesity(LIAT)
-test_dge_for_offspring_obesity(SCAT)
-test_dge_for_offspring_obesity(EVAT)
-
+get_dge_for_offspring_obesity(FLAT)
+get_dge_for_offspring_obesity(BRAT)
+get_dge_for_offspring_obesity(LIAT)
+get_dge_for_offspring_obesity(SCAT)
+get_dge_for_offspring_obesity(EVAT)
 
 # __b) Define limma models partially matching manuscript hypotheses (fall-back) ----
 
-# ____  Any parent obese vs. none obese, not considering offsprings obesity (contingency) ----
+# ____  Test for DGE among offspring based on parental obesity ----
 
-# Checking sample size
-pData(FLAT) %>% dplyr::select(ObeseParents) %>% table()
+# Defining and applying contrasts: One of "MotherFatherNotObese", "FatherObese", "MotherFatherObese", or "MotherObese" 
+#  against all remaining three levels.
 
-# building initial model
-design_parent_obese <- model.matrix(~ FLAT[["ObeseParents"]] - 1)
-colnames(design_parent_obese) <-c("MotherFatherNotObese", "FatherObese", "MotherFatherObese", "MotherObese") 
-fit_parent_obese <- lmFit(FLAT, design_parent_obese)
+FLAT_TopTableList <- get_dge_for_parent_obesity(FLAT)
+BRAT_TopTableList <- get_dge_for_parent_obesity(BRAT)
+LIAT_TopTableList <- get_dge_for_parent_obesity(LIAT)
+EVAT_TopTableList <- get_dge_for_parent_obesity(EVAT)
 
-contrast_parent_obese <- makeContrasts("AnyObesity-NoObesity"= MotherFatherNotObese - (FatherObese + MotherFatherObese + MotherObese)/3 , levels = design_parent_obese)
-
-fit_parent_obese_AnyVsNo <- contrasts.fit(fit_parent_obese, contrast_parent_obese)
-fit_parent_obese_AnyVsNo <- eBayes(fit_parent_obese_AnyVsNo)
-topTable(fit_parent_obese_AnyVsNo)
-
-# >>>> (do all tissues for all questions - but for now report only on ones relevant in PCA - ecide on which results to keep)
-
-# ____  Father obese vs. all other cases, not considering offsprings obesity ----
-contrast_father_obese <- makeContrasts("foo"=bar, levels = design_parent_obese)
-
-# ____  Mother obese vs. all other cases, not considering offsprings obesity ----
-contrast_mother_obese <- makeContrasts("foo"=bar, levels = design_parent_obese)
-
-# ____  Neither parent obese vs. all other cases, not considering offsprings obesity ----
-contrast_neither_obese <- makeContrasts("foo"=bar, levels = design_parent_obese)
-
-# __a) Overall expression differences between tissues
-
-pData(FLAT)
-table(FLAT$Tissue)
-
-design <- model.matrix(~ FLAT[["Tissue"]])
-fit <- lmFit(FLAT, design)
-fit <- eBayes(fit)
-topTable(fit)
-
-
-pData(FLAT)
-table(FLAT$ObesityLgcl)
-design <- model.matrix(~ FLAT[["ObesityLgcl"]] + FLAT[["ObeseParents"]])
-fit <- lmFit(FLAT, design)
-fit <- eBayes(fit)
-topTable(fit)
-
-pData(BRAT)
-table(EVAT$ObesityLgcl)
-design <- model.matrix(~ EVAT[["ObesityLgcl"]])
-fit <- lmFit(EVAT, design)
-fit <- eBayes(fit)
-topTable(fit)
-
-
-
-
-
-# >>> Constrcution site above ---- 
+# >>> Construction site above ---- 
 
 # Experimental: DGE-analysis using GAMs - Investigate overall tissue specific expression differences based on obesity variables ----
 
