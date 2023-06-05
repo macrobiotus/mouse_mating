@@ -180,45 +180,71 @@ get_dge_for_parent_obesity = function(ExpSet){
   
   message("Convenience function to test parents' obesity status in all tissue samples - analysis of factor \"ObeseParents\" is hard-coded.")
   
-  message("Consider whether the sample size is appropriate for DGE, you shoul have at least six samples per group:")
+  # Building initial models
+  message(paste0("\nUsing data set \"", deparse(substitute(ExpSet))), "\".")   
+  
+  
+  message("\nConsider whether the sample size is appropriate for DGE, you should have at least six samples per group:")
   
   pData(ExpSet) %>% dplyr::select(ObeseParents) %>% table() %>% print()
   
-  message(paste0("Building initial model on data set \"", deparse(substitute(ExpSet))), "\".")   
+  # Building initial models
+  message("Building initial model.")   
   
   design_parent_obese <- model.matrix(~ ExpSet[["ObeseParents"]] - 1)
   colnames(design_parent_obese) <-c("MotherFatherNotObese", "FatherObese", "MotherFatherObese", "MotherObese") 
   fit_parent_obese <- lmFit(ExpSet, design_parent_obese)
   
-  message("Defining and applying contrasts: One of \"MotherFatherNotObese\", \"FatherObese\", \"MotherFatherObese\", or \"MotherObese\" against all remening three levels.") 
+  # Setting contrasts - likley not all will give results 
+  contrast_names <- c(
+    "MotherFatherObese vs MotherObese",
+    "MotherFatherObese vs FatherObese", 
+    "MotherFatherObese vs FatherObese & MotherObese",
+    "MotherFatherObese vs MotherFatherNotObese",
+    "MotherFatherObese vs MotherFatherNotObese & MotherObese",
+    "MotherFatherObese vs MotherFatherNotObese & FatherObese",
+    "MotherFatherObese vs MotherFatherNotObese & FatherObese & MotherObese",
+    "MotherFatherNotObese vs MotherObese", 
+    "MotherFatherNotObese vs FatherObese", 
+    "MotherFatherNotObese vs FatherObese & MotherObese", 
+    "MotherFatherNotObese vs MotherFatherObese & MotherObese", 
+    "MotherFatherNotObese vs MotherFatherObese & FatherObese", 
+    "MotherFatherNotObese vs MotherFatherObese & FatherObese & MotherObese",
+    "FatherObese vs MotherObese")
   
-  contrast_mfo  <- makeContrasts("MotherFatherObese" = MotherFatherObese - (MotherObese + FatherObese + MotherFatherNotObese)/3 , levels = design_parent_obese)
-  contrast_fob   <- makeContrasts("FatherObese" = FatherObese - (MotherObese + MotherFatherObese + MotherFatherNotObese)/3 , levels = design_parent_obese)
-  contrast_mob   <- makeContrasts("MotherObese" = MotherObese - (FatherObese + MotherFatherObese + MotherFatherNotObese)/3 , levels = design_parent_obese)
-  contrast_nob <- makeContrasts("MotherFatherNotObese" = MotherFatherNotObese - (FatherObese + MotherFatherObese + MotherFatherObese)/3 , levels = design_parent_obese)
+  message("\nDefining contrasts: \"", paste0(contrast_names, collapse = "\", \""), "\".") 
   
-  fit_mfo <- contrasts.fit(fit_parent_obese, contrast_mfo)
-  fit_fob <- contrasts.fit(fit_parent_obese, contrast_fob)
-  fit_mob <- contrasts.fit(fit_parent_obese, contrast_mob)
-  fit_nob <- contrasts.fit(fit_parent_obese, contrast_nob)
+  contrast_list <- vector(mode = "list", length = length(contrast_names))
   
-  fit_mfo_eb <- eBayes(fit_mfo)
-  fit_fob_eb <- eBayes(fit_fob)
-  fit_mob_eb <- eBayes(fit_mob)
-  fit_nob_eb <- eBayes(fit_nob)
+  contrast_list[[1]]  <- makeContrasts("MotherFatherObese vs MotherObese" =  MotherFatherObese - MotherObese, levels = design_parent_obese)
+  contrast_list[[2]]  <- makeContrasts("MotherFatherObese vs FatherObese" =  MotherFatherObese - FatherObese, levels = design_parent_obese)
+  contrast_list[[3]]  <- makeContrasts("MotherFatherObese vs FatherObese & MotherObese" =  MotherFatherObese - (FatherObese + MotherObese)/2 , levels = design_parent_obese)
+  contrast_list[[4]]  <- makeContrasts("MotherFatherObese vs MotherFatherNotObese" =  MotherFatherObese - MotherFatherNotObese, levels = design_parent_obese)
+  contrast_list[[5]]  <- makeContrasts("MotherFatherObese vs MotherFatherNotObese & MotherObese" =  MotherFatherObese - (MotherFatherNotObese + MotherObese)/2, levels = design_parent_obese)
+  contrast_list[[6]]  <- makeContrasts( "MotherFatherObese vs MotherFatherNotObese & FatherObese" =  MotherFatherObese - (MotherFatherNotObese + FatherObese)/2, levels = design_parent_obese)
+  contrast_list[[7]]  <- makeContrasts("MotherFatherObese vs MotherFatherNotObese & FatherObese & MotherObese" =  MotherFatherObese - (MotherFatherNotObese + FatherObese + MotherObese)/3, levels = design_parent_obese)
+  contrast_list[[8]]  <- makeContrasts("MotherFatherNotObese vs MotherObese" =  MotherFatherNotObese - MotherObese, levels = design_parent_obese)
+  contrast_list[[9]]  <- makeContrasts("MotherFatherNotObese vs FatherObese" =  MotherFatherNotObese - FatherObese, levels = design_parent_obese)
+  contrast_list[[10]] <- makeContrasts("MotherFatherNotObese vs FatherObese & MotherObese" = MotherFatherNotObese - (FatherObese + MotherObese)/2, levels = design_parent_obese)
+  contrast_list[[11]] <- makeContrasts( "MotherFatherNotObese vs MotherFatherObese & MotherObese" = MotherFatherNotObese - (MotherFatherObese + MotherObese)/2, levels = design_parent_obese)
+  contrast_list[[12]] <- makeContrasts("MotherFatherNotObese vs MotherFatherObese & FatherObese" = MotherFatherNotObese - (MotherFatherObese + FatherObese)/2, levels = design_parent_obese)
+  contrast_list[[13]] <- makeContrasts("MotherFatherNotObese vs MotherFatherObese & FatherObese & MotherObese" = MotherFatherNotObese - (MotherFatherObese + FatherObese + MotherObese)/3, levels = design_parent_obese)
+  contrast_list[[14]] <- makeContrasts("FatherObese vs MotherObese" = FatherObese - MotherObese, levels = design_parent_obese)
   
-  message("returning results list - check list names for top table identification.") 
+  message("\nApplying contrasts.") 
   
-  return(
-    list(
-      "MotherFatherObese" = topTable(fit_mfo_eb, p.value = 0.05, number = 50), 
-      "FatherObese" = topTable(fit_fob_eb, p.value = 0.05, number = 50),
-      "MotherObese" = topTable(fit_mob_eb, p.value = 0.05, number = 50), 
-      "MotherFatherNotObese" = topTable(fit_nob_eb, p.value = 0.05, number = 50)
-    )
-  )
+  # Create list and fill it with contrats applied to the initial model
+  contrast_model_list <- vector(mode = "list", length = length(contrast_names))
+  contrast_model_list <- lapply(contrast_list, function (x) contrasts.fit(fit_parent_obese, x))
+  contrast_model_list_eb <- lapply(contrast_model_list, function (x) eBayes(x))
+  contrast_model_list_tp <- lapply(contrast_model_list_eb, function (x) topTable(x, p.value = 0.05, number = 50))
+  
+  message("\nReturning results list - check list names for top table identification.") 
+  
+  # Setting names for identifying contrast among results
+  names(contrast_model_list_tp) <- contrast_names
+  return(contrast_model_list_tp)
 }
-
 
 # _5.) Color code for plotting ----
 
@@ -459,7 +485,7 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
        filename = "050_r_array_analysis__plot_pca_liat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# >>>> Continue here after 02.06.2023 ----
+# >>>> Continue here after 05.06.2023 ----
 
 # >>> Unfinished code section below ----
 
@@ -570,8 +596,6 @@ ggplot(FLAT_DT.m1) +
   facet_wrap(.~Tissue) + 
   theme_bw()
 
-# >>> Construction site below ----
-
 # 2.) DGE analysis using Limma ----
 
 # see DESeq2 tutorial at https://colauttilab.github.io/RNA-Seq_Tutorial.html
@@ -600,11 +624,17 @@ get_dge_for_offspring_obesity(EVAT)
 #  against all remaining three levels.
 
 FLAT_TopTableList <- get_dge_for_parent_obesity(FLAT)
-BRAT_TopTableList <- get_dge_for_parent_obesity(BRAT)
-LIAT_TopTableList <- get_dge_for_parent_obesity(LIAT)
+BRAT_TopTableList <- get_dge_for_parent_obesity(BRAT) # not many samples
+LIAT_TopTableList <- get_dge_for_parent_obesity(LIAT) # not many samples
 EVAT_TopTableList <- get_dge_for_parent_obesity(EVAT)
 
-# >>> Construction site above ---- 
+# >>> Unfinished code section below ----
+
+# __b) Choose to tables for further analysis ----
+
+
+# >>> Unfinished code section above ----
+
 
 # Experimental: DGE-analysis using GAMs - Investigate overall tissue specific expression differences based on obesity variables ----
 

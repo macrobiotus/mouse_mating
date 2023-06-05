@@ -324,7 +324,9 @@
 ## 05-06-2023
  
  * finished getting DGE results
- * commit ``
+ * commit `297fd3d6c49c0f155191d4a1749e6786bb12b6bc`
+ * improved DGE contarts definitions by implementing all possible contarstst
+ * choose PCA to choose from meaningful results
  
  
 ## Todo queue
@@ -334,8 +336,8 @@
     * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
     * [x] the latter is needed but possibly the former data is the only one available
   * [ ] revise script `050_r_array_analysis_ah.r`:
-    * [ ] **Day 1** - **use to inform DGE and write this down** inspect PCA signals  - overall and tissue specific - for obesity variables -> ***use to inform DGE** 
-    * [ ] **Day 2** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
+    * [ ] **Day 1** - **use to inform DGE and write this down** inspect PCA signals  - overall and tissue specific - for obesity variables -> ***use to choose from DGE results** 
+    * [x] **Day 2** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
     * [ ] **Day 3** - get annotations - implement KEGG and GO - tissue specific - for DGE results -> see Tamoxifen project 
     * [ ] **Day 4** - later: see how AH used upset plots 
     * [ ] **Day 5** -  get Isolate model code - email Elmar on how to model outcomes directly - on cluster from intensity data by tissue and gene
