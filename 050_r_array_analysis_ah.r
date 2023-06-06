@@ -760,9 +760,16 @@ ggplot(FLAT_DT.m1) +
 # **use this!** - Limma slides at  https://kasperdanielhansen.github.io/genbioconductor/html/limma.html
 
 
-# __a) Define limma models matching manuscript hypotheses ----
 
-# ____  Test for DGE among obese and non-obese offspring ----
+# >>>> Missing code section below - continue here after 6.6.2023 -----
+
+# __a) Test FLAT for tissue effect agains all othrs ----
+
+# As justified per PCA results 
+
+# >>>> Missing code section above -----
+
+# __b)  Test for DGE among obese and non-obese offspring ----
 
 # No PCA signal (see above) nor DGE detected across all tissues or in any tissue based on offsprings' obesity status
 
@@ -772,13 +779,11 @@ get_dge_for_offspring_obesity(LIAT)
 get_dge_for_offspring_obesity(SCAT)
 get_dge_for_offspring_obesity(EVAT)
 
-# __b) Define limma models partially matching manuscript hypotheses (fall-back) ----
-
-# ____  Test for DGE among offspring based on parental obesity ----
+# __c)  Test for DGE among offspring based on parental obesity ----
 
 # Defining and applying contrasts: One of "MotherFatherNotObese", "FatherObese", "MotherFatherObese", or "MotherObese" 
 #  against all remaining three levels.
-#  Comapre to PCA results - Expression is variable based on tissue, and within each tissue based on parental obesity
+#  Compare to PCA results, including coefficencts - Expression is variable based on tissue, and within each tissue based on parental obesity
 
 FLAT_TopTableList <- get_dge_for_parent_obesity(FLAT)
 BRAT_TopTableList <- get_dge_for_parent_obesity(BRAT) # not many samples
@@ -787,9 +792,9 @@ EVAT_TopTableList <- get_dge_for_parent_obesity(EVAT)
 
 # >>> Unfinished code section below - continue here after 6.6.2023 ----
 
-# __b) Choose to tables for further analysis ----
+# __d) Choose to tables for further analysis ----
 
-# see PCA results 
+# see PCA results - and coefficents - an comments above 
 
 
 # >>> Unfinished code section above ----

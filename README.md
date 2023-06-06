@@ -329,7 +329,7 @@
  * choose PCA to choose from meaningful results
  * commit `01ab2cb42c87f5eda63e240ca4653fd81fdb9c57`
 
-## 05-06-2023
+## 06-06-2023
  
  * consolidated PCA code
  * analysed PC1 and appended results notes to manuscript
@@ -337,7 +337,7 @@
  * commit `f1eff498fb52fd33c2ebca18f5bab080a72031c5`
  * inspected coefficients in PCA analysis
  * got annotations for ExpressionData
- * commit `` 
+ * commit `dc8a882bce0c9227c68097a06b80dff68b00e34e` 
  
 ## Todo queue
  
