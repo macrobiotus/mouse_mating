@@ -39,7 +39,9 @@ library("GCSscore")
 library("DESeq2")
 library("pheatmap")
 library("oligoClasses") # to annotate array target
-library("pd.clariom.s.mouse")
+library("pd.clariom.s.mouse") # get array sequences
+library("AnnoProbe")  # Annotate the Gene Symbols for Probes in Expression Array
+library("affycoretools") # Functions useful for those doing repetitive analyses with Affymetrix GeneChips
 # for GO analysis
 library("org.Hs.eg.db")
 library("limma")
@@ -304,24 +306,44 @@ hmcol <- rev(colorRampPalette(RColorBrewer::brewer.pal(n=11, name="RdBu"))(50))
 
 # Load and shape data ----
 
-# _1.) Loading normalized data as ExpressionSet type ----
+# _1.) Full data of all 4 tissues ----
+
+# __a.) Loading normalized data ----
 
 # Data are Clariom S mouse arrays
 # I removed strong outliers: A285_liver clustert zu bAT, A339_liver weit weg vom Rest
 
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/allTissues_normData.RData") # only if you are interested to look into the normalized data
 
+# __b.) Annotate data ----
+
+normData  <- annotateEset(normData, pd.clariom.s.mouse, type = "probeset")
+
+# __c.) Copy, store, and discard data ----
+
 # copy to stick to manuscript naming conventions
 FLAT <- normData; rm(normData)
 
 saveRDS(FLAT, file = here("rds_storage", "050_r_array_analysis__normalized_data.rds"))
 
-# _2.) Loading normalized data as ExpressionSet type - normalised individually for each tissue ----
+# _2.) Data normalised individually for each tissue ----
 
 # Ich habe die normalisierung für jedes Gewebe getrennt für die DGE Analysen gemacht, 
 # da dies genauer ist (Gewebe zu weit auseinander in PCA)
 
+# __a.) Loading normalized data ----
+
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/normData4DGE.RData") #für jedes Gewebe die normalisierten Daten
+
+# __b.) Annotate data ----
+
+bAT_normData    <- annotateEset(bAT_normData, pd.clariom.s.mouse, type = "probeset")
+ingWAT_normData <- annotateEset(ingWAT_normData, pd.clariom.s.mouse, type = "probeset")
+Liv_normData    <- annotateEset(Liv_normData, pd.clariom.s.mouse, type = "probeset")
+bAT_normData    <- annotateEset(bAT_normData, pd.clariom.s.mouse, type = "probeset")
+eWAT_normData   <- annotateEset(eWAT_normData, pd.clariom.s.mouse, type = "probeset")
+
+# __c.) Copy, store, and discard data ----
 
 # copy to stick to manuscript naming conventions - corrcted as per AH 25.05.2023
 BRAT <- bAT_normData; rm(bAT_normData)        # brown adipose tissue
@@ -401,11 +423,11 @@ PCA_EVAT <- get_principal_components(EVAT)
 
 # _2.) Get PC loadings for plots ----
 
-FLAT_PV <- get_percent_variation(FLAT_PC)
-BRAT_PV <- get_percent_variation(BRAT_PC)
-SCAT_PV <- get_percent_variation(SCAT_PC)
-LIAT_PV <- get_percent_variation(LIAT_PC)
-EVAT_PV <- get_percent_variation(EVAT_PC)
+FLAT_PV <- get_percent_variation(PCA_FLAT)
+BRAT_PV <- get_percent_variation(PCA_BRAT)
+SCAT_PV <- get_percent_variation(PCA_SCAT)
+LIAT_PV <- get_percent_variation(PCA_LIAT)
+EVAT_PV <- get_percent_variation(PCA_EVAT)
 
 
 # Plot Principal Component Analyses ----
@@ -567,14 +589,17 @@ model_intercept <- lm(PC1 ~  1, data = FLAT_md)
 
 # Testing effect of Tissue 
 model_tissue <- lm(PC1 ~  Tissue, data = FLAT_md)
+summary(model_tissue) # all tissues distinct
 anova(model_intercept, model_tissue) # ***Tissue highly significant structuring PC1*** 
 
 # Testing effect of ObesityLgcl 
 model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = FLAT_md)
+summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # offspring's obesity not significant structuring PC1 
 
 # Testing effect of ObeseParents 
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = FLAT_md)
+summary(model_obesity_par) # no signal
 anova(model_intercept, model_obesity_par) # parents's obesity not significant structuring PC1  
 
 
@@ -585,10 +610,12 @@ model_intercept <- lm(PC1 ~  1, data = BRAT_md)
 
 # Testing effect of ObesityLgcl 
 model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = BRAT_md)
+summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
 
 # Testing effect of ObeseParents 
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = BRAT_md)
+summary(model_obesity_par) # ObeseParentsMotherFatherObese ObeseParentsMotherObese, but not ObeseParentsFatherObese, distinct from Not Obese
 anova(model_intercept, model_obesity_par) # ***Parent's obesity significant structuring PC1, check in DGE***
 
 # _3.) Analyse SCAT's first PC ---- 
@@ -598,10 +625,12 @@ model_intercept <- lm(PC1 ~  1, data = SCAT_md)
 
 # Testing effect of ObesityLgcl 
 model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = SCAT_md)
+summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
 
 # Testing effect of ObeseParents 
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = SCAT_md)
+summary(model_obesity_par) # ObeseParentsMotherFatherObese ObeseParentsMotherObese, but not ObeseParentsFatherObese, distinct from Not Obese
 anova(model_intercept, model_obesity_par) # ***Parent's obesity weakly significant structuring PC1, check in DGE***
 
 # _4.) Analyse LIAT's first PC ---- 
@@ -611,10 +640,12 @@ model_intercept <- lm(PC1 ~  1, data = LIAT_md)
 
 # Testing effect of ObesityLgcl 
 model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = LIAT_md)
+summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
 
 # Testing effect of ObeseParents 
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = LIAT_md)
+summary(model_obesity_par) # All ObeseParentsMotherFatherObese ObeseParentsMotherObese, ObeseParentsFatherObese, distinct from Not Obese
 anova(model_intercept, model_obesity_par) # ***Parent's obesity weakly significant structuring PC1, check in DGE***
 
 # _5.) Analyse EVAT's first PC ---- 
@@ -624,10 +655,12 @@ model_intercept <- lm(PC1 ~  1, data = EVAT_md)
 
 # Testing effect of ObesityLgcl 
 model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = EVAT_md)
+summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
 
 # Testing effect of ObeseParents 
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = EVAT_md)
+summary(model_obesity_par) # All ObeseParentsMotherFatherObese ObeseParentsMotherObese, ObeseParentsFatherObese, slightly distinct from Not Obese
 anova(model_intercept, model_obesity_par) # ***Parent's obesity weakly significant structuring PC1, check in DGE***
 
 # Re-implement analysis of array intensities  ----
@@ -651,12 +684,7 @@ pData(BRAT) # metadata - use `ObesityLgcl` and possibly `ObeseParents`
 pData(BRAT) %>% dplyr::select(ObesityLgcl, ObeseParents) %>% table()
 exprs(BRAT)
 
-# __b) >>> Not done yet: Add array annoations to ExpreesionSet data ----
-
-# see https://bioconductor.org/packages/release/data/annotation/html/pd.clariom.s.mouse.html
-
-
-# __c) Covert expression set to data table for inspection ----
+# __b) Covert expression set to data table for inspection ----
 
 # see https://support.bioconductor.org/p/77432/
 # see GSCOre manual
@@ -680,7 +708,7 @@ FLAT_DT.m1 <- melt(FLAT_DT,  id.vars = c("Sample", "Animal", "Tissue", "AnimalSe
   variable.name = "ArrayTarget", value.name = "Intensity")
 
 
-# __d) Inspect expression data raw intensities distribution  ----
+# __c) Inspect expression data raw intensities distribution  ----
 
 # to check that equal amounts of data are available for comparison - they are not
 
@@ -702,7 +730,7 @@ ggplot(FLAT_DT.m1) +
   facet_wrap(.~Tissue) + 
   theme_bw()
 
-# __e) Inspect expression data raw intensities' density  ----
+# __d) Inspect expression data raw intensities' density  ----
 
 # To check if distributions are different - hopefully they are a bit - yes perhaps in EVAT when Mother and Father are not Obese
 
@@ -757,9 +785,11 @@ BRAT_TopTableList <- get_dge_for_parent_obesity(BRAT) # not many samples
 LIAT_TopTableList <- get_dge_for_parent_obesity(LIAT) # not many samples
 EVAT_TopTableList <- get_dge_for_parent_obesity(EVAT)
 
-# >>> Unfinished code section below ----
+# >>> Unfinished code section below - continue here after 6.6.2023 ----
 
 # __b) Choose to tables for further analysis ----
+
+# see PCA results 
 
 
 # >>> Unfinished code section above ----
