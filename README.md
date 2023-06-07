@@ -344,10 +344,12 @@
 
  * added methods summary text to main text scaffold
  * implemented tissue specific DGE
- * **next** select relavant DGEs sets based on PCA
+ * **started** selected relavant DGEs sets based on PCA - select contarts in a way as to get signal in comparison to all others!
  * **next** do an export volcano plots
  * **next** implement KEGG and GO analysis
- 
+ * commit `897b6fc4594fd2d469e5ee1ec1362f2ba855d485`
+ * updated todo and started selecting coefficients, saved
+  
 ## Todo queue
  
   * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
