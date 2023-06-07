@@ -150,7 +150,58 @@ get_model_prdictions_with_mgcv = function(model_fit, model_data, ...){
   return(model_data_with_predictions)
 }
 
-# Convenience function to test Offsprings obesity status in all tissue samples
+# Convenience function to define DGE among offsprings tissue types
+get_dge_for_individal_tissues =  function(ExpSet){
+  
+  message("Convenience function to test DGE for each tissue compred to all other tissues, only makes sense for a data set with different tissue type. Analysis of factor \"Tissue\" is hard-coded.")
+  
+  # Building initial models
+  message(paste0("\nUsing data set \"", deparse(substitute(ExpSet))), "\".")   
+  
+  
+  message("\nConsider whether the sample size is appropriate for DGE, you should have at least six samples per group:")
+  
+  pData(ExpSet) %>% dplyr::select(ObeseParents) %>% table() %>% print()
+  
+  # Building initial models
+  message("Building initial model.")   
+  
+  design_tissue_types <- model.matrix(~ ExpSet[["Tissue"]] - 1)
+  colnames(design_tissue_types) <-c("BRAT", "EVAT", "LIAT", "SCAT") 
+  fit_tissue_types <- lmFit(ExpSet, design_tissue_types)
+  
+  # Setting contrasts - likley not all will give results 
+  contrast_names <- c(
+    "BRAT vs EVAT & LIAT & SCAT",
+    "EVAT vs BRAT & LIAT & SCAT",
+    "LIAT vs EVAT & BRAT & SCAT",
+    "SCAT vs EVAT & BRAT & LIAT")
+  
+  message("\nDefining contrasts: \"", paste0(contrast_names, collapse = "\", \""), "\".") 
+  
+  contrast_list <- vector(mode = "list", length = length(contrast_names))
+  
+  contrast_list[[1]]  <- makeContrasts("BRAT vs EVAT & LIAT & SCAT" =  BRAT - (EVAT + LIAT + SCAT)/3, levels = design_tissue_types)
+  contrast_list[[2]]  <- makeContrasts("EVAT vs BRAT & LIAT & SCAT" =  EVAT - (BRAT + LIAT + SCAT)/3, levels = design_tissue_types)
+  contrast_list[[3]]  <- makeContrasts("LIAT vs EVAT & BRAT & SCAT" =  LIAT - (EVAT + BRAT + SCAT)/3, levels = design_tissue_types)
+  contrast_list[[4]]  <- makeContrasts("SCAT vs EVAT & BRAT & LIAT" =  SCAT - (EVAT + BRAT + LIAT)/3, levels = design_tissue_types)
+  
+  message("\nApplying contrasts.") 
+  
+  # Create list and fill it with contrats applied to the initial model
+  contrast_model_list <- vector(mode = "list", length = length(contrast_names))
+  contrast_model_list <- lapply(contrast_list, function (x) contrasts.fit(fit_tissue_types, x))
+  contrast_model_list_eb <- lapply(contrast_model_list, function (x) eBayes(x))
+  contrast_model_list_tp <- lapply(contrast_model_list_eb, function (x) topTable(x, p.value = 0.05, number = 50))
+  
+  message("\nReturning results list - check list names for top table identification.") 
+  
+  # Setting names for identifying contrast among results
+  names(contrast_model_list_tp) <- contrast_names
+  return(contrast_model_list_tp)
+}
+
+# Convenience function to test offsprings' obesity status in all tissue samples
 get_dge_for_offspring_obesity = function(ExpSet){
   
   # message
@@ -759,15 +810,11 @@ ggplot(FLAT_DT.m1) +
 # see Limma slides at https://s3.amazonaws.com/assets.datacamp.com/production/course_6456/slides/chapter1.pdf
 # **use this!** - Limma slides at  https://kasperdanielhansen.github.io/genbioconductor/html/limma.html
 
-
-
-# >>>> Missing code section below - continue here after 6.6.2023 -----
-
-# __a) Test FLAT for tissue effect agains all othrs ----
+# __a) Test FLAT for tissue effect again all others ----
 
 # As justified per PCA results 
 
-# >>>> Missing code section above -----
+FLAT_TissueTopTableList <- get_dge_for_individal_tissues(FLAT)
 
 # __b)  Test for DGE among obese and non-obese offspring ----
 
@@ -790,11 +837,11 @@ BRAT_TopTableList <- get_dge_for_parent_obesity(BRAT) # not many samples
 LIAT_TopTableList <- get_dge_for_parent_obesity(LIAT) # not many samples
 EVAT_TopTableList <- get_dge_for_parent_obesity(EVAT)
 
-# >>> Unfinished code section below - continue here after 6.6.2023 ----
+# >>> Unfinished code section below - continue here after 7.6.2023 ----
 
 # __d) Choose to tables for further analysis ----
 
-# see PCA results - and coefficents - an comments above 
+# see PCA results - and coefficients - an comments above 
 
 
 # >>> Unfinished code section above ----

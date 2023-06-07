@@ -338,6 +338,15 @@
  * inspected coefficients in PCA analysis
  * got annotations for ExpressionData
  * commit `dc8a882bce0c9227c68097a06b80dff68b00e34e` 
+ * commit after adding ToDo's to script `ebd8a371b8e586f7725f8f70f7b3bbc12a2baab3`
+
+## 07-06-2023
+
+ * added methods summary text to main text scaffold
+ * implemented tissue specific DGE
+ * **next** select relavant DGEs sets based on PCA
+ * **next** do an export volcano plots
+ * **next** implement KEGG and GO analysis
  
 ## Todo queue
  
@@ -348,7 +357,7 @@
   * [ ] revise script `050_r_array_analysis_ah.r`:
     * [x] **Day 1** - **use to inform DGE and write this down** inspect PCA signals  - overall and tissue specific - for obesity variables -> ***use to choose from DGE results** 
     * [x] **Day 2** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
-    * [ ] **Day 3** - get annotations - subset DGE results based on coefficenients -  implement KEGG and GO - tissue specific - for DGE results -> see Tamoxifen project 
+    * [ ] **Day 3** - ~~finish DGE~~ - subset DGE results based on coefficients - implement KEGG and GO - tissue specific - for DGE results -> see Tamoxifen project 
     * [ ] **Day 4** - later: see how AH used upset plots 
     * [ ] **Day 5** - check for errors among expression data annotation get Isolate model code - email Elmar on how to model outcomes directly - on cluster from intensity data by tissue and gene
   * check if this is still valid
