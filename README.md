@@ -349,7 +349,8 @@
  * **next** implement KEGG and GO analysis
  * commit `897b6fc4594fd2d469e5ee1ec1362f2ba855d485`
  * updated todo and started selecting coefficients, saved
-  
+ * commit `50cb1c3dab4d090bed823bcbee9e56e5327df89d`
+ 
 ## Todo queue
  
   * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
@@ -359,9 +360,13 @@
   * [ ] revise script `050_r_array_analysis_ah.r`:
     * [x] **Day 1** - **use to inform DGE and write this down** inspect PCA signals  - overall and tissue specific - for obesity variables -> ***use to choose from DGE results** 
     * [x] **Day 2** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
-    * [ ] **Day 3** - ~~finish DGE~~ - subset DGE results based on coefficients - implement KEGG and GO - tissue specific - for DGE results -> see Tamoxifen project 
-    * [ ] **Day 4** - later: see how AH used upset plots 
-    * [ ] **Day 5** - check for errors among expression data annotation get Isolate model code - email Elmar on how to model outcomes directly - on cluster from intensity data by tissue and gene
+    * [x] **Day 3** - ~~finished DGE~~
+    * [ ] **Day 4** - modify reference levels in modelling - structure models more - rewrite 
+    * [ ] **Day 5** - subset DGE results based on coefficients - isolate each contrats against all others
+    * [ ] **Day 6** - export volcano plots
+    * [ ] **Day 7** - implement KEGG and GO for all contrast see Tamoxifen project 
+    * [ ] **Day 8** - possibly implement upset plots 
+    * [ ] **Day 9** - check for errors among expression data annotation get Isolate model code - email Elmar on how to model outcomes directly - on cluster from intensity data by tissue and gene
   * check if this is still valid
     * [ ] establish correlations between varaibles `ObesityLgcl` and possibly also `ObeseParents` and intensities - 
        * [ ] consult ITLN1 paper to find how AH does it - or check teams chat for package
