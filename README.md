@@ -361,7 +361,8 @@
  * **next:** compile one well-labelled DGE list
  * commit `28bdb73a2dece35ca9c1252ca9bf088a4355ec72` 
  * commit prior to extending parents' DGE list `75ea960ab4b05a7ad80a50e6d3421604bb4395cc`
- * finsihed getting a list with all DGE results - saved workspace
+ * finished getting a list with all DGE results - saved workspace
+ * commit `42a6760c05611ecc375b85af55894eae33c4567a`
  
 ## Todo queue
  
