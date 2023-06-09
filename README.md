@@ -356,10 +356,10 @@
 
 ## 08-06-2023
 
- * read PC-Rgeression results and designe contrasts
+ * read PC-Regression results and designed contrasts
  * **next:** subset DGE results to noted contrasts 
  * **next:** compile one well-labelled DGE list
- * commit `` 
+ * commit `28bdb73a2dece35ca9c1252ca9bf088a4355ec72` 
  
 ## Todo queue
  

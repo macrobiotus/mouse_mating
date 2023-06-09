@@ -922,11 +922,12 @@ names(FLAT_Tissue_TopTableList)
 # needed are contrasts:
 # 1.) MotherFatherNotObese vs MotherFatherObese & MotherObese
 # 2.) MotherFatherObese vs MotherFatherNotObese & FatherObese
+
 # 3.) MotherObese vs MotherFatherNotObese & FatherObese
 # 4.) FatherObese vs MotherFatherObese & MotherObese
 
 names(BRAT_TopTableList)
-names(BRAT_TopTableList[c("foo")])
+names(BRAT_TopTableList[c(11, 6)])
 
 BRAT__Select_TopTableList <- BRAT_TopTableList[c("foo")] # selecting individual and compound contrasts
 
