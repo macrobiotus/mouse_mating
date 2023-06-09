@@ -360,6 +360,8 @@
  * **next:** subset DGE results to noted contrasts 
  * **next:** compile one well-labelled DGE list
  * commit `28bdb73a2dece35ca9c1252ca9bf088a4355ec72` 
+ * commit prior to extending parents' DGE list `75ea960ab4b05a7ad80a50e6d3421604bb4395cc`
+ * finsihed getting a list with all DGE results - saved workspace
  
 ## Todo queue
  
@@ -371,12 +373,12 @@
     * [x] **Day 1** - **use to inform DGE and write this down** inspect PCA signals  - overall and tissue specific - for obesity variables -> ***use to choose from DGE results** 
     * [x] **Day 2** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
     * [x] **Day 3** - ~~finished DGE~~ modify reference levels in modelling - structure models more - rewrite 
+    * [x] **Day 4** - subset DGE results based on coefficients - create long list with data set identifier an contrast in name
     
-    * [ ] **Day 1** - subset DGE results based on coefficients - create long list with data set identifier an contrast in name
-    * [ ] **Day 2** - implement Volcano plot for DGE list
-    * [ ] **Day 3** - implement KEGG and GO for all DGE list as done 
-    * [ ] **Day 4** - remove mixed group from code, text, and images
-    * [ ] **Day 5** - implement Upset plots 
+    * [ ] **Day 1** - implement Volcano plot for DGE list
+    * [ ] **Day 2** - implement KEGG and GO for all DGE list as done 
+    * [ ] **Day 3** - remove mixed group from code, text, and images
+    * [ ] **Day 4** - possibly Upset plots 
     * [ ] **someday** - possibly implement SWAMP instad of PCA
     
     * [ ] **Day 2** - check for errors among expression data annotation get Isolate model code - email Elmar on how to model outcomes directly - on cluster from intensity data by tissue and gene

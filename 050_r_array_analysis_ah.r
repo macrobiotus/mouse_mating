@@ -263,7 +263,11 @@ get_dge_for_parent_obesity = function(ExpSet){
     "MotherFatherNotObese vs MotherFatherObese & MotherObese", 
     "MotherFatherNotObese vs MotherFatherObese & FatherObese", 
     "MotherFatherNotObese vs MotherFatherObese & FatherObese & MotherObese",
-    "FatherObese vs MotherObese")
+    "FatherObese vs MotherObese",
+    "MotherObese vs MotherFatherNotObese & FatherObese",
+    "FatherObese vs MotherFatherObese & MotherObese",
+    "FatherObese vs  MotherFatherNotObese & MotherFatherObese", 
+    "MotherObese vs MotherFatherNotObese & MotherFatherObese")
   
   message("\nDefining contrasts: \"", paste0(contrast_names, collapse = "\", \""), "\".") 
   
@@ -283,6 +287,10 @@ get_dge_for_parent_obesity = function(ExpSet){
   contrast_list[[12]] <- makeContrasts("MotherFatherNotObese vs MotherFatherObese & FatherObese" = MotherFatherNotObese - (MotherFatherObese + FatherObese)/2, levels = design_parent_obese)
   contrast_list[[13]] <- makeContrasts("MotherFatherNotObese vs MotherFatherObese & FatherObese & MotherObese" = MotherFatherNotObese - (MotherFatherObese + FatherObese + MotherObese)/3, levels = design_parent_obese)
   contrast_list[[14]] <- makeContrasts("FatherObese vs MotherObese" = FatherObese - MotherObese, levels = design_parent_obese)
+  contrast_list[[15]] <- makeContrasts("MotherObese vs MotherFatherNotObese & FatherObese" = MotherObese - (MotherFatherNotObese + FatherObese)/2, levels = design_parent_obese)
+  contrast_list[[16]] <- makeContrasts("FatherObese vs MotherFatherObese & MotherObese" = FatherObese - (MotherFatherObese + MotherObese)/2, levels = design_parent_obese)
+  contrast_list[[17]] <- makeContrasts("FatherObese vs MotherFatherNotObese & MotherFatherObese" = MotherObese - (MotherFatherNotObese + MotherFatherObese)/2, levels = design_parent_obese)
+  contrast_list[[18]] <- makeContrasts("MotherObese vs MotherFatherNotObese & MotherFatherObese" = FatherObese - (MotherFatherNotObese + MotherFatherObese)/2, levels = design_parent_obese)
   
   message("\nApplying contrasts.") 
   
@@ -874,6 +882,7 @@ FLAT_Tissue_TopTableList <- get_dge_for_individal_tissues(FLAT)
 # __b)  Test for DGE among obese and non-obese offspring ----
 
 # No PCA signal (see above) nor DGE detected across all tissues or in any tissue based on offsprings' obesity status
+# No further work necessary - but report!
 
 get_dge_for_offspring_obesity(FLAT)
 get_dge_for_offspring_obesity(BRAT)
@@ -885,14 +894,13 @@ get_dge_for_offspring_obesity(EVAT)
 
 # Defining and applying contrasts: One of "MotherFatherNotObese", "FatherObese", "MotherFatherObese", or "MotherObese" 
 #  against all remaining three levels.
-#  Compare to PCA results, including coefficencts - Expression is variable based on tissue, and within each tissue based on parental obesity
+#  Compare to PCA results, including coefficients - Expression is variable based on tissue, and within each tissue based on parental obesity
 
-FLAT_TopTableList <- get_dge_for_parent_obesity(FLAT)
+FLAT_TopTableList <- get_dge_for_parent_obesity(FLAT) # no results and question doesn't really make sense
 BRAT_TopTableList <- get_dge_for_parent_obesity(BRAT) # not many samples
 LIAT_TopTableList <- get_dge_for_parent_obesity(LIAT) # not many samples
 EVAT_TopTableList <- get_dge_for_parent_obesity(EVAT)
 SCAT_TopTableList <- get_dge_for_parent_obesity(SCAT)
-
 
 # __d) Choose DGE results for further analyses ----
 
@@ -913,81 +921,96 @@ names(FLAT_Tissue_TopTableList)
 
 #  see DGE results - above
 
-# >>>> Continue here after 12.06.2023 - workspace saved with section "Snapshot environment" ----
-
-
 # ___ BRAT - keeping some contrasts defined by parents' obesity  ----
 
 # see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_brat.txt"
 # needed are contrasts:
 # 1.) MotherFatherNotObese vs MotherFatherObese & MotherObese
 # 2.) MotherFatherObese vs MotherFatherNotObese & FatherObese
-
 # 3.) MotherObese vs MotherFatherNotObese & FatherObese
 # 4.) FatherObese vs MotherFatherObese & MotherObese
 
-names(BRAT_TopTableList)
-names(BRAT_TopTableList[c(11, 6)])
+names(BRAT_TopTableList) # check available slots 
+names(BRAT_TopTableList[c(11, 6, 15, 16)]) # select slots corresponding to contrasts readout above 
 
-BRAT__Select_TopTableList <- BRAT_TopTableList[c("foo")] # selecting individual and compound contrasts
+BRAT__Select_TopTableList <- BRAT_TopTableList[c(11, 6, 15, 16)] # selecting individual and compound contrasts
+
 
 # ___ SCAT - keeping some contrasts defined by parents' obesity  ----
 
 # see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_scat.txt"
 # needed are contrasts:
-# 1.) ObeseParentsMotherFatherNotObese vs ObeseParentsFatherObese & ObeseParentsMotherFatherObese & ObeseParentsMotherObese
-# 2.) ObeseParentsFatherObese vs ObeseParentsMotherFatherNotObese
-# 3.) ObeseParentsMotherFatherObese vs ObeseParentsMotherFatherNotObese
-# 4.) ObeseParentsMotherObese vs ObeseParentsMotherFatherNotObese
+# 1.) MotherFatherNotObese vs FatherObese & MotherFatherObese & MotherObese - empty
+# 2.) FatherObese vs MotherFatherNotObese - empty
+# 3.) MotherFatherObese vs MotherFatherNotObese
+# 4.) MotherObese vs MotherFatherNotObese - empty
 
 
+names(SCAT_TopTableList) # check available slots 
+names(SCAT_TopTableList[c(13, 9, 4,8)]) # select slots corresponding to contrasts readout above 
 
-names(SCAT_TopTableList)
-names(SCAT_TopTableList[c("foo")]) 
-
-SCAT__Select_TopTableList <- SCAT_TopTableList[c("foo")]
-
+SCAT__Select_TopTableList <- SCAT_TopTableList[c(4)] # slot(s) 13,9,8 empty
 
 # ___ LIAT - keeping some contrasts defined by parents' obesity  ----
 
 #  see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_liat.txt"
 # needed are contrasts:
-# 1.) ObeseParentsMotherFatherNotObese vs ObeseParentsFatherObese & ObeseParentsMotherFatherObese & ObeseParentsMotherObese
-# 2.) ObeseParentsFatherObese vs  ObeseParentsMotherFatherNotObese & ObeseParentsMotherFatherObese
-# 3.) ObeseParentsMotherFatherObese vs   ObeseParentsMotherFatherNotObese & ObeseParentsFatherObese & ObeseParentsMotherObese
-# 4.) ObeseParentsMotherObese vs ObeseParentsMotherFatherNotObese & ObeseParentsMotherFatherObese
+# 1.) MotherFatherNotObese vs FatherObese & MotherFatherObese & MotherObese
+# 2.) MotherFatherObese vs   MotherFatherNotObese & FatherObese & MotherObese
+# 3.) FatherObese vs  MotherFatherNotObese & MotherFatherObese
+# 4.) MotherObese vs MotherFatherNotObese & MotherFatherObese
 
 names(LIAT_TopTableList)
-names(LIAT_TopTableList[c("foo")]) 
+names(LIAT_TopTableList[c(13, 7, 17, 18)]) 
 
-SCAT__Select_TopTableList <- SCAT_TopTableList[c("foo")] 
-
+LIAT__Select_TopTableList <- LIAT_TopTableList[c(13, 7, 17, 18 )] 
 
 # ___ EVAT - keeping some contrasts defined by parents' obesity  ----
 
 #  see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_evat.txt"
 # needed are contrasts:
-# 1.) ObeseParentsMotherFatherNotObese vs ObeseParentsFatherObese & ObeseParentsMotherObese & ObeseParentsMotherFatherObese
-# 2.) ObeseParentsMotherFatherObese vs  ObeseParentsMotherFatherNotObese
-# 3.) ObeseParentsFatherObese vs  ObeseParentsMotherFatherNotObese
-# 4.) ObeseParentsMotherObese vs  ObeseParentsMotherFatherNotObese
+# 1.) MotherFatherNotObese vs FatherObese & MotherObese & MotherFatherObese
+# 2.) MotherFatherObese vs  MotherFatherNotObese
+# 3.) FatherObese vs  MotherFatherNotObese - empty slot 
+# 4.) MotherObese vs  MotherFatherNotObese
 
 names(EVAT_TopTableList)
-names(EVAT_TopTableList[c("foo")]) # slot 9 is empty - even though significant in PCA - small sample size and big signal? - check!
+names(EVAT_TopTableList[c(13, 4, 8)]) 
 
-EVAT__Select_TopTableList <- EVAT_TopTableList[c("foo")] # slot 9 is empty - even though significant in PCA - small sample size? - check!
-
+EVAT__Select_TopTableList <- EVAT_TopTableList[c(13, 4, 9, 8)] # slot 9 is empty - even though significant in PCA - small sample size? - check!
 
 # __e)  Compile a well-labelled list with all DGE results  ----
 
-# ___[not done yet] ----
+names(FLAT_Tissue_TopTableList) <- paste0("FLAT - ", names(FLAT_Tissue_TopTableList))
+
+names(BRAT__Select_TopTableList) <- paste0("BRAT - ", names(BRAT__Select_TopTableList))
+names(SCAT__Select_TopTableList) <- paste0("SCAT - ", names(SCAT__Select_TopTableList))
+names(LIAT__Select_TopTableList) <- paste0("LIAT - ", names(LIAT__Select_TopTableList))
+names(EVAT__Select_TopTableList) <- paste0("EVAT - ", names(EVAT__Select_TopTableList))
+
+FULL_TopTableList <- c(
+  FLAT_Tissue_TopTableList,
+  BRAT__Select_TopTableList,
+  SCAT__Select_TopTableList,
+  LIAT__Select_TopTableList,
+  EVAT__Select_TopTableList
+)
+
+# receing a table with 17 solts, each conteaing DGE results fo a specific tisse and statistcially relavent contrasts
+names(FULL_TopTableList)
+
+# >>>> Continue here after 12.06.2023 - workspace saved with section "Snapshot environment" ----
 
 
-# __f)  Implement KEGG analysis  ----
+# __f)  Get Vulcano plots  ----
 
 # ___ [not done yet] ----
 
-# __g)  Implement GO analysis  ----
+# __g)  Implement KEGG analysis  ----
+
+# ___ [not done yet] ----
+
+# __h)  Implement GO analysis  ----
 
 # ___ [not done yet] ----
 
