@@ -350,6 +350,16 @@
  * commit `897b6fc4594fd2d469e5ee1ec1362f2ba855d485`
  * updated todo and started selecting coefficients, saved
  * commit `50cb1c3dab4d090bed823bcbee9e56e5327df89d`
+ * updated todo in README
+ * commit `7e9d17ca02f1e54fba1afda157b5b85ccd091c13`
+ * added testing all reference leveles in analysis of 1st components
+
+## 08-06-2023
+
+ * read PC-Rgeression results and designe contrasts
+ * **next:** subset DGE results to noted contrasts 
+ * **next:** compile one well-labelled DGE list
+ * commit `` 
  
 ## Todo queue
  
@@ -360,13 +370,16 @@
   * [ ] revise script `050_r_array_analysis_ah.r`:
     * [x] **Day 1** - **use to inform DGE and write this down** inspect PCA signals  - overall and tissue specific - for obesity variables -> ***use to choose from DGE results** 
     * [x] **Day 2** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
-    * [x] **Day 3** - ~~finished DGE~~
-    * [ ] **Day 4** - modify reference levels in modelling - structure models more - rewrite 
-    * [ ] **Day 5** - subset DGE results based on coefficients - isolate each contrats against all others
-    * [ ] **Day 6** - export volcano plots
-    * [ ] **Day 7** - implement KEGG and GO for all contrast see Tamoxifen project 
-    * [ ] **Day 8** - possibly implement upset plots 
-    * [ ] **Day 9** - check for errors among expression data annotation get Isolate model code - email Elmar on how to model outcomes directly - on cluster from intensity data by tissue and gene
+    * [x] **Day 3** - ~~finished DGE~~ modify reference levels in modelling - structure models more - rewrite 
+    
+    * [ ] **Day 1** - subset DGE results based on coefficients - create long list with data set identifier an contrast in name
+    * [ ] **Day 2** - implement Volcano plot for DGE list
+    * [ ] **Day 3** - implement KEGG and GO for all DGE list as done 
+    * [ ] **Day 4** - remove mixed group from code, text, and images
+    * [ ] **Day 5** - implement Upset plots 
+    * [ ] **someday** - possibly implement SWAMP instad of PCA
+    
+    * [ ] **Day 2** - check for errors among expression data annotation get Isolate model code - email Elmar on how to model outcomes directly - on cluster from intensity data by tissue and gene
   * check if this is still valid
     * [ ] establish correlations between varaibles `ObesityLgcl` and possibly also `ObeseParents` and intensities - 
        * [ ] consult ITLN1 paper to find how AH does it - or check teams chat for package

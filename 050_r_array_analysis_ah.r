@@ -635,22 +635,22 @@ SCAT_md <- get_model_data(SCAT, PCs_SCAT)
 
 # _1.) Analyse FLAT's first PC ---- 
 
-sink(file = paste0(here("plots/050_r_array_analysis__text_pca_flat.txt")))
+sink(file = paste0(here("plots/050_r_array_analysis__text_pca_FLAT.txt")))
 
-# Getting 0-model
+# __a) Getting 0-model ----
 model_intercept <- lm(PC1 ~  1, data = FLAT_md)
 
-# Testing effect of Tissue 
+# __b) Testing effect of "Tissue"  ----
 model_tissue <- lm(PC1 ~  Tissue, data = FLAT_md)
 summary(model_tissue) # all tissues distinct
 anova(model_intercept, model_tissue) # ***Tissue highly significant structuring PC1*** 
 
-# Testing effect of ObesityLgcl 
+# __c) Testing effect of "ObesityLgcl" ----
 model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = FLAT_md)
 summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # offspring's obesity not significant structuring PC1 
 
-# Testing effect of ObeseParents 
+# __d) Testing effect of "ObeseParents" ----
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = FLAT_md)
 summary(model_obesity_par) # no signal
 anova(model_intercept, model_obesity_par) # parents's obesity not significant structuring PC1  
@@ -659,77 +659,113 @@ sink()
 
 # _2.) Analyse BRAT's first PC ----  
 
-sink(file = paste0(here("plots/050_r_array_analysis__text_pca_brat.txt")))
+sink(file = paste0(here("plots/050_r_array_analysis__text_pca_BRAT.txt")))
 
-# Getting 0-model
+# __a) Getting 0-model ----
+
 model_intercept <- lm(PC1 ~  1, data = BRAT_md)
 
-# Testing effect of ObesityLgcl 
+# __b) Testing effect of "ObesityLgcl" ----
+
 model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = BRAT_md)
 summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
 
-# Testing effect of ObeseParents 
+# __c) Testing effect of "ObeseParents" ----
+
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = BRAT_md)
-summary(model_obesity_par) # ObeseParentsMotherFatherObese ObeseParentsMotherObese, but not ObeseParentsFatherObese, distinct from Not Obese
 anova(model_intercept, model_obesity_par) # ***Parent's obesity significant structuring PC1, check in DGE***
+
+# __d) Testing all reference levels of "ObeseParents" ----
+
+summary(lm(PC1 ~ ObeseParents, data = BRAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 1))))
+summary(lm(PC1 ~ ObeseParents, data = BRAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 2))))
+summary(lm(PC1 ~ ObeseParents, data = BRAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 3))))
+summary(lm(PC1 ~ ObeseParents, data = BRAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 4))))
 
 sink()
 
 # _3.) Analyse SCAT's first PC ---- 
 
-sink(file = paste0(here("plots/050_r_array_analysis__text_pca_scat.txt")))
+sink(file = paste0(here("plots/050_r_array_analysis__text_pca_SCAT.txt")))
 
-# Getting 0-model
+# __a) Getting 0-model ----
+
 model_intercept <- lm(PC1 ~  1, data = SCAT_md)
 
-# Testing effect of ObesityLgcl 
+# __b) Testing effect of "ObesityLgcl" ----
+
 model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = SCAT_md)
 summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
 
-# Testing effect of ObeseParents 
+# __c) Testing effect of "ObeseParents" ----
+
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = SCAT_md)
-summary(model_obesity_par) # ObeseParentsMotherFatherObese ObeseParentsMotherObese, but not ObeseParentsFatherObese, distinct from Not Obese
-anova(model_intercept, model_obesity_par) # ***Parent's obesity weakly significant structuring PC1, check in DGE***
+anova(model_intercept, model_obesity_par) # ***Parent's obesity significant structuring PC1, check in DGE***
+
+# __d) Testing all reference levels of "ObeseParents" ----
+
+summary(lm(PC1 ~ ObeseParents, data = SCAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 1))))
+summary(lm(PC1 ~ ObeseParents, data = SCAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 2))))
+summary(lm(PC1 ~ ObeseParents, data = SCAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 3))))
+summary(lm(PC1 ~ ObeseParents, data = SCAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 4))))
 
 sink()
 
 # _4.) Analyse LIAT's first PC ---- 
 
-sink(file = paste0(here("plots/050_r_array_analysis__text_pca_liat.txt")))
+sink(file = paste0(here("plots/050_r_array_analysis__text_pca_LIAT.txt")))
 
-# Getting 0-model
+# __a) Getting 0-model ----
+
 model_intercept <- lm(PC1 ~  1, data = LIAT_md)
 
-# Testing effect of ObesityLgcl 
+# __b) Testing effect of "ObesityLgcl" ----
+
 model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = LIAT_md)
 summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
 
-# Testing effect of ObeseParents 
+# __c) Testing effect of "ObeseParents" ----
+
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = LIAT_md)
-summary(model_obesity_par) # All ObeseParentsMotherFatherObese ObeseParentsMotherObese, ObeseParentsFatherObese, distinct from Not Obese
-anova(model_intercept, model_obesity_par) # ***Parent's obesity weakly significant structuring PC1, check in DGE***
+anova(model_intercept, model_obesity_par) # ***Parent's obesity significant structuring PC1, check in DGE***
+
+# __d) Testing all reference levels of "ObeseParents" ----
+
+summary(lm(PC1 ~ ObeseParents, data = LIAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 1))))
+summary(lm(PC1 ~ ObeseParents, data = LIAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 2))))
+summary(lm(PC1 ~ ObeseParents, data = LIAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 3))))
+summary(lm(PC1 ~ ObeseParents, data = LIAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 4))))
 
 sink()
 
 # _5.) Analyse EVAT's first PC ---- 
 
-sink(file = paste0(here("plots/050_r_array_analysis__text_pca_evat.txt")))
+sink(file = paste0(here("plots/050_r_array_analysis__text_pca_EVAT.txt")))
 
-# Getting 0-model
+# __a) Getting 0-model ----
+
 model_intercept <- lm(PC1 ~  1, data = EVAT_md)
 
-# Testing effect of ObesityLgcl 
+# __b) Testing effect of "ObesityLgcl" ----
+
 model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = EVAT_md)
 summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
 
-# Testing effect of ObeseParents 
+# __c) Testing effect of "ObeseParents" ----
+
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = EVAT_md)
-summary(model_obesity_par) # All ObeseParentsMotherFatherObese ObeseParentsMotherObese, ObeseParentsFatherObese, slightly distinct from Not Obese
-anova(model_intercept, model_obesity_par) # ***Parent's obesity weakly significant structuring PC1, check in DGE***
+anova(model_intercept, model_obesity_par) # ***Parent's obesity significant structuring PC1, check in DGE***
+
+# __d) Testing all reference levels of "ObeseParents" ----
+
+summary(lm(PC1 ~ ObeseParents, data = EVAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 1))))
+summary(lm(PC1 ~ ObeseParents, data = EVAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 2))))
+summary(lm(PC1 ~ ObeseParents, data = EVAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 3))))
+summary(lm(PC1 ~ ObeseParents, data = EVAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 4))))
 
 sink()
 
@@ -870,55 +906,89 @@ names(FLAT_Tissue_TopTableList)
 # ___ FLAT, BRAT, SCAT, LIAT, EVAT - not keeping any contrasts defined by offspring' obesity  ----
 
 #  see PCA results: 
-#          "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_brat.txt"
-#          "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_evat.txt"
-#          "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_liat.txt"
-#          "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_scat.txt"
+#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_brat.txt"
+#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_evat.txt"
+#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_liat.txt"
+#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_scat.txt"
 
 #  see DGE results - above
+
+# >>>> Continue here after 12.06.2023 - workspace saved with section "Snapshot environment" ----
 
 
 # ___ BRAT - keeping some contrasts defined by parents' obesity  ----
 
 # see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_brat.txt"
-# relevant are MotherFatherNotObese vs MotherFatherObese,  MotherFatherNotObese vs MotherObese
+# needed are contrasts:
+# 1.) MotherFatherNotObese vs MotherFatherObese & MotherObese
+# 2.) MotherFatherObese vs MotherFatherNotObese & FatherObese
+# 3.) MotherObese vs MotherFatherNotObese & FatherObese
+# 4.) FatherObese vs MotherFatherObese & MotherObese
 
 names(BRAT_TopTableList)
-names(BRAT_TopTableList[c(4, 8, 11)])
+names(BRAT_TopTableList[c("foo")])
 
-BRAT__Select_TopTableList <- BRAT_TopTableList[c(4, 8, 11)] # selecting individual and compound contrasts
+BRAT__Select_TopTableList <- BRAT_TopTableList[c("foo")] # selecting individual and compound contrasts
 
 # ___ SCAT - keeping some contrasts defined by parents' obesity  ----
 
 # see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_scat.txt"
-# in short relevant are MotherFatherNotObese vs each of the other ones
+# needed are contrasts:
+# 1.) ObeseParentsMotherFatherNotObese vs ObeseParentsFatherObese & ObeseParentsMotherFatherObese & ObeseParentsMotherObese
+# 2.) ObeseParentsFatherObese vs ObeseParentsMotherFatherNotObese
+# 3.) ObeseParentsMotherFatherObese vs ObeseParentsMotherFatherNotObese
+# 4.) ObeseParentsMotherObese vs ObeseParentsMotherFatherNotObese
+
+
 
 names(SCAT_TopTableList)
-names(SCAT_TopTableList[c(4, 8, 9, 13)]) # slots 8 and 9 and 13 are empty - even though significant in PCA - small sample size for minute deifferences ? -  check!
+names(SCAT_TopTableList[c("foo")]) 
 
-SCAT__Select_TopTableList <- SCAT_TopTableList[c(4)]
+SCAT__Select_TopTableList <- SCAT_TopTableList[c("foo")]
 
 
 # ___ LIAT - keeping some contrasts defined by parents' obesity  ----
 
 #  see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_liat.txt"
-#  results similar to SCAT results 
+# needed are contrasts:
+# 1.) ObeseParentsMotherFatherNotObese vs ObeseParentsFatherObese & ObeseParentsMotherFatherObese & ObeseParentsMotherObese
+# 2.) ObeseParentsFatherObese vs  ObeseParentsMotherFatherNotObese & ObeseParentsMotherFatherObese
+# 3.) ObeseParentsMotherFatherObese vs   ObeseParentsMotherFatherNotObese & ObeseParentsFatherObese & ObeseParentsMotherObese
+# 4.) ObeseParentsMotherObese vs ObeseParentsMotherFatherNotObese & ObeseParentsMotherFatherObese
 
 names(LIAT_TopTableList)
-names(LIAT_TopTableList[c(4, 8, 9, 13)]) # slots 8 and 9 are empty - even though significant in PCA - small sample size? - check!
+names(LIAT_TopTableList[c("foo")]) 
 
-SCAT__Select_TopTableList <- SCAT_TopTableList[c(4)] # slots 8 and 9 and 13 are empty - even though significant in PCA - small sample size? - check!
+SCAT__Select_TopTableList <- SCAT_TopTableList[c("foo")] 
 
 
 # ___ EVAT - keeping some contrasts defined by parents' obesity  ----
 
 #  see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_evat.txt"
-#  results similar to SCAT and LIAT results 
+# needed are contrasts:
+# 1.) ObeseParentsMotherFatherNotObese vs ObeseParentsFatherObese & ObeseParentsMotherObese & ObeseParentsMotherFatherObese
+# 2.) ObeseParentsMotherFatherObese vs  ObeseParentsMotherFatherNotObese
+# 3.) ObeseParentsFatherObese vs  ObeseParentsMotherFatherNotObese
+# 4.) ObeseParentsMotherObese vs  ObeseParentsMotherFatherNotObese
 
 names(EVAT_TopTableList)
-names(EVAT_TopTableList[c(4, 8, 9, 11)]) # slot 9 is empty - even though significant in PCA - small sample size and big signal? - check!
+names(EVAT_TopTableList[c("foo")]) # slot 9 is empty - even though significant in PCA - small sample size and big signal? - check!
 
-EVAT__Select_TopTableList <- EVAT_TopTableList[c(4, 8, 11)] # slot 9 is empty - even though significant in PCA - small sample size? - check!
+EVAT__Select_TopTableList <- EVAT_TopTableList[c("foo")] # slot 9 is empty - even though significant in PCA - small sample size? - check!
+
+
+# __e)  Compile a well-labelled list with all DGE results  ----
+
+# ___[not done yet] ----
+
+
+# __f)  Implement KEGG analysis  ----
+
+# ___ [not done yet] ----
+
+# __g)  Implement GO analysis  ----
+
+# ___ [not done yet] ----
 
 # Experimental: DGE-analysis using GAMs - Investigate overall tissue specific expression differences based on obesity variables ----
 
@@ -970,7 +1040,7 @@ save.image(file = here("scripts", "050_r_array_analysis_ah.RData"))
 renv::snapshot()
 
 
-# >>> Construction site -- continue here after 7.6.2023 ----
+# >>> Construction site or refernce code -- continue whn things above have been done ----
 
 # AH code below - Volcano plots ----
 
