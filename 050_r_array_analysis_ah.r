@@ -35,6 +35,7 @@ library(ggplot2)
 library(mgcv)
 library(parallel, lib.loc = "/Users/paul/Library/Caches/org.R-project.R/R/renv/sandbox/R-4.2/aarch64-apple-darwin20/84ba8b13")
 library(RVAideMemoire)
+library(EnhancedVolcano)
 library("GCSscore")
 library("DESeq2")
 library("pheatmap")
@@ -298,7 +299,7 @@ get_dge_for_parent_obesity = function(ExpSet){
   contrast_model_list <- vector(mode = "list", length = length(contrast_names))
   contrast_model_list <- lapply(contrast_list, function (x) contrasts.fit(fit_parent_obese, x))
   contrast_model_list_eb <- lapply(contrast_model_list, function (x) eBayes(x))
-  contrast_model_list_tp <- lapply(contrast_model_list_eb, function (x) topTable(x, p.value = 0.05, number = 50))
+  contrast_model_list_tp <- lapply(contrast_model_list_eb, function (x) topTable(x, p.value = 0.05, number = 200))
   
   message("\nReturning results list - check list names for top table identification.") 
   
@@ -357,6 +358,25 @@ get_model_data = function(ExprSet, PCsSet) {
   return(model_data)  
   
 }
+
+
+# Get Volcano plots
+get_one_volcanoplot <- function(TopTableListItem, TopTableListItemName){
+  
+  # transform input item for plotting function 
+  top_tibble <- as_tibble(TopTableListItem)
+  
+  # diagnostic
+  message(paste0("Creating plot for contrast: \"", TopTableListItemName, "\"", sep = ""))
+  
+  # get plot
+  evplot <- EnhancedVolcano(top_tibble, x = "logFC", y = "adj.P.Val", lab = top_tibble[["SYMBOL"]], title = TopTableListItemName)
+  
+  # return plot 
+  return(evplot)
+  
+}
+
 
 
 # _5.) Color code for plotting ----
@@ -975,9 +995,9 @@ LIAT__Select_TopTableList <- LIAT_TopTableList[c(13, 7, 17, 18 )]
 # 4.) MotherObese vs  MotherFatherNotObese
 
 names(EVAT_TopTableList)
-names(EVAT_TopTableList[c(13, 4, 8)]) 
+names(EVAT_TopTableList[c(13, 4, 9, 8)]) # slot 9 is empty - even though significant in PCA - small sample size? - check!
 
-EVAT__Select_TopTableList <- EVAT_TopTableList[c(13, 4, 9, 8)] # slot 9 is empty - even though significant in PCA - small sample size? - check!
+EVAT__Select_TopTableList <- EVAT_TopTableList[c(13, 4, 8)] 
 
 # __e)  Compile a well-labelled list with all DGE results  ----
 
@@ -996,14 +1016,17 @@ FULL_TopTableList <- c(
   EVAT__Select_TopTableList
 )
 
-# receing a table with 17 solts, each conteaing DGE results fo a specific tisse and statistcially relavent contrasts
+# receiving a table with 17 slots, each containing DGE results fo a specific tissue and statistically relavent contrasts
 names(FULL_TopTableList)
-
-# >>>> Continue here after 12.06.2023 - workspace saved with section "Snapshot environment" ----
 
 # __f)  Get Vulcano plots  ----
 
-# ___ [not done yet] ----
+FULL_TopTable_VolcanoPlots <- mapply(get_one_volcanoplot, TopTableListItem = FULL_TopTableList, TopTableListItemName = names(FULL_TopTableList), SIMPLIFY = FALSE)
+
+# >>>> Continue here after 12.06.2023 - work space saved with section "Snapshot environment" ----
+
+
+# ___ [not done yet: extract and arrange plots from list] ----
 
 # __g)  Implement KEGG analysis  ----
 
@@ -1062,8 +1085,10 @@ sessionInfo()
 save.image(file = here("scripts", "050_r_array_analysis_ah.RData"))
 renv::snapshot()
 
+# >>> Construction site or reference code -- continue when things above have been done ----
 
-# >>> Construction site or refernce code -- continue whn things above have been done ----
+
+volcanoplot
 
 # AH code below - Volcano plots ----
 

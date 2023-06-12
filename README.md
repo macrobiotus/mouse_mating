@@ -362,8 +362,13 @@
  * commit `28bdb73a2dece35ca9c1252ca9bf088a4355ec72` 
  * commit prior to extending parents' DGE list `75ea960ab4b05a7ad80a50e6d3421604bb4395cc`
  * finished getting a list with all DGE results - saved workspace
- * commit `42a6760c05611ecc375b85af55894eae33c4567a`
- 
+ * commit `58bf6dbc4989ca2e16a0a336860db5b534b891f0`
+
+## 12-06-2023
+
+ * started on Volcano plots
+ * commit `58bf6dbc4989ca2e16a0a336860db5b534b891f0`
+  
 ## Todo queue
  
   * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
