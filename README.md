@@ -368,6 +368,13 @@
 
  * started on Volcano plots
  * commit `58bf6dbc4989ca2e16a0a336860db5b534b891f0`
+
+## 14-06-2023
+
+ * adjusting and saving Volcano plots
+ * continue by volcano updating plots in manuscript
+ * from `/Users/paul/Documents/HM_MouseMating/analysis/plots`
+ * commit ``
   
 ## Todo queue
  
@@ -381,7 +388,7 @@
     * [x] **Day 3** - ~~finished DGE~~ modify reference levels in modelling - structure models more - rewrite 
     * [x] **Day 4** - subset DGE results based on coefficients - create long list with data set identifier an contrast in name
     
-    * [ ] **Day 1** - implement Volcano plot for DGE list
+    * [ ] **Day 1** - implement Volcano plot for DGE list - adjust thresholds
     * [ ] **Day 2** - implement KEGG and GO for all DGE list as done 
     * [ ] **Day 3** - remove mixed group from code, text, and images
     * [ ] **Day 4** - possibly Upset plots 

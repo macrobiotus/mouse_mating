@@ -279,19 +279,19 @@ get_dge_for_parent_obesity = function(ExpSet){
   contrast_list[[3]]  <- makeContrasts("MotherFatherObese vs FatherObese & MotherObese" =  MotherFatherObese - (FatherObese + MotherObese)/2 , levels = design_parent_obese)
   contrast_list[[4]]  <- makeContrasts("MotherFatherObese vs MotherFatherNotObese" =  MotherFatherObese - MotherFatherNotObese, levels = design_parent_obese)
   contrast_list[[5]]  <- makeContrasts("MotherFatherObese vs MotherFatherNotObese & MotherObese" =  MotherFatherObese - (MotherFatherNotObese + MotherObese)/2, levels = design_parent_obese)
-  contrast_list[[6]]  <- makeContrasts( "MotherFatherObese vs MotherFatherNotObese & FatherObese" =  MotherFatherObese - (MotherFatherNotObese + FatherObese)/2, levels = design_parent_obese)
+  contrast_list[[6]]  <- makeContrasts("MotherFatherObese vs MotherFatherNotObese & FatherObese" =  MotherFatherObese - (MotherFatherNotObese + FatherObese)/2, levels = design_parent_obese)
   contrast_list[[7]]  <- makeContrasts("MotherFatherObese vs MotherFatherNotObese & FatherObese & MotherObese" =  MotherFatherObese - (MotherFatherNotObese + FatherObese + MotherObese)/3, levels = design_parent_obese)
   contrast_list[[8]]  <- makeContrasts("MotherFatherNotObese vs MotherObese" =  MotherFatherNotObese - MotherObese, levels = design_parent_obese)
   contrast_list[[9]]  <- makeContrasts("MotherFatherNotObese vs FatherObese" =  MotherFatherNotObese - FatherObese, levels = design_parent_obese)
   contrast_list[[10]] <- makeContrasts("MotherFatherNotObese vs FatherObese & MotherObese" = MotherFatherNotObese - (FatherObese + MotherObese)/2, levels = design_parent_obese)
-  contrast_list[[11]] <- makeContrasts( "MotherFatherNotObese vs MotherFatherObese & MotherObese" = MotherFatherNotObese - (MotherFatherObese + MotherObese)/2, levels = design_parent_obese)
+  contrast_list[[11]] <- makeContrasts("MotherFatherNotObese vs MotherFatherObese & MotherObese" = MotherFatherNotObese - (MotherFatherObese + MotherObese)/2, levels = design_parent_obese)
   contrast_list[[12]] <- makeContrasts("MotherFatherNotObese vs MotherFatherObese & FatherObese" = MotherFatherNotObese - (MotherFatherObese + FatherObese)/2, levels = design_parent_obese)
   contrast_list[[13]] <- makeContrasts("MotherFatherNotObese vs MotherFatherObese & FatherObese & MotherObese" = MotherFatherNotObese - (MotherFatherObese + FatherObese + MotherObese)/3, levels = design_parent_obese)
   contrast_list[[14]] <- makeContrasts("FatherObese vs MotherObese" = FatherObese - MotherObese, levels = design_parent_obese)
   contrast_list[[15]] <- makeContrasts("MotherObese vs MotherFatherNotObese & FatherObese" = MotherObese - (MotherFatherNotObese + FatherObese)/2, levels = design_parent_obese)
   contrast_list[[16]] <- makeContrasts("FatherObese vs MotherFatherObese & MotherObese" = FatherObese - (MotherFatherObese + MotherObese)/2, levels = design_parent_obese)
-  contrast_list[[17]] <- makeContrasts("FatherObese vs MotherFatherNotObese & MotherFatherObese" = MotherObese - (MotherFatherNotObese + MotherFatherObese)/2, levels = design_parent_obese)
-  contrast_list[[18]] <- makeContrasts("MotherObese vs MotherFatherNotObese & MotherFatherObese" = FatherObese - (MotherFatherNotObese + MotherFatherObese)/2, levels = design_parent_obese)
+  contrast_list[[17]] <- makeContrasts("FatherObese vs MotherFatherNotObese & MotherFatherObese" = FatherObese - (MotherFatherNotObese + MotherFatherObese)/2, levels = design_parent_obese)
+  contrast_list[[18]] <- makeContrasts("MotherObese vs MotherFatherNotObese & MotherFatherObese" = MotherObese - (MotherFatherNotObese + MotherFatherObese)/2, levels = design_parent_obese)
   
   message("\nApplying contrasts.") 
   
@@ -299,7 +299,7 @@ get_dge_for_parent_obesity = function(ExpSet){
   contrast_model_list <- vector(mode = "list", length = length(contrast_names))
   contrast_model_list <- lapply(contrast_list, function (x) contrasts.fit(fit_parent_obese, x))
   contrast_model_list_eb <- lapply(contrast_model_list, function (x) eBayes(x))
-  contrast_model_list_tp <- lapply(contrast_model_list_eb, function (x) topTable(x, p.value = 0.05, number = 200))
+  contrast_model_list_tp <- lapply(contrast_model_list_eb, function (x) topTable(x, p.value = 0.05, number = Inf))
   
   message("\nReturning results list - check list names for top table identification.") 
   
@@ -370,7 +370,7 @@ get_one_volcanoplot <- function(TopTableListItem, TopTableListItemName){
   message(paste0("Creating plot for contrast: \"", TopTableListItemName, "\"", sep = ""))
   
   # get plot
-  evplot <- EnhancedVolcano(top_tibble, x = "logFC", y = "adj.P.Val", lab = top_tibble[["SYMBOL"]], title = TopTableListItemName)
+  evplot <- EnhancedVolcano(top_tibble, pCutoff = 0.05, x = "logFC", y = "adj.P.Val", lab = top_tibble[["SYMBOL"]], title = TopTableListItemName, subtitle = NULL)
   
   # return plot 
   return(evplot)
@@ -1019,11 +1019,43 @@ FULL_TopTableList <- c(
 # receiving a table with 17 slots, each containing DGE results fo a specific tissue and statistically relavent contrasts
 names(FULL_TopTableList)
 
-# __f)  Get Vulcano plots  ----
+# __f)  Get, assort, arrange, and save Vulcano plots  ----
 
-FULL_TopTable_VolcanoPlots <- mapply(get_one_volcanoplot, TopTableListItem = FULL_TopTableList, TopTableListItemName = names(FULL_TopTableList), SIMPLIFY = FALSE)
+FULL_VolcanoPlots <- mapply(get_one_volcanoplot, TopTableListItem = FULL_TopTableList, TopTableListItemName = names(FULL_TopTableList), SIMPLIFY = FALSE)
 
-# >>>> Continue here after 12.06.2023 - work space saved with section "Snapshot environment" ----
+FLAT_VolcanoPlots <- FULL_VolcanoPlots[grep("FLAT", names(FULL_VolcanoPlots))]
+BRAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^BRAT", names(FULL_VolcanoPlots))]
+SCAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^SCAT", names(FULL_VolcanoPlots))]
+LIAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^LIAT", names(FULL_VolcanoPlots))]
+EVAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^EVAT", names(FULL_VolcanoPlots))]
+
+FLAT_VolcanoPlotsComposite <- ggarrange(plotlist = FLAT_VolcanoPlots, ncol = 2, nrow = 2, labels = "auto")
+BRAT_VolcanoPlotsComposite <- ggarrange(plotlist = BRAT_VolcanoPlots, ncol = 2, nrow = 2, labels = "auto")
+SCAT_VolcanoPlotsComposite <- ggarrange(plotlist = SCAT_VolcanoPlots, ncol = 1, nrow = 1, labels = NULL)
+LIAT_VolcanoPlotsComposite <- ggarrange(plotlist = LIAT_VolcanoPlots, ncol = 2, nrow = 2, labels = "auto")
+EVAT_VolcanoPlotsComposite <- ggarrange(plotlist = EVAT_VolcanoPlots, ncol = 3, nrow = 1, labels = "auto")
+
+ggsave(plot = FLAT_VolcanoPlotsComposite, path = here("plots"), 
+       filename = "050_r_array_analysis__plot_volcano_flat.pdf",  
+       width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+
+ggsave(plot = BRAT_VolcanoPlotsComposite, path = here("plots"), 
+       filename = "050_r_array_analysis__plot_volcano_brat.pdf",  
+       width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 3)
+
+ggsave(plot = SCAT_VolcanoPlotsComposite, path = here("plots"), 
+       filename = "050_r_array_analysis__plot_volcano_scat.pdf",  
+       width = 180, height = 150, units = "mm", dpi = 150,  limitsize = TRUE, scale = 1.3)
+
+ggsave(plot = LIAT_VolcanoPlotsComposite, path = here("plots"), 
+       filename = "050_r_array_analysis__plot_volcano_liat.pdf",  
+       width = 180, height = 200, units = "mm", dpi = 200,  limitsize = TRUE, scale = 3)
+
+ggsave(plot = EVAT_VolcanoPlotsComposite, path = here("plots"), 
+       filename = "050_r_array_analysis__plot_volcano_evat.pdf",  
+       width = 300, height = 125, units = "mm", dpi = 200,  limitsize = TRUE, scale = 3)
+
+# >>>> Continue here after 14.06.2023 - work space saved with section "Snapshot environment" ----
 
 
 # ___ [not done yet: extract and arrange plots from list] ----
