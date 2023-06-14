@@ -374,7 +374,7 @@
  * adjusting and saving Volcano plots
  * continue by volcano updating plots in manuscript
  * from `/Users/paul/Documents/HM_MouseMating/analysis/plots`
- * commit ``
+ * commit `15301aa02dfb640a9ebe83b5ccd4d8f6275d38ae`
   
 ## Todo queue
  
@@ -387,14 +387,13 @@
     * [x] **Day 2** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
     * [x] **Day 3** - ~~finished DGE~~ modify reference levels in modelling - structure models more - rewrite 
     * [x] **Day 4** - subset DGE results based on coefficients - create long list with data set identifier an contrast in name
+    * [x] **Day 5** - implement Volcano plot for DGE list - adjust thresholds
     
-    * [ ] **Day 1** - implement Volcano plot for DGE list - adjust thresholds
-    * [ ] **Day 2** - implement KEGG and GO for all DGE list as done 
-    * [ ] **Day 3** - remove mixed group from code, text, and images
-    * [ ] **Day 4** - possibly Upset plots 
+    * [ ] **Day 6** - implement KEGG and GO for all DGE list as done 
+    * [ ] **Day 7** - remove mixed group from code, text, and images
+    * [ ] **Day 8** - possibly Upset plots 
     * [ ] **someday** - possibly implement SWAMP instad of PCA
-    
-    * [ ] **Day 2** - check for errors among expression data annotation get Isolate model code - email Elmar on how to model outcomes directly - on cluster from intensity data by tissue and gene
+    * [ ] **someday** - check for errors among expression data annotation get Isolate model code - email Elmar on how to model outcomes directly - on cluster from intensity data by tissue and gene
   * check if this is still valid
     * [ ] establish correlations between varaibles `ObesityLgcl` and possibly also `ObeseParents` and intensities - 
        * [ ] consult ITLN1 paper to find how AH does it - or check teams chat for package
