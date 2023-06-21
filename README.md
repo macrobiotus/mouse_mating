@@ -374,7 +374,14 @@
  * adjusting and saving Volcano plots
  * continue by volcano updating plots in manuscript
  * from `/Users/paul/Documents/HM_MouseMating/analysis/plots`
- * commit `15301aa02dfb640a9ebe83b5ccd4d8f6275d38ae`
+ * commit `e41733678e8c6f30de6952ad7b5b290ed3c36d2d`
+
+## 21-06-2023
+
+ * continuing in `050_r_array_analysis_ah.r`
+ * implemented KEGG and GO analysis
+ * 
+
   
 ## Todo queue
  
@@ -382,18 +389,24 @@
     * [x] parental diet conforms exactly with dietary variables considered by AH for array data
     * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
     * [x] the latter is needed but possibly the former data is the only one available
-  * [ ] revise script `050_r_array_analysis_ah.r`:
+  
+  * [x] revise script `050_r_array_analysis_ah.r`:
     * [x] **Day 1** - **use to inform DGE and write this down** inspect PCA signals  - overall and tissue specific - for obesity variables -> ***use to choose from DGE results** 
     * [x] **Day 2** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
-    * [x] **Day 3** - ~~finished DGE~~ modify reference levels in modelling - structure models more - rewrite 
+    * [x] **Day 3** - modify reference levels in modelling - structure models more - rewrite 
     * [x] **Day 4** - subset DGE results based on coefficients - create long list with data set identifier an contrast in name
     * [x] **Day 5** - implement Volcano plot for DGE list - adjust thresholds
-    
-    * [ ] **Day 6** - implement KEGG and GO for all DGE list as done 
-    * [ ] **Day 7** - remove mixed group from code, text, and images
-    * [ ] **Day 8** - possibly Upset plots 
+    * [x] **Day 6** - implement KEGG and GO for all DGE list as done 
+
+ * adjust scripts `020_r_h1.r`, `030_r_h2.r`, and `040_r_h3.r`:
+    * [ ] **Day 1** - possibly re-encode group, remove mixed group from code, text, and images
+ 
+ * [ ] extend script `050_r_array_analysis_ah.r`:
+    * [ ] **someday** - possibly Upset plots
+    * [ ] **someday** - possibly network plots
     * [ ] **someday** - possibly implement SWAMP instad of PCA
     * [ ] **someday** - check for errors among expression data annotation get Isolate model code - email Elmar on how to model outcomes directly - on cluster from intensity data by tissue and gene
+  
   * check if this is still valid
     * [ ] establish correlations between varaibles `ObesityLgcl` and possibly also `ObeseParents` and intensities - 
        * [ ] consult ITLN1 paper to find how AH does it - or check teams chat for package
@@ -404,6 +417,7 @@
     * [ ] **possibly** implement including other variables instead of body weight body fat
     * [ ] **possibly** use AH's dietary varibles but recode to obesity variable
     * [ ] **possibly** use AH's dietary variables neat
+  
   * [ ] in manuscript
     * [ ] add IMISE consulting personell to acknowledgements:
       * **Maciej Rosolowski** <maciej.rosolowski@imise.uni-leipzig.de>

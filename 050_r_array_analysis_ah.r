@@ -44,7 +44,7 @@ library("pd.clariom.s.mouse") # get array sequences
 library("AnnoProbe")  # Annotate the Gene Symbols for Probes in Expression Array
 library("affycoretools") # Functions useful for those doing repetitive analyses with Affymetrix GeneChips
 # for GO analysis
-library("org.Hs.eg.db")
+library("org.Mm.eg.db")
 library("limma")
 library(stringr)
 library(tidyr)
@@ -377,6 +377,90 @@ get_one_volcanoplot <- function(TopTableListItem, TopTableListItemName){
   
 }
 
+# Lookup Entrez IDs
+get_entrez_ids = function(TopTable) {
+  
+  require("org.Mm.eg.db")
+  require("biomaRt")
+  
+  message(paste0("Looking up Entrez IDs for data set."))  
+  
+  # create target object
+  TopTableAppended <- TopTable
+  
+  # lookup Entrez ID from RefSeq ID and store both columns for separtaion
+  translations <- bitr(geneID = TopTable[["ID"]], fromType = "REFSEQ", toType = "ENTREZID", OrgDb = "org.Mm.eg.db", drop = FALSE)
+  
+  # Move second column to traget obeject 
+  TopTableAppended[["ENTREZ"]] <- translations[ , 2]
+          
+  return(TopTableAppended)
+          
+}
+
+get_one_kegg_plot <- function(TopTableListItem, TopTableListItemName){
+  
+  require("clusterProfiler")
+  require("enrichplot")
+  
+  # diagnostic
+  message(paste0("Creating KEGG plot for data set: \"", TopTableListItemName, "\".", sep = ""))
+  
+  # lookup kegg pathways
+  kegg_result <- enrichKEGG(gene = TopTableListItem$ENTREZ, keyType = 'ncbi-geneid',  organism = 'mmu')  # ncib-proteinid is not supported for mmu ...
+  
+  # get dipslay item
+  kegg_plot <- enrichplot::dotplot(kegg_result, title =  paste0("KEGG pathways of data set: \"", TopTableListItemName, "\"", sep = ""), showCategory=15)
+  
+  # return plot 
+  return(kegg_plot)
+  
+}
+
+get_one_go_plot <- function(TopTableListItem, TopTableListItemName){
+  
+  require("clusterProfiler")
+  require("enrichplot")
+  
+  # diagnostic
+  message(paste0("Creating GO plot for data set: \"", TopTableListItemName, "\".", sep = ""))
+  
+  # lookup go pathways
+  go_result <- enrichGO(gene = TopTableListItem$ENTREZ, keyType = "ENTREZID",  OrgDb = "org.Mm.eg.db", ont = "all")  # ncib-proteinid is not supported for mmu ...
+  
+  # get dipslay item
+  go_plot <- enrichplot::dotplot(go_result, split="ONTOLOGY", title =  paste0("GO terms of data set: \"", TopTableListItemName, "\"", sep = ""), showCategory=15) + facet_grid(ONTOLOGY ~ ., scale="free")
+  
+  # return plot 
+  return(go_plot)
+  
+}
+
+save_kegg_plots <- function(ggplot_list_item, ggplot_list_item_name){
+  
+  require(ggplot2)
+  
+  filename <- gsub("[^[:alnum:][:space:]]","", ggplot_list_item_name)
+  filename <- gsub("\\s+","_", filename)
+  filename <- paste0("050_r_array_analysis__plot_kegg_", filename, ".pdf", collapse = "_")
+  
+  message(filename)
+  try(ggsave(plot = ggplot_list_item, path = here("plots"), filename, scale = 0.75))
+  
+}
+
+save_go_plots <- function(ggplot_list_item, ggplot_list_item_name){
+  
+  require(ggplot2)
+  
+  filename <- gsub("[^[:alnum:][:space:]]","", ggplot_list_item_name)
+  filename <- gsub("\\s+","_", filename)
+  filename <- paste0("050_r_array_analysis__plot_go_", filename, ".pdf", collapse = "_")
+  
+  message(filename)
+  try(ggsave(plot = ggplot_list_item, path = here("plots"), filename, scale = 0.75, height = 800, width = 400, units = c("mm")))
+  
+}
 
 
 # _5.) Color code for plotting ----
@@ -886,12 +970,14 @@ ggplot(FLAT_DT.m1) +
   facet_wrap(.~Tissue) + 
   theme_bw()
 
-# 2.) DGE analysis using Limma ----
+# _2.) DGE analysis using Limma ----
 
 # see DESeq2 tutorial at https://colauttilab.github.io/RNA-Seq_Tutorial.html
 # see GCSCore tutaorial at https://www.bioconductor.org/packages/release/bioc/vignettes/GCSscore/inst/doc/GCSscore.pdf
 # see Limma slides at https://s3.amazonaws.com/assets.datacamp.com/production/course_6456/slides/chapter1.pdf
 # **use this!** - Limma slides at  https://kasperdanielhansen.github.io/genbioconductor/html/limma.html
+# see also here for LFC shrinkage and genral procedure https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/08_practical_DE.pdf
+# see here why shrinking LFCs is considered unenecssary by the limma authors - https://support.bioconductor.org/p/100804/
 
 # __a) Test for DGE for each tissue against all others, using FLAT ----
 
@@ -1055,18 +1141,38 @@ ggsave(plot = EVAT_VolcanoPlotsComposite, path = here("plots"),
        filename = "050_r_array_analysis__plot_volcano_evat.pdf",  
        width = 300, height = 125, units = "mm", dpi = 200,  limitsize = TRUE, scale = 3)
 
-# >>>> Continue here after 14.06.2023 - work space saved with section "Snapshot environment" ----
+
+# _3.) Gene Set Enrichment Analysis (GSEA) ----
+
+# the following resources are susefule 
+# step-by-step GSEA https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/08_practical_DE.pdf
+# step-by-step GSEA https://bioinformatics-core-shared-training.github.io/cruk-summer-school-2018/RNASeq2018/html/06_Gene_set_testing.nb.html
+# why shrinkage of LFCs is not necessary, or already done https://support.bioconductor.org/p/100804/
+
+  # check test data - possibly used tissue-specific data sets
+
+# __a) Lookup Entrez ID for Clusterprofiler ----
+
+FULL_TopTableListAppended <- lapply(FULL_TopTableList, get_entrez_ids) 
+
+# __b) Get plots of KEEG pathways ----
+
+FULL_KeggPlots <- mapply(get_one_kegg_plot, TopTableListItem = FULL_TopTableListAppended, TopTableListItemName = names(FULL_TopTableListAppended), SIMPLIFY = FALSE)
+names(FULL_KeggPlots)
+
+# __c) Save plots of KEEG pathways ----
+
+mapply(save_kegg_plots, ggplot_list_item = FULL_KeggPlots, ggplot_list_item_name = names(FULL_KeggPlots), SIMPLIFY = FALSE)
 
 
-# ___ [not done yet: extract and arrange plots from list] ----
+# __d) Implement GO analysis ----
 
-# __g)  Implement KEGG analysis  ----
+FULL_GoPlots <- mapply(get_one_go_plot, TopTableListItem = FULL_TopTableListAppended, TopTableListItemName = names(FULL_TopTableListAppended), SIMPLIFY = FALSE)
+names(FULL_GoPlots)
 
-# ___ [not done yet] ----
+# __e) Save plots of GO pathways ----
 
-# __h)  Implement GO analysis  ----
-
-# ___ [not done yet] ----
+mapply(save_go_plots, ggplot_list_item = FULL_GoPlots, ggplot_list_item_name = names(FULL_KeggPlots), SIMPLIFY = FALSE)
 
 # Experimental: DGE-analysis using GAMs - Investigate overall tissue specific expression differences based on obesity variables ----
 
@@ -1117,10 +1223,7 @@ sessionInfo()
 save.image(file = here("scripts", "050_r_array_analysis_ah.RData"))
 renv::snapshot()
 
-# >>> Construction site or reference code -- continue when things above have been done ----
-
-
-volcanoplot
+# >>> Reference code from AH ----
 
 # AH code below - Volcano plots ----
 
@@ -1174,9 +1277,8 @@ ggplot(data=resultTable, aes(x=logFC, y=-log10(pVal))) +
           axis.title.y = element_text(size = 15))
 ggsave(paste0("Results_05.23/",para2,"_Volcano.pdf"),width = 6, height = 6)
 
-# >>> Construction and old code code below: Upset plot  ----
+# AH code below - UpSet plots ----
 
- 
 # Upset plots ############################# 
 #hier am Beispiel für Liver
 para <- "Liver"
