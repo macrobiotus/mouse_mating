@@ -294,7 +294,7 @@ mice_f1_modeled_data_with_rna_seq_data
 saveRDS(mice_f1_model_data, file = here("rds_storage", "040_r_h3__mice_f1_model_data.rds"))
 saveRDS(mice_f1_modeled_data_with_rna_seq_data, file = here("rds_storage", "040_r_h3__mice_f1_modeled_data_with_rna_seq_data.rds"))
 
-mice_f1_model_data$ObeseParents
+openxlsx::write.xlsx(mice_f1_modeled_data_with_rna_seq_data, paste0(here("tables"), "/", "040_r_h3__rna_seq_sample.xlsx"), asTable = TRUE, overwrite = TRUE)
 
 # Save finished data ----
 saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_with_H3variables.rds"))
@@ -302,5 +302,5 @@ saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_with_H3variables.
 
 # Snapshot environment ----
 sessionInfo()
-save.image(file = here("scripts", "020_r_h1.RData"))
+save.image(file = here("scripts", "040_r_h3.RData"))
 renv::snapshot()

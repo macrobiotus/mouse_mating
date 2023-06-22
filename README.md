@@ -380,7 +380,20 @@
 
  * continuing in `050_r_array_analysis_ah.r`
  * implemented KEGG and GO analysis
- * commit `97c543a88490ed06cca8c88269b582eea71399c9`
+ * commit `26119d5a2c7718ff93a3d7441d92d15906f3ae63`
+
+## 22-06-2023
+ 
+ * thinned ou entire folder structure by erasing superfluous output files
+ * did not erase any scripts
+ * re-ran the following scripts consecutively 
+   * `000_r_format_data.r`
+   * `010_r_define_obesity.r`
+   * `020_r_h1.r`
+   * `030_r_h2.r`
+   * `040_r_h3.r`
+   * `050_r_array_analysis.r`
+   * also see corresponding `.Rdata` files
   
 ## Todo queue
  
@@ -396,16 +409,22 @@
     * [x] **Day 4** - subset DGE results based on coefficients - create long list with data set identifier an contrast in name
     * [x] **Day 5** - implement Volcano plot for DGE list - adjust thresholds
     * [x] **Day 6** - implement KEGG and GO for all DGE list as done 
-
- * adjust scripts `020_r_h1.r`, `030_r_h2.r`, and `040_r_h3.r`:
-    * [ ] **Day 1** - possibly re-encode group, remove mixed group from code, text, and images
+    * [x] **Day 7** - possibly re-encode groups, remove mixed group from code, text, and images
  
- * [ ] extend script `050_r_array_analysis_ah.r`:
+ * [x] adjust scripts `020_r_h1.r`, `030_r_h2.r`, and `040_r_h3.r`:
+  
+ * [] manuscript work
+   * [ ] adjust caption of Fig. 1
+   * [ ] update all figures and tables
+   * [ ] update results based on results
+   * [ ] refit introduction
+   * [ ] write disussion
+ 
+  * [ ] extend script `050_r_array_analysis_ah.r`:
     * [ ] **someday** - possibly Upset plots
     * [ ] **someday** - possibly network plots
     * [ ] **someday** - possibly implement SWAMP instad of PCA
-    * [ ] **someday** - check for errors among expression data annotation get Isolate model code - email Elmar on how to model outcomes directly - on cluster from intensity data by tissue and gene
-  
+    
   * check if this is still valid
     * [ ] establish correlations between varaibles `ObesityLgcl` and possibly also `ObeseParents` and intensities - 
        * [ ] consult ITLN1 paper to find how AH does it - or check teams chat for package

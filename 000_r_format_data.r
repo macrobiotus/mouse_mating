@@ -35,6 +35,8 @@ library("janitor")  # data cleaning
 library("dplyr")    # pipes and more
 library("magrittr") # even more pipes
 
+library("hablar") # Type conversions
+
 
 # Data read-in, cleaning, formatting ----
 
@@ -98,7 +100,6 @@ mice_f1 %<>% mutate("MeasurementDay" = readr::parse_number(as.character(Week)) *
 glimpse(mice_f0)
 glimpse(mice_f1)
 
-
 # __d) Re-code further variables  ----
 
 # *** not used - implement as needed ***
@@ -113,13 +114,38 @@ saveRDS(mice_f0, file = here("rds_storage", "mice_f0.rds"))
 saveRDS(mice_f1, file = here("rds_storage", "mice_f1.rds"))
 
 
-# 5.) Data sub-setting ----
+# _5.) Data inspcetions and possibly sub-setting ----
 
-# *** not used - implement as needed ***
 
-# check which variables are available for selection
+# __a) Check which animals have been used for clinical assessments ----
+
 glimpse(mice_f1)
-glimpse(mice_f0)
+
+mice_f1_animal_ids <- mice_f1 %>% dplyr::select(AnimalId, AnimalSex, MotherDiet, FatherDiet) %>% distinct()
+
+mice_f1_animal_ids %>% print(n = Inf)
+
+
+# __b) Check which animals have been used for RNA sequencing ----
+
+mice_f1_rna_seq <- readxl::read_excel("/Users/paul/Documents/HM_MouseMating/communication/190916 Probenliste Clariom S.xlsx")
+mice_f1_rna_seq %>% print(n = Inf) # inspect
+mice_f1_rna_seq %<>% clean_names(case = "upper_camel")
+mice_f1_rna_seq %<>% dplyr::select(-c("X6"))
+mice_f1_rna_seq %<>% rename(DietGroup = X7)
+mice_f1_rna_seq %<>% tidyr::fill("Sex","ParentalDietMoFa", "DietGroup")
+mice_f1_rna_seq %<>% convert(fct(Animal, Tissue, Sex, ParentalDietMoFa, DietGroup))
+mice_f1_rna_seq_no_tissues <- mice_f1_rna_seq %>% select(-c(Sample, Tissue)) %>% distinct()
+
+
+# __c) Output a table that show which animals had been used for RNA sequencing  ---
+
+mice_f1_modeled_data_with_rna_seq_data <- left_join(mice_f1_animal_ids, mice_f1_rna_seq_no_tissues, by = c("AnimalId" = "Animal"))
+mice_f1_modeled_data_with_rna_seq_data %<>% dplyr::select(-c("Sex", "ParentalDietMoFa"))
+mice_f1_modeled_data_with_rna_seq_data %<>% mutate(RNAseq = case_when(is.na(DietGroup)  ~ FALSE, !is.na(DietGroup) ~ TRUE))
+mice_f1_modeled_data_with_rna_seq_data %<>% dplyr::select(-c("DietGroup"))
+
+openxlsx::write.xlsx(mice_f1_modeled_data_with_rna_seq_data, paste0(here("tables"), "/", "000_r_format_data__rna_seq_sample.xlsx"), asTable = TRUE, overwrite = TRUE)
 
 # select all variables that could be relevant for modelling
 
@@ -129,6 +155,8 @@ mice_f1_slct <- mice_f1 # %>%  dplyr::select(animal_id, animal_sex, body_weight_
 # check selected variables
 glimpse(mice_f0_slct)
 glimpse(mice_f1_slct)
+
+# >>> Construction site above 22.06.2023 ----
 
 # Save finished data ----
 

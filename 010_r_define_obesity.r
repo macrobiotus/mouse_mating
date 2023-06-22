@@ -136,9 +136,6 @@ xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, strip = FAL
        },
        xlab = "Standardized age", ylab = "Height (cm)")
 
-
-
-
 # _3.) Isolate values for curvature calculations ----
 
 # For function `polynom_curvature`

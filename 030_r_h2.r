@@ -171,9 +171,6 @@ saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_with_H2variables.
 
 # Snapshot environment ----
 sessionInfo()
-save.image(file = here("scripts", "020_r_h1.RData"))
+save.image(file = here("scripts", "030_r_h2.RData"))
 renv::snapshot()
-
-
-
 
