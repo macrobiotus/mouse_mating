@@ -416,9 +416,10 @@
  * [] manuscript work
    * [ ] adjust caption of Fig. 1
    * [ ] update all figures and tables
-   * [ ] update results based on results
+   * [ ] update results  - check if Pathview can be used to improve visulaistaions (` https://doi.org/10.1093/bioinformatics/btt285`)
+   * [ ] update introduction based on results
    * [ ] refit introduction
-   * [ ] write disussion
+   * [ ] write discussion
  
   * [ ] extend script `050_r_array_analysis_ah.r`:
     * [ ] **someday** - possibly Upset plots
