@@ -404,14 +404,14 @@
    * `000_r_format_data.r` - minor changes to formatting
    * `010_r_define_obesity.r` - added DI export code - including table summaries - writes to `/Users/paul/Documents/HM_MouseMating/manuscript/display_items`
  * commit after reaching line 292 in `010_r_define_obesity.r` and prior to removing Mixed group in `000_r_format_data`
-   
+ * commit `b7bd0758c5c037169ed24dcae421bcad6c9cbcdf`  
+ * re-ran `000_r_format_data.r`
+   * removed mixed group among f1 and group information among f0 since it was confusing
+ * commit ``
 
 ## Todo queue
 
-  * [ ] **not started** - re-run script `000_r_format_data` - remove `Group` - Mix
-  * [ ] **started** - re-run script `010_r_define_obesity.r` - export DIs 
-  
-  * [ ] re-run script `010_r_define_obesity.r` - remove mixed diets - adjust results overview
+  * [ ] **started** - re-run script `010_r_define_obesity.r` from start - export DIs 
   * [ ] re-run scripts `020_r_h1.r`, `030_r_h2.r`, and `040_r_h3.r` - adjust results overview
  
   * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
@@ -428,10 +428,12 @@
     * [x] **Day 6** - implement KEGG and GO for all DGE list as done 
     * [x] **Day 7** - possibly re-encode groups, remove mixed group from code, text, and images
  
- 
   
  * [] manuscript work
-   * [ ] adjust caption of Fig. 1
+   * [ ] adjust results description of mice mating 
+   * [ ] - using summary tables in `/Users/paul/Documents/HM_MouseMating/analysis/tables` or 
+   * [ ] - using `000_r_format_data`
+   * [ ] adjust Fig 1
    * [ ] update all figures and tables
    * [ ] find out which genes could be relavant and add to all manuscript sections  
    * [ ] update results  - check if Pathview can be used to improve visualisations (`https://doi.org/10.1093/bioinformatics/btt285`)

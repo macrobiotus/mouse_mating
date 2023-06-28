@@ -100,33 +100,50 @@ mice_f1 %<>% mutate("MeasurementDay" = readr::parse_number(as.character(Week)) *
 glimpse(mice_f0)
 glimpse(mice_f1)
 
-# __d) Re-code further variables  ----
 
-# *** not used - implement as needed ***
+# __d) Check which animals have been used for clinical assessments and save original state ----
 
-# mice_f0 %<>%   
-# mice_f1 %<>%
+# f0 generation - check 
+glimpse(mice_f0)
+mice_f0_animal_ids <- mice_f0 %>% dplyr::select(AnimalId, AnimalSex, Group, Diet, PartnerDiet) %>% distinct()
+mice_f0_animal_ids %>% print(n = Inf)
 
-
-# _4.) Save intermediate data ----
-
+# f0 generation - save original state
+openxlsx::write.xlsx(mice_f0_animal_ids, paste0(here("tables"), "/", "000_r_format_data__f0_mice_with_all_diets.xlsx"), asTable = TRUE, overwrite = TRUE)
 saveRDS(mice_f0, file = here("rds_storage", "mice_f0.rds"))
+
+# f1 generation - check 
+glimpse(mice_f1)
+mice_f1_animal_ids <- mice_f1 %>% dplyr::select(AnimalId, AnimalSex, MotherDiet, FatherDiet) %>% distinct()
+mice_f1_animal_ids %>% print(n = Inf)
+openxlsx::write.xlsx(mice_f1_animal_ids, paste0(here("tables"), "/", "000_r_format_data__f1_mice_with_all_diets.xlsx"), asTable = TRUE, overwrite = TRUE)
+
+# f1 generation - save original state
+openxlsx::write.xlsx(mice_f1_animal_ids, paste0(here("tables"), "/", "000_r_format_data__f0_mice_with_all_diets.xlsx"), asTable = TRUE, overwrite = TRUE)
 saveRDS(mice_f1, file = here("rds_storage", "mice_f1.rds"))
 
+# __e) Remove Group column among f0 and mixed group among f1  ----
 
-# _5.) Data inspcetions and possibly sub-setting ----
+# to not get confused downstream and beacuse ther is no RNAseq data for mixed f1 
+mice_f0 %<>% select(-c("Group")) 
+mice_f1 %<>% filter(MotherDiet != "Mix")
+
+# f0 generation - save altered state
+openxlsx::write.xlsx(mice_f0, paste0(here("tables"), "/", "000_r_format_data__f0_mice_cleaned_detail.xlsx"), asTable = TRUE, overwrite = TRUE)
+saveRDS(mice_f1, file = here("rds_storage", "mice_f0_cleaned.rds"))
+
+openxlsx::write.xlsx(mice_f0 %>% dplyr::select(AnimalId, AnimalSex, Diet, PartnerDiet) %>% distinct(), paste0(here("tables"), "/", "000_r_format_data__f0_mice_cleaned.xlsx"), asTable = TRUE, overwrite = TRUE)
+saveRDS(mice_f1, file = here("rds_storage", "mice_f0_cleaned.rds"))
 
 
-# __a) Check which animals have been used for clinical assessments ----
+# f1 generation - save altered state
+openxlsx::write.xlsx(mice_f1, paste0(here("tables"), "/", "000_r_format_data__f1_mice_cleaned_detail.xlsx"), asTable = TRUE, overwrite = TRUE)
+saveRDS(mice_f1, file = here("rds_storage", "mice_f1_cleaned.rds"))
 
-glimpse(mice_f1)
+openxlsx::write.xlsx(mice_f1 %>% dplyr::select(AnimalId, AnimalSex, MotherDiet, FatherDiet) %>% distinct(), paste0(here("tables"), "/", "000_r_format_data__f1_mice_cleaned.xlsx"), asTable = TRUE, overwrite = TRUE)
+saveRDS(mice_f1, file = here("rds_storage", "mice_f1_cleaned.rds"))
 
-mice_f1_animal_ids <- mice_f1 %>% dplyr::select(AnimalId, AnimalSex, MotherDiet, FatherDiet) %>% distinct()
-
-mice_f1_animal_ids %>% print(n = Inf)
-
-
-# __b) Check which animals have been used for RNA sequencing ----
+# __d) Check which animals have been used for RNA sequencing ----
 
 mice_f1_rna_seq <- readxl::read_excel("/Users/paul/Documents/HM_MouseMating/communication/190916 Probenliste Clariom S.xlsx")
 mice_f1_rna_seq %>% print(n = Inf) # inspect
@@ -138,7 +155,7 @@ mice_f1_rna_seq %<>% convert(fct(Animal, Tissue, Sex, ParentalDietMoFa, DietGrou
 mice_f1_rna_seq_no_tissues <- mice_f1_rna_seq %>% select(-c(Sample, Tissue)) %>% distinct()
 
 
-# __c) Output a table that show which animals had been used for RNA sequencing  ---
+# __e) Output a table that show which animals had been used for RNA sequencing  ----
 
 mice_f1_modeled_data_with_rna_seq_data <- left_join(mice_f1_animal_ids, mice_f1_rna_seq_no_tissues, by = c("AnimalId" = "Animal"))
 mice_f1_modeled_data_with_rna_seq_data %<>% dplyr::select(-c("Sex", "ParentalDietMoFa"))
@@ -147,7 +164,7 @@ mice_f1_modeled_data_with_rna_seq_data %<>% dplyr::select(-c("DietGroup"))
 
 openxlsx::write.xlsx(mice_f1_modeled_data_with_rna_seq_data, paste0(here("tables"), "/", "000_r_format_data__rna_seq_sample.xlsx"), asTable = TRUE, overwrite = TRUE)
 
-# select all variables that could be relevant for modelling
+# __f) Select all variables that could be relevant for modelling ----
 
 mice_f0_slct <- mice_f0 # 
 mice_f1_slct <- mice_f1 # %>%  dplyr::select(animal_id, animal_sex, body_weight_g, mother_diet, father_diet, week, mother_id, father_id) 
@@ -155,8 +172,6 @@ mice_f1_slct <- mice_f1 # %>%  dplyr::select(animal_id, animal_sex, body_weight_
 # check selected variables
 glimpse(mice_f0_slct)
 glimpse(mice_f1_slct)
-
-# >>> Construction site above 22.06.2023 ----
 
 # Save finished data ----
 
