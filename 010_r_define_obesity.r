@@ -85,7 +85,6 @@ polynom_curvature <- function (x, pc) {
   d2 / (1 + d1 * d1) ^ (3 / 2) # curvature: 
 }
 
-
 # Data read-in, cleaning, formatting ----
 
 # _1.) Get data ----
@@ -97,15 +96,21 @@ mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct.rds"))
 
 # Plot f0 and f1  weights by measurement day 
 
-xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measuerment age")
-xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weight at measuerment age")
+mice_f0_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measurement age")
+mice_f1_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weight at measurement age")
 
+mice_f0_slct_xyplot
+mice_f1_slct_xyplot
+
+mice_slct_xyplots <- ggarrange(mice_f0_slct_xyplot, mice_f1_slct_xyplot, labels = c("a", "b"), ncol = 1, nrow = 2, heights = c(1.1, 1.9))
+
+ggsave(plot = mice_slct_xyplots, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights.pdf")
 
 # Define Obesity ----
 
 # _1.) Model 2nd degree polynomials ----
 
-# not using poly() to coomodate function calculateing derivatives
+# not using poly() to accommodate function calculating derivatives
 F0_BodyWeight_Models <-  mice_f0_slct %>% group_by(AnimalId) %>% do(model = lm(BodyWeightG ~ as.numeric(MeasurementDay)+I(as.numeric(MeasurementDay)^2), data = .))
 F1_BodyWeight_Models <-  mice_f1_slct %>% group_by(AnimalId) %>% do(model = lm(BodyWeightG ~ as.numeric(MeasurementDay)+I(as.numeric(MeasurementDay)^2), data = .)) 
 
@@ -116,25 +121,32 @@ lapply(F0_BodyWeight_Models$model, summary)
 lapply(F1_BodyWeight_Models$model, summary) 
 
 
-# - graphically, can only be done in lattice using poly() but result shoul be similar
-xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, strip = FALSE,
+# - graphically, can only be done in lattice using poly() but result should be similar
+mice_f0_slct_xyplot_poly <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct,
       aspect = "xy", pch = 16, grid = TRUE,
       panel = function(x, y, ...) {
         panel.xyplot(x, y, ...)
         fm <- lm(y ~ poly(x, 2))
         panel.lines(x, fitted(fm), col.line = "black")
       },
-      xlab = "Standardized age", ylab = "Height (cm)")
+      xlab = "MeasurementDay", ylab = "BodyWeightG", sub="modelled f0 weight at measurement age")
 
 # - graphically, can only be done in lattice using poly() but result shoul be similar
-xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, strip = FALSE,
+mice_f1_slct_xyplot_poly <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct,
        aspect = "xy", pch = 16, grid = TRUE,
        panel = function(x, y, ...) {
          panel.xyplot(x, y, ...)
          fm <- lm(y ~ poly(x, 2))
          panel.lines(x, fitted(fm), col.line = "black")
        },
-       xlab = "Standardized age", ylab = "Height (cm)")
+       xlab = "MeasurementDay", ylab = "BodyWeightG", sub="modelled f1 weight at measurement age")
+
+mice_f0_slct_xyplot_poly
+mice_f1_slct_xyplot_poly
+
+mice_slct_xyplots_poly <- ggarrange(mice_f0_slct_xyplot_poly, mice_f1_slct_xyplot_poly, labels = c("a", "b"), ncol = 1, nrow = 2, heights = c(1.1, 1.9))
+
+ggsave(plot = mice_slct_xyplots_poly, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights_lm.pdf")
 
 # _3.) Isolate values for curvature calculations ----
 
@@ -171,25 +183,61 @@ sort(F1_PCurvature_Results)
 # Plot f0 and f1 weights by measurement day
 
 # Including sums of 2nd curvatures
-xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measuerment age, inlcuding curvature summary",
+mice_f0_slct_xyplot_curves <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measuerment age, inlcuding curvature summary",
        panel=function(x, y,...){
          panel.xyplot(x,y,...)
          panel.text(80,17, cex = 0.75, labels = signif(F0_PCurvature_Results[panel.number()]), digits = 4) })
 
-xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weight at measuerment age, inlcuding curvature summary",
+mice_f1_slct_xyplot_curves <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weight at measuerment age, inlcuding curvature summary",
        panel=function(x, y,...){
          panel.xyplot(x,y,...)
          panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4) })
 
+
+mice_f0_slct_xyplot_curves
+mice_f1_slct_xyplot_curves
+
+mice_slct_xyplots_curves <- ggarrange(mice_f0_slct_xyplot_curves, mice_f1_slct_xyplot_curves, labels = c("a", "b"), ncol = 1, nrow = 2, heights = c(1.1, 1.9))
+
+ggsave(plot = mice_slct_xyplots_curves, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights_curves.pdf")
+
+
 # Separate obese from non-obese mice ----
 
 # _1.) Finding modes for splitting data in obese and non-obese ----
+
+# __a) Base plots ----
 
 plot(density(F0_PCurvature_Results), main = "F0 weight gain curvatures - Estimated mode")
 abline(v = naive(F0_PCurvature_Results,bw = 0.001), col = 2)
 
 plot(density(F1_PCurvature_Results), main = "F1 weight gain curvatures - Estimated mode")
 abline(v = naive(F1_PCurvature_Results, bw = 0.01), col = 2)
+
+# __a) GGplots ----
+
+mice_f0_derivatives_density <- ggplot(as_tibble_col(F0_PCurvature_Results, column_name = "SecondDerivative"), aes(x=SecondDerivative)) + 
+  geom_density() +
+  geom_vline(xintercept = naive(F0_PCurvature_Results, bw = 0.001), color="blue") +
+  xlab("second derivatives of growth curves") +
+  ylab("denisty") +
+  ggtitle("f0 distribution of growth curve derivatives, with mode") +
+  theme_bw()
+
+mice_f1_derivatives_density <- ggplot(as_tibble_col(F1_PCurvature_Results, column_name = "SecondDerivative"), aes(x=SecondDerivative)) + 
+  geom_density() +
+  geom_vline(xintercept = naive(F1_PCurvature_Results, bw = 0.01), color="blue") +
+  xlab("second derivatives of growth curves") +
+  ylab("denisty") +
+  ggtitle("f1 distribution of growth curve derivatives, with mode") +
+  theme_bw()
+
+mice_f0_derivatives_density
+mice_f1_derivatives_density
+
+mice_derivatives_densities <- ggarrange(mice_f0_derivatives_density, mice_f1_derivatives_density, labels = c("a", "b"), ncol = 1, nrow = 2, heights = c(1, 1))
+
+ggsave(scale = 0.75, plot = mice_derivatives_densities, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_derivatives_densities.pdf")
 
 # Storing modes
 
@@ -198,7 +246,7 @@ F1_Mode <- naive(F1_PCurvature_Results, bw = 0.01)
 
 # _2.) Defining F0 animals with high or low weight gain ----
 
-# Not yet obesity statuts - see methods
+# Not yet obesity status - see methods
 
 F0_HiGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results >= F0_Mode) ]   
 F0_LoGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results < F0_Mode) ]   
@@ -210,6 +258,7 @@ F0_LoGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results < F0_Mode)
 F1_HiGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results >= F1_Mode) ]   
 F1_LoGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results < F1_Mode) ]   
 
+
 # _4.) Mark mice in f0 table ----
 
 # based on hi and low weight gain - can't get to work mutate and case_when
@@ -220,6 +269,11 @@ mice_f0_slct[which(as.character(mice_f0_slct[["AnimalId"]]) %in% F0_LoGain), ]["
 mice_f0_slct[["WeightGain"]] <- as.factor(mice_f0_slct[["WeightGain"]])
 mice_f0_slct$WeightGain %>% summary()
 
+mice_f0_slct %>% select(AnimalId, WeightGain) %>% distinct %>% 
+  tbl_summary(., missing = "no") %>%
+  as_gt() %>%
+  gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f0_slct__weight_gain.docx")) 
+
 # _5.) Mark mice in f1 table ----
 
 # based on hi and low weight gain - can't get to work mutate and case_when
@@ -229,6 +283,13 @@ mice_f1_slct[which(as.character(mice_f1_slct[["AnimalId"]]) %in% F1_HiGain), ]["
 mice_f1_slct[which(as.character(mice_f1_slct[["AnimalId"]]) %in% F1_LoGain), ]["WeightGain"] <- "lo"
 mice_f1_slct[["WeightGain"]] <- as.factor(mice_f1_slct[["WeightGain"]])
 mice_f1_slct$WeightGain %>% summary()
+
+mice_f1_slct %>% select(AnimalId, WeightGain) %>% distinct %>% 
+  tbl_summary(., missing = "no") %>%
+  as_gt() %>%
+  gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__weight_gain.docx")) 
+
+# >>>> continue here after 28.05.2023 with DI exporting----
 
 # _6.) Define obese f0 mice ----
 

@@ -394,8 +394,25 @@
    * `040_r_h3.r`
    * `050_r_array_analysis.r`
    * also see corresponding `.Rdata` files
-  
+ * commit `c8d1cd7e774b6a71f2b503049307676fe9fc4230`
+
+## 28-06-2023
+
+ * to get overview creating a results summary document with display items
+ * name `/HM_MouseMating/manuscript/230628_results_summary.docx`
+   * re-ran the following scripts consecutively 
+   * `000_r_format_data.r` - minor changes to formatting
+   * `010_r_define_obesity.r` - added DI export code - including table summaries - writes to `/Users/paul/Documents/HM_MouseMating/manuscript/display_items`
+ * commit after reaching line 292 in `010_r_define_obesity.r` and prior to removing Mixed group in `000_r_format_data`
+   
+
 ## Todo queue
+
+  * [ ] **not started** - re-run script `000_r_format_data` - remove `Group` - Mix
+  * [ ] **started** - re-run script `010_r_define_obesity.r` - export DIs 
+  
+  * [ ] re-run script `010_r_define_obesity.r` - remove mixed diets - adjust results overview
+  * [ ] re-run scripts `020_r_h1.r`, `030_r_h2.r`, and `040_r_h3.r` - adjust results overview
  
   * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
     * [x] parental diet conforms exactly with dietary variables considered by AH for array data
@@ -411,12 +428,13 @@
     * [x] **Day 6** - implement KEGG and GO for all DGE list as done 
     * [x] **Day 7** - possibly re-encode groups, remove mixed group from code, text, and images
  
- * [x] adjust scripts `020_r_h1.r`, `030_r_h2.r`, and `040_r_h3.r`:
+ 
   
  * [] manuscript work
    * [ ] adjust caption of Fig. 1
    * [ ] update all figures and tables
-   * [ ] update results  - check if Pathview can be used to improve visulaistaions (` https://doi.org/10.1093/bioinformatics/btt285`)
+   * [ ] find out which genes could be relavant and add to all manuscript sections  
+   * [ ] update results  - check if Pathview can be used to improve visualisations (`https://doi.org/10.1093/bioinformatics/btt285`)
    * [ ] update introduction based on results
    * [ ] refit introduction
    * [ ] write discussion
