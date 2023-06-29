@@ -411,20 +411,21 @@
 
 ## 29-06-2023
 
- * [x] adding Roxygen-style markdown to  `000_r_format_data.r` - see `https://bookdown.org/yihui/rmarkdown-cookbook/spin.html`
- * [x] re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/000_r_format_data.r')`
- * [x] re-running `010_r_define_obesity.r` from start
-    * found f0 individuals with mixed diets `010_r_define_obesity.r` in line 362 
-    * commit - filter in `000_r_format_data.r` re run to `010_r_define_obesity.r` line 362
- 
- * [ ] adding Markdown structure to `010_r_define_obesity.r`
+ * adding Roxygen-style markdown to  `000_r_format_data.r` - see `https://bookdown.org/yihui/rmarkdown-cookbook/spin.html`
+ * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/000_r_format_data.r')`
+ * re-running `010_r_define_obesity.r` from start
+   * found f0 individuals with mixed diets `010_r_define_obesity.r` in line 362 
+   * commit - filter in `000_r_format_data.r` re run to `010_r_define_obesity.r` line 362
+   * commit `a54481c0fc4fd590d7a0f99e53f30fe6ce96123b`
+ * adding some Markdown structure to `010_r_define_obesity.r`
+ * running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/010_r_define_obesity.r')`
  
 
 
 ## Todo queue
 
-  * [ ] **started** - re-run script `010_r_define_obesity.r` from start - export DIs 
-  * [ ] re-run scripts `020_r_h1.r`, `030_r_h2.r`, and `040_r_h3.r` - adjust results overview
+  * [x] re-run script `010_r_define_obesity.r` from start - export DIs 
+  * [ ] re-run scripts `020_r_h1.r`, `030_r_h2.r`, and `040_r_h3.r` - adjust DI and markdown - export overview
  
   * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
     * [x] parental diet conforms exactly with dietary variables considered by AH for array data

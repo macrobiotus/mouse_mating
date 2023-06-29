@@ -66,8 +66,7 @@ library("gtsummary")
 
 '%!in%' <- function(x,y)!('%in%'(x,y))
 
-
-# Calculate derivatives of polynomials ----
+# Calculate derivatives of polynomials 
 # - from https://stackoverflow.com/questions/40438195/function-for-polynomials-of-arbitrary-order-symbolic-method-preferred/40442584#40442584
 
 g <- function (x, pc, nderiv = 0L) {
@@ -127,6 +126,8 @@ mice_slct_xyplots <- ggarrange(mice_f0_slct_xyplot, mice_f1_slct_xyplot, labels 
 
 ggsave(plot = mice_slct_xyplots, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights.pdf")
 
+#' # Define Obesity
+
 # Define Obesity ----
 
 # _1.) Model 2nd degree polynomials ----
@@ -140,8 +141,11 @@ F1_BodyWeight_Models <-  mice_f1_slct %>% group_by(AnimalId) %>% do(model = lm(B
 # __a) Show model summaries as text ----
 
 # - not all models are perfect, or the polynomial warranted, but as expected from curves
-lapply(F0_BodyWeight_Models$model, summary) 
-lapply(F1_BodyWeight_Models$model, summary) 
+
+# will clutter - uncomment only if needed
+
+# lapply(F0_BodyWeight_Models$model, summary) 
+# lapply(F1_BodyWeight_Models$model, summary) 
 
 # __a) Show model summaries graphically ----
 
@@ -224,6 +228,8 @@ mice_f1_slct_xyplot_curves
 mice_slct_xyplots_curves <- ggarrange(mice_f0_slct_xyplot_curves, mice_f1_slct_xyplot_curves, labels = c("a", "b"), ncol = 1, nrow = 2, heights = c(1.1, 1.9))
 
 ggsave(plot = mice_slct_xyplots_curves, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights_curves.pdf")
+
+#' # Separate obese from non-obese mice
 
 # Separate obese from non-obese mice ----
 
@@ -347,7 +353,7 @@ mice_f1_slct %>% select(AnimalId, WeightGain) %>% distinct %>%
 
 # _6.) Define obese f0 mice ----
 
-# __a) Mark f0 with any HFD and hi weight gain as classified obese and all others are not obese! 
+# __a) Mark f0 with any HFD and hi weight gain as classified obese and all others are not obese! ----
 
 mice_f0_slct %<>% mutate(Obesity = case_when(
   (Diet == "HFD" & WeightGain == "hi") ~ "Obese",
@@ -357,42 +363,22 @@ mice_f0_slct[["Obesity"]] <- as.factor(mice_f0_slct[["Obesity"]])
 
 # __b) Check successful marking ----
 
-mice_f0_slct %>% select(AnimalId) %>% distinct # next command below should have 12 animals
+mice_f0_slct %>% select(AnimalId) %>% distinct # next command below should have 8 animals
 
-# >>> error below -- animal has received two types of diets ----
+# One f0 mouse with HFD did not get obese per our definition - 8992
 
 mice_f0_slct %>% select(AnimalId, Diet, WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) 
 
-#the the f0 animlas below received mixed diets
-mice_f0_slct %>% filter(AnimalId %in% c(8994, 8995, 8996, 8997)) %>% arrange(AnimalId) %>% print(n = Inf)
+# __c) Export table with successful obesity marking ----
 
-#the the f0 animlas below received unmixed diets
-mice_f0_slct %>% filter(AnimalId %!in% c(8994, 8995, 8996, 8997)) %>% arrange(AnimalId) %>% print(n = Inf)
-
-# commit 
-
-# Some HFD did not get obese per our definition - give the table for the manuscript
-
-mice_f0_slct %>% select(AnimalId, Diet, WeightGain, Obesity) %>% distinct %>% table
-
-# __c ) Export table with successful marking ----
-
-mice_f1_slct %>% select(AnimalId, WeightGain) %>% distinct %>% 
+mice_f0_slct %>% select(AnimalId, Diet, WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
-  gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__weight_gain.docx")) 
-
-
-
-
-
-
-
-mice_f0_slct$Obesity %>% summary()
+  gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f0_slct__obesity.docx")) 
 
 # _7.) Define obese f1 mice ----
 
-# Mark f1 with  hi weight gain as obese - all others are not obese! 
+# __a) Mark f1 with any HFD and hi weight gain as classified obese and all others are not obese! ----
 
 mice_f1_slct %<>% mutate(Obesity = case_when(
   (WeightGain == "hi") ~ "Obese",
@@ -401,31 +387,49 @@ mice_f1_slct %<>% mutate(Obesity = case_when(
 mice_f1_slct[["Obesity"]] <- as.factor(mice_f1_slct[["Obesity"]])
 mice_f1_slct$Obesity %>% summary()
 
+# __b) Check successful marking ----
+
+mice_f1_slct %>% select(AnimalId) %>% distinct # next command below should have 50 animals
+
+# obesity marking scucessful as obejcet has 50 lines 
+
+mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) 
+
+# __c) Export table with successful obesity marking ----
+
+mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) %>% 
+  tbl_summary(., missing = "no") %>%
+  as_gt() %>%
+  gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__obesity.docx")) 
+
 # _8.) Add f0 obesity status to f1 data ----
+
+# __a) Check f0 Obesity status ----
 
 # ***Weight data is available for mothers - using HFD AND weight gain as  proxy variables for obesity ***
 
 F0_ObeseMothers <- mice_f0_slct %>% filter(Obesity == "Obese" & AnimalSex == "f") %>% pull("AnimalId")  %>% unique
 
 # **** No weight data appears to be available for fathers - using HFD as a proxy variable for obesity ****
+mice_f0_slct %>% filter(Obesity == "Obese" & AnimalSex == "m") %>% pull("AnimalId")  %>% unique
 
 F0_ObeseFathers <- mice_f0_slct %>% filter(PartnerDiet == "HFD" ) %>% pull("MatingWith")  %>% unique
 
-# - adding mothers' obesity status to F1
+# __b) Adding f0 mothers' obesity status to F1 ----
 
 mice_f1_slct["ObeseMother"] <- FALSE
 mice_f1_slct[which(as.character(mice_f1_slct[["MotherId"]]) %in% F0_ObeseMothers), ]["ObeseMother"] <- TRUE
 mice_f1_slct[["ObeseMother"]] <- as.logical(mice_f1_slct[["ObeseMother"]])
 mice_f1_slct$ObeseMother %>% summary()
 
-# - adding farthers' obesity status to F1
+# __c) Adding f0 fathers' obesity status to F1 ----
 
 mice_f1_slct["ObeseFather"] <- FALSE
 mice_f1_slct[which(as.character(mice_f1_slct[["FatherId"]]) %in% F0_ObeseFathers), ]["ObeseFather"] <- TRUE
 mice_f1_slct[["ObeseFather"]] <- as.logical(mice_f1_slct[["ObeseFather"]])
 mice_f1_slct$ObeseFather %>% summary()
 
-# - adding parents' obesity status to F1
+# __d) Adding parents' obesity status to F1 ----
 
 mice_f1_slct %<>% mutate(ObeseParents = case_when(
   (ObeseMother == TRUE  & ObeseFather == FALSE) ~ "MotherObese",
@@ -434,21 +438,32 @@ mice_f1_slct %<>% mutate(ObeseParents = case_when(
   (ObeseMother == FALSE & ObeseFather == FALSE) ~ "MotherFatherNotObese",
   TRUE ~ NA))
 mice_f1_slct[["ObeseParents"]] <- as.factor(mice_f1_slct[["ObeseParents"]])
-mice_f1_slct$ObeseParents %>% summary()
+
+# __e) Inspecting and exporting parents obesity status ----
+
+mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity, ObeseParents) %>% distinct %>% arrange(AnimalId) %>% print(n = Inf)
+
+mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity, ObeseParents) %>% distinct %>% arrange(AnimalId) %>% 
+  tbl_summary(., missing = "no") %>%
+  as_gt() %>%
+  gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__parents_obesity.docx")) 
+
+#' # Summarizing final data
 
 # Summarizing final data ----
 
 # _1.) Plotting f0 weight at measurement age, including sex and obesity status ----
 
-xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measurement age, inlcuding sex and obesity status",
+mice_f0_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measurement age, inlcuding sex and obesity status",
        panel=function(x, y,...){
          panel.xyplot(x,y,...)
          panel.text(80,18, cex = 0.75, labels = mice_f0_slct$AnimalSex[panel.number()])
          panel.text(80,17, cex = 0.75, labels = mice_f0_slct$Obesity[panel.number()]) })
 
+
 # _2.) Plotting f1 weight at measurement age, including sex and obesity status ----
 
-xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weights at measurement ages, with sex and obesity status, and parents obesity status",
+mice_f1_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weights at measurement ages, with sex and obesity status, and parents obesity status",
        panel=function(x, y,...){
          panel.xyplot(x,y,...)
          panel.text(80,13, cex = 0.75, labels = mice_f1_slct$AnimalSex[panel.number()])
@@ -456,29 +471,45 @@ xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b",
          panel.text(80,19, cex = 0.75, labels = mice_f1_slct$ObeseParents[panel.number()])
          })
 
-# _3.) Table summaries ----
+# _3.) Showing and exporting plot ----
+
+mice_f0_slct_xyplot_final
+mice_f1_slct_xyplot_final
+
+mice_slct_xyplots_obesity <- ggarrange(mice_f0_slct_xyplot_final, mice_f1_slct_xyplot_final, labels = c("a", "b"), ncol = 1, nrow = 2, heights = c(1, 2))
+
+ggsave(plot = mice_slct_xyplots_obesity, scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights_sex_obesity.pdf")
+
+# _4.) Table summaries ----
 
 mice_f0_slct %>% 
-  select(Group, BodyWeightG, MeasurementDay, AnimalSex, WeightGain, Obesity) %>% 
+  select(AnimalId, AnimalSex, WeightGain, Obesity) %>% distinct() %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
   gt::gtsave(filename = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/010_r_define_obesity__mice_f0_slct__summary.docx") 
 
 
 mice_f1_slct %>% 
-  select(BodyWeightG, MeasurementDay, AnimalSex, WeightGain, Obesity, MotherDiet, FatherDiet, ObeseMother, ObeseFather) %>% 
+  select(AnimalId, AnimalSex, WeightGain, Obesity, MotherDiet, FatherDiet, ObeseMother, ObeseFather) %>% distinct() %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
   gt::gtsave(filename = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/010_r_define_obesity__mice_f1_slct__summary.docx") 
 
 # How many HFD mothers were not obese?
-mice_f0_slct %>% select(Group, Obesity) %>% count(Group, Obesity, sort = TRUE)
+mice_f0_slct %>% select(AnimalId, Obesity) %>% distinct 
+mice_f0_slct %>% select(AnimalId, Obesity) %>% distinct %>% tbl_summary(., missing = "no")
+
+#' #  Save finished data
 
 # Save finished data ----
+
 saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
 saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
 
+#' # Snapshot environment
+
 # Snapshot environment ----
+
 sessionInfo()
 save.image(file = here("scripts", "010_r_define_obesity.RData"))
 renv::snapshot()

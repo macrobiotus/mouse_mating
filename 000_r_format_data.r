@@ -41,6 +41,13 @@ library("magrittr") # even more pipes
 
 library("hablar") # Type conversions
 
+#' ## Functions
+
+# _2.) Functions ----
+
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
+
 #' # Data read-in, cleaning, formatting
 
 # Data read-in, cleaning, formatting ----
@@ -147,13 +154,39 @@ openxlsx::write.xlsx(mice_f1_animal_ids, paste0(here("tables"), "/", "000_r_form
 openxlsx::write.xlsx(mice_f1_animal_ids, paste0(here("tables"), "/", "000_r_format_data__f0_mice_with_all_diets.xlsx"), asTable = TRUE, overwrite = TRUE)
 saveRDS(mice_f1, file = here("rds_storage", "mice_f1.rds"))
 
-#' ## Remove Group column among f0 and mixed group among f1
+#' ## Deal with "Mixed" parental diets by removing them
 
-# _5.) Remove Group column among f0 and mixed group among f1  ----
+# _5.) Remove "Mixed" parental diets and save altered state  ----
+
+#' ### Show f0 animals that received mixed diets
+
+# __a) Show f0 animals that received mixed diets ----
+
+mice_f0 %>% filter(AnimalId %in% c(8994, 8995, 8996, 8997)) %>% arrange(AnimalId) %>% select(AnimalId, AnimalSex,  Diet, Group) %>% print(n = Inf)
+
+#' ### Show f0 animals that did not receive mixed diets
+
+# __b) Show f0 animals that did not receive mixed diets ----
+
+mice_f0 %>% filter(AnimalId %!in% c(8994, 8995, 8996, 8997)) %>% arrange(AnimalId) %>% select(AnimalId, AnimalSex, Diet, Group) %>% print(n = Inf)
+
+#' ### Keep only f0 animals that did not receive mixed diets
+
+# __c) Keep only f0 animals that did not receive mixed diets ----
+
+mice_f0 %<>% filter(AnimalId %!in% c(8994, 8995, 8996, 8997))
+
+#' ### Remove Group column among f0 and mixed group among f1
+
+# __d) Remove Group column among f0 and mixed group among f1  ----
 
 # to not get confused downstream and beacuse ther is no RNAseq data for mixed f1 
 mice_f0 %<>% select(-c("Group")) 
 mice_f1 %<>% filter(MotherDiet != "Mix")
+
+#' ### Save altered state
+
+# __e) Save altered state ----
 
 # f0 generation - save altered state
 openxlsx::write.xlsx(mice_f0, paste0(here("tables"), "/", "000_r_format_data__f0_mice_cleaned_detail.xlsx"), asTable = TRUE, overwrite = TRUE)
