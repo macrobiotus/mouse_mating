@@ -407,7 +407,13 @@
  * commit `b7bd0758c5c037169ed24dcae421bcad6c9cbcdf`  
  * re-ran `000_r_format_data.r`
    * removed mixed group among f1 and group information among f0 since it was confusing
- * commit ``
+ * commit `640149bdafaeb7e3f9ac7d61336a2a43edcce16b`
+
+## 29-06-2023
+
+ * adding Roxygen-style markdwons to  `000_r_format_data.r`
+  * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/000_r_format_data.r')`
+
 
 ## Todo queue
 
