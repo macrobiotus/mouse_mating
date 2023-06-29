@@ -19,12 +19,18 @@
 #'     code_folding: show
 #' ---
 
+#' # Prepare environment
+
 # Prepare environment  ---- 
+
+#' ## Collect garbage
 
 # _1.) Collect garbage ----
 
 rm(list=ls())
 gc()
+
+#' ## Packages
 
 # _2.) Packages ----
 
@@ -54,7 +60,12 @@ library("cAIC4")       # Model selection
 
 library("gtsummary")
 
+#' ## Functions
+
 # _3.) Functions ----
+
+'%!in%' <- function(x,y)!('%in%'(x,y))
+
 
 # Calculate derivatives of polynomials ----
 # - from https://stackoverflow.com/questions/40438195/function-for-polynomials-of-arbitrary-order-symbolic-method-preferred/40442584#40442584
@@ -85,6 +96,8 @@ polynom_curvature <- function (x, pc) {
   d2 / (1 + d1 * d1) ^ (3 / 2) # curvature: 
 }
 
+#' # Data read-in, cleaning, formatting
+
 # Data read-in, cleaning, formatting ----
 
 # _1.) Get data ----
@@ -94,7 +107,15 @@ mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct.rds"))
 
 # _2.) Inspect data ----
 
-# Plot f0 and f1  weights by measurement day 
+# __a) Show f0 Information ----
+
+mice_f0_slct %>% select(AnimalId, AnimalSex, Diet, PartnerDiet) %>% distinct 
+
+# __b) Show f1 Information ----
+
+mice_f1_slct %>% select(AnimalId, AnimalSex, MotherDiet, FatherDiet) %>% distinct %>% print(n=Inf)
+
+# __c) Plot f0 and f1  weights by measurement day ----
 
 mice_f0_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measurement age")
 mice_f1_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weight at measurement age")
@@ -116,10 +137,13 @@ F1_BodyWeight_Models <-  mice_f1_slct %>% group_by(AnimalId) %>% do(model = lm(B
 
 # _2.) Inspect models ----
 
+# __a) Show model summaries as text ----
+
 # - not all models are perfect, or the polynomial warranted, but as expected from curves
 lapply(F0_BodyWeight_Models$model, summary) 
 lapply(F1_BodyWeight_Models$model, summary) 
 
+# __a) Show model summaries graphically ----
 
 # - graphically, can only be done in lattice using poly() but result should be similar
 mice_f0_slct_xyplot_poly <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct,
@@ -152,17 +176,17 @@ ggsave(plot = mice_slct_xyplots_poly, path = here("../manuscript/display_items")
 
 # For function `polynom_curvature`
 
-# - Isolate coefficients from model lists 
+# __a)  Isolate coefficients from model lists ----
 
 F0_BodyWeight_Models_Coefficients <- lapply(F0_BodyWeight_Models[[2]], coefficients) 
 F1_BodyWeight_Models_Coefficients <- lapply(F1_BodyWeight_Models[[2]], coefficients) 
 
-# - Isolate measurement days 
+# __b) Isolate measurement days ----
 
 F0_BodyWeight_Models_MDays <- split(as.numeric(mice_f0_slct$MeasurementDay), mice_f0_slct$AnimalId)
 F1_BodyWeight_Models_MDays <- split(as.numeric(mice_f1_slct$MeasurementDay), mice_f1_slct$AnimalId)
 
-# _4.) Get curvatures of polynomials at each time point ----
+# _4.) Get curvatures (2nd derivative) of polynomials at each time point ----
 
 # With function `polynom_curvature`
 F0_PCurvature <- Map(polynom_curvature, F0_BodyWeight_Models_MDays, F0_BodyWeight_Models_Coefficients)
@@ -174,13 +198,13 @@ F1_PCurvature <- Map(polynom_curvature, F1_BodyWeight_Models_MDays, F1_BodyWeigh
 F0_PCurvature_Results <- lapply(F0_PCurvature, sum) %>% unlist 
 F1_PCurvature_Results <- lapply(F1_PCurvature, sum) %>% unlist 
 
-# _6.) Check if curvature calculatoins make sense
+# _6.) Check if curvature calculatoins make sense ----
 
-# Show animal's id's and summed curvatures
+# __a) Show animal's id's and summed curvatures ----
 sort(F0_PCurvature_Results)
 sort(F1_PCurvature_Results)
 
-# Plot f0 and f1 weights by measurement day
+# __b) Plot f0 and f1 weights by measurement day ----
 
 # Including sums of 2nd curvatures
 mice_f0_slct_xyplot_curves <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measuerment age, inlcuding curvature summary",
@@ -193,7 +217,7 @@ mice_f1_slct_xyplot_curves <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, da
          panel.xyplot(x,y,...)
          panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4) })
 
-
+# The more steep the curve the higher the shown number
 mice_f0_slct_xyplot_curves
 mice_f1_slct_xyplot_curves
 
@@ -201,35 +225,41 @@ mice_slct_xyplots_curves <- ggarrange(mice_f0_slct_xyplot_curves, mice_f1_slct_x
 
 ggsave(plot = mice_slct_xyplots_curves, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights_curves.pdf")
 
-
 # Separate obese from non-obese mice ----
 
-# _1.) Finding modes for splitting data in obese and non-obese ----
+# _1.) Finding a measure for splitting data in obese and non-obese ----
 
-# __a) Base plots ----
+# __a) Trying to define a mode ----
 
+# modes don't work well to separte bimodal distribution of second derivatives - will use medeian instead
 plot(density(F0_PCurvature_Results), main = "F0 weight gain curvatures - Estimated mode")
 abline(v = naive(F0_PCurvature_Results,bw = 0.001), col = 2)
 
 plot(density(F1_PCurvature_Results), main = "F1 weight gain curvatures - Estimated mode")
-abline(v = naive(F1_PCurvature_Results, bw = 0.01), col = 2)
+abline(v = naive(F1_PCurvature_Results, bw = 0.001), col = 2)
 
-# __a) GGplots ----
+# __b) Show distribution of 2nd derivates and the median which separates high gain from low gain mice ----
+
+# Use this for reporting if necessary:
+median(F0_PCurvature_Results)
 
 mice_f0_derivatives_density <- ggplot(as_tibble_col(F0_PCurvature_Results, column_name = "SecondDerivative"), aes(x=SecondDerivative)) + 
   geom_density() +
-  geom_vline(xintercept = naive(F0_PCurvature_Results, bw = 0.001), color="blue") +
+  geom_vline(xintercept = median(F0_PCurvature_Results), color="blue") +
   xlab("second derivatives of growth curves") +
   ylab("denisty") +
-  ggtitle("f0 distribution of growth curve derivatives, with mode") +
+  ggtitle("f0 distribution of growth curve derivatives, with median value") +
   theme_bw()
+
+# Use this for reporting if necessary:
+median(F1_PCurvature_Results)
 
 mice_f1_derivatives_density <- ggplot(as_tibble_col(F1_PCurvature_Results, column_name = "SecondDerivative"), aes(x=SecondDerivative)) + 
   geom_density() +
-  geom_vline(xintercept = naive(F1_PCurvature_Results, bw = 0.01), color="blue") +
+  geom_vline(xintercept = median(F1_PCurvature_Results), color="blue") +
   xlab("second derivatives of growth curves") +
   ylab("denisty") +
-  ggtitle("f1 distribution of growth curve derivatives, with mode") +
+  ggtitle("f1 distribution of growth curve derivatives, with median") +
   theme_bw()
 
 mice_f0_derivatives_density
@@ -239,35 +269,55 @@ mice_derivatives_densities <- ggarrange(mice_f0_derivatives_density, mice_f1_der
 
 ggsave(scale = 0.75, plot = mice_derivatives_densities, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_derivatives_densities.pdf")
 
-# Storing modes
+# Storing modes and medians
 
 F0_Mode <- naive(F0_PCurvature_Results,bw = 0.001)
 F1_Mode <- naive(F1_PCurvature_Results, bw = 0.01)
+
+F0_Median <- median(F0_PCurvature_Results)
+F1_Median <- median(F1_PCurvature_Results)
 
 # _2.) Defining F0 animals with high or low weight gain ----
 
 # Not yet obesity status - see methods
 
-F0_HiGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results >= F0_Mode) ]   
-F0_LoGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results < F0_Mode) ]   
+F0_HiGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results >= F0_Median) ]   
+F0_LoGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results < F0_Median) ]   
+
+# HiGian F0 are
+F0_HiGain
+
+# LoGain F0 are
+F0_LoGain
 
 # _3.) Defining F1 animals with high or low weight gain 
 
 # Not yet obesity status - see methods
 
-F1_HiGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results >= F1_Mode) ]   
-F1_LoGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results < F1_Mode) ]   
+F1_HiGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results >= F1_Median) ]   
+F1_LoGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results < F1_Median) ]   
 
+# HiGian F1 are
+F1_HiGain
 
-# _4.) Mark mice in f0 table ----
+# LoGain F1 are
+F1_LoGain
 
-# based on hi and low weight gain - can't get to work mutate and case_when
+# _4.) Mark obese mice in f0 table ----
+
+# __a) Mark animals ----
 
 mice_f0_slct["WeightGain"] <- NA
 mice_f0_slct[which(as.character(mice_f0_slct[["AnimalId"]]) %in% F0_HiGain), ]["WeightGain"] <- "hi"
 mice_f0_slct[which(as.character(mice_f0_slct[["AnimalId"]]) %in% F0_LoGain), ]["WeightGain"] <- "lo"
 mice_f0_slct[["WeightGain"]] <- as.factor(mice_f0_slct[["WeightGain"]])
-mice_f0_slct$WeightGain %>% summary()
+
+# __b) Check successful marking ----
+
+mice_f0_slct %>% select(AnimalId) %>% distinct # next command below should have 12 animals
+mice_f0_slct %>% select(AnimalId, WeightGain) %>% distinct # 12 animals are marked as expected
+
+# __c ) Export table with successful marking ----
 
 mice_f0_slct %>% select(AnimalId, WeightGain) %>% distinct %>% 
   tbl_summary(., missing = "no") %>%
@@ -276,31 +326,68 @@ mice_f0_slct %>% select(AnimalId, WeightGain) %>% distinct %>%
 
 # _5.) Mark mice in f1 table ----
 
-# based on hi and low weight gain - can't get to work mutate and case_when
+# __a) Mark animals ----
 
 mice_f1_slct["WeightGain"] <- NA
 mice_f1_slct[which(as.character(mice_f1_slct[["AnimalId"]]) %in% F1_HiGain), ]["WeightGain"] <- "hi"
 mice_f1_slct[which(as.character(mice_f1_slct[["AnimalId"]]) %in% F1_LoGain), ]["WeightGain"] <- "lo"
 mice_f1_slct[["WeightGain"]] <- as.factor(mice_f1_slct[["WeightGain"]])
-mice_f1_slct$WeightGain %>% summary()
+
+# __b) Check successful marking ----
+
+mice_f1_slct %>% select(AnimalId) %>% distinct # next command below should have 50 animals
+mice_f1_slct %>% select(AnimalId, WeightGain) %>% distinct # 50 animals are marked as expected
+
+# __c ) Export table with successful marking ----
 
 mice_f1_slct %>% select(AnimalId, WeightGain) %>% distinct %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__weight_gain.docx")) 
 
-# >>>> continue here after 28.05.2023 with DI exporting----
-
 # _6.) Define obese f0 mice ----
 
-# Mark f0 with any HFD (also mixed diet) and hi weight gain are classified obese - all others are not obese! 
+# __a) Mark f0 with any HFD and hi weight gain as classified obese and all others are not obese! 
 
 mice_f0_slct %<>% mutate(Obesity = case_when(
   (Diet == "HFD" & WeightGain == "hi") ~ "Obese",
-  (Diet == "Mix" & WeightGain == "hi") ~ "Obese",
   (Diet == "CD" & WeightGain == "lo") ~ "NotObese", 
   TRUE ~ "NotObese"))
 mice_f0_slct[["Obesity"]] <- as.factor(mice_f0_slct[["Obesity"]])
+
+# __b) Check successful marking ----
+
+mice_f0_slct %>% select(AnimalId) %>% distinct # next command below should have 12 animals
+
+# >>> error below -- animal has received two types of diets ----
+
+mice_f0_slct %>% select(AnimalId, Diet, WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) 
+
+#the the f0 animlas below received mixed diets
+mice_f0_slct %>% filter(AnimalId %in% c(8994, 8995, 8996, 8997)) %>% arrange(AnimalId) %>% print(n = Inf)
+
+#the the f0 animlas below received unmixed diets
+mice_f0_slct %>% filter(AnimalId %!in% c(8994, 8995, 8996, 8997)) %>% arrange(AnimalId) %>% print(n = Inf)
+
+# commit 
+
+# Some HFD did not get obese per our definition - give the table for the manuscript
+
+mice_f0_slct %>% select(AnimalId, Diet, WeightGain, Obesity) %>% distinct %>% table
+
+# __c ) Export table with successful marking ----
+
+mice_f1_slct %>% select(AnimalId, WeightGain) %>% distinct %>% 
+  tbl_summary(., missing = "no") %>%
+  as_gt() %>%
+  gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__weight_gain.docx")) 
+
+
+
+
+
+
+
 mice_f0_slct$Obesity %>% summary()
 
 # _7.) Define obese f1 mice ----

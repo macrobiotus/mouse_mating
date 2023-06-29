@@ -411,8 +411,14 @@
 
 ## 29-06-2023
 
- * adding Roxygen-style markdwons to  `000_r_format_data.r`
-  * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/000_r_format_data.r')`
+ * [x] adding Roxygen-style markdown to  `000_r_format_data.r` - see `https://bookdown.org/yihui/rmarkdown-cookbook/spin.html`
+ * [x] re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/000_r_format_data.r')`
+ * [x] re-running `010_r_define_obesity.r` from start
+    * found f0 individuals with mixed diets `010_r_define_obesity.r` in line 362 
+    * commit - filter in `000_r_format_data.r` re run to `010_r_define_obesity.r` line 362
+ 
+ * [ ] adding Markdown structure to `010_r_define_obesity.r`
+ 
 
 
 ## Todo queue
