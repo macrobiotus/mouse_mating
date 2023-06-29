@@ -108,7 +108,7 @@ mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct.rds"))
 
 # __a) Show f0 Information ----
 
-mice_f0_slct %>% select(AnimalId, AnimalSex, Diet, PartnerDiet) %>% distinct 
+mice_f0_slct %>% select(AnimalId, AnimalSex, Diet, MatingWith, PartnerDiet) %>% distinct 
 
 # __b) Show f1 Information ----
 
