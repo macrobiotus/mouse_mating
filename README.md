@@ -428,31 +428,37 @@
  * in `000_r_format_data.r` checking filtering out  of f1 mice with mothers of mixed diets 
  * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/000_r_format_data.r')`
  * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/010_r_define_obesity.r')`
- 
+ * running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/020_r_h1.r')`
+ * including model formula summary as per 
+   * `https://datalorax.github.io/equatiomatic/`
+   * `https://bookdown.org/yihui/rmarkdown-cookbook/equatiomatic.html`
+   * `https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html`
+
 ## Todo queue
 
-  * [x] re-run script `010_r_define_obesity.r` from start - export DIs 
-  * [ ] re-run script `020_r_h1.r`, `030_r_h2.r`, and `040_r_h3.r` - adjust DI and markdown - export overviews
-  * [ ] re-run script `050_r_array_analysis.r`
-  * [ ] check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
+ * [x] re-run script `010_r_define_obesity.r` from start - export DIs 
+ * [x] re-run script `020_r_h1.r` - add hypothesis to top export as markdown add model formulae
+ * [ ] re-run script `030_r_h2.r` - add hypothesis to top export as markdown add model formulae
+ * [ ] re-run script `040_r_h3.r` - add hypothesis to top adjust DI and markdown - export overviews
+ * [ ] re-run script `050_r_array_analysis.r`
+ * [ ] check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
  
-  * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
-    * [x] parental diet conforms exactly with dietary variables considered by AH for array data
-    * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
-    * [x] the latter is needed but possibly the former data is the only one available
+ * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
+   * [x] parental diet conforms exactly with dietary variables considered by AH for array data
+   * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
+   * [x] the latter is needed but possibly the former data is the only one available
   
-  * [x] revise script `050_r_array_analysis_ah.r`:
-    * [x] **Day 1** - **use to inform DGE and write this down** inspect PCA signals  - overall and tissue specific - for obesity variables -> ***use to choose from DGE results** 
-    * [x] **Day 2** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
-    * [x] **Day 3** - modify reference levels in modelling - structure models more - rewrite 
-    * [x] **Day 4** - subset DGE results based on coefficients - create long list with data set identifier an contrast in name
-    * [x] **Day 5** - implement Volcano plot for DGE list - adjust thresholds
-    * [x] **Day 6** - implement KEGG and GO for all DGE list as done 
-    * [x] **Day 7** - possibly re-encode groups, remove mixed group from code, text, and images
- 
+ * [x] revise script `050_r_array_analysis_ah.r`:
+   * [x] **Day 1** - **use to inform DGE and write this down** inspect PCA signals  - overall and tissue specific - for obesity variables -> ***use to choose from DGE results** 
+   * [x] **Day 2** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
+   * [x] **Day 3** - modify reference levels in modelling - structure models more - rewrite 
+   * [x] **Day 4** - subset DGE results based on coefficients - create long list with data set identifier an contrast in name
+   * [x] **Day 5** - implement Volcano plot for DGE list - adjust thresholds
+   * [x] **Day 6** - implement KEGG and GO for all DGE list as done 
+   * [x] **Day 7** - possibly re-encode groups, remove mixed group from code, text, and images
   
  * [] manuscript work
-   * [ ] update supplemental methods 
+   * [ ] update supplemental methods - modelling section 
    * [ ] adjust Fig 1
    * [ ] update all numbers figures and tables from html reports and exported items
    * [ ] find out which genes could be relavant and add to all manuscript sections  
