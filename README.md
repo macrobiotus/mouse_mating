@@ -443,7 +443,7 @@
  * after attempting to deal with missing data will ignore LIAT
  * running `git checkout d7c10c120f5c516b362620484ab8e4e1d825b9e1 -- 050_r_array_analysis.r`
  * including code to check availability of obesity variables for expression data
- * commit ``
+ * commit `92a922d66d2752668fe673c80fe05bf7975424ba`
  
 
 ## Todo queue
@@ -452,7 +452,7 @@
  * [x] re-run script `020_r_h1.r` add hypothesis to top export as markdown add model formulae
  * [x] re-run script `030_r_h2.r` add hypothesis to top export as markdown add model formulae
  * [x] re-run script `040_r_h3.r` add hypothesis to top adjust DI and markdown - export overviews
- * [ ] re-run script `050_r_array_analysis.r` - redefine contrasts - add markdown - erase old DIs - export DIs 
+ * [ ] re-run script `050_r_array_analysis.r` - deal with missing LIAT - redefine contrasts - add markdown - erase old DIs - export DIs 
  * [ ] in script `050_r_array_analysis.r` - check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
  
  * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
