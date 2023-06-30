@@ -533,12 +533,9 @@ SCAT <- adjust_array_data(SCAT, mice_f1_modeled_data_with_rna_seq_data)
 LIAT <- adjust_array_data(LIAT, mice_f1_modeled_data_with_rna_seq_data)
 EVAT <- adjust_array_data(EVAT, mice_f1_modeled_data_with_rna_seq_data)
 
-# check, if you like, using
-# pData(BRAT)
-# exprs(BRAT)
+# check, if you like, using `pData(BRAT)` and `exprs(BRAT)` - check available metadata - LIAT does not have a lot
 
-# pData(LIAT)
-# exprs(LIAT)
+lapply(c(FLAT, BRAT, SCAT, LIAT, EVAT), pData)  
 
 # _5.) Loading AHs dietary DGE analysis results ----
 

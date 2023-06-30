@@ -438,6 +438,13 @@
  * started on results section 
  * before continuing writing - need refreshed array analysis results first
  * commit `97a250fa653f36b5a8452d1e56af4a3a8631a19e`
+ * commit prior to altering script 50 due to missing mother obese in LIAT
+ * commit `d7c10c120f5c516b362620484ab8e4e1d825b9e1`
+ * after attempting to deal with missing data will ignore LIAT
+ * running `git checkout d7c10c120f5c516b362620484ab8e4e1d825b9e1 -- 050_r_array_analysis.r`
+ * including code to check availability of obesity variables for expression data
+ * commit ``
+ 
 
 ## Todo queue
 
