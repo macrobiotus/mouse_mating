@@ -443,7 +443,7 @@
  * after attempting to deal with missing data will ignore LIAT
  * running `git checkout d7c10c120f5c516b362620484ab8e4e1d825b9e1 -- 050_r_array_analysis.r`
  * including code to check availability of obesity variables for expression data
- * commit `4291a5e47bd2190edcd56c3379f2b5d417cf367c`
+ * commit `3bf6bc800f64546cdd43220b90c7353033fc1577`
  
 ## Todo queue
 
@@ -451,7 +451,7 @@
  * [x] re-run script `020_r_h1.r` add hypothesis to top export as markdown add model formulae
  * [x] re-run script `030_r_h2.r` add hypothesis to top export as markdown add model formulae
  * [x] re-run script `040_r_h3.r` add hypothesis to top adjust DI and markdown - export overviews
- * [ ] re-run script `050_r_array_analysis.r` - deal with missing LIAT - redefine contrasts - add markdown - erase old DIs - export DIs 
+ * [ ] re-run script `050_r_array_analysis.r` - update manuscript with PCA results - deal with missing LIAT - redefine contrasts - add markdown - erase old DIs - export DIs 
  * [ ] in script `050_r_array_analysis.r` - check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
  
  * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
@@ -469,7 +469,7 @@
    * [x] **Day 7** - possibly re-encode groups, remove mixed group from code, text, and images
   
  * [] manuscript work
-   * [ ] continue with results section - transcriptome work 
+   * [ ] continue with results section - update PCA text and figures
    * [ ] adjust Fig 1
    * [ ] update all numbers figures and tables from html reports and exported items
    * [ ] find out which genes could be relavant and add to all manuscript sections  
