@@ -176,9 +176,30 @@ mice_f0 %>% filter(AnimalId %!in% c(8994, 8995, 8996, 8997)) %>% arrange(AnimalI
 
 mice_f0 %<>% filter(AnimalId %!in% c(8994, 8995, 8996, 8997))
 
+
+#' ### Remove f1 individuals from parents with mixed diets, if any
+
+# __d) Remove f1 individuals from mothers with "mixed" diets, if any  ----
+
+# -- testing approach --
+
+# there are 50 f1 mice prior to filtering
+mice_f1 %>% pull(AnimalId) %>% unique() %>% length 
+
+# there is data for 8 female mice in the f0 
+mice_f0 %>% select(AnimalId, AnimalSex) %>% distinct
+mice_f0 %>% select(AnimalId, AnimalSex) %>% pull(AnimalId) %>% unique() %>% length 
+
+# there are 50 f1 mice after filtering
+mice_f1 %>% filter(MotherId %in% (mice_f0 %>% pull(AnimalId) %>% unique())) %>% pull(AnimalId) %>% unique() %>% length 
+
+
+# -- doing the filtering --
+mice_f1 %<>% filter(MotherId %in% (mice_f0 %>% pull(AnimalId) %>% unique()))
+
 #' ### Remove Group column among f0 and mixed group among f1
 
-# __d) Remove Group column among f0 and mixed group among f1  ----
+# __e) Remove Group column among f0 and mixed group among f1  ----
 
 # to not get confused downstream and beacuse ther is no RNAseq data for mixed f1 
 mice_f0 %<>% select(-c("Group")) 
@@ -186,7 +207,7 @@ mice_f1 %<>% filter(MotherDiet != "Mix")
 
 #' ### Save altered state
 
-# __e) Save altered state ----
+# __f) Save altered state ----
 
 # f0 generation - save altered state
 openxlsx::write.xlsx(mice_f0, paste0(here("tables"), "/", "000_r_format_data__f0_mice_cleaned_detail.xlsx"), asTable = TRUE, overwrite = TRUE)

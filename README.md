@@ -420,14 +420,21 @@
  * adding some Markdown structure to `010_r_define_obesity.r`
  * running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/010_r_define_obesity.r')`
  * commit `be7b1fbed71ff2c4eeca66e0a46d631b85dcba39`
- * continued writing - finished main text methods - need to revise suppelmnetal methods
+ * continued writing - finished main text methods - need to revise supplemental methods
+ * commit `f6cc4a51b2021f9214638b322b90e3078d7013b3`
 
-
+## 30-06-2023
+  
+ * in `000_r_format_data.r` checking filtering out  of f1 mice with mothers of mixed diets 
+ * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/000_r_format_data.r')`
+ * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/010_r_define_obesity.r')`
+ 
 ## Todo queue
 
   * [x] re-run script `010_r_define_obesity.r` from start - export DIs 
-  * [ ] re-run scripts `020_r_h1.r`, `030_r_h2.r`, and `040_r_h3.r` - adjust DI and markdown - export overview
-  * [ ] check if DGE, KEGG, GO results can be interpreted with some sort of comparison data
+  * [ ] re-run script `020_r_h1.r`, `030_r_h2.r`, and `040_r_h3.r` - adjust DI and markdown - export overviews
+  * [ ] re-run script `050_r_array_analysis.r`
+  * [ ] check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
  
   * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
     * [x] parental diet conforms exactly with dietary variables considered by AH for array data
@@ -445,10 +452,9 @@
  
   
  * [] manuscript work
-   
    * [ ] update supplemental methods 
-   * [ ] update all numbers figures and tables from html reports and exported items
    * [ ] adjust Fig 1
+   * [ ] update all numbers figures and tables from html reports and exported items
    * [ ] find out which genes could be relavant and add to all manuscript sections  
    * [ ] update results  - check if Pathview can be used to improve visualisations (`https://doi.org/10.1093/bioinformatics/btt285`)
    * [ ] update introduction based on results
