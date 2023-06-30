@@ -437,7 +437,7 @@
  * running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/040_r_h3.r')`
  * started on results section 
  * before continuing writing - need refreshed array analysis results first
- * commit ``
+ * commit `97a250fa653f36b5a8452d1e56af4a3a8631a19e`
 
 ## Todo queue
 

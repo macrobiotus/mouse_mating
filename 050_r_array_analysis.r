@@ -249,7 +249,8 @@ get_dge_for_parent_obesity = function(ExpSet){
   colnames(design_parent_obese) <-c("MotherFatherNotObese", "FatherObese", "MotherFatherObese", "MotherObese") 
   fit_parent_obese <- lmFit(ExpSet, design_parent_obese)
   
-  # Setting contrasts - likley not all will give results 
+  # Setting contrasts - likely not all will give results 
+  
   contrast_names <- c(
     "MotherFatherObese vs MotherObese",
     "MotherFatherObese vs FatherObese", 
@@ -535,6 +536,9 @@ EVAT <- adjust_array_data(EVAT, mice_f1_modeled_data_with_rna_seq_data)
 # check, if you like, using
 # pData(BRAT)
 # exprs(BRAT)
+
+# pData(LIAT)
+# exprs(LIAT)
 
 # _5.) Loading AHs dietary DGE analysis results ----
 
@@ -1005,9 +1009,10 @@ get_dge_for_offspring_obesity(EVAT)
 
 FLAT_TopTableList <- get_dge_for_parent_obesity(FLAT) # no results and question doesn't really make sense
 BRAT_TopTableList <- get_dge_for_parent_obesity(BRAT) # not many samples
-LIAT_TopTableList <- get_dge_for_parent_obesity(LIAT) # not many samples
 EVAT_TopTableList <- get_dge_for_parent_obesity(EVAT)
 SCAT_TopTableList <- get_dge_for_parent_obesity(SCAT)
+
+LIAT_TopTableList <- get_dge_for_parent_obesity(LIAT) # not many samples
 
 # __d) Choose DGE results for further analyses ----
 
