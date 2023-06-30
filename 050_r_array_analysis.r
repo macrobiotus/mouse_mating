@@ -1008,8 +1008,7 @@ FLAT_TopTableList <- get_dge_for_parent_obesity(FLAT) # no results and question 
 BRAT_TopTableList <- get_dge_for_parent_obesity(BRAT) # not many samples
 EVAT_TopTableList <- get_dge_for_parent_obesity(EVAT)
 SCAT_TopTableList <- get_dge_for_parent_obesity(SCAT)
-
-LIAT_TopTableList <- get_dge_for_parent_obesity(LIAT) # not many samples
+LIAT_TopTableList <- get_dge_for_parent_obesity(LIAT) # will fail as sample is missing
 
 # __d) Choose DGE results for further analyses ----
 
@@ -1019,7 +1018,6 @@ LIAT_TopTableList <- get_dge_for_parent_obesity(LIAT) # not many samples
 
 names(FLAT_Tissue_TopTableList)
           
-
 # ___ FLAT, BRAT, SCAT, LIAT, EVAT - not keeping any contrasts defined by offspring' obesity  ----
 
 #  see PCA results: 
@@ -1060,6 +1058,20 @@ names(SCAT_TopTableList[c(13, 9, 4,8)]) # select slots corresponding to contrast
 
 SCAT__Select_TopTableList <- SCAT_TopTableList[c(4)] # slot(s) 13,9,8 empty
 
+# ___ EVAT - keeping some contrasts defined by parents' obesity  ----
+
+#  see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_evat.txt"
+# needed are contrasts:
+# 1.) MotherFatherNotObese vs FatherObese & MotherObese & MotherFatherObese
+# 2.) MotherFatherObese vs  MotherFatherNotObese
+# 3.) FatherObese vs  MotherFatherNotObese - empty slot 
+# 4.) MotherObese vs  MotherFatherNotObese
+
+names(EVAT_TopTableList)
+names(EVAT_TopTableList[c(13, 4, 9, 8)]) # slot 9 is empty - even though significant in PCA - small sample size? - check!
+
+EVAT__Select_TopTableList <- EVAT_TopTableList[c(13, 4, 8)] 
+
 # ___ LIAT - keeping some contrasts defined by parents' obesity  ----
 
 #  see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_liat.txt"
@@ -1074,19 +1086,6 @@ names(LIAT_TopTableList[c(13, 7, 17, 18)])
 
 LIAT__Select_TopTableList <- LIAT_TopTableList[c(13, 7, 17, 18 )] 
 
-# ___ EVAT - keeping some contrasts defined by parents' obesity  ----
-
-#  see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_evat.txt"
-# needed are contrasts:
-# 1.) MotherFatherNotObese vs FatherObese & MotherObese & MotherFatherObese
-# 2.) MotherFatherObese vs  MotherFatherNotObese
-# 3.) FatherObese vs  MotherFatherNotObese - empty slot 
-# 4.) MotherObese vs  MotherFatherNotObese
-
-names(EVAT_TopTableList)
-names(EVAT_TopTableList[c(13, 4, 9, 8)]) # slot 9 is empty - even though significant in PCA - small sample size? - check!
-
-EVAT__Select_TopTableList <- EVAT_TopTableList[c(13, 4, 8)] 
 
 # __e)  Compile a well-labelled list with all DGE results  ----
 

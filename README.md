@@ -423,7 +423,7 @@
  * continued writing - finished main text methods - need to revise supplemental methods
  * commit `f6cc4a51b2021f9214638b322b90e3078d7013b3`
 
-## 30-06-2023
+## 30-06-2023 - work day 44
   
  * in `000_r_format_data.r` checking filtering out  of f1 mice with mothers of mixed diets 
  * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/000_r_format_data.r')`
@@ -443,9 +443,8 @@
  * after attempting to deal with missing data will ignore LIAT
  * running `git checkout d7c10c120f5c516b362620484ab8e4e1d825b9e1 -- 050_r_array_analysis.r`
  * including code to check availability of obesity variables for expression data
- * commit `92a922d66d2752668fe673c80fe05bf7975424ba`
+ * commit `4291a5e47bd2190edcd56c3379f2b5d417cf367c`
  
-
 ## Todo queue
 
  * [x] re-run script `010_r_define_obesity.r` from start - export DIs 
