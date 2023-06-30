@@ -433,15 +433,20 @@
    * `https://datalorax.github.io/equatiomatic/`
    * `https://bookdown.org/yihui/rmarkdown-cookbook/equatiomatic.html`
    * `https://vincentarelbundock.github.io/modelsummary/articles/modelsummary.html`
+ * running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/030_r_h2.r')`
+ * running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/040_r_h3.r')`
+ * started on results section 
+ * before continuing writing - need refreshed array analysis results first
+ * commit ``
 
 ## Todo queue
 
  * [x] re-run script `010_r_define_obesity.r` from start - export DIs 
- * [x] re-run script `020_r_h1.r` - add hypothesis to top export as markdown add model formulae
- * [ ] re-run script `030_r_h2.r` - add hypothesis to top export as markdown add model formulae
- * [ ] re-run script `040_r_h3.r` - add hypothesis to top adjust DI and markdown - export overviews
- * [ ] re-run script `050_r_array_analysis.r`
- * [ ] check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
+ * [x] re-run script `020_r_h1.r` add hypothesis to top export as markdown add model formulae
+ * [x] re-run script `030_r_h2.r` add hypothesis to top export as markdown add model formulae
+ * [x] re-run script `040_r_h3.r` add hypothesis to top adjust DI and markdown - export overviews
+ * [ ] re-run script `050_r_array_analysis.r` - redefine contrasts - add markdown - erase old DIs - export DIs 
+ * [ ] in script `050_r_array_analysis.r` - check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
  
  * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
    * [x] parental diet conforms exactly with dietary variables considered by AH for array data
@@ -458,7 +463,7 @@
    * [x] **Day 7** - possibly re-encode groups, remove mixed group from code, text, and images
   
  * [] manuscript work
-   * [ ] update supplemental methods - modelling section 
+   * [ ] continue with results section - transcriptome work 
    * [ ] adjust Fig 1
    * [ ] update all numbers figures and tables from html reports and exported items
    * [ ] find out which genes could be relavant and add to all manuscript sections  

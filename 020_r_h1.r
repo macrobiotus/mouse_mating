@@ -141,8 +141,6 @@ equatiomatic::extract_eq(mod_0)
 summary(mod_0)
 
 
-
-
 #' ## Actual model
 
 # _2.) Actual model ----

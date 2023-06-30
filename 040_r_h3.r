@@ -1,6 +1,6 @@
 #' ---
 #' title: "Mice Mating Study"
-#' subtitle: "Modelling for Hypothesis 3"
+#' subtitle: "Modelling for Hypothesis 3: Offspring-specific sex effect of inheriting obesity."
 #' author: "Paul Czechowski ``paul.czechowski@helmholtz-munich.de``"
 #' date: "`r Sys.Date()`"
 #' output:
@@ -18,6 +18,8 @@
 #'     number_sections: true
 #'     code_folding: show
 #' ---
+
+#' # Prepare environment
 
 # Prepare environment  ---- 
 
@@ -58,7 +60,7 @@ library("cAIC4")       # Model selection
 library("gtsummary")
 library("modelsummary")
 
-# 3.) Functions ----
+# _3.) Functions ----
 
 get_model_prdictions_with_mgcv = function(model_fit, model_data, ...){
   
@@ -79,12 +81,14 @@ get_model_prdictions_with_mgcv = function(model_fit, model_data, ...){
   return(model_data_with_predictions)
 }
 
+#' # Get data
 
 # Get data ----
 
 mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_slct_with_H2variables.rds"))
 mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct_with_H2variables.rds"))
 
+#' # Logistic Regression: Select and shape data
 
 # Logistic Regression: Select and shape data ----
 
@@ -99,29 +103,35 @@ mice_f1_model_data <- mice_f1_slct %>% select(AnimalId, AnimalSex, ObesityLgcl, 
 
 # _2.) Check balance of modelling data and get a graphical or table summary  ----
 
-mice_f1_model_data %>% select(ObesityLgcl, ObeseParents) %>% count(ObesityLgcl, ObeseParents, sort = TRUE)
+mice_f1_model_data %>% select(ObesityLgcl, ObeseParents) %>% dplyr::count(ObesityLgcl, ObeseParents, sort = TRUE)
 mice_f1_model_data %>% select(ObesityLgcl, ObeseParents) %>% table()
+
+#' # Logistic Regression: Model offspring' obesity as function of parents obesity
 
 # Logistic Regression: Model offspring' obesity as function of parents obesity  ----
 
 # _1.) Intercept-only model ----
 
 mod_0 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
+equatiomatic::extract_eq(mod_0)
 summary(mod_0)
 
 # _2.) Animal sex only ----
 
 mod_1 <- lme4::glmer(ObesityLgcl ~ AnimalSex +  (1 | AnimalId), data = mice_f1_model_data, family = binomial)
+equatiomatic::extract_eq(mod_1)
 summary(mod_1)  # AnimalSexm *** (due to weight curve Obesity definistion)
 
 # _3.) Parents obesity only  ----
 
 mod_2 <- lme4::glmer(ObesityLgcl ~ ObeseParents + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
+equatiomatic::extract_eq(mod_2)
 summary(mod_2) # ObeseParentsMotherFatherObese ***
 
 # _4.) Full model ----
 
 mod_3 <- lme4::glmer(ObesityLgcl ~ AnimalSex + ObeseParents + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
+equatiomatic::extract_eq(mod_3)
 summary(mod_3)
 
 exp(fixef(mod_3))
@@ -143,6 +153,8 @@ anova(mod_1, mod_2) #
 anova(mod_1, mod_3) # 
 anova(mod_2, mod_3) # 2.192e-10 ***
 
+#' # GAM and body weight: Select and shape data
+
 # GAM and body weight: Select and shape data ----
 
 # Hypotheses are
@@ -158,7 +170,7 @@ mice_f1_model_data$ObeseParents <- relevel(mice_f1_model_data$ObeseParents, "Mot
 
 # _2.) Check balance of modelling data and get a graphical or table summary  ----
 
-mice_f1_model_data %>% select(MeasurementDay, ObeseParents) %>% count(MeasurementDay, ObeseParents, sort = TRUE)
+mice_f1_model_data %>% select(MeasurementDay, ObeseParents) %>% dplyr::count(MeasurementDay, ObeseParents, sort = TRUE)
 mice_f1_model_data %>% select(MeasurementDay, ObeseParents) %>% table()
 
 plotrix::sizetree(mice_f1_model_data %>% dplyr::select(AnimalSex, ObeseParents)) 
@@ -170,6 +182,8 @@ plotrix::sizetree(mice_f1_model_data %>% dplyr::select(AnimalSex, ObeseParents, 
 mice_f1_model_data
 summary(mice_f1_model_data)
 
+#' # GAM and body weight: Model offspring' body weight as function of parents obesity
+
 # GAM and body weight: Model offspring' body weight as function of parents obesity  ----
 
 # https://fromthebottomoftheheap.net/2021/02/02/random-effects-in-gams/
@@ -179,21 +193,27 @@ summary(mice_f1_model_data)
 
 # __a) No random effects ----
 mod_1 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents, data = mice_f1_model_data, method = "ML", family = "gaussian")
+equatiomatic::extract_eq(mod_1)
 
 # __b) No random effects, but correlated errors ----
 mod_2 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents, data = mice_f1_model_data, method = "ML", correlation = coAR1(form = ~ MeasurementDay | AnimalId), family = "gaussian")
+equatiomatic::extract_eq(mod_2)
 
 # __c) Subject only as random effect ----
 mod_3 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents + s(AnimalId, bs = 're'), data = mice_f1_model_data, method = "ML", family = "gaussian")
+equatiomatic::extract_eq(mod_3)
 
 # __d) Subject at each time  as random effect ----
 mod_4 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents + s(AnimalId, MeasurementDay, bs = 're'), data = mice_f1_model_data, method = "ML", family = "gaussian")
+equatiomatic::extract_eq(mod_4)
 
 # __e) Adding time correlation to Subjscts random effects instead of complicated ranodm effect ----
 mod_5 <- gam(BodyWeightG ~  s(MeasurementDay, k=5, bs="tp") + AnimalSex + ObeseParents + s(AnimalId, bs = 're'), correlation = coAR1(form = ~ MeasurementDay | AnimalId), data = mice_f1_model_data, method = "ML",  family = "gaussian")
+equatiomatic::extract_eq(mod_5)
 
 # __f) Reverting to d) but for each sex ----
 mod_6 <- gam(BodyWeightG ~  s(MeasurementDay, by = AnimalSex, k=5, bs="fs", m=2)  + ObeseParents + s(AnimalId, MeasurementDay, bs = 're'), data = mice_f1_model_data, method = "ML", family = "gaussian")
+equatiomatic::extract_eq(mod_6)
 
 # _2.) Model rankings ----
 
@@ -296,9 +316,13 @@ saveRDS(mice_f1_modeled_data_with_rna_seq_data, file = here("rds_storage", "040_
 
 openxlsx::write.xlsx(mice_f1_modeled_data_with_rna_seq_data, paste0(here("tables"), "/", "040_r_h3__rna_seq_sample.xlsx"), asTable = TRUE, overwrite = TRUE)
 
+#' # Save finished data
+
 # Save finished data ----
 saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_with_H3variables.rds"))
 saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_with_H3variables.rds"))
+
+#' # Snapshot environment
 
 # Snapshot environment ----
 sessionInfo()
