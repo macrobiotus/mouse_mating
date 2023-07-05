@@ -464,6 +464,13 @@
    * `/Users/paul/Documents/HM_MouseMating/analysis/tables/050_r_array_analysis_BRAT_TTL_sign.xlsx`
    * `/Users/paul/Documents/HM_MouseMating/analysis/tables/050_r_array_analysis_LIAT_TTL_down.xlsx`
    * `/Users/paul/Documents/HM_MouseMating/analysis/tables/050_r_array_analysis_LIAT_TTL_sign.xlsx`
+ * commit `482459afbd07f16e6af1a7f94f95cd63103a75b7`
+ * finished script `050_r_array_analysis`, let it run in full, and saved full image
+ * updated results in manuscript - **only GO terms still need doing**
+ * commmit ``
+ 
+ 
+ 
  
 ## Todo queue
 
@@ -471,7 +478,7 @@
  * [x] re-run script `020_r_h1.r` add hypothesis to top export as markdown add model formulae
  * [x] re-run script `030_r_h2.r` add hypothesis to top export as markdown add model formulae
  * [x] re-run script `040_r_h3.r` add hypothesis to top adjust DI and markdown - export overviews
- * [ ] re-run script `050_r_array_analysis.r` - update manuscript with PCA results - deal with missing LIAT - redefine contrasts - add markdown - erase old DIs - export DIs 
+ * [x] re-run script `050_r_array_analysis.r` - update manuscript with PCA results - deal with missing LIAT - redefine contrasts - add markdown - erase old DIs - export DIs 
  * [ ] in script `050_r_array_analysis.r` - check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
  
  * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
@@ -489,8 +496,9 @@
    * [x] **Day 7** - possibly re-encode groups, remove mixed group from code, text, and images
   
  * [] manuscript work
-   * [ ] continue with results section - update PCA text and figures
-   * [ ] adjust Fig 1
+   * [x] continue with results section - update PCA text and figures
+   * [ ] finish results section - GO terms
+   * [ ] adjust Fig 1 - in files, so far only cropped and numbers may not be correct
    * [ ] update all numbers figures and tables from html reports and exported items
    * [ ] find out which genes could be relavant and add to all manuscript sections  
    * [ ] update results  - check if Pathview can be used to improve visualisations (`https://doi.org/10.1093/bioinformatics/btt285`)

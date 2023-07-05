@@ -456,16 +456,21 @@ get_entrez_ids = function(TopTable) {
           
 }
 
-get_one_kegg_plot <- function(TopTableListItem, TopTableListItemName){
+get_one_kegg_dotplot <- function(TopTableListItem, TopTableListItemName){
+  
+  # see https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html
   
   require("clusterProfiler")
   require("enrichplot")
   
   # diagnostic
-  message(paste0("Creating KEGG plot for data set: \"", TopTableListItemName, "\".", sep = ""))
+  message(paste0("Creating KEGG dot-plot for data set: \"", TopTableListItemName, "\".", sep = ""))
   
   # lookup kegg pathways
-  kegg_result <- enrichKEGG(gene = TopTableListItem$ENTREZ, keyType = 'ncbi-geneid',  organism = 'mmu')  # ncib-proteinid is not supported for mmu ...
+  kegg_result <- enrichKEGG(gene = TopTableListItem$ENTREZ, keyType = 'ncbi-geneid',  organism = 'mmu', minGSSize = 5)  # ncib-proteinid is not supported for mmu ...
+  
+  # check resulting object
+  print(kegg_result)
   
   # get dipslay item
   kegg_plot <- enrichplot::dotplot(kegg_result, title =  paste0("KEGG pathways of data set: \"", TopTableListItemName, "\"", sep = ""), showCategory=15)
@@ -474,6 +479,7 @@ get_one_kegg_plot <- function(TopTableListItem, TopTableListItemName){
   return(kegg_plot)
   
 }
+
 
 get_one_go_plot <- function(TopTableListItem, TopTableListItemName){
   
@@ -1219,8 +1225,11 @@ FULL_TopTableListAppended <- lapply(FULL_TopTableList, get_entrez_ids)
 
 # __b) Get plots of KEEG pathways ----
 
-FULL_KeggPlots <- mapply(get_one_kegg_plot, TopTableListItem = FULL_TopTableListAppended, TopTableListItemName = names(FULL_TopTableListAppended), SIMPLIFY = FALSE)
+FULL_KeggPlots <- mapply(get_one_kegg_dotplot, TopTableListItem = FULL_TopTableListAppended, TopTableListItemName = names(FULL_TopTableListAppended), SIMPLIFY = FALSE)
 names(FULL_KeggPlots)
+
+FULL_KeggPlots[1]
+FULL_KeggPlots[2]
 
 # __c) Save plots of KEEG pathways ----
 
@@ -1235,6 +1244,8 @@ names(FULL_GoPlots)
 # __e) Save plots of GO pathways ----
 
 mapply(save_go_plots, ggplot_list_item = FULL_GoPlots, ggplot_list_item_name = names(FULL_KeggPlots), SIMPLIFY = FALSE)
+
+ggsave(plot = ggarrange(plotlist =  FULL_GoPlots, ncol = 2, labels = "auto"), filename = "050_r_array_analysis__plot_go_both.pdf", path = here("../manuscript/display_items/"), width = 280, height = 420, unit = "mm", scale = 1)
 
 # Experimental: DGE-analysis using GAMs - Investigate overall tissue specific expression differences based on obesity variables ----
 
@@ -1251,7 +1262,7 @@ mapply(save_go_plots, ggplot_list_item = FULL_GoPlots, ggplot_list_item_name = n
 
 # select model data size for mdoel testing and code develpment - decrese number is code is getting too slow
 ArrayTargets <- sample(FLAT_DT.m1[["ArrayTarget"]], 500, replace=FALSE)
-model_data <- subset(FLAT_DT.m1, ArrayTarget %in% ArrayTargets) # subes to 100 of 20000 genes to speed up compuaterion
+model_data <- subset(FLAT_DT.m1, ArrayTarget %in% ArrayTargets) # subest to 100 of 20000 genes to speed up compuaterion
 unique(model_data[["Tissue"]])
 
 # _3.) Build model ----
