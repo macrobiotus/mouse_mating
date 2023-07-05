@@ -443,7 +443,17 @@
  * after attempting to deal with missing data will ignore LIAT
  * running `git checkout d7c10c120f5c516b362620484ab8e4e1d825b9e1 -- 050_r_array_analysis.r`
  * including code to check availability of obesity variables for expression data
- * commit `3bf6bc800f64546cdd43220b90c7353033fc1577`
+ * commit `bc46bba79b132b56c66a5be6c464f2f610dd47f0`
+
+## 04-07-2023 - work day 45
+
+ * re-ran `050_r_array_analysis.r` to break point in line 1010 and saved workspace image
+ * updated results section in manuscript and SI figure
+
+
+## 05-07-2023 - work day 46
+
+ * foo
  
 ## Todo queue
 
