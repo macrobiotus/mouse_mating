@@ -457,7 +457,13 @@
  * commit prior to dealing with `050_r_array_analysis.r` and missing contrast in LIAT in script 
  * commit `cc0d696935d32eb267ea227572ea2c8971a67234`
  * getting DEG results falso fro LIAT with reduced set
- * commmit ``
+ * commit `f8ca937c8142e37258185ec8d98cd5723b5a3572`
+ * continuing to update manuscript
+ * extending `050_r_array_analysis.r` - adding DGE list export to: 
+   * `/Users/paul/Documents/HM_MouseMating/analysis/tables/050_r_array_analysis_BRAT_TTL_down.xlsx`
+   * `/Users/paul/Documents/HM_MouseMating/analysis/tables/050_r_array_analysis_BRAT_TTL_sign.xlsx`
+   * `/Users/paul/Documents/HM_MouseMating/analysis/tables/050_r_array_analysis_LIAT_TTL_down.xlsx`
+   * `/Users/paul/Documents/HM_MouseMating/analysis/tables/050_r_array_analysis_LIAT_TTL_sign.xlsx`
  
 ## Todo queue
 

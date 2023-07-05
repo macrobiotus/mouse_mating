@@ -177,7 +177,7 @@ plotrix::sizetree(mice_f1_model_data %>% dplyr::select(AnimalSex, ObeseParents))
 plotrix::sizetree(mice_f1_model_data %>% dplyr::select(AnimalSex, ObeseParents, MeasurementDay)) 
 plotrix::sizetree(mice_f1_model_data %>% dplyr::select(AnimalSex, ObeseParents, BodyWeightG)) 
 
-# _3.) Data summmary ----
+# _3.) Data summary ----
 
 mice_f1_model_data
 summary(mice_f1_model_data)

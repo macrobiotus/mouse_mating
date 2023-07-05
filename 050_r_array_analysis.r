@@ -1070,135 +1070,139 @@ LIAT_TopTableList <- get_some_dge_for_parent_obesity(LIAT)
 
 # ___ FLAT - keeping all contrasts for all tissues ----
 
-# see file "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_flat.txt"
+# see file "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_FLAT.txt"
 
 names(FLAT_Tissue_TopTableList)
           
 # ___ FLAT, BRAT, SCAT, LIAT, EVAT - not keeping any contrasts defined by offspring' obesity  ----
 
 #  see PCA results: 
-#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_brat.txt"
-#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_evat.txt"
-#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_liat.txt"
-#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_scat.txt"
+#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_EVAT.txt" # likely not needed - see manuscript results 05.07.2023
+#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_SCAT.txt" # likely not needed - see manuscript results 05.07.2023
+#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_BRAT.txt"
+#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_LIAT.txt"
 
 #  see DGE results - above
 
-# ___ BRAT - keeping some contrasts defined by parents' obesity  ----
+# ___ EVAT - keeping some contrasts defined by parents' obesity  ----
 
-# see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_brat.txt"
-# needed are contrasts:
-# 1.) MotherFatherNotObese vs MotherFatherObese & MotherObese
-# 2.) MotherFatherObese vs MotherFatherNotObese & FatherObese
-# 3.) MotherObese vs MotherFatherNotObese & FatherObese
-# 4.) FatherObese vs MotherFatherObese & MotherObese
-
-names(BRAT_TopTableList) # check available slots 
-names(BRAT_TopTableList[c(11, 6, 15, 16)]) # select slots corresponding to contrasts readout above 
-
-BRAT__Select_TopTableList <- BRAT_TopTableList[c(11, 6, 15, 16)] # selecting individual and compound contrasts
-
+# no contrasts ar needed  
+# - see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_EVAT.txt"
+# - see manuscript results 05.07.2023
 
 # ___ SCAT - keeping some contrasts defined by parents' obesity  ----
 
-# see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_scat.txt"
-# needed are contrasts:
-# 1.) MotherFatherNotObese vs FatherObese & MotherFatherObese & MotherObese - empty
-# 2.) FatherObese vs MotherFatherNotObese - empty
-# 3.) MotherFatherObese vs MotherFatherNotObese
-# 4.) MotherObese vs MotherFatherNotObese - empty
+# no contrasts ar needed  
+# - see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_SCAT.txt"
+# - see manuscript results 05.07.2023
 
+# ___ BRAT - keeping some contrasts defined by parents' obesity  ----
 
-names(SCAT_TopTableList) # check available slots 
-names(SCAT_TopTableList[c(13, 9, 4,8)]) # select slots corresponding to contrasts readout above 
+# some contrast are needed: 
+# - see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_BRAT.txt"
+# - see manuscript results 05.07.2023
+# - "MotherFatherObese vs FatherObese"
 
-SCAT__Select_TopTableList <- SCAT_TopTableList[c(4)] # slot(s) 13,9,8 empty
+names(BRAT_TopTableList) # check available slots 
+names(BRAT_TopTableList[c(2)]) # select slots corresponding to contrasts readout above 
 
-# ___ EVAT - keeping some contrasts defined by parents' obesity  ----
-
-#  see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_evat.txt"
-# needed are contrasts:
-# 1.) MotherFatherNotObese vs FatherObese & MotherObese & MotherFatherObese
-# 2.) MotherFatherObese vs  MotherFatherNotObese
-# 3.) FatherObese vs  MotherFatherNotObese - empty slot 
-# 4.) MotherObese vs  MotherFatherNotObese
-
-names(EVAT_TopTableList)
-names(EVAT_TopTableList[c(13, 4, 9, 8)]) # slot 9 is empty - even though significant in PCA - small sample size? - check!
-
-EVAT__Select_TopTableList <- EVAT_TopTableList[c(13, 4, 8)] 
+BRAT__Select_TopTableList <- BRAT_TopTableList[c(2)] # selecting individual and compound contrasts
 
 # ___ LIAT - keeping some contrasts defined by parents' obesity  ----
 
-#  see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_liat.txt"
-# needed are contrasts:
-# 1.) MotherFatherNotObese vs FatherObese & MotherFatherObese & MotherObese
-# 2.) MotherFatherObese vs   MotherFatherNotObese & FatherObese & MotherObese
-# 3.) FatherObese vs  MotherFatherNotObese & MotherFatherObese
-# 4.) MotherObese vs MotherFatherNotObese & MotherFatherObese
+# some contrast are needed: 
+# - see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_LIAT.txt"
+# - see manuscript results 05.07.2023
+# - "MotherFatherNotObese vs MotherFatherObese"
 
 names(LIAT_TopTableList)
-names(LIAT_TopTableList[c(13, 7, 17, 18)]) 
+names(LIAT_TopTableList[c(2)]) 
 
-LIAT__Select_TopTableList <- LIAT_TopTableList[c(13, 7, 17, 18 )] 
-
+LIAT__Select_TopTableList <- LIAT_TopTableList[c(2)] 
 
 # __e)  Compile a well-labelled list with all DGE results  ----
 
+# - these results are likley not needed
 names(FLAT_Tissue_TopTableList) <- paste0("FLAT - ", names(FLAT_Tissue_TopTableList))
 
+# - these results are undefined, as PCA didn't show structure and no DEGs were define (see 5.-Jul.2023)
+#   names(EVAT__Select_TopTableList) <- paste0("EVAT - ", names(EVAT__Select_TopTableList))
+#   names(SCAT__Select_TopTableList) <- paste0("SCAT - ", names(SCAT__Select_TopTableList))
+
 names(BRAT__Select_TopTableList) <- paste0("BRAT - ", names(BRAT__Select_TopTableList))
-names(SCAT__Select_TopTableList) <- paste0("SCAT - ", names(SCAT__Select_TopTableList))
 names(LIAT__Select_TopTableList) <- paste0("LIAT - ", names(LIAT__Select_TopTableList))
-names(EVAT__Select_TopTableList) <- paste0("EVAT - ", names(EVAT__Select_TopTableList))
 
 FULL_TopTableList <- c(
-  FLAT_Tissue_TopTableList,
+  # FLAT_Tissue_TopTableList,
+  # EVAT__Select_TopTableList, 
   BRAT__Select_TopTableList,
-  SCAT__Select_TopTableList,
-  LIAT__Select_TopTableList,
-  EVAT__Select_TopTableList
-)
+  LIAT__Select_TopTableList
+  )
 
-# receiving a table with 17 slots, each containing DGE results fo a specific tissue and statistically relavent contrasts
+# receiving a table with 2 slots, each containing DGE results fo a specific tissue and statistically relavent contrasts
 names(FULL_TopTableList)
 
 # __f)  Get, assort, arrange, and save Vulcano plots  ----
 
 FULL_VolcanoPlots <- mapply(get_one_volcanoplot, TopTableListItem = FULL_TopTableList, TopTableListItemName = names(FULL_TopTableList), SIMPLIFY = FALSE)
 
-FLAT_VolcanoPlots <- FULL_VolcanoPlots[grep("FLAT", names(FULL_VolcanoPlots))]
+# the following three sets are undefined or serve no purpose (see 5-Jul-2023)
+#  FLAT_VolcanoPlots <- FULL_VolcanoPlots[grep("FLAT", names(FULL_VolcanoPlots))]
+#  SCAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^SCAT", names(FULL_VolcanoPlots))]
+#  EVAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^EVAT", names(FULL_VolcanoPlots))]
+
 BRAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^BRAT", names(FULL_VolcanoPlots))]
-SCAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^SCAT", names(FULL_VolcanoPlots))]
 LIAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^LIAT", names(FULL_VolcanoPlots))]
-EVAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^EVAT", names(FULL_VolcanoPlots))]
 
-FLAT_VolcanoPlotsComposite <- ggarrange(plotlist = FLAT_VolcanoPlots, ncol = 2, nrow = 2, labels = "auto")
-BRAT_VolcanoPlotsComposite <- ggarrange(plotlist = BRAT_VolcanoPlots, ncol = 2, nrow = 2, labels = "auto")
-SCAT_VolcanoPlotsComposite <- ggarrange(plotlist = SCAT_VolcanoPlots, ncol = 1, nrow = 1, labels = NULL)
-LIAT_VolcanoPlotsComposite <- ggarrange(plotlist = LIAT_VolcanoPlots, ncol = 2, nrow = 2, labels = "auto")
-EVAT_VolcanoPlotsComposite <- ggarrange(plotlist = EVAT_VolcanoPlots, ncol = 3, nrow = 1, labels = "auto")
+# the following three sets are undefined or serve no purpose (see 5-Jul-2023)
+#  FLAT_VolcanoPlotsComposite <- ggarrange(plotlist = FLAT_VolcanoPlots, ncol = 2, nrow = 2, labels = "auto")
+#  SCAT_VolcanoPlotsComposite <- ggarrange(plotlist = SCAT_VolcanoPlots, ncol = 1, nrow = 1, labels = NULL)
+#  EVAT_VolcanoPlotsComposite <- ggarrange(plotlist = EVAT_VolcanoPlots, ncol = 3, nrow = 1, labels = "auto")
+BRAT_VolcanoPlotsComposite <- ggarrange(plotlist = BRAT_VolcanoPlots, ncol = 1, nrow = 1, labels = NULL)
+LIAT_VolcanoPlotsComposite <- ggarrange(plotlist = LIAT_VolcanoPlots, ncol = 1, nrow = 1, labels = NULL)
+BRLI_VolcanoPlotsComposite <- ggarrange(plotlist = c(BRAT_VolcanoPlots, LIAT_VolcanoPlots), ncol = 2, nrow = 1, labels = "auto")
 
-ggsave(plot = FLAT_VolcanoPlotsComposite, path = here("plots"), 
-       filename = "050_r_array_analysis__plot_volcano_flat.pdf",  
-       width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+# ggsave(plot = FLAT_VolcanoPlotsComposite, path = here("plots"), 
+#        filename = "050_r_array_analysis__plot_volcano_flat.pdf",  
+#        width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+# 
+# ggsave(plot = SCAT_VolcanoPlotsComposite, path = here("plots"), 
+#        filename = "050_r_array_analysis__plot_volcano_scat.pdf",  
+#        width = 180, height = 150, units = "mm", dpi = 150,  limitsize = TRUE, scale = 1.3)
+# 
+# ggsave(plot = EVAT_VolcanoPlotsComposite, path = here("plots"), 
+#        filename = "050_r_array_analysis__plot_volcano_evat.pdf",  
+#        width = 300, height = 125, units = "mm", dpi = 200,  limitsize = TRUE, scale = 3)
 
 ggsave(plot = BRAT_VolcanoPlotsComposite, path = here("plots"), 
        filename = "050_r_array_analysis__plot_volcano_brat.pdf",  
        width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 3)
 
-ggsave(plot = SCAT_VolcanoPlotsComposite, path = here("plots"), 
-       filename = "050_r_array_analysis__plot_volcano_scat.pdf",  
-       width = 180, height = 150, units = "mm", dpi = 150,  limitsize = TRUE, scale = 1.3)
-
 ggsave(plot = LIAT_VolcanoPlotsComposite, path = here("plots"), 
        filename = "050_r_array_analysis__plot_volcano_liat.pdf",  
-       width = 180, height = 200, units = "mm", dpi = 200,  limitsize = TRUE, scale = 3)
+       width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 3)
 
-ggsave(plot = EVAT_VolcanoPlotsComposite, path = here("plots"), 
-       filename = "050_r_array_analysis__plot_volcano_evat.pdf",  
-       width = 300, height = 125, units = "mm", dpi = 200,  limitsize = TRUE, scale = 3)
+ggsave(plot = BRLI_VolcanoPlotsComposite, path = here("../manuscript/display_items"), 
+       filename = "050_r_array_analysis__plot_volcano_brli.pdf",  
+       width = 160, height = 80, units = "mm", dpi = 300,   limitsize = TRUE, scale = 2.5)
 
+# __g) Save DGE lists ----
+
+BRAT_TTL_sign <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]]
+BRAT_TTL_down <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(logFC > 1)
+BRAT_TTL_uprg <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(logFC < -1)
+
+LIAT_TTL_sign <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]]
+LIAT_TTL_down <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC > 1)
+LIAT_TTL_uprg <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC < -1)
+
+openxlsx::write.xlsx(BRAT_TTL_sign, paste0(here("tables"), "/050_r_array_analysis_", "BRAT_TTL_sign", ".xlsx"), asTable = TRUE, overwrite = TRUE)
+openxlsx::write.xlsx(BRAT_TTL_down, paste0(here("tables"), "/050_r_array_analysis_", "BRAT_TTL_down", ".xlsx"), asTable = TRUE, overwrite = TRUE)
+openxlsx::write.xlsx(BRAT_TTL_uprg, paste0(here("tables"), "/050_r_array_analysis_", "BRAT_TTL_uprg", ".xlsx"), asTable = TRUE, overwrite = TRUE)
+
+openxlsx::write.xlsx(LIAT_TTL_sign, paste0(here("tables"), "/050_r_array_analysis_", "LIAT_TTL_sign", ".xlsx"), asTable = TRUE, overwrite = TRUE)
+openxlsx::write.xlsx(LIAT_TTL_down, paste0(here("tables"), "/050_r_array_analysis_", "LIAT_TTL_down", ".xlsx"), asTable = TRUE, overwrite = TRUE)
+openxlsx::write.xlsx(LIAT_TTL_uprg, paste0(here("tables"), "/050_r_array_analysis_", "LIAT_TTL_uprg", ".xlsx"), asTable = TRUE, overwrite = TRUE)
 
 # _3.) Gene Set Enrichment Analysis (GSEA) ----
 
