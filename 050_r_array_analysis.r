@@ -19,12 +19,18 @@
 #'     code_folding: show
 #' ---
 
-# Prepare environment  ---- 
+#' # Prepare environment
+
+# Prepare environment ---- 
+
+#' ## Collect garbage
 
 # _1.) Collect garbage ----
 
 rm(list=ls())
 gc()
+
+#' ##  Packages
 
 # _2.) Packages ----
 
@@ -65,9 +71,13 @@ library(htmlwidgets)
 library(ggpubr)
 library(usethis) 
 
+#' ## Increase meomeory if needed
+
 # _3.) Increase meomeory if needed ----
 
 # usethis::edit_r_environ()
+
+#' ##  Functions
 
 # _4.) Functions ----
 
@@ -480,7 +490,6 @@ get_one_kegg_dotplot <- function(TopTableListItem, TopTableListItemName){
   
 }
 
-
 get_one_go_plot <- function(TopTableListItem, TopTableListItemName){
   
   require("clusterProfiler")
@@ -526,14 +535,21 @@ save_go_plots <- function(ggplot_list_item, ggplot_list_item_name){
   
 }
 
+#' ##  Color code for plotting
 
 # _5.) Color code for plotting ----
 
 hmcol <- rev(colorRampPalette(RColorBrewer::brewer.pal(n=11, name="RdBu"))(50))
 
+#' # Load and shape data
+
 # Load and shape data ----
 
+#' ## Full data of all 4 tissues
+
 # _1.) Full data of all 4 tissues ----
+
+#' ### Loading normalized data
 
 # __a.) Loading normalized data ----
 
@@ -542,9 +558,13 @@ hmcol <- rev(colorRampPalette(RColorBrewer::brewer.pal(n=11, name="RdBu"))(50))
 
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/allTissues_normData.RData") # only if you are interested to look into the normalized data
 
+#' ### Annotate data
+
 # __b.) Annotate data ----
 
 normData  <- annotateEset(normData, pd.clariom.s.mouse, type = "probeset")
+
+#' ### Copy, store, and discard data
 
 # __c.) Copy, store, and discard data ----
 
@@ -553,14 +573,20 @@ FLAT <- normData; rm(normData)
 
 saveRDS(FLAT, file = here("rds_storage", "050_r_array_analysis__normalized_data.rds"))
 
-# _2.) Data normalised individually for each tissue ----
+#' ## Data normalized individually for each tissue
+
+# _2.) Data normalized individually for each tissue ----
 
 # Ich habe die normalisierung für jedes Gewebe getrennt für die DGE Analysen gemacht, 
 # da dies genauer ist (Gewebe zu weit auseinander in PCA)
 
+#' ### Loading normalized data
+
 # __a.) Loading normalized data ----
 
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/normData4DGE.RData") #für jedes Gewebe die normalisierten Daten
+
+#' ### Annotate data
 
 # __b.) Annotate data ----
 
@@ -569,6 +595,8 @@ ingWAT_normData <- annotateEset(ingWAT_normData, pd.clariom.s.mouse, type = "pro
 Liv_normData    <- annotateEset(Liv_normData, pd.clariom.s.mouse, type = "probeset")
 bAT_normData    <- annotateEset(bAT_normData, pd.clariom.s.mouse, type = "probeset")
 eWAT_normData   <- annotateEset(eWAT_normData, pd.clariom.s.mouse, type = "probeset")
+
+#' ### Copy, store, and discard data
 
 # __c.) Copy, store, and discard data ----
 
@@ -583,9 +611,13 @@ saveRDS(SCAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_
 saveRDS(LIAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_liv.rds" ))
 saveRDS(EVAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_ingwat.rds"))
 
+#' ## Loading metadata from modelling (obesity variables)
+
 # _3.) Loading metadata from modelling (obesity variables) ----
 
 mice_f1_modeled_data_with_rna_seq_data <- readRDS(file = here("rds_storage", "040_r_h3__mice_f1_modeled_data_with_rna_seq_data.rds"))
+
+#' ## Adjust variable names and inspect data
 
 # _4.) Adjust variable names and inspect data ----
 
@@ -599,11 +631,17 @@ EVAT <- adjust_array_data(EVAT, mice_f1_modeled_data_with_rna_seq_data)
 
 lapply(c(FLAT, BRAT, SCAT, LIAT, EVAT), pData)  
 
+#' ## Loading AHs dietary DGE analysis results
+
 # _5.) Loading AHs dietary DGE analysis results ----
+
+#' ### Load data
 
 # __a) Load data ----
 
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/DGELists.RData") #lädt alle DGE Tabellen
+
+#' ### Define list with dietary variables ----
 
 # __b) Define list with dietary variables ----
 
@@ -628,6 +666,8 @@ DGEL_obes <- DGEL_diet
 
 # names(DGEL_obes) <-  c( "foo", "bar")
 
+#' ### Clean environment and save data
+
 # __d) Clean environment and save data ---- 
 
 rm(bAT_CD_HFD_VS_CD_CD, bAT_HFD_CD_VS_CD_CD, bAT_HFD_CD_VS_CD_HFD, bAT_HFD_HFD_VS_CD_CD, bAT_HFD_HFD_VS_CD_HFD,    
@@ -638,7 +678,11 @@ rm(bAT_CD_HFD_VS_CD_CD, bAT_HFD_CD_VS_CD_CD, bAT_HFD_CD_VS_CD_HFD, bAT_HFD_HFD_V
 
 saveRDS(DGEL_diet, file = here("rds_storage", "050_r_array_analysis__dge_lists_by_diet.rds"))
 
+#' # Calculate Principal components
+
 # Calculate Principal components ----
+
+#' ## Get PCs for all subsequent analyses
 
 # _1.) Get PCs for all subsequent analyses ----
 
@@ -648,6 +692,8 @@ PCA_SCAT <- get_principal_components(SCAT)
 PCA_LIAT <- get_principal_components(LIAT)
 PCA_EVAT <- get_principal_components(EVAT)
 
+#' ## Get PC loadings for plots
+
 # _2.) Get PC loadings for plots ----
 
 FLAT_PV <- get_percent_variation(PCA_FLAT)
@@ -656,8 +702,11 @@ SCAT_PV <- get_percent_variation(PCA_SCAT)
 LIAT_PV <- get_percent_variation(PCA_LIAT)
 EVAT_PV <- get_percent_variation(PCA_EVAT)
 
+# #' Plot Principal Component Analyses
 
 # Plot Principal Component Analyses ----
+
+#' ## Plot FLAT PCs in 2D for several variables types
 
 # _1.) Plot FLAT PCs in 2D for several variables types  ----
 
@@ -669,7 +718,6 @@ plot_pca_flat_b <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT ,
 
 # Overall expression differences and obesity parental obesity status among f0
 plot_pca_flat_c <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "c", percent_var = FLAT_PV)
-
 
 # ___ Combine and save plots ----
 
@@ -693,6 +741,8 @@ plot_pca_sptial <- plot_ly(dataGG, x = ~PC1, y = ~PC2, z = ~PC3) %>%
 saveWidget(plot_pca_sptial, file = paste0(here("plots"),"/", "050_r_array_analysis__plot_pca_flat.html"), selfcontained = T, libdir = "lib")
 
 
+#' ## Plot BRAT PCs in 2D for several variables types
+
 # _2.) Plot BRAT PCs in 2D for several variables types  ----
 
 # "Overall expression differences between analysed tissues among f1 offspring"
@@ -713,6 +763,8 @@ ggsave(plot = plot_pca_brat, path = here("plots"),
 ggsave(plot = plot_pca_brat, path = here("../manuscript/display_items"), 
        filename = "050_r_array_analysis__plot_pca_brat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+
+#' ## Plot SCAT PCs in 2D for several variables types
 
 # _3.) Plot SCAT PCs in 2D for several variables types  ----
 
@@ -736,6 +788,8 @@ ggsave(plot = plot_pca_scat, path = here("../manuscript/display_items"),
        filename = "050_r_array_analysis__plot_pca_scat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
+#' ## Plot EVAT PCs in 2D for several variables types
+
 # _4.) Plot EVAT PCs in 2D for several variables types  ----
 
 # "Overall expression differences between analysed tissues among f1 offspring"
@@ -757,6 +811,8 @@ ggsave(plot = plot_pca_evat, path = here("plots"),
 ggsave(plot = plot_pca_evat, path = here("../manuscript/display_items"), 
        filename = "050_r_array_analysis__plot_pca_evat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+
+#' ## Plot LIAT PCs in 2D for several variables types
 
 # _5.) Plot LIAT PCs in 2D for several variables types  ----
 
@@ -780,6 +836,8 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
        filename = "050_r_array_analysis__plot_pca_liat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
+#' # Prepare getting numerical summaries of above PCAs
+
 # Prepare getting numerical summaries of above PCAs ----
 
 # use the PCA graphics and results above to get numerical summaties of hwat can be sees
@@ -791,6 +849,8 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
 # report those models used here and in DGE and write down the results
 # possibly adjust DGE models
 
+#' ## Isolate First 5 Pricipal Components
+
 # _1.) Isolate First 5 Pricipal Components ----
 
 PCs_FLAT <- get_isolated_pcs(PCA_FLAT)
@@ -798,6 +858,8 @@ PCs_BRAT <- get_isolated_pcs(PCA_BRAT)
 PCs_EVAT <- get_isolated_pcs(PCA_EVAT)
 PCs_LIAT <- get_isolated_pcs(PCA_LIAT)
 PCs_SCAT <- get_isolated_pcs(PCA_SCAT)
+
+#' ## Get data frames to model variation of first PC against chosen factors
 
 # _2.) Get data frames to model variation of first PC against chosen factors ----
 
@@ -807,39 +869,61 @@ EVAT_md <- get_model_data(EVAT, PCs_EVAT)
 LIAT_md <- get_model_data(LIAT, PCs_LIAT)
 SCAT_md <- get_model_data(SCAT, PCs_SCAT)
 
+#' # Getting numerical summaries of above PCAs
+
 # Getting numerical summaries of above PCAs ----
+
+#' ## Analyse FLAT's first PC
 
 # _1.) Analyse FLAT's first PC ---- 
 
-sink(file = paste0(here("plots/050_r_array_analysis__text_pca_FLAT.txt")))
+# opening connection to text with full path for Rmarkdown
+# sink(file = paste0(here("plots/050_r_array_analysis__text_pca_FLAT.txt")))
+# sink(file = "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_FLAT.txt")
+
+#' ### Getting 0-model
 
 # __a) Getting 0-model ----
 model_intercept <- lm(PC1 ~  1, data = FLAT_md)
+
+#' ### Testing effect of "Tissue"
 
 # __b) Testing effect of "Tissue"  ----
 model_tissue <- lm(PC1 ~  Tissue, data = FLAT_md)
 summary(model_tissue) # all tissues distinct
 anova(model_intercept, model_tissue) # ***Tissue highly significant structuring PC1*** 
 
+#' ### Testing effect of "ObesityLgcl"
+
 # __c) Testing effect of "ObesityLgcl" ----
 model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = FLAT_md)
 summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # offspring's obesity not significant structuring PC1 
+
+#' ### Testing effect of "ObeseParents"
 
 # __d) Testing effect of "ObeseParents" ----
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = FLAT_md)
 summary(model_obesity_par) # no signal
 anova(model_intercept, model_obesity_par) # parents's obesity not significant structuring PC1  
 
-sink()
+# sink()
+
+#' ## Analyse BRAT's first PC
 
 # _2.) Analyse BRAT's first PC ----  
 
-sink(file = paste0(here("plots/050_r_array_analysis__text_pca_BRAT.txt")))
+# opening connection to text with full path for Rmarkdown
+# sink(file = paste0(here("plots/050_r_array_analysis__text_pca_BRAT.txt")))
+# sink(file = paste0(here("/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_BRAT.txt")))
+
+#' ### Getting 0-model
 
 # __a) Getting 0-model ----
 
 model_intercept <- lm(PC1 ~  1, data = BRAT_md)
+
+#' ### Testing effect of "ObesityLgcl"
 
 # __b) Testing effect of "ObesityLgcl" ----
 
@@ -847,10 +931,14 @@ model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = BRAT_md)
 summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
 
+#' ### Testing effect of "ObeseParents"
+
 # __c) Testing effect of "ObeseParents" ----
 
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = BRAT_md)
 anova(model_intercept, model_obesity_par) # ***Parent's obesity significant structuring PC1, check in DGE***
+
+#' ### Testing all reference levels of "ObeseParents"
 
 # __d) Testing all reference levels of "ObeseParents" ----
 
@@ -859,15 +947,23 @@ summary(lm(PC1 ~ ObeseParents, data = BRAT_md %>% mutate(ObeseParents = relevel(
 summary(lm(PC1 ~ ObeseParents, data = BRAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 3))))
 summary(lm(PC1 ~ ObeseParents, data = BRAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 4))))
 
-sink()
+# sink()
+
+#' ## Analyse SCAT's first PC 
 
 # _3.) Analyse SCAT's first PC ---- 
 
-sink(file = paste0(here("plots/050_r_array_analysis__text_pca_SCAT.txt")))
+# opening connection to text with full path for Rmarkdown
+# sink(file = paste0(here("plots/050_r_array_analysis__text_pca_SCAT.txt")))
+# sink(file = "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_SCAT.txt")
+
+#' ### Getting 0-model
 
 # __a) Getting 0-model ----
 
 model_intercept <- lm(PC1 ~  1, data = SCAT_md)
+
+#' ### Testing effect of "ObesityLgcl"
 
 # __b) Testing effect of "ObesityLgcl" ----
 
@@ -875,10 +971,14 @@ model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = SCAT_md)
 summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
 
+#' ### Testing effect of "ObeseParents"
+
 # __c) Testing effect of "ObeseParents" ----
 
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = SCAT_md)
 anova(model_intercept, model_obesity_par) # ***Parent's obesity significant structuring PC1, check in DGE***
+
+#' ### Testing all reference levels of "ObeseParents"
 
 # __d) Testing all reference levels of "ObeseParents" ----
 
@@ -887,15 +987,23 @@ summary(lm(PC1 ~ ObeseParents, data = SCAT_md %>% mutate(ObeseParents = relevel(
 summary(lm(PC1 ~ ObeseParents, data = SCAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 3))))
 summary(lm(PC1 ~ ObeseParents, data = SCAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 4))))
 
-sink()
+# sink()
+
+#' ## Analyse LIAT's first PC 
 
 # _4.) Analyse LIAT's first PC ---- 
 
-sink(file = paste0(here("plots/050_r_array_analysis__text_pca_LIAT.txt")))
+# opening connection to text with full path for Rmarkdown
+# sink(file = paste0(here("plots/050_r_array_analysis__text_pca_LIAT.txt")))
+# sink(file = "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_LIAT.txt")
+
+#' ### Getting 0-model
 
 # __a) Getting 0-model ----
 
 model_intercept <- lm(PC1 ~  1, data = LIAT_md)
+
+#' ### Testing effect of "ObesityLgcl"
 
 # __b) Testing effect of "ObesityLgcl" ----
 
@@ -903,10 +1011,14 @@ model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = LIAT_md)
 summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
 
+#' ### Testing effect of "ObeseParents"
+
 # __c) Testing effect of "ObeseParents" ----
 
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = LIAT_md)
 anova(model_intercept, model_obesity_par) # ***Parent's obesity significant structuring PC1, check in DGE***
+
+#' ### Testing all reference levels of "ObeseParents"
 
 # __d) Testing all reference levels of "ObeseParents" ----
 
@@ -915,15 +1027,23 @@ summary(lm(PC1 ~ ObeseParents, data = LIAT_md %>% mutate(ObeseParents = relevel(
 summary(lm(PC1 ~ ObeseParents, data = LIAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 3))))
 summary(lm(PC1 ~ ObeseParents, data = LIAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 4))))
 
-sink()
+# sink()
 
-# _5.) Analyse EVAT's first PC ---- 
+#' ## Analyse EVAT's first PC
 
-sink(file = paste0(here("plots/050_r_array_analysis__text_pca_EVAT.txt")))
+# _5.) Analyse EVAT's first PC ----
+
+# opening connection to text with full path for Rmarkdown
+# sink(file = paste0(here("plots/050_r_array_analysis__text_pca_EVAT.txt")))
+# sink(file = "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_EVAT.txt")
+
+#' ### Getting 0-model
 
 # __a) Getting 0-model ----
 
 model_intercept <- lm(PC1 ~  1, data = EVAT_md)
+
+#' ### Testing effect of "ObesityLgcl"
 
 # __b) Testing effect of "ObesityLgcl" ----
 
@@ -931,10 +1051,14 @@ model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = EVAT_md)
 summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
 
+#' ### Testing effect of "ObeseParents"
+
 # __c) Testing effect of "ObeseParents" ----
 
 model_obesity_par <- lm(PC1 ~ ObeseParents, data = EVAT_md)
 anova(model_intercept, model_obesity_par) # ***Parent's obesity significant structuring PC1, check in DGE***
+
+#' ### Testing all reference levels of "ObeseParents"
 
 # __d) Testing all reference levels of "ObeseParents" ----
 
@@ -943,13 +1067,19 @@ summary(lm(PC1 ~ ObeseParents, data = EVAT_md %>% mutate(ObeseParents = relevel(
 summary(lm(PC1 ~ ObeseParents, data = EVAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 3))))
 summary(lm(PC1 ~ ObeseParents, data = EVAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 4))))
 
-sink()
+# sink()
 
-# Re-implement analysis of array intensities  ----
+#' # Re-implement analysis of array intensities
+
+# Re-implement analysis of array intensities ----
+
+#' ## Shape and check array intensity data
 
 # _1.) Shape and check array intensity data ----
 
 # see https://hbctraining.github.io/DGE_workshop/lessons/01_DGE_setup_and_overview.html
+
+#' ###  Check input data formats
 
 # __a) Check input data formats ----
 
@@ -965,6 +1095,8 @@ exprs(FLAT)
 pData(BRAT) # metadata - use `ObesityLgcl` and possibly `ObeseParents`
 pData(BRAT) %>% dplyr::select(ObesityLgcl, ObeseParents) %>% table()
 exprs(BRAT)
+
+#' ### Covert expression set to data table for inspection
 
 # __b) Covert expression set to data table for inspection ----
 
@@ -990,6 +1122,8 @@ FLAT_DT.m1 <- melt(FLAT_DT,  id.vars = c("Sample", "Animal", "Tissue", "AnimalSe
   variable.name = "ArrayTarget", value.name = "Intensity")
 
 
+#' ### Inspect expression data raw intensities distribution
+
 # __c) Inspect expression data raw intensities distribution  ----
 
 # to check that equal amounts of data are available for comparison - they are not
@@ -1011,6 +1145,8 @@ ggplot(FLAT_DT.m1) +
   ggtitle("Intensities' availibilty and distribution for parents obesity") +
   facet_wrap(.~Tissue) + 
   theme_bw()
+
+#' ### Inspect expression data raw intensities' density  ----
 
 # __d) Inspect expression data raw intensities' density  ----
 
@@ -1034,6 +1170,8 @@ ggplot(FLAT_DT.m1) +
   facet_wrap(.~Tissue) + 
   theme_bw()
 
+#' ## DGE analysis using Limma
+
 # _2.) DGE analysis using Limma ----
 
 # see DESeq2 tutorial at https://colauttilab.github.io/RNA-Seq_Tutorial.html
@@ -1043,11 +1181,15 @@ ggplot(FLAT_DT.m1) +
 # see also here for LFC shrinkage and genral procedure https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/08_practical_DE.pdf
 # see here why shrinking LFCs is considered unenecssary by the limma authors - https://support.bioconductor.org/p/100804/
 
+#' ###  Test for DGE for each tissue against all others, using FLAT
+
 # __a) Test for DGE for each tissue against all others, using FLAT ----
 
 # As justified per PCA results 
 
 FLAT_Tissue_TopTableList <- get_dge_for_individal_tissues(FLAT)
+
+#' ### Test for DGE among obese and non-obese offspring
 
 # __b)  Test for DGE among obese and non-obese offspring ----
 
@@ -1060,6 +1202,8 @@ get_dge_for_offspring_obesity(LIAT)
 get_dge_for_offspring_obesity(SCAT)
 get_dge_for_offspring_obesity(EVAT)
 
+#' ### Test for DGE among offspring based on parental obesity
+
 # __c)  Test for DGE among offspring based on parental obesity ----
 
 # Defining and applying contrasts: One of "MotherFatherNotObese", "FatherObese", "MotherFatherObese", or "MotherObese" 
@@ -1071,6 +1215,8 @@ EVAT_TopTableList <- get_dge_for_parent_obesity(EVAT) # likely not needed - see 
 SCAT_TopTableList <- get_dge_for_parent_obesity(SCAT) # likely not needed - see manuscript results 05.07.2023
 BRAT_TopTableList <- get_dge_for_parent_obesity(BRAT) 
 LIAT_TopTableList <- get_some_dge_for_parent_obesity(LIAT) 
+
+#' ###  Choose DGE results for further analyses
 
 # __d) Choose DGE results for further analyses ----
 
@@ -1126,6 +1272,8 @@ names(LIAT_TopTableList[c(2)])
 
 LIAT__Select_TopTableList <- LIAT_TopTableList[c(2)] 
 
+#' ### Compile a well-labelled list with all DGE results
+
 # __e)  Compile a well-labelled list with all DGE results  ----
 
 # - these results are likley not needed
@@ -1147,6 +1295,8 @@ FULL_TopTableList <- c(
 
 # receiving a table with 2 slots, each containing DGE results fo a specific tissue and statistically relavent contrasts
 names(FULL_TopTableList)
+
+#' ### Get, assort, arrange, and save Vulcano plots
 
 # __f)  Get, assort, arrange, and save Vulcano plots  ----
 
@@ -1192,6 +1342,8 @@ ggsave(plot = BRLI_VolcanoPlotsComposite, path = here("../manuscript/display_ite
        filename = "050_r_array_analysis__plot_volcano_brli.pdf",  
        width = 160, height = 80, units = "mm", dpi = 300,   limitsize = TRUE, scale = 2.5)
 
+#' ### Save DGE lists
+
 # __g) Save DGE lists ----
 
 BRAT_TTL_sign <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]]
@@ -1210,6 +1362,8 @@ openxlsx::write.xlsx(LIAT_TTL_sign, paste0(here("tables"), "/050_r_array_analysi
 openxlsx::write.xlsx(LIAT_TTL_down, paste0(here("tables"), "/050_r_array_analysis_", "LIAT_TTL_down", ".xlsx"), asTable = TRUE, overwrite = TRUE)
 openxlsx::write.xlsx(LIAT_TTL_uprg, paste0(here("tables"), "/050_r_array_analysis_", "LIAT_TTL_uprg", ".xlsx"), asTable = TRUE, overwrite = TRUE)
 
+#' ## Gene Set Enrichment Analysis (GSEA)
+
 # _3.) Gene Set Enrichment Analysis (GSEA) ----
 
 # the following resources are susefule 
@@ -1217,35 +1371,51 @@ openxlsx::write.xlsx(LIAT_TTL_uprg, paste0(here("tables"), "/050_r_array_analysi
 # step-by-step GSEA https://bioinformatics-core-shared-training.github.io/cruk-summer-school-2018/RNASeq2018/html/06_Gene_set_testing.nb.html
 # why shrinkage of LFCs is not necessary, or already done https://support.bioconductor.org/p/100804/
 
-  # check test data - possibly used tissue-specific data sets
+# check test data - possibly used tissue-specific data sets
+
+#' ### Lookup Entrez ID for Clusterprofiler
 
 # __a) Lookup Entrez ID for Clusterprofiler ----
 
 FULL_TopTableListAppended <- lapply(FULL_TopTableList, get_entrez_ids) 
+
+#' ### Get plots of KEEG pathways
 
 # __b) Get plots of KEEG pathways ----
 
 FULL_KeggPlots <- mapply(get_one_kegg_dotplot, TopTableListItem = FULL_TopTableListAppended, TopTableListItemName = names(FULL_TopTableListAppended), SIMPLIFY = FALSE)
 names(FULL_KeggPlots)
 
-FULL_KeggPlots[1]
+# FULL_KeggPlots[1] - no result
 FULL_KeggPlots[2]
+
+#' ### Save plots of KEEG pathways
 
 # __c) Save plots of KEEG pathways ----
 
 mapply(save_kegg_plots, ggplot_list_item = FULL_KeggPlots, ggplot_list_item_name = names(FULL_KeggPlots), SIMPLIFY = FALSE)
 
 
+#' ### Implement GO analysis
+
 # __d) Implement GO analysis ----
 
 FULL_GoPlots <- mapply(get_one_go_plot, TopTableListItem = FULL_TopTableListAppended, TopTableListItemName = names(FULL_TopTableListAppended), SIMPLIFY = FALSE)
 names(FULL_GoPlots)
 
-# __e) Save plots of GO pathways ----
+#' ### Show and save plots of GO pathways
+
+# __e) Show and save plots of GO pathways ----
+
+FULL_GoPlots[[1]]
+FULL_GoPlots[[2]]
 
 mapply(save_go_plots, ggplot_list_item = FULL_GoPlots, ggplot_list_item_name = names(FULL_KeggPlots), SIMPLIFY = FALSE)
 
 ggsave(plot = ggarrange(plotlist =  FULL_GoPlots, ncol = 2, labels = "auto"), filename = "050_r_array_analysis__plot_go_both.pdf", path = here("../manuscript/display_items/"), width = 280, height = 420, unit = "mm", scale = 1)
+
+
+# #' Experimental: DGE-analysis using GAMs - Investigate overall tissue specific expression differences based on obesity variables
 
 # Experimental: DGE-analysis using GAMs - Investigate overall tissue specific expression differences based on obesity variables ----
 
@@ -1291,13 +1461,15 @@ unique(model_data[["Tissue"]])
 #        x="age [d]", y = "body weight [g]")
 # 
 
+#' # Snapshot environment
+
 # Snapshot environment ----
+
 sessionInfo()
 save.image(file = here("scripts", "050_r_array_analysis.RData"))
 renv::snapshot()
 
 # >>> Reference code from AH ----
-
 
 # AH code below - UpSet plots ----
 

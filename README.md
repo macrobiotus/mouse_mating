@@ -449,7 +449,7 @@
 
  * re-ran `050_r_array_analysis.r` to break point in line 1010 and saved workspace image
  * updated results section in manuscript and SI figure
-
+ * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/050_r_array_analysis.r')`
 
 ## 05-07-2023 - work day 46
 
@@ -467,9 +467,13 @@
  * commit `482459afbd07f16e6af1a7f94f95cd63103a75b7`
  * finished script `050_r_array_analysis`, let it run in full, and saved full image
  * updated results in manuscript - **only GO terms still need doing**
- * commmit ``
+ * commit `224d11d65037d253652c9a131548fe68c10684f1`
+
+## 06-07-2023 - work day 47 - at retreat 
  
- 
+ * extending `050_r_array_analysis.r`
+ * drafted `md` formatting, by duplicating second-level-headings
+ * rendered `md` version
  
  
 ## Todo queue
