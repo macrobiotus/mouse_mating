@@ -278,7 +278,7 @@ get_dge_for_parent_obesity = function(ExpSet){
     "FatherObese vs MotherObese",
     "MotherObese vs MotherFatherNotObese & FatherObese",
     "FatherObese vs MotherFatherObese & MotherObese",
-    "FatherObese vs  MotherFatherNotObese & MotherFatherObese", 
+    "FatherObese vs MotherFatherNotObese & MotherFatherObese", 
     "MotherObese vs MotherFatherNotObese & MotherFatherObese")
   
   message("\nDefining contrasts: \"", paste0(contrast_names, collapse = "\", \""), "\".") 
