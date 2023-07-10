@@ -112,7 +112,10 @@ mice_f0_slct %>% select(AnimalId, AnimalSex, Diet, MatingWith, PartnerDiet) %>% 
 
 # __b) Show f1 Information ----
 
-mice_f1_slct %>% select(AnimalId, AnimalSex, MotherDiet, FatherDiet) %>% distinct %>% print(n=Inf)
+mice_f1_slct %>% 
+  select(AnimalId, AnimalSex, MotherDiet, FatherDiet) %>% 
+  distinct %>% 
+  arrange(AnimalSex, MotherDiet,FatherDiet) %>% print(n=Inf)
 
 # __c) Plot f0 and f1  weights by measurement day ----
 

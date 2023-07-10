@@ -474,7 +474,12 @@
  * extending `050_r_array_analysis.r`
  * drafted `md` formatting, by duplicating second-level-headings
  * rendered `md` version
+ * commit `363b82da3bdb880b8ec2540aea6c495d96b103d2`
  
+## 10-07-2023 - work day 48 
+
+ * updating Figure 1 for manuscript, and script `010_r_define_obesity.r` for summary (see line 115)
+
  
 ## Todo queue
 

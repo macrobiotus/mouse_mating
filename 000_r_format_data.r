@@ -162,13 +162,13 @@ saveRDS(mice_f1, file = here("rds_storage", "mice_f1.rds"))
 
 # __a) Show f0 animals that received mixed diets ----
 
-mice_f0 %>% filter(AnimalId %in% c(8994, 8995, 8996, 8997)) %>% arrange(AnimalId) %>% select(AnimalId, AnimalSex,  Diet, Group) %>% print(n = Inf)
+mice_f0 %>% filter(AnimalId %in% c(8994, 8995, 8996, 8997)) %>% arrange(AnimalId) %>% dplyr::select(AnimalId, AnimalSex,  Diet, Group) %>% print(n = Inf)
 
 #' ### Show f0 animals that did not receive mixed diets
 
 # __b) Show f0 animals that did not receive mixed diets ----
 
-mice_f0 %>% filter(AnimalId %!in% c(8994, 8995, 8996, 8997)) %>% arrange(AnimalId) %>% select(AnimalId, AnimalSex, Diet, Group) %>% print(n = Inf)
+mice_f0 %>% filter(AnimalId %!in% c(8994, 8995, 8996, 8997)) %>% arrange(AnimalId) %>% dplyr::select(AnimalId, AnimalSex, Diet, Group) %>% print(n = Inf)
 
 #' ### Keep only f0 animals that did not receive mixed diets
 
@@ -187,8 +187,8 @@ mice_f0 %<>% filter(AnimalId %!in% c(8994, 8995, 8996, 8997))
 mice_f1 %>% pull(AnimalId) %>% unique() %>% length 
 
 # there is data for 8 female mice in the f0 
-mice_f0 %>% select(AnimalId, AnimalSex) %>% distinct
-mice_f0 %>% select(AnimalId, AnimalSex) %>% pull(AnimalId) %>% unique() %>% length 
+mice_f0 %>% dplyr::select(AnimalId, AnimalSex) %>% distinct
+mice_f0 %>% dplyr::select(AnimalId, AnimalSex) %>% pull(AnimalId) %>% unique() %>% length 
 
 # there are 50 f1 mice after filtering
 mice_f1 %>% filter(MotherId %in% (mice_f0 %>% pull(AnimalId) %>% unique())) %>% pull(AnimalId) %>% unique() %>% length 
@@ -202,7 +202,7 @@ mice_f1 %<>% filter(MotherId %in% (mice_f0 %>% pull(AnimalId) %>% unique()))
 # __e) Remove Group column among f0 and mixed group among f1  ----
 
 # to not get confused downstream and beacuse ther is no RNAseq data for mixed f1 
-mice_f0 %<>% select(-c("Group")) 
+mice_f0 %<>% dplyr::select(-c("Group")) 
 mice_f1 %<>% filter(MotherDiet != "Mix")
 
 #' ### Save altered state
@@ -234,7 +234,7 @@ mice_f1_rna_seq %<>% dplyr::select(-c("X6"))
 mice_f1_rna_seq %<>% rename(DietGroup = X7)
 mice_f1_rna_seq %<>% tidyr::fill("Sex","ParentalDietMoFa", "DietGroup")
 mice_f1_rna_seq %<>% convert(fct(Animal, Tissue, Sex, ParentalDietMoFa, DietGroup))
-mice_f1_rna_seq_no_tissues <- mice_f1_rna_seq %>% select(-c(Sample, Tissue)) %>% distinct()
+mice_f1_rna_seq_no_tissues <- mice_f1_rna_seq %>% dplyr::select(-c(Sample, Tissue)) %>% distinct()
 
 #' ## Output a table that show which animals had been used for RNA sequencing
 
