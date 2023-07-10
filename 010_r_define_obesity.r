@@ -106,21 +106,21 @@ mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct.rds"))
 
 # _2.) Inspect data ----
 
-# __a) Show f0 Information ----
+# __a) Show F0 Information ----
 
 mice_f0_slct %>% select(AnimalId, AnimalSex, Diet, MatingWith, PartnerDiet) %>% distinct 
 
-# __b) Show f1 Information ----
+# __b) Show F1 Information ----
 
 mice_f1_slct %>% 
   select(AnimalId, AnimalSex, MotherDiet, FatherDiet) %>% 
   distinct %>% 
   arrange(AnimalSex, MotherDiet,FatherDiet) %>% print(n=Inf)
 
-# __c) Plot f0 and f1  weights by measurement day ----
+# __c) Plot F0 and F1  weights by measurement day ----
 
-mice_f0_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measurement age")
-mice_f1_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weight at measurement age")
+mice_f0_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="F0 weight at measurement age")
+mice_f1_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="F1 weight at measurement age")
 
 mice_f0_slct_xyplot
 mice_f1_slct_xyplot
@@ -160,7 +160,7 @@ mice_f0_slct_xyplot_poly <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data
         fm <- lm(y ~ poly(x, 2))
         panel.lines(x, fitted(fm), col.line = "black")
       },
-      xlab = "MeasurementDay", ylab = "BodyWeightG", sub="modelled f0 weight at measurement age")
+      xlab = "MeasurementDay", ylab = "BodyWeightG", sub="modelled F0 weight at measurement age")
 
 # - graphically, can only be done in lattice using poly() but result shoul be similar
 mice_f1_slct_xyplot_poly <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct,
@@ -170,7 +170,7 @@ mice_f1_slct_xyplot_poly <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data
          fm <- lm(y ~ poly(x, 2))
          panel.lines(x, fitted(fm), col.line = "black")
        },
-       xlab = "MeasurementDay", ylab = "BodyWeightG", sub="modelled f1 weight at measurement age")
+       xlab = "MeasurementDay", ylab = "BodyWeightG", sub="modelled F1 weight at measurement age")
 
 mice_f0_slct_xyplot_poly
 mice_f1_slct_xyplot_poly
@@ -211,15 +211,15 @@ F1_PCurvature_Results <- lapply(F1_PCurvature, sum) %>% unlist
 sort(F0_PCurvature_Results)
 sort(F1_PCurvature_Results)
 
-# __b) Plot f0 and f1 weights by measurement day ----
+# __b) Plot F0 and F1 weights by measurement day ----
 
 # Including sums of 2nd curvatures
-mice_f0_slct_xyplot_curves <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measuerment age, inlcuding curvature summary",
+mice_f0_slct_xyplot_curves <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="F0 weight at measuerment age, inlcuding curvature summary",
        panel=function(x, y,...){
          panel.xyplot(x,y,...)
          panel.text(80,17, cex = 0.75, labels = signif(F0_PCurvature_Results[panel.number()]), digits = 4) })
 
-mice_f1_slct_xyplot_curves <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weight at measuerment age, inlcuding curvature summary",
+mice_f1_slct_xyplot_curves <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="F1 weight at measuerment age, inlcuding curvature summary",
        panel=function(x, y,...){
          panel.xyplot(x,y,...)
          panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4) })
@@ -257,7 +257,7 @@ mice_f0_derivatives_density <- ggplot(as_tibble_col(F0_PCurvature_Results, colum
   geom_vline(xintercept = median(F0_PCurvature_Results), color="blue") +
   xlab("second derivatives of growth curves") +
   ylab("denisty") +
-  ggtitle("f0 distribution of growth curve derivatives, with median value") +
+  ggtitle("F0 distribution of growth curve derivatives, with median value") +
   theme_bw()
 
 # Use this for reporting if necessary:
@@ -268,7 +268,7 @@ mice_f1_derivatives_density <- ggplot(as_tibble_col(F1_PCurvature_Results, colum
   geom_vline(xintercept = median(F1_PCurvature_Results), color="blue") +
   xlab("second derivatives of growth curves") +
   ylab("denisty") +
-  ggtitle("f1 distribution of growth curve derivatives, with median") +
+  ggtitle("F1 distribution of growth curve derivatives, with median") +
   theme_bw()
 
 mice_f0_derivatives_density
@@ -312,7 +312,7 @@ F1_HiGain
 # LoGain F1 are
 F1_LoGain
 
-# _4.) Mark obese mice in f0 table ----
+# _4.) Mark obese mice in F0 table ----
 
 # __a) Mark animals ----
 
@@ -333,7 +333,7 @@ mice_f0_slct %>% select(AnimalId, WeightGain) %>% distinct %>%
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f0_slct__weight_gain.docx")) 
 
-# _5.) Mark mice in f1 table ----
+# _5.) Mark mice in F1 table ----
 
 # __a) Mark animals ----
 
@@ -354,9 +354,9 @@ mice_f1_slct %>% select(AnimalId, WeightGain) %>% distinct %>%
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__weight_gain.docx")) 
 
-# _6.) Define obese f0 mice ----
+# _6.) Define obese F0 mice ----
 
-# __a) Mark f0 with any HFD and hi weight gain as classified obese and all others are not obese! ----
+# __a) Mark F0 with any HFD and hi weight gain as classified obese and all others are not obese! ----
 
 mice_f0_slct %<>% mutate(Obesity = case_when(
   (Diet == "HFD" & WeightGain == "hi") ~ "Obese",
@@ -368,7 +368,7 @@ mice_f0_slct[["Obesity"]] <- as.factor(mice_f0_slct[["Obesity"]])
 
 mice_f0_slct %>% select(AnimalId) %>% distinct # next command below should have 8 animals
 
-# One f0 mouse with HFD did not get obese per our definition - 8992
+# One F0 mouse with HFD did not get obese per our definition - 8992
 
 mice_f0_slct %>% select(AnimalId, Diet, WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) 
 
@@ -379,9 +379,9 @@ mice_f0_slct %>% select(AnimalId, Diet, WeightGain, Obesity) %>% distinct %>% ar
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f0_slct__obesity.docx")) 
 
-# _7.) Define obese f1 mice ----
+# _7.) Define obese F1 mice ----
 
-# __a) Mark f1 with any HFD and hi weight gain as classified obese and all others are not obese! ----
+# __a) Mark F1 with any HFD and hi weight gain as classified obese and all others are not obese! ----
 
 mice_f1_slct %<>% mutate(Obesity = case_when(
   (WeightGain == "hi") ~ "Obese",
@@ -405,9 +405,9 @@ mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) 
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__obesity.docx")) 
 
-# _8.) Add f0 obesity status to f1 data ----
+# _8.) Add F0 obesity status to F1 data ----
 
-# __a) Check f0 Obesity status ----
+# __a) Check F0 Obesity status ----
 
 # ***Weight data is available for mothers - using HFD AND weight gain as  proxy variables for obesity ***
 
@@ -418,14 +418,14 @@ mice_f0_slct %>% filter(Obesity == "Obese" & AnimalSex == "m") %>% pull("AnimalI
 
 F0_ObeseFathers <- mice_f0_slct %>% filter(PartnerDiet == "HFD" ) %>% pull("MatingWith")  %>% unique
 
-# __b) Adding f0 mothers' obesity status to F1 ----
+# __b) Adding F0 mothers' obesity status to F1 ----
 
 mice_f1_slct["ObeseMother"] <- FALSE
 mice_f1_slct[which(as.character(mice_f1_slct[["MotherId"]]) %in% F0_ObeseMothers), ]["ObeseMother"] <- TRUE
 mice_f1_slct[["ObeseMother"]] <- as.logical(mice_f1_slct[["ObeseMother"]])
 mice_f1_slct$ObeseMother %>% summary()
 
-# __c) Adding f0 fathers' obesity status to F1 ----
+# __c) Adding F0 fathers' obesity status to F1 ----
 
 mice_f1_slct["ObeseFather"] <- FALSE
 mice_f1_slct[which(as.character(mice_f1_slct[["FatherId"]]) %in% F0_ObeseFathers), ]["ObeseFather"] <- TRUE
@@ -455,18 +455,18 @@ mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity, 
 
 # Summarizing final data ----
 
-# _1.) Plotting f0 weight at measurement age, including sex and obesity status ----
+# _1.) Plotting F0 weight at measurement age, including sex and obesity status ----
 
-mice_f0_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="f0 weight at measurement age, inlcuding sex and obesity status",
+mice_f0_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="F0 weight at measurement age, inlcuding sex and obesity status",
        panel=function(x, y,...){
          panel.xyplot(x,y,...)
          panel.text(80,18, cex = 0.75, labels = mice_f0_slct$AnimalSex[panel.number()])
          panel.text(80,17, cex = 0.75, labels = mice_f0_slct$Obesity[panel.number()]) })
 
 
-# _2.) Plotting f1 weight at measurement age, including sex and obesity status ----
+# _2.) Plotting F1 weight at measurement age, including sex and obesity status ----
 
-mice_f1_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="f1 weights at measurement ages, with sex and obesity status, and parents obesity status",
+mice_f1_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="F1 weights at measurement ages, with sex and obesity status, and parents obesity status",
        panel=function(x, y,...){
          panel.xyplot(x,y,...)
          panel.text(80,13, cex = 0.75, labels = mice_f1_slct$AnimalSex[panel.number()])

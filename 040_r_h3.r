@@ -294,7 +294,7 @@ mice_f1_rna_seq_no_tissues <- mice_f1_rna_seq %>% select(-c(Sample, Tissue)) %>%
 
 mice_f1_model_data_uniques <- mice_f1_model_data %>% select(-c(BodyWeightG, MeasurementDay)) %>% distinct()
 
-# __c) Join both data sets to see wehat can be done with RNAseq data ---
+# __c) Join both data sets to see what can be done with RNAseq data ---
 
 mice_f1_model_data_rna_seqed <- left_join(mice_f1_model_data_uniques, mice_f1_rna_seq_no_tissues, by = c("AnimalId" = "Animal")) 
 mice_f1_modeled_data_with_rna_seq_data <- mice_f1_model_data_rna_seqed %>% filter(Sex != "NA" & ParentalDietMoFa != "NA" & DietGroup != "NA")

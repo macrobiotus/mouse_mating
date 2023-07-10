@@ -479,6 +479,11 @@
 ## 10-07-2023 - work day 48 
 
  * updating Figure 1 for manuscript, and script `010_r_define_obesity.r` for summary (see line 115)
+ * commit `a55ace13bd77f28e3c7a2cb0a18a63f86e0076de`
+ * started on Discussion in main text
+ * corrected cases in captions of script `010_r_define_obesity.r`
+ * 
+ 
 
  
 ## Todo queue
