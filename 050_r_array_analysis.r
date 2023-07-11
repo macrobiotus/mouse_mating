@@ -69,7 +69,8 @@ library(UpSetR)
 library(plotly)
 library(htmlwidgets)
 library(ggpubr)
-library(usethis) 
+library(usethis)
+library(pheatmap)
 
 #' ## Increase meomeory if needed
 
@@ -1146,7 +1147,7 @@ ggplot(FLAT_DT.m1) +
   facet_wrap(.~Tissue) + 
   theme_bw()
 
-#' ### Inspect expression data raw intensities' density  ----
+#' ### Inspect expression data raw intensities' density
 
 # __d) Inspect expression data raw intensities' density  ----
 
@@ -1342,9 +1343,91 @@ ggsave(plot = BRLI_VolcanoPlotsComposite, path = here("../manuscript/display_ite
        filename = "050_r_array_analysis__plot_volcano_brli.pdf",  
        width = 160, height = 80, units = "mm", dpi = 300,   limitsize = TRUE, scale = 2.5)
 
+#' ### Get, assort, arrange, and save heat maps (drafted)
+
+# __g) Get, assort, arrange, and save heat maps (drafted) ----
+
+# code below very dirty, could be cleaned out and made into a function
+# sample annotation can be improved using a data frame as shown here
+# https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/
+
+# ___ BRAT ----
+
+# get expression data as matrix with probe ids, subset for speed 
+foo <- as_tibble(exprs(BRAT), rownames = c("PROBEID")) %>% filter(PROBEID %in%  BRAT__Select_TopTableList[[1]][["PROBEID"]])
+foo_mat <- base::as.matrix(foo %>% select(-PROBEID))
+rownames(foo_mat) <- (foo %>% pull(PROBEID))
+
+# isolate the DEG top table
+bar <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]]
+
+# join DEG top table and expression data to a new tibble  
+foobar <- left_join(bar, foo)
+
+# keep only relavent logFC, conforming with Volcano plots, p values do not need further adjustemts
+foobar <- foobar %>% filter(logFC < -1 | logFC > 1) %>% arrange(logFC)
+
+# pheatmap needs a matrix - hence converting tibble to matrix
+foo_mat <- base::as.matrix (foobar %>% select(contains("_BRAT")))
+rownames(foo_mat) <- foobar[["SYMBOL"]]
+
+# to add more sample annotations to heatmap matrix colnames - isolating this data here
+mdata_tibble <- tibble(pData(BRAT)) %>% mutate(SAMPLE = paste0(Animal,"_",Tissue))
+
+# checking possibilty to extend matrix column names
+which(colnames(foo_mat) %in% mdata_tibble$SAMPLE)
+
+# extending matrix column names (samples) with relevant metadata
+colnames(foo_mat) <- paste0(colnames(foo_mat), " | " , 
+       mdata_tibble[which(colnames(foo_mat) %in% mdata_tibble$SAMPLE) , "ObeseParents"][["ObeseParents"]])
+
+# adding stars to contrast
+colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))], "*")
+
+# print heat map to script
+pheatmap(foo_mat, filename =  paste0(here("plots"),"/","050_r_array_analysis__plot_heatmap_brat.pdf"))
+pheatmap(foo_mat)
+
+# ___ LIAT ----
+
+# get expression data as matrix with probe ids, subset for speed 
+foo <- as_tibble(exprs(LIAT), rownames = c("PROBEID")) %>% filter(PROBEID %in%  LIAT__Select_TopTableList[[1]][["PROBEID"]])
+foo_mat <- base::as.matrix(foo %>% select(-PROBEID))
+rownames(foo_mat) <- (foo %>% pull(PROBEID))
+
+# isolate the DEG top table
+bar <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]]
+
+# join DEG top table and expression data to a new tibble  
+foobar <- left_join(bar, foo)
+
+# keep only relavent logFC, conforming with Volcano plots, p values do not need further adjustemts
+foobar <- foobar %>% filter(logFC < -1 | logFC > 1) %>% arrange(logFC)
+
+# pheatmap needs a matrix - hence converting tibble to matrix
+foo_mat <- base::as.matrix (foobar %>% select(contains("_LIAT")))
+rownames(foo_mat) <- foobar[["SYMBOL"]]
+
+# to add more sample annotations to heatmap matrix colnames - isolating this data here
+mdata_tibble <- tibble(pData(LIAT)) %>% mutate(SAMPLE = paste0(Animal,"_",Tissue))
+
+# checking possibilty to extend matrix column names
+which(colnames(foo_mat) %in% mdata_tibble$SAMPLE)
+
+# extending matrix column names (samples) with relevant metadata
+colnames(foo_mat) <- paste0(colnames(foo_mat), " | " , 
+                            mdata_tibble[which(colnames(foo_mat) %in% mdata_tibble$SAMPLE) , "ObeseParents"][["ObeseParents"]])
+
+# adding stars to contrast
+colnames(foo_mat)[grep(pattern = "MotherFatherObese|MotherFatherNotObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|MotherFatherNotObese", colnames(foo_mat))], "*")
+
+# print heat map to script
+pheatmap(foo_mat, filename =  paste0(here("plots"),"/","050_r_array_analysis__plot_heatmap_liat.pdf"))
+pheatmap(foo_mat)
+
 #' ### Save DGE lists
 
-# __g) Save DGE lists ----
+# __h) Save DGE lists ----
 
 BRAT_TTL_sign <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]]
 BRAT_TTL_uprg <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(logFC > 1)

@@ -483,6 +483,15 @@
  * started on Discussion in main text
  * corrected cases in captions of script `010_r_define_obesity.r`
  * commit `ef91e56bd34e14303fa7639b9fadfe8f6ba9feb4`
+ * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/050_r_array_analysis.r')`
+
+## 11-07-2023 - work day 49
+
+ * re-ran `050_r_array_analysis.r` after correcting table export function
+ * commit `cce6f274fbb3f7f5de3d83d6993b20fd4b819ead`
+ * added messy heat map code to `050_r_array_analysis.r`
+ * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/050_r_array_analysis.r')`
+ * re-running `050_r_array_analysis.r`
  
 ## Todo queue
 
@@ -492,7 +501,8 @@
  * [x] re-run script `040_r_h3.r` add hypothesis to top adjust DI and markdown - export overviews
  * [x] re-run script `050_r_array_analysis.r` - update manuscript with PCA results - deal with missing LIAT - redefine contrasts - add markdown - erase old DIs - export DIs 
  * [ ] in script `050_r_array_analysis.r` - check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
- * [ ] in script `050_r_array_analysis.r` - use running score and preranked list of GSEA result [see here](https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html).
+ * [ ] in script `050_r_array_analysis.r` - possibly use running score and preranked list of GSEA result [see here](https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html).
+ * [ ] in script `050_r_array_analysis.r` - clean out heat map code - create function, name variables properly
  
  * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
    * [x] parental diet conforms exactly with dietary variables considered by AH for array data
