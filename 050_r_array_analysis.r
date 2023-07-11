@@ -1347,12 +1347,12 @@ ggsave(plot = BRLI_VolcanoPlotsComposite, path = here("../manuscript/display_ite
 # __g) Save DGE lists ----
 
 BRAT_TTL_sign <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]]
-BRAT_TTL_down <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(logFC > 1)
-BRAT_TTL_uprg <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(logFC < -1)
+BRAT_TTL_uprg <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(logFC > 1)
+BRAT_TTL_down <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(logFC < -1)
 
 LIAT_TTL_sign <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]]
-LIAT_TTL_down <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC > 1)
-LIAT_TTL_uprg <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC < -1)
+LIAT_TTL_uprg <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC > 1)
+LIAT_TTL_down <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC < -1)
 
 openxlsx::write.xlsx(BRAT_TTL_sign, paste0(here("tables"), "/050_r_array_analysis_", "BRAT_TTL_sign", ".xlsx"), asTable = TRUE, overwrite = TRUE)
 openxlsx::write.xlsx(BRAT_TTL_down, paste0(here("tables"), "/050_r_array_analysis_", "BRAT_TTL_down", ".xlsx"), asTable = TRUE, overwrite = TRUE)
