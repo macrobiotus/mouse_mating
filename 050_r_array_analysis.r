@@ -1333,11 +1333,11 @@ BRLI_VolcanoPlotsComposite <- ggarrange(plotlist = c(BRAT_VolcanoPlots, LIAT_Vol
 
 ggsave(plot = BRAT_VolcanoPlotsComposite, path = here("plots"), 
        filename = "050_r_array_analysis__plot_volcano_brat.pdf",  
-       width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 3)
+       width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 1)
 
 ggsave(plot = LIAT_VolcanoPlotsComposite, path = here("plots"), 
        filename = "050_r_array_analysis__plot_volcano_liat.pdf",  
-       width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 3)
+       width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 1)
 
 ggsave(plot = BRLI_VolcanoPlotsComposite, path = here("../manuscript/display_items"), 
        filename = "050_r_array_analysis__plot_volcano_brli.pdf",  

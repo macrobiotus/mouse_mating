@@ -493,6 +493,16 @@
  * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/050_r_array_analysis.r')`
  * re-running `050_r_array_analysis.r`
  * commit `65bf8fb487d792018e1b0122f7860a85dabb1319`
+ * appended messy heat map code to `050_r_array_analysis.r`
+ * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/050_r_array_analysis.r')`
+ * commit `d1279a3497cad29886b0bc4e4fbebf34cd548b90`
+
+## 11-07-2023 - work day 49
+
+  * added script `060_r_arrange_display_items.R` 
+  * which creates `060_r_arrange_display_items__fig_2.png` for inclusion into manuscript
+  * re-ran `050_r_array_analysis.r` to get new input files for above script
+  
  
 ## Todo queue
 
