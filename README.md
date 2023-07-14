@@ -497,14 +497,24 @@
  * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/050_r_array_analysis.r')`
  * commit `d1279a3497cad29886b0bc4e4fbebf34cd548b90`
 
-## 11-07-2023 - work day 49
+## 12-07-2023 - work day 50
 
-  * added script `060_r_arrange_display_items.R` 
-  * which creates `060_r_arrange_display_items__fig_2.png` for inclusion into manuscript
-  * re-ran `050_r_array_analysis.r` to get new input files for above script
-  
- 
+ * added script `060_r_arrange_display_items.R` 
+ * which creates `060_r_arrange_display_items__fig_2.png` for inclusion into manuscript
+ * re-ran `050_r_array_analysis.r` to get new input files for above script
+ * commit `1781c5c70efd6e68b541b7382dcc8aa451540b2a`
+ * re-running `rmarkdown::render(input = '/Users/paul/Documents/HM_MouseMating/analysis/scripts/050_r_array_analysis.r')`
+
+## 14-07-2023 - work day 51
+
+ * finished and mailed of manuscript - see `/Users/paul/Documents/HM_MouseMating/manuscript/230714_main_text_to_coauthors/230714_main_text.docx`
+ * slightly rearranged folder structure in `/Users/paul/Documents/HM_MouseMating/manuscript`
+ * updated todo below
+
 ## Todo queue
+
+ * [] manuscript work
+   * [ ] revise draft with coauthor's suggestions
 
  * [x] re-run script `010_r_define_obesity.r` from start - export DIs 
  * [x] re-run script `020_r_h1.r` add hypothesis to top export as markdown add model formulae
@@ -519,29 +529,6 @@
    * [x] parental diet conforms exactly with dietary variables considered by AH for array data
    * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
    * [x] the latter is needed but possibly the former data is the only one available
-  
- * [x] revise script `050_r_array_analysis_ah.r`:
-   * [x] **Day 1** - **use to inform DGE and write this down** inspect PCA signals  - overall and tissue specific - for obesity variables -> ***use to choose from DGE results** 
-   * [x] **Day 2** - implement DGE - tissue specific - get gene annotations from array targets -> use to inform KEGG and GO - look up how to check model assumptions / possibly email 
-   * [x] **Day 3** - modify reference levels in modelling - structure models more - rewrite 
-   * [x] **Day 4** - subset DGE results based on coefficients - create long list with data set identifier an contrast in name
-   * [x] **Day 5** - implement Volcano plot for DGE list - adjust thresholds
-   * [x] **Day 6** - implement KEGG and GO for all DGE list as done 
-   * [x] **Day 7** - possibly re-encode groups, remove mixed group from code, text, and images
-  
- * [] manuscript work
-   * [x] continue with results section - update PCA text and figures
-   * [x] finish results section - GO terms
-   * [x] adjust Fig 1 - in files, so far only cropped and numbers may not be correct
-   * [x] update all numbers figures and tables from html reports and exported items
-   * [ ] finish results section - most important genes
-   * [ ] draft discussion
-   * [ ] **possibly** - finish results section - running score and preranked list of GSEA 
-   * [ ] find out which genes could be relavant and add to all manuscript sections  
-   * [ ] update results  - check if Pathview can be used to improve visualisations (`https://doi.org/10.1093/bioinformatics/btt285`)
-   * [ ] update introduction based on results
-   * [ ] refit introduction
-   * [ ] write discussion
  
   * [ ] extend script `050_r_array_analysis_ah.r`:
     * [ ] **someday** - possibly Upset plots
@@ -570,13 +557,3 @@
   * [ ] archive old scripts and data files
     * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R`
     * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/main_analysis.R`
-    
-## Ideas not yet pursued
-
- * foo 
-
-## Further reading
-
-### Modelling
-
- * **Zuur AF, Ieno EN, Walker N, et al. 2009. Mixed effects models and extensions in ecology with R. New York, NY: Springer.**
