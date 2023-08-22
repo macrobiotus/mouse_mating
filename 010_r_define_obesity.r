@@ -42,11 +42,15 @@ library("janitor")  # data cleaning
 
 library("dplyr")    # pipes and more
 library("magrittr") # even more pipes
+library("tibble") 
+library("hablar") 
+
 
 library("plotrix")
 library("lattice")
 library("ggplot2")
-library("ggrepel")  
+library("ggrepel")
+library("ggpubr")
 
 library("modeest")
 
@@ -474,7 +478,56 @@ mice_f1_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, dat
          panel.text(80,19, cex = 0.75, labels = mice_f1_slct$ObeseParents[panel.number()])
          })
 
-# _3.) Showing and exporting plot ----
+# _3.) Revision 22.08.2023 - Adding new plot with weight deltas of offspring for parental categories  
+
+# __a) Copy object for new plot ----
+
+mice_f1_slct_mb  <- mice_f1_slct
+
+# __b) Get weight delta ----
+
+# getting time points for delta - min and max wont work as some mice don't ahve data at max weeks
+mice_f1_slct_mb %>% convert(num(Week)) %>% group_by(AnimalId) %>% slice(c(which.min(Week), which.max(Week))) %>% arrange 
+
+# show available weeks:
+mice_f1_slct_mb %>% convert(num(Week)) %>% pull(Week) %>% unique
+
+# getting time points for delta - min week and week 14
+mice_f1_slct_mb %<>% convert(num(Week)) %>% group_by(AnimalId) %>% slice(c(which.min(Week), which(Week == 14)))
+
+# calculate weight gain by subtracting weight at week 14 from weight at week 4 - add this to caption
+mice_f1_slct_mb %<>% group_by(AnimalId) %>% mutate(BodyWeightGainDeltaG = BodyWeightG - first(BodyWeightG)) %>% relocate(BodyWeightGainDeltaG, .after = BodyWeightG)
+
+# keep only rows with the relvant weight gein delte - the second column of each group
+mice_f1_slct_mb %<>% group_by(AnimalId) %>% slice(min(n(), 2))
+
+# __c) Prepare plotting ----
+
+# encode sex into the factor variable to lable ggplot 2 facets without much work
+mice_f1_slct_mb %<>% 
+  convert(chr(MotherDiet, FatherDiet)) %>%
+  mutate(MotherDiet = paste0("Father ", MotherDiet)) %>%
+  mutate(FatherDiet = paste0("Mother ", FatherDiet)) %>%
+  convert(chr(MotherDiet, FatherDiet))
+
+# __d) Plot weight delta ----
+
+f1_mice_weights_sex_deltas <- ggplot(data = mice_f1_slct_mb, aes(x = AnimalSex, y = BodyWeightGainDeltaG)) +
+  geom_jitter(position = position_jitter(seed = 1, width = 0.2), color = "darkgrey") +
+  geom_boxplot(width = 0.2, alpha = 0.2) +
+  facet_wrap(MotherDiet ~ FatherDiet, ncol = 4) + 
+  theme_bw() +
+  labs(x = "F1 animal sex", y = "F1 weight gain Δ [g]")
+  NULL
+
+f1_mice_weights_sex_deltas
+  
+# __d) Save weight delta plot ----
+
+# with unicode support  
+ggsave(device = cairo_pdf, plot = f1_mice_weights_sex_deltas, width = 210, height = 100, units = c("mm"), dpi = 300,scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__f1_mice_weights_sex_deltas.pdf")
+
+# _4.) Showing and exporting plot ----
 
 mice_f0_slct_xyplot_final
 mice_f1_slct_xyplot_final
@@ -483,7 +536,7 @@ mice_slct_xyplots_obesity <- ggarrange(mice_f0_slct_xyplot_final, mice_f1_slct_x
 
 ggsave(plot = mice_slct_xyplots_obesity, scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights_sex_obesity.pdf")
 
-# _4.) Table summaries ----
+# _5.) Table summaries ----
 
 mice_f0_slct %>% 
   select(AnimalId, AnimalSex, WeightGain, Obesity) %>% distinct() %>% 

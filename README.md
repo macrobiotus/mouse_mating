@@ -523,22 +523,28 @@
 
 ## 22-08-2023 - work day 53
  
-  * met with NKB - updated todo
-  * commit ``
-
+ * met with NKB - updated todo
+ * commit `b96c627bd7e22f13357108cecf73d81ca4596f2d`
+ * create analysis fork - `git checkout -b "more_bars"`
+ * created additional version of SI Fig 1 b for main text
+   * see text 22-Aug-2023 - newly inserted Fig 2
+   * see fork `more_bars`, script `010_r_define_obesity.r`, line ~480
+ * commit ``
+  
 
 ## Todo queue
  
- * [ ] create analysis fork - `more_bars`
-   * [ ] create additional version of SI Fig 1 b for main text
-   * [ ] calculate weight deltas for each f1 mouse between day 0 and 100 ("A...")
-   * [ ] plot weight deltas by factor
-   * [ ] include in mian text
+ * [x] create analysis fork - `more_bars`
+   * [x] fro NKB create additional version of SI Fig 1 b for main text
+   * [x] calculate weight deltas for each f1 mouse between day 0 and 100 ("A...")
+   * [x] plot weight deltas by factor
+   * [x] include in main text
+   * [ ] _possibly_ omit or use obesity factors instead, where available 
  * [ ] create analysis fork - `slim_mouse`
    * [ ] deal with mouse 8987
    * [ ] check if it is removed form analysis as it should - if so add to main text
    * [ ] if it isn't removed re-run analysis without it
- * [ ] create analysis fork - `diet_instead`
+ * [ ] _possibly_ create analysis fork - `diet_instead`
    * [ ] deal with mouse 8987
    * [ ] check if it is removed form analysis as it should - if so add to main text
    * [ ] substitute "obesity" with HFD throughout
