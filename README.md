@@ -512,11 +512,41 @@
  * updated todo below
  * commit `557e386cc0584dfc0e43fe114ace800703394b77`
 
+## 21-08-2023 - work day 52
+
+ * received edited manuscript version from NKB
+ * stored:
+   * mailed-off version (original): `/Users/paul/Documents/HM_MouseMating/manuscript/230714_main_text__reference.docx`
+   * mailed-off version (revised):`/Users/paul/Documents/HM_MouseMating/manuscript/230714_main_text__edited_by_NKB.docx`
+   * received version (to be revised further):`/Users/paul/Documents/HM_MouseMating/manuscript/230821_main_text.docx`
+   * started accepting minor changes to above manuscript. 
+
+## 22-08-2023 - work day 53
+ 
+  * met with NKB - updated todo
+  * commit ``
+
+
 ## Todo queue
+ 
+ * [ ] create analysis fork - `more_bars`
+   * [ ] create additional version of SI Fig 1 b for main text
+   * [ ] calculate weight deltas for each f1 mouse between day 0 and 100 ("A...")
+   * [ ] plot weight deltas by factor
+   * [ ] include in mian text
+ * [ ] create analysis fork - `slim_mouse`
+   * [ ] deal with mouse 8987
+   * [ ] check if it is removed form analysis as it should - if so add to main text
+   * [ ] if it isn't removed re-run analysis without it
+ * [ ] create analysis fork - `diet_instead`
+   * [ ] deal with mouse 8987
+   * [ ] check if it is removed form analysis as it should - if so add to main text
+   * [ ] substitute "obesity" with HFD throughout
 
  * [] manuscript work
+   * [ ] see aboeve 
    * [ ] revise draft with coauthor's suggestions
-
+ 
  * [x] re-run script `010_r_define_obesity.r` from start - export DIs 
  * [x] re-run script `020_r_h1.r` add hypothesis to top export as markdown add model formulae
  * [x] re-run script `030_r_h2.r` add hypothesis to top export as markdown add model formulae
