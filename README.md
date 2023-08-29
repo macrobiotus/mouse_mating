@@ -534,10 +534,18 @@
 ## 29-08-2023 - work day 54 - working in revision suggestions of NKB (see ToDo)
 
  * in `/Users/paul/Documents/HM_MouseMating/analysis/scripts/010_r_define_obesity.r`
-   * slight rearrangment of plot saving code
+   * slight re-arrangment of plot saving code
    * re-ran full script
- * commit ``
-
+ * commit `42db8c441a5018ee3bbeebcdf593e0ef507a78be`
+ * created and switched to analysis fork - `git checkout -b "slim_mouse"`
+ * in `/Users/paul/Documents/HM_MouseMating/analysis/scripts/010_r_define_obesity.r`
+   * slight re-arrangment of plot saving code
+   * updated plotting code
+   * re-ran entire script
+ * in `/Users/paul/Documents/HM_MouseMating/analysis/scripts/050_r_array_analysis.r`
+   * adjusted heat map plotting code to plot z-scores, and updated figure manuscript
+ * starting revising main text - proceeded to ened of Methods section
+ 
 
  
 ## Todo queue
@@ -547,20 +555,29 @@
    * [x] calculate weight deltas for each f1 mouse between day 0 and 100 ("A...")
    * [x] plot weight deltas by factor
    * [x] include in main text
-   * [ ] _possibly_ omit or use obesity factors instead, where available 
- * [ ] create analysis fork - `slim_mouse`
-   * [ ] deal with mouse 8987
-   * [ ] check if it is removed form analysis as it should - if so add to main text
-   * [ ] if it isn't removed re-run analysis without it
- * [ ] _possibly_ create analysis fork - `diet_instead`
+   * ˜˜˜[ ] _possibly_ omit or use obesity factors instead, where available ˜˜˜ 
+ * [x] create analysis fork - `slim_mouse`
+   * [x] deal with mouse 8989
+   * [x] check if it is removed form analysis as it should - if so add to main text
+   * [x] if it isn't removed re-run analysis without it
+ * ˜˜˜ [ ] _possibly_ create analysis fork - `diet_instead` ˜˜˜
    * [ ] deal with mouse 8987
    * [ ] check if it is removed form analysis as it should - if so add to main text
    * [ ] substitute "obesity" with HFD throughout
 
- * [] manuscript work
-   * [ ] see above 
+ * [x] manuscript work
+   * [x] see above 
+   * [ ] correct count values
+     * [ ] insert new "(Fig. X)" as new Fig. 2 or table: "Litters and pubs were counted and documented"
+   * [ ] correct figure labels - in `pdfs`'s and code - use 
+     * [ ] epigonal visceral (EVAT), 
+     * [ ] subcutaneous (SCAT), 
+     * [ ] liver (L) and 
+     * [ ] brown adipose tissue (BAT)
    * [ ] revise draft with coauthor's suggestions
- 
+   * [ ] circulate
+   * [ ] prepare submissions
+   
  * [x] re-run script `010_r_define_obesity.r` from start - export DIs 
  * [x] re-run script `020_r_h1.r` add hypothesis to top export as markdown add model formulae
  * [x] re-run script `030_r_h2.r` add hypothesis to top export as markdown add model formulae

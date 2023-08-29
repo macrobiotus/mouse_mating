@@ -462,11 +462,13 @@ mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity, 
 # _1.) Plotting F0 weight at measurement age, including sex and obesity status ----
 
 mice_f0_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="F0 weight at measurement age, inlcuding sex and obesity status",
-       panel=function(x, y,...){
+       panel = function(x, y,...){
          panel.xyplot(x,y,...)
-         panel.text(80,18, cex = 0.75, labels = mice_f0_slct$AnimalSex[panel.number()])
-         panel.text(80,17, cex = 0.75, labels = mice_f0_slct$Obesity[panel.number()]) })
-
+         panel.text(45,27, cex = 0.75, labels = mice_f0_slct$AnimalSex[panel.number()])
+         panel.text(51,27, cex = 0.75, labels = mice_f0_slct$Diet[panel.number()])
+         panel.text(66,27, cex = 0.75, labels = mice_f0_slct$Obesity[panel.number()])
+         }
+       )
 
 # _2.) Plotting F1 weight at measurement age, including sex and obesity status ----
 

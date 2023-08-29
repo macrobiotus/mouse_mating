@@ -43,7 +43,7 @@ fig_1 <- image_append(
     image_append(c(panel.ur, panel.lr), stack = TRUE)
     ))
 
-image_write(fig_1, format = "png", density = 200, path =  "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/060_r_arrange_display_items__fig_2.png")
+image_write(fig_1, format = "png", density = 300, path =  "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/060_r_arrange_display_items__fig_2.png")
 
 # Snapshot environment ----
 

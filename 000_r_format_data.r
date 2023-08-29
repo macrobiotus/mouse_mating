@@ -176,7 +176,6 @@ mice_f0 %>% filter(AnimalId %!in% c(8994, 8995, 8996, 8997)) %>% arrange(AnimalI
 
 mice_f0 %<>% filter(AnimalId %!in% c(8994, 8995, 8996, 8997))
 
-
 #' ### Remove f1 individuals from parents with mixed diets, if any
 
 # __d) Remove f1 individuals from mothers with "mixed" diets, if any  ----
@@ -192,7 +191,6 @@ mice_f0 %>% dplyr::select(AnimalId, AnimalSex) %>% pull(AnimalId) %>% unique() %
 
 # there are 50 f1 mice after filtering
 mice_f1 %>% filter(MotherId %in% (mice_f0 %>% pull(AnimalId) %>% unique())) %>% pull(AnimalId) %>% unique() %>% length 
-
 
 # -- doing the filtering --
 mice_f1 %<>% filter(MotherId %in% (mice_f0 %>% pull(AnimalId) %>% unique()))

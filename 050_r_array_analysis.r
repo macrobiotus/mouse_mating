@@ -1387,8 +1387,8 @@ colnames(foo_mat) <- paste0(colnames(foo_mat), " | " ,
 colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))], "*")
 
 # print heat map to script
-pheatmap(foo_mat, filename =  paste0(here("plots"),"/","050_r_array_analysis__plot_heatmap_brat.pdf"))
-pheatmap(foo_mat)
+pheatmap(foo_mat, scale = "row", filename =  paste0(here("plots"),"/","050_r_array_analysis__plot_heatmap_brat.pdf"))
+pheatmap(foo_mat, scale = "row")
 
 # ___ LIAT ----
 
@@ -1426,8 +1426,8 @@ colnames(foo_mat) <- paste0(colnames(foo_mat), " | " ,
 colnames(foo_mat)[grep(pattern = "MotherFatherObese|MotherFatherNotObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|MotherFatherNotObese", colnames(foo_mat))], "*")
 
 # print heat map to script
-pheatmap(foo_mat, filename =  paste0(here("plots"),"/","050_r_array_analysis__plot_heatmap_liat.pdf"))
-pheatmap(foo_mat)
+pheatmap(foo_mat, scale = "row", filename =  paste0(here("plots"),"/","050_r_array_analysis__plot_heatmap_liat.pdf"))
+pheatmap(foo_mat, scale = "row")
 
 #' ### Save DGE lists
 
