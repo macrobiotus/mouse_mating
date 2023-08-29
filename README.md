@@ -531,9 +531,12 @@
    * see fork `more_bars`, script `010_r_define_obesity.r`, line ~480
  * commit `3c9fbb5857428cd06a28060eecd779f411e77bf9`(on `more_bars`)
 
-## 29-08-2023 - work day 54
+## 29-08-2023 - work day 54 - working in revision suggestions of NKB (see ToDo)
 
- * foo
+ * in `/Users/paul/Documents/HM_MouseMating/analysis/scripts/010_r_define_obesity.r`
+   * slight rearrangment of plot saving code
+   * re-ran full script
+ * commit ``
 
 
  
