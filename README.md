@@ -540,13 +540,15 @@
  * created and switched to analysis fork - `git checkout -b "slim_mouse"`
  * in `/Users/paul/Documents/HM_MouseMating/analysis/scripts/010_r_define_obesity.r`
    * slight re-arrangment of plot saving code
-   * updated plotting code
+   * updated plotting code - added diet to F0 
    * re-ran entire script
  * in `/Users/paul/Documents/HM_MouseMating/analysis/scripts/050_r_array_analysis.r`
    * adjusted heat map plotting code to plot z-scores, and updated figure manuscript
  * starting revising main text - proceeded to ened of Methods section
+ * commit `13dc723cc44ae31212ffc5ce57e0a19b5cd9a435`
  
-
+ 
+ 
  
 ## Todo queue
  
@@ -567,8 +569,12 @@
 
  * [x] manuscript work
    * [x] see above 
-   * [ ] correct count values
-     * [ ] insert new "(Fig. X)" as new Fig. 2 or table: "Litters and pubs were counted and documented"
+   * [ ] add count values to manuscript
+     * [ ] add diet to F1 plot in `010_r_define_obesity.r`
+     * [ ] update SI Figure 1b in manuscript
+     * [ ] check caption
+     * [ ] update count values from SI Fig. 1
+   * validate caption of Fig. 3  
    * [ ] correct figure labels - in `pdfs`'s and code - use 
      * [ ] epigonal visceral (EVAT), 
      * [ ] subcutaneous (SCAT), 
