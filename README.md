@@ -525,17 +525,22 @@
  
  * met with NKB - updated todo
  * commit `b96c627bd7e22f13357108cecf73d81ca4596f2d`
- * create analysis fork - `git checkout -b "more_bars"`
+ * created and switched to analysis fork - `git checkout -b "more_bars"`
  * created additional version of SI Fig 1 b for main text
    * see text 22-Aug-2023 - newly inserted Fig 2
    * see fork `more_bars`, script `010_r_define_obesity.r`, line ~480
- * commit ``
-  
+ * commit `3c9fbb5857428cd06a28060eecd779f411e77bf9`(on `more_bars`)
 
+## 29-08-2023 - work day 54
+
+ * foo
+
+
+ 
 ## Todo queue
  
  * [x] create analysis fork - `more_bars`
-   * [x] fro NKB create additional version of SI Fig 1 b for main text
+   * [x] for NKB create additional version of SI Fig 1 b for main text
    * [x] calculate weight deltas for each f1 mouse between day 0 and 100 ("A...")
    * [x] plot weight deltas by factor
    * [x] include in main text
@@ -550,7 +555,7 @@
    * [ ] substitute "obesity" with HFD throughout
 
  * [] manuscript work
-   * [ ] see aboeve 
+   * [ ] see above 
    * [ ] revise draft with coauthor's suggestions
  
  * [x] re-run script `010_r_define_obesity.r` from start - export DIs 

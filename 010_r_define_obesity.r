@@ -521,13 +521,10 @@ f1_mice_weights_sex_deltas <- ggplot(data = mice_f1_slct_mb, aes(x = AnimalSex, 
   NULL
 
 f1_mice_weights_sex_deltas
-  
-# __d) Save weight delta plot ----
-
-# with unicode support  
-ggsave(device = cairo_pdf, plot = f1_mice_weights_sex_deltas, width = 210, height = 100, units = c("mm"), dpi = 300,scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__f1_mice_weights_sex_deltas.pdf")
 
 # _4.) Showing and exporting plot ----
+
+# __a) Save weight curve plots ----
 
 mice_f0_slct_xyplot_final
 mice_f1_slct_xyplot_final
@@ -535,6 +532,12 @@ mice_f1_slct_xyplot_final
 mice_slct_xyplots_obesity <- ggarrange(mice_f0_slct_xyplot_final, mice_f1_slct_xyplot_final, labels = c("a", "b"), ncol = 1, nrow = 2, heights = c(1, 2))
 
 ggsave(plot = mice_slct_xyplots_obesity, scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights_sex_obesity.pdf")
+
+# __b) Save weight delta plot ----
+
+# with unicode support  
+ggsave(device = cairo_pdf, plot = f1_mice_weights_sex_deltas, width = 210, height = 100, units = c("mm"), dpi = 300,scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__f1_mice_weights_sex_deltas.pdf")
+
 
 # _5.) Table summaries ----
 
