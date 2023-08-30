@@ -559,7 +559,7 @@
  * commit before explorig odd obesity value assignment among F1 - see below
  * commit `e3af6b4daa580840f880b4b52b6f1cfd72dda613`
  * leaving branch `more_bars` open ended
- * merging current branch `slim_mouse` to `master` as per `https://www.w3docs.com/snippets/git/how-to-make-the-current-git-branch-a-master-branch.html`
+ * **merging current branch** `slim_mouse` to `master` as per `https://www.w3docs.com/snippets/git/how-to-make-the-current-git-branch-a-master-branch.html`
  * **creating analysis fork** `adjust_cutoffs` to change curve cutoff of F1 to that of F0 `git checkout -b adjust_cutoffs`
  * working in `010_r_define_obesity.r` as listed in ToDo queue
  * re-running `010_r_define_obesity.r` entirely
@@ -568,7 +568,8 @@
  * re-running `040_r_h3.r` entirely - added exporting plot `gam6_plot` as `SI Figure2`
  * not re-running `050_r_array_analysis.r` - results shouldn't have changed
  * continuing to edit file `230830_main_text_b.docx`
- * commit 
+ * commit `bf92b4919f9baaac0d892e3a116e06ea719f1364`
+ * **merging current branch** `adjust_cutoffs` to `master
  
 ## Todo queue
  
