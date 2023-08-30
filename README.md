@@ -569,8 +569,14 @@
  * not re-running `050_r_array_analysis.r` - results shouldn't have changed
  * continuing to edit file `230830_main_text_b.docx`
  * commit `bf92b4919f9baaac0d892e3a116e06ea719f1364`
- * **merging current branch** `adjust_cutoffs` to `master
- 
+ * **merging current branch** `adjust_cutoffs` to `master`
+ * commit `ce0887565d9dcaaa915b820b6fda5c72d49bc533`
+ * copying and continuing to edit file `230830_main_text_b_cleaned.docx` - removing superflous tracked changes
+ * updated ToDo
+ * copying cleaned `230830_main_text_b_cleaned` to `230831_main_text`, mailing latter of to NKB
+ * summary of current state in `/Users/paul/Documents/HM_MouseMating/communication/230830_on_revision_to_NKB.pdf`
+ * commit ``
+
 ## Todo queue
  
  * [x] create analysis fork - `more_bars`
@@ -585,13 +591,11 @@
    * [x] check if it is removed form analysis as it should - if so add to main text
    * [x] if it isn't removed re-run analysis without it
  
- * ˜˜˜ [ ] _possibly_ create analysis fork - `diet_instead` ˜˜˜
-   * [ ] deal with mouse 8987
-   * [ ] check if it is removed form analysis as it should - if so add to main text
-   * [ ] substitute "obesity" with HFD throughout
-  
   * [ ] _likely_ create analysis fork - `weight_deltas`
-    * [ ] redefine obesity using weight deltas instead of curves
+    * [ ] redefine obesity using weight deltas instead of curves and re-run everything
+    * [ ] in script `010_r_define_obesity.r`
+    * [ ] possibly define obesity using weight gain deltas instead of growth curves
+    * [ ] re-check weight gain definitions among F0 and F1
 
  * [x] manuscript work
    * [x] see above 
@@ -603,7 +607,7 @@
      * [x] update SI Figure 1b in manuscript
      * [x] check caption of SI Figure 1b
      * [x] add curvature summaries to SI Fig 1
-     * [ ] explore odd obesity value assignment among F1
+     * [x] explore odd obesity value assignment among F1
        * [x] commit to save state `81033ebad16be523b7096e8a841697e7fd037b33`
        * [x] backing up `010_r_define_obesity__mice_derivatives_densities.pdf` to `010_r_define_obesity__mice_derivatives_densities_backup.pdf` 
        * [x] create analysis fork `adjust_cutoffs` to change curve cutoff of F1 to that of F0 
@@ -617,23 +621,19 @@
      * [x] add parents and their obesity status to current SI table 1 which is `040_r_h3__rna_seq_sample.xlsx`
      * [x] update count values in text from `040_r_h3__rna_seq_sample.xlsx`
    * [x] validate caption of Fig. 3  
-   * [ ] update all analysis and text
+   * [x] update all analysis and text
+   * [x] revise draft with coauthor's suggestions
+   * [ ] circulate to NKB
+   * [ ] duplicate and load duplicated environment of `050_r_array_analysis.r`, in heatmap remove "inferred obesity status of the sequenced individual"
    * [ ] correct figure labels - in `pdfs`'s and code - use 
      * [ ] epigonal visceral (EVAT), 
      * [ ] subcutaneous (SCAT), 
      * [ ] liver (L) and 
      * [ ] brown adipose tissue (BAT)
-   * [ ] revise draft with coauthor's suggestions
-   * [ ] circulate
+   * [ ] expand SI table 1 to female and litter information 
+   * [ ] prepare submissions **or**     
    * [ ] communicate and **possibly**in `weight_delta` fork re-run analysis with other obesity definition, based on weight delta 
-   * [ ] prepare submissions
-   
- * [x] re-run script `010_r_define_obesity.r` from start - export DIs 
- * [x] re-run script `020_r_h1.r` add hypothesis to top export as markdown add model formulae
- * [x] re-run script `030_r_h2.r` add hypothesis to top export as markdown add model formulae
- * [x] re-run script `040_r_h3.r` add hypothesis to top adjust DI and markdown - export overviews
- * [x] re-run script `050_r_array_analysis.r` - update manuscript with PCA results - deal with missing LIAT - redefine contrasts - add markdown - erase old DIs - export DIs 
- 
+
  * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
    * [x] parental diet conforms exactly with dietary variables considered by AH for array data
    * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
@@ -641,10 +641,6 @@
 
 ## After revisions, if desired, or required
 
- * [ ] in script `010_r_define_obesity.r`
-   * [ ] possibly define obesity using weight gain deltas instead of growth curves
-   * [ ] re-check weight gain definitions among F0 and F1
- 
  * [ ] in script `050_r_array_analysis.r`
    * [ ] check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
    * [ ]  possibly use running score and preranked list of GSEA result [see here](https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html).
@@ -653,8 +649,6 @@
    * [ ] **someday** - possibly network plots
    * [ ] **someday** - possibly implement SWAMP instad of PCA
     
-    
-
  * [ ] archive old scripts and data files
    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R`
    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/main_analysis.R`
