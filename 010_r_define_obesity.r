@@ -44,7 +44,7 @@ library("dplyr")    # pipes and more
 library("magrittr") # even more pipes
 library("tibble") 
 library("hablar") 
-
+library("vctrs")
 
 library("plotrix")
 library("lattice")
@@ -215,8 +215,23 @@ F1_BodyWeight_Models_Coefficients <- lapply(F1_BodyWeight_Models[[2]], coefficie
 
 # __b) Isolate measurement days ----
 
+# inspect Measurement days
+mice_f0_slct %>% select(MeasurementDay, AnimalId, AnimalSex) %>% table()
+mice_f1_slct %>% select(MeasurementDay, AnimalId, AnimalSex) %>% table()
+
+# isolate measurement days
 F0_BodyWeight_Models_MDays <- split(as.numeric(mice_f0_slct$MeasurementDay), mice_f0_slct$AnimalId)
 F1_BodyWeight_Models_MDays <- split(as.numeric(mice_f1_slct$MeasurementDay), mice_f1_slct$AnimalId)
+
+# remove missing data
+F0_BodyWeight_Models_MDays <- list_drop_empty(F0_BodyWeight_Models_MDays)
+F1_BodyWeight_Models_MDays <- list_drop_empty(F1_BodyWeight_Models_MDays)
+
+# check filtering
+length(F0_BodyWeight_Models_MDays)
+length(F1_BodyWeight_Models_MDays)
+
+
 
 # _4.) Get curvatures (2nd derivative) of polynomials at each time point ----
 
@@ -267,7 +282,7 @@ ggsave(plot = mice_slct_xyplots_curves, path = here("../manuscript/display_items
 
 # modes don't work well to separte bimodal distribution of second derivatives - will use medeian instead
 plot(density(F0_PCurvature_Results), main = "F0 weight gain curvatures - Estimated mode")
-abline(v = naive(F0_PCurvature_Results,bw = 0.001), col = 2)
+abline(v = naive(F0_PCurvature_Results, bw = 0.001), col = 2)
 
 plot(density(F1_PCurvature_Results), main = "F1 weight gain curvatures - Estimated mode")
 abline(v = naive(F1_PCurvature_Results, bw = 0.001), col = 2)
@@ -435,7 +450,7 @@ mice_f1_slct$Obesity %>% summary()
 
 mice_f1_slct %>% select(AnimalId) %>% distinct # next command below should have 50 animals
 
-# obesity marking successful as obejcet has 50 lines 
+# obesity marking successful as object has 50 lines 
 
 mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) 
 

@@ -575,7 +575,12 @@
  * updated ToDo
  * copying cleaned `230830_main_text_b_cleaned` to `230831_main_text`, mailing latter of to NKB
  * summary of current state in `/Users/paul/Documents/HM_MouseMating/communication/230830_on_revision_to_NKB.pdf`
- * commit ``
+ * commit `08c0d9f27dce5ef0d68ef7adf8426450c0dcadb2`
+ * suspecting error in growth curve analysis 
+ * in `010_r_define_obesity.r` adding inspection code at `Isolate measurement days ----`
+   * using obesity definition by left and right of 0 result stays the same
+   * corrected figures in manuscript file 31.08.2023
+   * commit to new fork `new_curvatures`
 
 ## Todo queue
  
@@ -623,8 +628,11 @@
    * [x] validate caption of Fig. 3  
    * [x] update all analysis and text
    * [x] revise draft with coauthor's suggestions
-   * [ ] circulate to NKB
-   * [ ] duplicate and load duplicated environment of `050_r_array_analysis.r`, in heatmap remove "inferred obesity status of the sequenced individual"
+   * [x] circulate to NKB
+   * [ ] communicate and **possibly** 
+     * [x] in fork `new_curvatures` fork explore correction of growth curve analysis and re-run analysis with corrected obesity definition
+     * [ ] in fork `weight_delta` fork explore alternative to growth curve analysis and re-run analysis, use weight deltas
+   * [ ] possibly - duplicate and load duplicated environment of `050_r_array_analysis.r`, in heatmap remove "inferred obesity status of the sequenced individual"
    * [ ] correct figure labels - in `pdfs`'s and code - use 
      * [ ] epigonal visceral (EVAT), 
      * [ ] subcutaneous (SCAT), 
@@ -632,8 +640,7 @@
      * [ ] brown adipose tissue (BAT)
    * [ ] expand SI table 1 to female and litter information 
    * [ ] prepare submissions **or**     
-   * [ ] communicate and **possibly**in `weight_delta` fork re-run analysis with other obesity definition, based on weight delta 
-
+   
  * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
    * [x] parental diet conforms exactly with dietary variables considered by AH for array data
    * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
