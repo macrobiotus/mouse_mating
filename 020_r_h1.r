@@ -136,24 +136,34 @@ mice_f1_model_data %>% select(ObesityLgcl, ObeseParentsLgcl) %>% table()
 
 # _1.) Intercept-only model ----
 
-mod_0 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
-equatiomatic::extract_eq(mod_0)
-summary(mod_0)
-
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+  
+  mod_0 <-lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
+  equatiomatic::extract_eq(mod_0)
+  summary(mod_0)
+}
 
 #' ## Actual model
 
 # _2.) Actual model ----
 
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+
 mod_1 <- lme4::glmer(ObesityLgcl ~ ObeseParentsLgcl + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 equatiomatic::extract_eq(mod_1)
 summary(mod_1)
+
+}
 
 #' ## Test effect of parents obesity status
 
 # _3.) Test effect of parents obesity status ----
 
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+
 anova(mod_0, mod_1)
+  
+}  
 
 #' # Select and shape data for Subquestion 2: "Both parents’ obesity only"
 
@@ -199,14 +209,22 @@ mice_f1_model_data %>% select(ObesityLgcl, BothObeseParentsLgcl) %>% table()
 
 # _1.) Intercept-only model ----
 
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+  
+
 mod_2 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 equatiomatic::extract_eq(mod_2)
 summary(mod_2)
 # modelsummary(mod_2)
 
+}
+
 #' ## Actual model
 
 # _2.) Actual model ----
+
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+  
 
 mod_3 <- lme4::glmer(ObesityLgcl ~ BothObeseParentsLgcl + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 equatiomatic::extract_eq(mod_3)
@@ -214,12 +232,17 @@ summary(mod_3)
 
 round(exp(fixef(mod_3)), digits = 2)
 
+}
+
 #' ## Test effect of parents obesity status
 
 # _3.) Test effect of parents obesity status ----
 
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+  
 anova(mod_2, mod_3)
 
+}
 #' # Save finished data
 
 # Save finished data ----

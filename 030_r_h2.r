@@ -120,23 +120,37 @@ mice_f1_model_data %>% select(ObesityLgcl, ObeseFatherLgcl) %>% table()
 
 # _1.) Intercept-only model ----
 
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+  
 mod_0 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 equatiomatic::extract_eq(mod_0)
 summary(mod_0)
+
+}
 
 #' ## Actual model
 
 # _2.) Actual model ----
 
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+  
 mod_1 <- lme4::glmer(ObesityLgcl ~ ObeseFatherLgcl + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 equatiomatic::extract_eq(mod_1)
 summary(mod_1)
+
+}
 
 #' ## Test effect of parents obesity status
 
 # _3.) Test effect of parents obesity status ----
 
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+  
+
 anova(mod_0, mod_1)
+
+  
+}
 
 #' # Select and shape data for Subquestion 2: "Obesity in mothers"
 
@@ -190,23 +204,35 @@ mice_f1_model_data %>% select(ObesityLgcl, ObeseMotherLgcl) %>% table()
 
 # _1.) Intercept-only model ----
 
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+
 mod_3 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 equatiomatic::extract_eq(mod_3)
 summary(mod_0)
+
+}
 
 #' ## Actual model
 
 # _2.) Actual model ----
 
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+  
 mod_4 <- lme4::glmer(ObesityLgcl ~ ObeseMotherLgcl + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 equatiomatic::extract_eq(mod_4)
 summary(mod_4)
+
+}
 
 #' ## Test effect of parents obesity status
 
 # _3.) Test effect of parents obesity status ----
 
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+  
 anova(mod_3, mod_4)
+
+}
 
 #' # Save finished data
 

@@ -560,6 +560,15 @@
  * commit `e3af6b4daa580840f880b4b52b6f1cfd72dda613`
  * leaving branch `more_bars` open ended
  * merging current branch `slim_mouse` to `master` as per `https://www.w3docs.com/snippets/git/how-to-make-the-current-git-branch-a-master-branch.html`
+ * **creating analysis fork** `adjust_cutoffs` to change curve cutoff of F1 to that of F0 `git checkout -b adjust_cutoffs`
+ * working in `010_r_define_obesity.r` as listed in ToDo queue
+ * re-running `010_r_define_obesity.r` entirely
+ * re-running `020_r_h1.r` entirely
+ * re-running `030_r_h2.r` entirely
+ * re-running `040_r_h3.r` entirely - added exporting plot `gam6_plot` as `SI Figure2`
+ * not re-running `050_r_array_analysis.r` - results shouldn't have changed
+ * continuing to edit file `230830_main_text_b.docx`
+ * commit 
  
 ## Todo queue
  
@@ -594,16 +603,19 @@
      * [x] check caption of SI Figure 1b
      * [x] add curvature summaries to SI Fig 1
      * [ ] explore odd obesity value assignment among F1
-       * [ ] commit to save state 
-       * [ ] backing up `010_r_define_obesity__mice_derivatives_densities.pdf` to `010_r_define_obesity__mice_derivatives_densities_backup.pdf` 
-       * [ ] in  `010_r_define_obesity.r`
-       * [ ] save new version of manuscript file, named []
-   * [ ] add count values to manuscript
-     * [ ] see `010_r_define_obesity__mice_f1_slct__obesity.xlsx` and  line ~415 of `010_r_define_obesity.r`
-     * [ ] add parents and their obesity status to current SI table 1 which is `040_r_h3__rna_seq_sample.xlsx`
-     * [ ] update count values in text from `040_r_h3__rna_seq_sample.xlsx`
+       * [x] commit to save state `81033ebad16be523b7096e8a841697e7fd037b33`
+       * [x] backing up `010_r_define_obesity__mice_derivatives_densities.pdf` to `010_r_define_obesity__mice_derivatives_densities_backup.pdf` 
+       * [x] create analysis fork `adjust_cutoffs` to change curve cutoff of F1 to that of F0 
+       * [x] in  `010_r_define_obesity.r`  
+         * [x] check and remove missing data among F1 - week 16
+         * [x] re-run script and look for changes, decide what to do next
+         * [x] save new version of manuscript file, named `230830_main_text_b.docx`
+         * [x] update manuscript file 
+   * [x] add count values to manuscript
+     * [x] see `010_r_define_obesity__mice_f1_slct__obesity.xlsx` and  line ~415 of `010_r_define_obesity.r`
+     * [x] add parents and their obesity status to current SI table 1 which is `040_r_h3__rna_seq_sample.xlsx`
+     * [x] update count values in text from `040_r_h3__rna_seq_sample.xlsx`
    * [x] validate caption of Fig. 3  
-   * [ ] communicate and in `weight_delta` fork re-run analysis with other obesity definition, based on weight delta 
    * [ ] update all analysis and text
    * [ ] correct figure labels - in `pdfs`'s and code - use 
      * [ ] epigonal visceral (EVAT), 
@@ -612,6 +624,7 @@
      * [ ] brown adipose tissue (BAT)
    * [ ] revise draft with coauthor's suggestions
    * [ ] circulate
+   * [ ] communicate and **possibly**in `weight_delta` fork re-run analysis with other obesity definition, based on weight delta 
    * [ ] prepare submissions
    
  * [x] re-run script `010_r_define_obesity.r` from start - export DIs 

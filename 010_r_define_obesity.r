@@ -121,7 +121,28 @@ mice_f1_slct %>%
   distinct %>% 
   arrange(AnimalSex, MotherDiet,FatherDiet) %>% print(n=Inf)
 
-# __c) Plot F0 and F1  weights by measurement day ----
+
+# _3.) Remove week 16 from F1 ----
+
+# - Many NAs may affect growth curve analysis by yielding 0
+# - F0 has data only available to week 14
+
+
+# __a) Check for missing Measurement Days ----
+
+mice_f0_slct %>% select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
+mice_f1_slct %>% select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
+
+# __b) Remove week 16 from F1
+
+mice_f1_slct %<>% filter(Week != 16)
+
+# __c) Check for missing Measurement Days ----
+
+mice_f0_slct %>% select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
+mice_f1_slct %>% select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
+
+# __d) Plot F0 and F1  weights by measurement day ----
 
 mice_f0_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="F0 weight at measurement age")
 mice_f1_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="F1 weight at measurement age")
@@ -154,7 +175,7 @@ F1_BodyWeight_Models <-  mice_f1_slct %>% group_by(AnimalId) %>% do(model = lm(B
 # lapply(F0_BodyWeight_Models$model, summary) 
 # lapply(F1_BodyWeight_Models$model, summary) 
 
-# __a) Show model summaries graphically ----
+# __b) Show model summaries graphically ----
 
 # - graphically, can only be done in lattice using poly() but result should be similar
 mice_f0_slct_xyplot_poly <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct,
@@ -292,10 +313,18 @@ F1_Median <- median(F1_PCurvature_Results)
 
 # _2.) Defining F0 animals with high or low weight gain ----
 
-# Not yet obesity status - see methods
+# __a) Not used anymore: Define hi and lo gain via median of growth curv derivatives ---- 
 
+# Does not give results that make any sense - makes only sens for F0
+#  presumably because ist splits positive and negative values
 F0_HiGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results >= F0_Median) ]   
 F0_LoGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results < F0_Median) ]   
+
+# __b) Used 30-Aug-2023e: Define hi and lo gain via positive or negative curvature summary ---- 
+F0_HiGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results >= 0) ]   
+F0_LoGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results < 0) ]   
+
+# __c) Inspect results ----
 
 # HiGian F0 are
 F0_HiGain
@@ -303,12 +332,20 @@ F0_HiGain
 # LoGain F0 are
 F0_LoGain
 
-# _3.) Defining F1 animals with high or low weight gain 
+# _3.) Defining F1 animals with high or low weight gain ----
 
-# Not yet obesity status - see methods
+# __a) Not used anymore: Define hi and lo gain via median of growth curv derivatives ---- 
 
+# Does not give results that make any sense - makes only sens for F0
+#  presumably because ist splits positive and negative values
 F1_HiGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results >= F1_Median) ]   
 F1_LoGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results < F1_Median) ]   
+
+# __b) Used 30-Aug-2023e: Define hi and lo gain via positive or negative curvature summary ---- 
+F1_HiGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results >= 0) ]   
+F1_LoGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results < 0) ]   
+
+# __c) Inspect results ----
 
 # HiGian F1 are
 F1_HiGain
@@ -487,8 +524,6 @@ mice_f1_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, dat
          panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
          })
 
-# **** Construction site below - adjust ----
-
 # _3.) Revision started 30.08.2023 - Adding new plots with weight deltas of F0 ----
 
 # __a) Copy object for new plot ----
@@ -534,12 +569,12 @@ f0_mice_weights_sex_deltas <- ggplot(data = mice_f0_slct_mb, aes(x = AnimalSex, 
   geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black") +
   geom_boxplot(width = 0.2, alpha = 0.2) +
   facet_wrap(Diet ~ . , ncol = 2) + 
+  coord_cartesian(ylim = c(0, 20)) +
   theme_bw() +
   labs(x = "F0 animal sex", y = "F0 weight gain Δ [g]")
 NULL
 
 f0_mice_weights_sex_deltas
-
 
 # _4.) Revision started 22.08.2023 - Adding new plots with weight deltas of F1 ----
 
@@ -586,6 +621,7 @@ f1_mice_weights_sex_deltas <- ggplot(data = mice_f1_slct_mb, aes(x = AnimalSex, 
   geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black") +
   geom_boxplot(width = 0.2, alpha = 0.2) +
   facet_wrap(MotherDiet ~ FatherDiet, ncol = 4) + 
+  coord_cartesian(ylim = c(0, 20)) +
   theme_bw() +
   labs(x = "F1 animal sex", y = "F1 weight gain Δ [g]")
   NULL
@@ -603,7 +639,7 @@ mice_slct_xyplots_obesity <- ggarrange(mice_f0_slct_xyplot_final, mice_f1_slct_x
 
 ggsave(plot = mice_slct_xyplots_obesity, scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights_sex_obesity.pdf")
 
-# __c) Save F0 and F1 weight delta plots ----
+# __b) Save F0 and F1 weight delta plots ----
 
 f0_f1_mice_weights_sex_deltas <- ggarrange(f0_mice_weights_sex_deltas, f1_mice_weights_sex_deltas, labels = c("a", "b"), ncol = 2, nrow = 1, widths =  c(2, 4))
 

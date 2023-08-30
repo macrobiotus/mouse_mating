@@ -112,23 +112,37 @@ mice_f1_model_data %>% select(ObesityLgcl, ObeseParents) %>% table()
 
 # _1.) Intercept-only model ----
 
-mod_0 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
-equatiomatic::extract_eq(mod_0)
-summary(mod_0)
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+  
+  mod_0 <- lme4::glmer(ObesityLgcl ~ 1 + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
+  equatiomatic::extract_eq(mod_0)
+  summary(mod_0)
+
+}
 
 # _2.) Animal sex only ----
 
-mod_1 <- lme4::glmer(ObesityLgcl ~ AnimalSex +  (1 | AnimalId), data = mice_f1_model_data, family = binomial)
-equatiomatic::extract_eq(mod_1)
-summary(mod_1)  # AnimalSexm *** (due to weight curve Obesity definistion)
-
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+ 
+   mod_1 <- lme4::glmer(ObesityLgcl ~ AnimalSex +  (1 | AnimalId), data = mice_f1_model_data, family = binomial)
+  equatiomatic::extract_eq(mod_1)
+  summary(mod_1)  # AnimalSexm *** (due to weight curve Obesity definistion)
+  
+}
+  
 # _3.) Parents obesity only  ----
 
-mod_2 <- lme4::glmer(ObesityLgcl ~ ObeseParents + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
-equatiomatic::extract_eq(mod_2)
-summary(mod_2) # ObeseParentsMotherFatherObese ***
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
+  
+  mod_2 <- lme4::glmer(ObesityLgcl ~ ObeseParents + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
+  equatiomatic::extract_eq(mod_2)
+  summary(mod_2) # ObeseParentsMotherFatherObese ***
+
+}
 
 # _4.) Full model ----
+
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
 
 mod_3 <- lme4::glmer(ObesityLgcl ~ AnimalSex + ObeseParents + (1 | AnimalId), data = mice_f1_model_data, family = binomial)
 equatiomatic::extract_eq(mod_3)
@@ -137,7 +151,11 @@ summary(mod_3)
 exp(fixef(mod_3))
 round(exp(fixef(mod_3)), digits = 3)
 
+}
+
 # _5.) Test logistic regressions' fixed effects using ANOVA function and cAIC ----
+
+if (!length(unique(mice_f1_model_data[["ObesityLgcl"]])) == 1){
 
 # cAIC(mod_0) -- 0.34
 # cAIC(mod_1) -- 0.17
@@ -152,6 +170,8 @@ anova(mod_1, mod_2) #
 
 anova(mod_1, mod_3) # 
 anova(mod_2, mod_3) # 2.192e-10 ***
+
+} 
 
 #' # GAM and body weight: Select and shape data
 
@@ -229,9 +249,9 @@ AIC(mod_6) # even lower
 summary(mod_1)
 summary(mod_2)
 summary(mod_3)
-summary(mod_4) # Deviance explained = 95.9%
+summary(mod_4) # Deviance explained = 96.6%
 summary(mod_5)
-summary(mod_6) # Deviance explained = 96.3%
+summary(mod_6) # Deviance explained = 96.9%
 
 # _4.) Model appraisals ----
 
@@ -268,7 +288,7 @@ ggplot(data = mod_4_predictions, aes(x = MeasurementDay, y = BodyWeightG, colour
 
 mod_6_predictions  <- get_model_prdictions_with_mgcv(mod_6, mice_f1_model_data)
 
-ggplot(data = mod_6_predictions, aes(x = MeasurementDay, y = BodyWeightG, colour = AnimalId)) +
+gam6_plot <- ggplot(data = mod_6_predictions, aes(x = MeasurementDay, y = BodyWeightG, colour = AnimalId)) +
   geom_point(aes(y = BodyWeightG, group = AnimalId), alpha = 0.5) +
   geom_line(aes(y = fit, group = AnimalId), alpha = 0.5, linewidth = 0.2) +
   facet_wrap(ObeseParents ~ AnimalSex, ncol = 2) + 
@@ -276,6 +296,10 @@ ggplot(data = mod_6_predictions, aes(x = MeasurementDay, y = BodyWeightG, colour
   labs(title = "Offsprings body weight by sex and parents obesity statuts", 
        subtitle = paste("R model formula: ", as.character(paste(deparse(formula(mod_6), width.cutoff = 500), collapse=""))),
        x="age [d]", y = "body weight [g]")
+
+gam6_plot
+
+ggsave(device = cairo_pdf, plot = gam6_plot, width = 210, height = 210, units = c("mm"), dpi = 300,scale = 1.2, path = here("../manuscript/display_items"), filename = "040_r_h3__gam_6_F1_weight_trajectories.pdf")
 
 # _7.) Check which data can be used for RNAseq ----
 
@@ -301,10 +325,15 @@ mice_f1_modeled_data_with_rna_seq_data <- mice_f1_model_data_rna_seqed %>% filte
 
 # __d) Check data prior to export
 
+# This is SI Table 2 (30-Aug-2023):
 mice_f1_modeled_data_with_rna_seq_data %>% select(ObesityLgcl, ObeseParents) %>% table()
 mice_f1_modeled_data_with_rna_seq_data
 
-# _8.) Export data as Excel file for RNAseq anslys ----
+# __f) Add parental information
+
+mice_f1_modeled_data_with_rna_seq_data <- left_join(mice_f1_modeled_data_with_rna_seq_data,  distinct(mice_f1_slct[c("AnimalId", "MotherId", "FatherId")]))
+
+# _8.) Export data as Excel file for RNAseq analysis ----
 
 # __a) In below object explore (1) differential expression, (2) GO and KEGG terms, 
 #     between individuals for (a) female or (b) male  animal sex or (c) both sexes in unison
@@ -314,7 +343,15 @@ mice_f1_modeled_data_with_rna_seq_data
 saveRDS(mice_f1_model_data, file = here("rds_storage", "040_r_h3__mice_f1_model_data.rds"))
 saveRDS(mice_f1_modeled_data_with_rna_seq_data, file = here("rds_storage", "040_r_h3__mice_f1_modeled_data_with_rna_seq_data.rds"))
 
-openxlsx::write.xlsx(mice_f1_modeled_data_with_rna_seq_data, paste0(here("tables"), "/", "040_r_h3__rna_seq_sample.xlsx"), asTable = TRUE, overwrite = TRUE)
+# __b) Generate a useful SI Table 1
+mf1_summary_xlsx <- mice_f1_modeled_data_with_rna_seq_data
+mf1_summary_xlsx %<>% select(AnimalId, AnimalSex, ObesityLgcl, ObeseParents, MotherDiet, FatherDiet, MotherId, FatherId)
+openxlsx::write.xlsx(mf1_summary_xlsx, paste0(here("tables"), "/", "040_r_h3__rna_seq_sample.xlsx"), asTable = TRUE, overwrite = TRUE)
+
+# __b) Generate a useful summary of SI Table 1 for the main text
+
+mf1_summary_xlsx %>% select(MotherDiet, AnimalSex) %>% table()
+
 
 #' # Save finished data
 
