@@ -555,9 +555,11 @@
  * in `/Users/paul/Documents/HM_MouseMating/analysis/scripts/010_r_define_obesity.r`
    * checking obesity definition in F0 - with CD never obese - with HFD depending on curve analysis - see line ~365 
    * checking obesity definition in F1 - always depending on curve analysis - see line ~390
- * worekd through todo list below
+ * worked through todo list below
  * commit before explorig odd obesity value assignment among F1 - see below
- * commit ``
+ * commit `e3af6b4daa580840f880b4b52b6f1cfd72dda613`
+ * leaving branch `more_bars` open ended
+ * merging current branch `slim_mouse` to `master` as per `https://www.w3docs.com/snippets/git/how-to-make-the-current-git-branch-a-master-branch.html`
  
 ## Todo queue
  
