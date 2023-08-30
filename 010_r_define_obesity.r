@@ -1,7 +1,7 @@
 #' ---
 #' title: "Mice Mating Study"
 #' subtitle: "Defining obesity in mice"
-#' author: "Paul Czechowski ``paul.czechowski@helmholtz-munich.de``"
+#' author: "Paul Czechowski `paul.czechowski@helmholtz-munich.de`"
 #' date: "`r Sys.Date()`"
 #' output:
 #'  html_notebook:
@@ -385,7 +385,7 @@ mice_f0_slct %>% select(AnimalId, Diet, WeightGain, Obesity) %>% distinct %>% ar
 
 # _7.) Define obese F1 mice ----
 
-# __a) Mark F1 with any HFD and hi weight gain as classified obese and all others are not obese! ----
+# __a) Mark F1 with hi weight gain as obese and all others are not obese ----
 
 mice_f1_slct %<>% mutate(Obesity = case_when(
   (WeightGain == "hi") ~ "Obese",
@@ -398,16 +398,21 @@ mice_f1_slct$Obesity %>% summary()
 
 mice_f1_slct %>% select(AnimalId) %>% distinct # next command below should have 50 animals
 
-# obesity marking scucessful as obejcet has 50 lines 
+# obesity marking successful as obejcet has 50 lines 
 
 mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) 
 
 # __c) Export table with successful obesity marking ----
 
+# table with summaries
 mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
-  gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__obesity.docx")) 
+  gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__obesity_table.docx")) 
+
+# plain table for sanity
+mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) %>% 
+  openxlsx::write.xlsx(., file = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__obesity.xlsx"), asTable = TRUE) 
 
 # _8.) Add F0 obesity status to F1 data ----
 
@@ -467,6 +472,7 @@ mice_f0_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, dat
          panel.text(45,27, cex = 0.75, labels = mice_f0_slct$AnimalSex[panel.number()])
          panel.text(51,27, cex = 0.75, labels = mice_f0_slct$Diet[panel.number()])
          panel.text(66,27, cex = 0.75, labels = mice_f0_slct$Obesity[panel.number()])
+         panel.text(80,17, cex = 0.75, labels = signif(F0_PCurvature_Results[panel.number()]), digits = 4)
          }
        )
 
@@ -475,12 +481,67 @@ mice_f0_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, dat
 mice_f1_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="F1 weights at measurement ages, with sex and obesity status, and parents obesity status",
        panel=function(x, y,...){
          panel.xyplot(x,y,...)
-         panel.text(80,13, cex = 0.75, labels = mice_f1_slct$AnimalSex[panel.number()])
-         panel.text(80,16, cex = 0.75, labels = mice_f1_slct$Obesity[panel.number()])
-         panel.text(80,19, cex = 0.75, labels = mice_f1_slct$ObeseParents[panel.number()])
+         panel.text(35,30, cex = 0.75, labels = mice_f1_slct$AnimalSex[panel.number()])
+         panel.text(70,30, cex = 0.75, labels = mice_f1_slct$Obesity[panel.number()])
+         panel.text(70,12, cex = 0.75, labels = mice_f1_slct$ObeseParents[panel.number()])
+         panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
          })
 
-# _3.) Revision 22.08.2023 - Adding new plot with weight deltas of offspring for parental categories  
+# **** Construction site below - adjust ----
+
+# _3.) Revision started 30.08.2023 - Adding new plots with weight deltas of F0 ----
+
+# __a) Copy object for new plot ----
+
+mice_f0_slct_mb  <- mice_f0_slct
+
+# __b) Get weight delta ----
+
+# getting time points for delta - min and max wont work as some mice don't ahve data at max weeks
+mice_f0_slct_mb %>% convert(num(Week)) %>% group_by(AnimalId) %>% slice(c(which.min(Week), which.max(Week))) %>% arrange 
+
+# show available weeks:
+mice_f0_slct_mb %>% convert(num(Week)) %>% pull(Week) %>% unique
+
+# getting time points for delta - min week and week 14
+mice_f0_slct_mb %<>% convert(num(Week)) %>% group_by(AnimalId) %>% slice(c(which.min(Week), which(Week == 14)))
+
+# calculate weight gain by subtracting weight at week 14 from weight at week 4 - add this to caption
+mice_f0_slct_mb %<>% group_by(AnimalId) %>% mutate(BodyWeightGainDeltaG = BodyWeightG - first(BodyWeightG)) %>% relocate(BodyWeightGainDeltaG, .after = BodyWeightG)
+
+# keep only rows with the relevant weight gain delta - the second column of each group
+mice_f0_slct_mb %<>% group_by(AnimalId) %>% slice(min(n(), 2))
+
+# sanity check - compare to `010_r_define_obesity__mice_f1_slct__obesity.xlsx` for F1 exported above, should look similar
+mice_f0_slct_mb %>% 
+  select(AnimalId, AnimalSex, BodyWeightGainDeltaG,  Diet,  WeightGain, Obesity) %>% 
+  distinct %>% 
+  arrange(AnimalSex, BodyWeightGainDeltaG) %>%
+  print(n = Inf)
+
+# __c) Prepare plotting ----
+
+# # encode sex into the factor variable to label ggplot 2 facets without much work
+# mice_f0_slct_mb %<>% 
+#   convert(chr(MotherDiet, FatherDiet)) %>%
+#   mutate(MotherDiet = paste0("Father ", MotherDiet)) %>%
+#   mutate(FatherDiet = paste0("Mother ", FatherDiet)) %>%
+#   convert(chr(MotherDiet, FatherDiet))
+
+# __d) Plot weight delta ----
+
+f0_mice_weights_sex_deltas <- ggplot(data = mice_f0_slct_mb, aes(x = AnimalSex, y = BodyWeightGainDeltaG)) +
+  geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black") +
+  geom_boxplot(width = 0.2, alpha = 0.2) +
+  facet_wrap(Diet ~ . , ncol = 2) + 
+  theme_bw() +
+  labs(x = "F0 animal sex", y = "F0 weight gain Δ [g]")
+NULL
+
+f0_mice_weights_sex_deltas
+
+
+# _4.) Revision started 22.08.2023 - Adding new plots with weight deltas of F1 ----
 
 # __a) Copy object for new plot ----
 
@@ -500,12 +561,19 @@ mice_f1_slct_mb %<>% convert(num(Week)) %>% group_by(AnimalId) %>% slice(c(which
 # calculate weight gain by subtracting weight at week 14 from weight at week 4 - add this to caption
 mice_f1_slct_mb %<>% group_by(AnimalId) %>% mutate(BodyWeightGainDeltaG = BodyWeightG - first(BodyWeightG)) %>% relocate(BodyWeightGainDeltaG, .after = BodyWeightG)
 
-# keep only rows with the relvant weight gein delte - the second column of each group
+# keep only rows with the relvant weight gein delta - the second column of each group
 mice_f1_slct_mb %<>% group_by(AnimalId) %>% slice(min(n(), 2))
+
+# sanity check - compare to `010_r_define_obesity__mice_f1_slct__obesity.xlsx` expoted above, shoul look similar
+mice_f1_slct_mb %>% 
+  select(AnimalId, AnimalSex, BodyWeightGainDeltaG,  MotherDiet, FatherDiet,  WeightGain, Obesity) %>% 
+  distinct %>% 
+  arrange(AnimalSex, BodyWeightGainDeltaG) %>%
+  print(n = Inf)
 
 # __c) Prepare plotting ----
 
-# encode sex into the factor variable to lable ggplot 2 facets without much work
+# encode sex into the factor variable to label ggplot 2 facets without much work
 mice_f1_slct_mb %<>% 
   convert(chr(MotherDiet, FatherDiet)) %>%
   mutate(MotherDiet = paste0("Father ", MotherDiet)) %>%
@@ -515,7 +583,7 @@ mice_f1_slct_mb %<>%
 # __d) Plot weight delta ----
 
 f1_mice_weights_sex_deltas <- ggplot(data = mice_f1_slct_mb, aes(x = AnimalSex, y = BodyWeightGainDeltaG)) +
-  geom_jitter(position = position_jitter(seed = 1, width = 0.2), color = "darkgrey") +
+  geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black") +
   geom_boxplot(width = 0.2, alpha = 0.2) +
   facet_wrap(MotherDiet ~ FatherDiet, ncol = 4) + 
   theme_bw() +
@@ -524,7 +592,7 @@ f1_mice_weights_sex_deltas <- ggplot(data = mice_f1_slct_mb, aes(x = AnimalSex, 
 
 f1_mice_weights_sex_deltas
 
-# _4.) Showing and exporting plot ----
+# _5.) Showing and exporting plot ----
 
 # __a) Save weight curve plots ----
 
@@ -535,20 +603,21 @@ mice_slct_xyplots_obesity <- ggarrange(mice_f0_slct_xyplot_final, mice_f1_slct_x
 
 ggsave(plot = mice_slct_xyplots_obesity, scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights_sex_obesity.pdf")
 
-# __b) Save weight delta plot ----
+# __c) Save F0 and F1 weight delta plots ----
 
-# with unicode support  
-ggsave(device = cairo_pdf, plot = f1_mice_weights_sex_deltas, width = 210, height = 100, units = c("mm"), dpi = 300,scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__f1_mice_weights_sex_deltas.pdf")
+f0_f1_mice_weights_sex_deltas <- ggarrange(f0_mice_weights_sex_deltas, f1_mice_weights_sex_deltas, labels = c("a", "b"), ncol = 2, nrow = 1, widths =  c(2, 4))
 
+ggsave(device = cairo_pdf, plot = f0_f1_mice_weights_sex_deltas, width = 210, height = 100, units = c("mm"), dpi = 300,scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__f0_f1_mice_weights_sex_deltas.pdf")
 
-# _5.) Table summaries ----
+# _6.) Table summaries ----
+
+# __a) Default tables - of original draft ----
 
 mice_f0_slct %>% 
   select(AnimalId, AnimalSex, WeightGain, Obesity) %>% distinct() %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
   gt::gtsave(filename = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/010_r_define_obesity__mice_f0_slct__summary.docx") 
-
 
 mice_f1_slct %>% 
   select(AnimalId, AnimalSex, WeightGain, Obesity, MotherDiet, FatherDiet, ObeseMother, ObeseFather) %>% distinct() %>% 
@@ -559,6 +628,10 @@ mice_f1_slct %>%
 # How many HFD mothers were not obese?
 mice_f0_slct %>% select(AnimalId, Obesity) %>% distinct 
 mice_f0_slct %>% select(AnimalId, Obesity) %>% distinct %>% tbl_summary(., missing = "no")
+
+# __b) Tables showing all information of section a) above, but also the relationship between mice ----
+
+# not implemnted here see script 40 and README.md 30-Aug-2023
 
 #' #  Save finished data
 

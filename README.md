@@ -546,9 +546,18 @@
    * adjusted heat map plotting code to plot z-scores, and updated figure manuscript
  * starting revising main text - proceeded to ened of Methods section
  * commit `13dc723cc44ae31212ffc5ce57e0a19b5cd9a435`
- 
- 
- 
+ * updated Todo queue 
+ * commit `4d299b57cc06654b51b5b623e2608fbe9a967829`
+
+## 30-08-2023 - work day 55 - working in revision suggestions of NKB (see ToDo)
+
+ * corrected figure caption for heat maps in main text
+ * in `/Users/paul/Documents/HM_MouseMating/analysis/scripts/010_r_define_obesity.r`
+   * checking obesity definition in F0 - with CD never obese - with HFD depending on curve analysis - see line ~365 
+   * checking obesity definition in F1 - always depending on curve analysis - see line ~390
+ * worekd through todo list below
+ * commit before explorig odd obesity value assignment among F1 - see below
+ * commit ``
  
 ## Todo queue
  
@@ -558,23 +567,42 @@
    * [x] plot weight deltas by factor
    * [x] include in main text
    * ˜˜˜[ ] _possibly_ omit or use obesity factors instead, where available ˜˜˜ 
+ 
  * [x] create analysis fork - `slim_mouse`
    * [x] deal with mouse 8989
    * [x] check if it is removed form analysis as it should - if so add to main text
    * [x] if it isn't removed re-run analysis without it
+ 
  * ˜˜˜ [ ] _possibly_ create analysis fork - `diet_instead` ˜˜˜
    * [ ] deal with mouse 8987
    * [ ] check if it is removed form analysis as it should - if so add to main text
    * [ ] substitute "obesity" with HFD throughout
+  
+  * [ ] _likely_ create analysis fork - `weight_deltas`
+    * [ ] redefine obesity using weight deltas instead of curves
 
  * [x] manuscript work
    * [x] see above 
+   * [ ] improve presentation of weight variables
+     * [x] add F0 weight deltas in `010_r_define_obesity.r`
+     * [x] to F1 and F0 weight deltas attempt to add assigned obesity status, e.g. via differently-colored barplot-overlays, or sub figures, in `010_r_define_obesity.r`
+       * [x] update Fig. 2 in main text, to Fig 2a and b. 
+     * ~~~[ ] add diet to F1 curve plot in `010_r_define_obesity.r`, as already done for F0~~~ **not needed, all CD, added to caption**
+     * [x] update SI Figure 1b in manuscript
+     * [x] check caption of SI Figure 1b
+     * [x] add curvature summaries to SI Fig 1
+     * [ ] explore odd obesity value assignment among F1
+       * [ ] commit to save state 
+       * [ ] backing up `010_r_define_obesity__mice_derivatives_densities.pdf` to `010_r_define_obesity__mice_derivatives_densities_backup.pdf` 
+       * [ ] in  `010_r_define_obesity.r`
+       * [ ] save new version of manuscript file, named []
    * [ ] add count values to manuscript
-     * [ ] add diet to F1 plot in `010_r_define_obesity.r`
-     * [ ] update SI Figure 1b in manuscript
-     * [ ] check caption
-     * [ ] update count values from SI Fig. 1
-   * validate caption of Fig. 3  
+     * [ ] see `010_r_define_obesity__mice_f1_slct__obesity.xlsx` and  line ~415 of `010_r_define_obesity.r`
+     * [ ] add parents and their obesity status to current SI table 1 which is `040_r_h3__rna_seq_sample.xlsx`
+     * [ ] update count values in text from `040_r_h3__rna_seq_sample.xlsx`
+   * [x] validate caption of Fig. 3  
+   * [ ] communicate and in `weight_delta` fork re-run analysis with other obesity definition, based on weight delta 
+   * [ ] update all analysis and text
    * [ ] correct figure labels - in `pdfs`'s and code - use 
      * [ ] epigonal visceral (EVAT), 
      * [ ] subcutaneous (SCAT), 
@@ -589,39 +617,28 @@
  * [x] re-run script `030_r_h2.r` add hypothesis to top export as markdown add model formulae
  * [x] re-run script `040_r_h3.r` add hypothesis to top adjust DI and markdown - export overviews
  * [x] re-run script `050_r_array_analysis.r` - update manuscript with PCA results - deal with missing LIAT - redefine contrasts - add markdown - erase old DIs - export DIs 
- * [ ] in script `050_r_array_analysis.r` - check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
- * [ ] in script `050_r_array_analysis.r` - possibly use running score and preranked list of GSEA result [see here](https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html).
- * [ ] in script `050_r_array_analysis.r` - clean out heat map code - create function, name variables properly
  
  * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
    * [x] parental diet conforms exactly with dietary variables considered by AH for array data
    * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
    * [x] the latter is needed but possibly the former data is the only one available
+
+## After revisions, if desired, or required
+
+ * [ ] in script `010_r_define_obesity.r`
+   * [ ] possibly define obesity using weight gain deltas instead of growth curves
+   * [ ] re-check weight gain definitions among F0 and F1
  
-  * [ ] extend script `050_r_array_analysis_ah.r`:
-    * [ ] **someday** - possibly Upset plots
-    * [ ] **someday** - possibly network plots
-    * [ ] **someday** - possibly implement SWAMP instad of PCA
+ * [ ] in script `050_r_array_analysis.r`
+   * [ ] check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
+   * [ ]  possibly use running score and preranked list of GSEA result [see here](https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html).
+   * [ ]  clean out heat map code - create function, name variables properly
+   * [ ] **someday** - possibly Upset plots
+   * [ ] **someday** - possibly network plots
+   * [ ] **someday** - possibly implement SWAMP instad of PCA
     
-  * check if this is still valid
-    * [ ] establish correlations between varaibles `ObesityLgcl` and possibly also `ObeseParents` and intensities - 
-       * [ ] consult ITLN1 paper to find how AH does it - or check teams chat for package
-       * [ ] possibly get numerical summaries of PCAs as noted in script 50
-    * [ ] try to reimplemnet DGE with `ObesityLgcl` and possibly also `ObeseParents`
-    * [ ] adjust AH's Vulcano plot code for new DGE results
-    * [ ] adjust AH's UpsetPlot code for new DGE results 
-    * [ ] **possibly** implement including other variables instead of body weight body fat
-    * [ ] **possibly** use AH's dietary varibles but recode to obesity variable
-    * [ ] **possibly** use AH's dietary variables neat
-  
-  * [ ] in manuscript
-    * [ ] add IMISE consulting personell to acknowledgements:
-      * **Maciej Rosolowski** <maciej.rosolowski@imise.uni-leipzig.de>
-      * Maryam Yahiaoui-Doktor <maryam.Yahiaoui-Doktor@imise.uni-leipzig.de>
-    * [ ] add HM consulting personell to paper
-      * **Elmar Spiegel**
-      * Roman Le Glut
-      * Kainat Khowaja
-  * [ ] archive old scripts and data files
-    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R`
-    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/main_analysis.R`
+    
+
+ * [ ] archive old scripts and data files
+   * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R`
+   * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/main_analysis.R`

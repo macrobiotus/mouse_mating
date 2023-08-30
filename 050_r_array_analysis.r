@@ -1364,14 +1364,14 @@ bar <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]]
 # join DEG top table and expression data to a new tibble  
 foobar <- left_join(bar, foo)
 
-# keep only relavent logFC, conforming with Volcano plots, p values do not need further adjustemts
+# keep only relavent logFC, conforming with Volcano plots, p values do not need further adjustments
 foobar <- foobar %>% filter(logFC < -1 | logFC > 1) %>% arrange(logFC)
 
 # pheatmap needs a matrix - hence converting tibble to matrix
 foo_mat <- base::as.matrix (foobar %>% select(contains("_BRAT")))
 rownames(foo_mat) <- foobar[["SYMBOL"]]
 
-# to add more sample annotations to heatmap matrix colnames - isolating this data here
+# to add more sample annotations to heat map matrix colnames - isolating this data here
 mdata_tibble <- tibble(pData(BRAT)) %>% mutate(SAMPLE = paste0(Animal,"_",Tissue))
 
 # checking possibilty to extend matrix column names
@@ -1410,7 +1410,7 @@ foobar <- foobar %>% filter(logFC < -1 | logFC > 1) %>% arrange(logFC)
 foo_mat <- base::as.matrix (foobar %>% select(contains("_LIAT")))
 rownames(foo_mat) <- foobar[["SYMBOL"]]
 
-# to add more sample annotations to heatmap matrix colnames - isolating this data here
+# to add more sample annotations to heat map matrix colnames - isolating this data here
 mdata_tibble <- tibble(pData(LIAT)) %>% mutate(SAMPLE = paste0(Animal,"_",Tissue))
 
 # checking possibilty to extend matrix column names
