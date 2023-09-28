@@ -204,7 +204,7 @@ get_dge_for_individal_tissues =  function(ExpSet){
   contrast_model_list <- vector(mode = "list", length = length(contrast_names))
   contrast_model_list <- lapply(contrast_list, function (x) contrasts.fit(fit_tissue_types, x))
   contrast_model_list_eb <- lapply(contrast_model_list, function (x) eBayes(x))
-  contrast_model_list_tp <- lapply(contrast_model_list_eb, function (x) topTable(x, p.value = 0.05, number = 50))
+  contrast_model_list_tp <- lapply(contrast_model_list_eb, function (x) topTable(x, p.value = 0.50, number = Inf))
   
   message("\nReturning results list - check list names for top table identification.") 
   
@@ -236,7 +236,7 @@ get_dge_for_offspring_obesity = function(ExpSet){
   # message
   message("Returning topTable() output:")
   
-  return(topTable(fit1c, p.value = 0.05, number = 50))
+  return(topTable(fit1c, p.value = 0.50, number = Inf))
   
 }
 
@@ -247,7 +247,6 @@ get_dge_for_parent_obesity = function(ExpSet){
   
   # Building initial models
   message(paste0("\nUsing data set \"", deparse(substitute(ExpSet))), "\".")   
-  
   
   message("\nConsider whether the sample size is appropriate for DGE, you should have at least six samples per group:")
   
@@ -311,7 +310,7 @@ get_dge_for_parent_obesity = function(ExpSet){
   contrast_model_list <- vector(mode = "list", length = length(contrast_names))
   contrast_model_list <- lapply(contrast_list, function (x) contrasts.fit(fit_parent_obese, x))
   contrast_model_list_eb <- lapply(contrast_model_list, function (x) eBayes(x))
-  contrast_model_list_tp <- lapply(contrast_model_list_eb, function (x) topTable(x, p.value = 0.05, number = Inf))
+  contrast_model_list_tp <- lapply(contrast_model_list_eb, function (x) topTable(x, p.value = 0.50, number = Inf))
   
   message("\nReturning results list - check list names for top table identification.") 
   
@@ -367,7 +366,7 @@ get_some_dge_for_parent_obesity = function(ExpSet){
   contrast_model_list <- vector(mode = "list", length = length(contrast_names))
   contrast_model_list <- lapply(contrast_list, function (x) contrasts.fit(fit_parent_obese, x))
   contrast_model_list_eb <- lapply(contrast_model_list, function (x) eBayes(x))
-  contrast_model_list_tp <- lapply(contrast_model_list_eb, function (x) topTable(x, p.value = 0.05, number = Inf))
+  contrast_model_list_tp <- lapply(contrast_model_list_eb, function (x) topTable(x, p.value = 1.0, number = Inf))
   
   message("\nReturning results list - check list names for top table identification.") 
   
@@ -438,7 +437,21 @@ get_one_volcanoplot <- function(TopTableListItem, TopTableListItemName){
   message(paste0("Creating plot for contrast: \"", TopTableListItemName, "\"", sep = ""))
   
   # get plot
-  evplot <- EnhancedVolcano(top_tibble, pCutoff = 0.05, x = "logFC", y = "adj.P.Val", lab = top_tibble[["SYMBOL"]], title = TopTableListItemName, subtitle = NULL)
+  evplot <-
+    EnhancedVolcano(
+      top_tibble,
+      pCutoff = 0.05,
+      FCcutoff = 1,
+      x = "logFC",
+      y = "P.Value",
+      pCutoffCol = "adj.P.Val",
+      lab = top_tibble[["SYMBOL"]],
+      title = TopTableListItemName,
+      subtitle = NULL
+    )
+  
+  # scales y axis
+  evplot <-  evplot + ylim(0, 5)
   
   # return plot 
   return(evplot)
@@ -1122,30 +1135,31 @@ setkey(FLAT_DT, Sample)
 FLAT_DT.m1 <- melt(FLAT_DT,  id.vars = c("Sample", "Animal", "Tissue", "AnimalSex", "ObesityLgcl", "ObeseParents", "MotherDiet", "FatherDiet", "Sex", "ParentalDietMoFa", "DietGroup"), 
   variable.name = "ArrayTarget", value.name = "Intensity")
 
-
 #' ### Inspect expression data raw intensities distribution
 
-# __c) Inspect expression data raw intensities distribution  ----
+# __c) Inspect expression data raw intensities distribution (defunct)  ----
 
 # to check that equal amounts of data are available for comparison - they are not
 
-ggplot(FLAT_DT.m1) +
-  # geom_density(aes(Intensity), stat = "bin", bins = 200) +
-  geom_density(aes(Intensity, colour = ObesityLgcl), stat = "bin", bins = 200) +
-  ylab("Number of measurments across all other variables") +
-  xlab("Intensity") +
-  ggtitle("Intensities' availibilty and distribution for offsprings obesity") +
-  facet_wrap(.~Tissue) + 
-  theme_bw()
+# *** plotting commented out until melting command above is adjusted ****
 
-ggplot(FLAT_DT.m1) +
-  # geom_density(aes(Intensity), stat = "bin", bins = 200) +
-  geom_density(aes(Intensity, colour = ObeseParents), stat = "bin", bins = 200) +
-  ylab("Number of measurments across all other variables") +
-  xlab("Intensity") +
-  ggtitle("Intensities' availibilty and distribution for parents obesity") +
-  facet_wrap(.~Tissue) + 
-  theme_bw()
+# ggplot(FLAT_DT.m1) +
+#   # geom_density(aes(Intensity), stat = "bin", bins = 200) +
+#   geom_density(aes(Intensity, colour = ObesityLgcl), stat = "bin", bins = 200) +
+#   ylab("Number of measurments across all other variables") +
+#   xlab("Intensity") +
+#   ggtitle("Intensities' availibilty and distribution for offsprings obesity") +
+#   facet_wrap(.~Tissue) + 
+#   theme_bw()
+
+# ggplot(FLAT_DT.m1) +
+#   # geom_density(aes(Intensity), stat = "bin", bins = 200) +
+#   geom_density(aes(Intensity, colour = ObeseParents), stat = "bin", bins = 200) +
+#   ylab("Number of measurments across all other variables") +
+#   xlab("Intensity") +
+#   ggtitle("Intensities' availibilty and distribution for parents obesity") +
+#   facet_wrap(.~Tissue) + 
+#   theme_bw()
 
 #' ### Inspect expression data raw intensities' density
 
@@ -1153,23 +1167,23 @@ ggplot(FLAT_DT.m1) +
 
 # To check if distributions are different - hopefully they are a bit - yes perhaps in EVAT when Mother and Father are not Obese
 
-ggplot(FLAT_DT.m1) +
-  # geom_density(aes(Intensity), stat = "bin", bins = 200) +
-  geom_density(aes(Intensity, colour = ObesityLgcl), stat = "density") +
-  ylab("Density of measurments across all other variables") +
-  xlab("Intensity") +
-  ggtitle("Intensities' density for offsprings obesity") +
-  facet_wrap(.~Tissue) + 
-  theme_bw()
+# ggplot(FLAT_DT.m1) +
+#   # geom_density(aes(Intensity), stat = "bin", bins = 200) +
+#   geom_density(aes(Intensity, colour = ObesityLgcl), stat = "density") +
+#   ylab("Density of measurments across all other variables") +
+#   xlab("Intensity") +
+#   ggtitle("Intensities' density for offsprings obesity") +
+#   facet_wrap(.~Tissue) + 
+#   theme_bw()
 
-ggplot(FLAT_DT.m1) +
-  # geom_density(aes(Intensity), stat = "bin", bins = 200) +
-  geom_density(aes(Intensity, colour = ObeseParents), stat = "density") +
-  ylab("Denisty of measurments across all other variables") +
-  xlab("Intensity") +
-  ggtitle("Intensities' density for parents obesity") +
-  facet_wrap(.~Tissue) + 
-  theme_bw()
+# ggplot(FLAT_DT.m1) +
+#   # geom_density(aes(Intensity), stat = "bin", bins = 200) +
+#   geom_density(aes(Intensity, colour = ObeseParents), stat = "density") +
+#   ylab("Denisty of measurments across all other variables") +
+#   xlab("Intensity") +
+#   ggtitle("Intensities' density for parents obesity") +
+#   facet_wrap(.~Tissue) + 
+#   theme_bw()
 
 #' ## DGE analysis using Limma
 
@@ -1197,11 +1211,11 @@ FLAT_Tissue_TopTableList <- get_dge_for_individal_tissues(FLAT)
 # No PCA signal (see above) nor DGE detected across all tissues or in any tissue based on offsprings' obesity status
 # No further work necessary - but report!
 
-get_dge_for_offspring_obesity(FLAT)
-get_dge_for_offspring_obesity(BRAT)
-get_dge_for_offspring_obesity(LIAT)
-get_dge_for_offspring_obesity(SCAT)
-get_dge_for_offspring_obesity(EVAT)
+# get_dge_for_offspring_obesity(FLAT)
+# get_dge_for_offspring_obesity(BRAT)
+# get_dge_for_offspring_obesity(LIAT)
+# get_dge_for_offspring_obesity(SCAT)
+# get_dge_for_offspring_obesity(EVAT)
 
 #' ### Test for DGE among offspring based on parental obesity
 
@@ -1297,9 +1311,24 @@ FULL_TopTableList <- c(
 # receiving a table with 2 slots, each containing DGE results fo a specific tissue and statistically relavent contrasts
 names(FULL_TopTableList)
 
+# __f) Filter Toptables further if required ----   
+
+# check tables
+FULL_TopTableList[[1]]
+FULL_TopTableList[[2]]
+
+# check for NAs
+FULL_TopTableList[[1]][rowSums(is.na(FULL_TopTableList[[1]])) > 0, ]
+FULL_TopTableList[[2]][rowSums(is.na(FULL_TopTableList[[2]])) > 0, ]
+
+# Incpect data in question - green tail on Volcano plot
+FULL_TopTableList[[1]][ which(  log2(FULL_TopTableList[[1]]$logFC) > 1 ) , ]
+FULL_TopTableList[[1]][ which(  log2(FULL_TopTableList[[1]]$logFC) > 1 ) , ]
+
+
 #' ### Get, assort, arrange, and save Vulcano plots
 
-# __f)  Get, assort, arrange, and save Vulcano plots  ----
+# __g)  Get, assort, arrange, and save Vulcano plots  ----
 
 FULL_VolcanoPlots <- mapply(get_one_volcanoplot, TopTableListItem = FULL_TopTableList, TopTableListItemName = names(FULL_TopTableList), SIMPLIFY = FALSE)
 
@@ -1345,7 +1374,7 @@ ggsave(plot = BRLI_VolcanoPlotsComposite, path = here("../manuscript/display_ite
 
 #' ### Get, assort, arrange, and save heat maps (drafted)
 
-# __g) Get, assort, arrange, and save heat maps (drafted) ----
+# __h) Get, assort, arrange, and save heat maps (drafted) ----
 
 # code below very dirty, could be cleaned out and made into a function
 # sample annotation can be improved using a data frame as shown here
@@ -1366,6 +1395,8 @@ foobar <- left_join(bar, foo)
 
 # keep only relavent logFC, conforming with Volcano plots, p values do not need further adjustments
 foobar <- foobar %>% filter(logFC < -1 | logFC > 1) %>% arrange(logFC)
+foobar <- foobar %>% filter(adj.P.Val < 0.05 )%>% arrange(logFC)
+
 
 # pheatmap needs a matrix - hence converting tibble to matrix
 foo_mat <- base::as.matrix (foobar %>% select(contains("_BRAT")))
@@ -1386,9 +1417,9 @@ colnames(foo_mat) <- paste0(colnames(foo_mat), " | " ,
 # adding stars to contrast
 colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))], "*")
 
-# print heat map to script
-pheatmap(foo_mat, scale = "row", filename =  paste0(here("plots"),"/","050_r_array_analysis__plot_heatmap_brat.pdf"))
+# print heat map to script and file
 pheatmap(foo_mat, scale = "row")
+pheatmap(foo_mat, scale = "row", filename =  paste0(here("plots"),"/","050_r_array_analysis__plot_heatmap_brat.pdf"))
 
 # ___ LIAT ----
 
@@ -1403,8 +1434,9 @@ bar <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotOb
 # join DEG top table and expression data to a new tibble  
 foobar <- left_join(bar, foo)
 
-# keep only relavent logFC, conforming with Volcano plots, p values do not need further adjustemts
+# keep only relavent logFC
 foobar <- foobar %>% filter(logFC < -1 | logFC > 1) %>% arrange(logFC)
+foobar <- foobar %>% filter(adj.P.Val < 0.05 ) %>% arrange(logFC)
 
 # pheatmap needs a matrix - hence converting tibble to matrix
 foo_mat <- base::as.matrix (foobar %>% select(contains("_LIAT")))
@@ -1425,19 +1457,19 @@ colnames(foo_mat) <- paste0(colnames(foo_mat), " | " ,
 # adding stars to contrast
 colnames(foo_mat)[grep(pattern = "MotherFatherObese|MotherFatherNotObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|MotherFatherNotObese", colnames(foo_mat))], "*")
 
-# print heat map to script
-pheatmap(foo_mat, scale = "row", filename =  paste0(here("plots"),"/","050_r_array_analysis__plot_heatmap_liat.pdf"))
+# print heat map to script and file
 pheatmap(foo_mat, scale = "row")
+pheatmap(foo_mat, scale = "row", filename =  paste0(here("plots"),"/","050_r_array_analysis__plot_heatmap_liat.pdf"))
 
 #' ### Save DGE lists
 
-# __h) Save DGE lists ----
+# __i) Save DGE lists ----
 
-BRAT_TTL_sign <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]]
+BRAT_TTL_sign <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(adj.P.Val < 0.05 )
 BRAT_TTL_uprg <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(logFC > 1)
 BRAT_TTL_down <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(logFC < -1)
 
-LIAT_TTL_sign <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]]
+LIAT_TTL_sign <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(adj.P.Val < 0.05 )
 LIAT_TTL_uprg <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC > 1)
 LIAT_TTL_down <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC < -1)
 

@@ -580,10 +580,46 @@
  * in `010_r_define_obesity.r` adding inspection code at `Isolate measurement days ----`
    * using obesity definition by left and right of 0 result stays the same
    * corrected figures in manuscript file 31.08.2023
-   * commit to new fork `new_curvatures`
+   * commit to new fork `new_curvatures` - `8bee3da04e795336a6a80a50beb6356428208519`
 
+## 31-08-2023 - work day 56 - working on main text
+
+ * expanded Acknowledgements, started funding section
+ * received comments from NKB
+ * updated ToDo 
+
+
+## 04-09-2023 - work day 56 - working on main text
+
+ * [x] working on submission version `/HM_MouseMating/manuscript/230904_manuscript_to_coauthors/230904_main_text.docx`
+   * [x] revise text
+   * [x] draft abstract
+ * [x] updated ToDo
+
+## 28-09-2023 - work day 57 - revising main text
+
+ * working in `/Users/paul/Documents/HM_MouseMating/manuscript/230928_main_text.docx`
+ * merged branch `new_curvatures`
+ * opened branch `revise_array_analysis`
+ * starting to adjust `050_r_array_analysis.r`
+   * adjusted lfc and p-cutoffs in `get_one_volcanoplot`
+   * adjusted lfc and p-cutoffs in heatmap code
+   * commented out code that is irrelevant and starting to bit rot due to package updates
+   
 ## Todo queue
  
+ * [x] **manuscript work**
+   * [x] circulate to MB 
+   * [x] revise as per MB and AH
+     * [ ] in `050_r_array_analysis.r`
+       * [ ] continue revisiosn of `# _3.) Gene Set Enrichment Analysis (GSEA) ----`
+       * [ ] adjust lfc and p-cutoffs in heatmap code
+     * [ ] see file and descendants of `/Users/paul/Documents/HM_MouseMating/manuscript/230928_main_text.docx`
+       * [ ] for heat maps mention p and FSC changes
+   * [ ] update figure labels
+   * [ ] upload code
+   * [ ] upload array data upon publication
+  
  * [x] create analysis fork - `more_bars`
    * [x] for NKB create additional version of SI Fig 1 b for main text
    * [x] calculate weight deltas for each f1 mouse between day 0 and 100 ("A...")
@@ -629,8 +665,19 @@
    * [x] update all analysis and text
    * [x] revise draft with coauthor's suggestions
    * [x] circulate to NKB
+     * [x] see `/Users/paul/Documents/HM_MouseMating/communication/230831_on_finishing.pdf`
+     * [x] meet with NKB
+     * [ ] work in NKB edits
+     * [x] use commnets from `/Users/paul/Documents/HM_MouseMating/manuscript/230831_main_text_NK.docx`
+     * [x] apply commnets in file `/Users/paul/Documents/HM_MouseMating/manuscript/230831_main_text.docx`
+     * [x] add abstract
+     * [x] add acknowledgements, funding
+   
    * [ ] communicate and **possibly** 
-     * [x] in fork `new_curvatures` fork explore correction of growth curve analysis and re-run analysis with corrected obesity definition
+     * [x] in fork `new_curvatures` 
+       * [x] implement old analysis with corrected figures
+       * [ ] explore correction of growth curve analysis
+       * [ ] and re-run analysis with corrected obesity definition
      * [ ] in fork `weight_delta` fork explore alternative to growth curve analysis and re-run analysis, use weight deltas
    * [ ] possibly - duplicate and load duplicated environment of `050_r_array_analysis.r`, in heatmap remove "inferred obesity status of the sequenced individual"
    * [ ] correct figure labels - in `pdfs`'s and code - use 
@@ -655,7 +702,9 @@
    * [ ] **someday** - possibly Upset plots
    * [ ] **someday** - possibly network plots
    * [ ] **someday** - possibly implement SWAMP instad of PCA
-    
+ 
+ * [ ] check if maternal weight loss can be adressed with statistical analyses using mixed group
+ 
  * [ ] archive old scripts and data files
    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R`
    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/main_analysis.R`

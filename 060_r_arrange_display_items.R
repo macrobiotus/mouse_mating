@@ -18,7 +18,7 @@ library(dplyr)
 
 # Read in data ----
 
-# _1.) Fig. 2 ----
+# _1.) Fig. 3 ----
 
 # created by 050_r_array_analysis
 
@@ -30,7 +30,7 @@ path_heatmap_liat <- c("/Users/paul/Documents/HM_MouseMating/analysis/plots/050_
 
 # Create text figures ----
 
-# _1.) Fig. 2 ----
+# _1.) Fig. 3 ----
 
 panel.ul <- image_trim(image_read_pdf(path_volcano_brat)) %>% image_annotate(" a", size = 16, gravity = "northwest", color = "black")
 panel.ur <- image_trim(image_read_pdf(path_volcano_liat)) %>% image_annotate(" b", size = 16, gravity = "northwest", color = "black")
