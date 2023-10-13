@@ -581,11 +581,11 @@ mice_f0_slct_mb %>%
 # __d) Plot weight delta ----
 
 f0_mice_weights_sex_deltas <- ggplot(data = mice_f0_slct_mb, aes(x = AnimalSex, y = BodyWeightGainDeltaG)) +
-  geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black") +
+  geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black", size = 3) +
   geom_boxplot(width = 0.2, alpha = 0.2) +
   facet_wrap(Diet ~ . , ncol = 2) + 
-  coord_cartesian(ylim = c(0, 20)) +
-  theme_bw() +
+  coord_cartesian(ylim = c(0, 16)) +
+  theme_bw(base_size = 12) +
   labs(x = "F0 animal sex", y = "F0 weight gain Δ [g]")
 NULL
 
@@ -633,11 +633,11 @@ mice_f1_slct_mb %<>%
 # __d) Plot weight delta ----
 
 f1_mice_weights_sex_deltas <- ggplot(data = mice_f1_slct_mb, aes(x = AnimalSex, y = BodyWeightGainDeltaG)) +
-  geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black") +
+  geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black", size=3) +
   geom_boxplot(width = 0.2, alpha = 0.2) +
   facet_wrap(MotherDiet ~ FatherDiet, ncol = 4) + 
-  coord_cartesian(ylim = c(0, 20)) +
-  theme_bw() +
+  coord_cartesian(ylim = c(0, 15)) +
+  theme_bw(base_size = 12) +
   labs(x = "F1 animal sex", y = "F1 weight gain Δ [g]")
   NULL
 
@@ -658,7 +658,7 @@ ggsave(plot = mice_slct_xyplots_obesity, scale = 1.2, path = here("../manuscript
 
 f0_f1_mice_weights_sex_deltas <- ggarrange(f0_mice_weights_sex_deltas, f1_mice_weights_sex_deltas, labels = c("a", "b"), ncol = 2, nrow = 1, widths =  c(2, 4))
 
-ggsave(device = cairo_pdf, plot = f0_f1_mice_weights_sex_deltas, width = 210, height = 100, units = c("mm"), dpi = 300,scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__f0_f1_mice_weights_sex_deltas.pdf")
+ggsave(device = cairo_pdf, plot = f0_f1_mice_weights_sex_deltas, width = 210, height = 100, units = c("mm"), dpi = 300, scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__f0_f1_mice_weights_sex_deltas.pdf")
 
 # _6.) Table summaries ----
 

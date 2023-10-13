@@ -588,7 +588,6 @@
  * received comments from NKB
  * updated ToDo 
 
-
 ## 04-09-2023 - work day 56 - working on main text
 
  * [x] working on submission version `/HM_MouseMating/manuscript/230904_manuscript_to_coauthors/230904_main_text.docx`
@@ -605,14 +604,45 @@
    * adjusted lfc and p-cutoffs in `get_one_volcanoplot`
    * adjusted lfc and p-cutoffs in heatmap code
    * commented out code that is irrelevant and starting to bit rot due to package updates
+ * commit `61a1404cd9fb96dc0e2b9c3a208ce399a719af82`
+
+## 09-10-2023 - work day 58 - revising main text
+
+ * working in `/Users/paul/Documents/HM_MouseMating/manuscript/231009_main_text.docx`
+ * continued to adjust `050_r_array_analysis.r`
+   * updated packages, checking which packages aren't needed
+   * corrected PCA plot labels and exported, break point set
+   * corrected PCA plots in manuscript SI
    
+
+## 10-10-2023 - inset - exporting data for other project
+
+ * adjusted `050_r_array_analysis.r`
+   * added export code to save prepared input data (around line 665)
+
+## 13-10-2023 - inset - improved boxplot
+  
+ * in `010_r_define_obesity.r`
+   * improved boxplot
+ * commit ``
+
+
+
+
+ **next** 
+   * in `050_r_array_analysis.r`
+      * re-run from first breakpoint
+      * see break point in R script (environment saved up until there)
+      * see mark in manuscript
+      * for volcano plot plots possibly remove zero-count genes
+ 
 ## Todo queue
  
  * [x] **manuscript work**
    * [x] circulate to MB 
    * [x] revise as per MB and AH
      * [ ] in `050_r_array_analysis.r`
-       * [ ] continue revisiosn of `# _3.) Gene Set Enrichment Analysis (GSEA) ----`
+       * [ ] continue revision of `# _3.) Gene Set Enrichment Analysis (GSEA) ----`
        * [ ] adjust lfc and p-cutoffs in heatmap code
      * [ ] see file and descendants of `/Users/paul/Documents/HM_MouseMating/manuscript/230928_main_text.docx`
        * [ ] for heat maps mention p and FSC changes

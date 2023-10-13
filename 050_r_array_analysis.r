@@ -36,43 +36,50 @@ gc()
 
 library(here)
 library(renv)
+
 library(magrittr)
-library(ggplot2)
-library(mgcv)
-library(parallel, lib.loc = "/Users/paul/Library/Caches/org.R-project.R/R/renv/sandbox/R-4.2/aarch64-apple-darwin20/84ba8b13")
-library(RVAideMemoire)
-library(EnhancedVolcano)
-library("GCSscore")
-library("DESeq2")
-library("pheatmap")
-library("oligoClasses") # to annotate array target
-library("pd.clariom.s.mouse") # get array sequences
-library("AnnoProbe")  # Annotate the Gene Symbols for Probes in Expression Array
-library("affycoretools") # Functions useful for those doing repetitive analyses with Affymetrix GeneChips
-# for GO analysis
-library("org.Mm.eg.db")
-library("limma")
-library(stringr)
-library(tidyr)
-library(Biobase)
-library(BiocGenerics)
-library(gplots)
 library(dplyr)
 library(tibble)
-library(RColorBrewer)
-library(KernSmooth)
-library(data.table)
-# library(swamp)
-library(factoextra)
-library(FactoMineR)
-library(UpSetR)
-library(plotly)
-library(htmlwidgets)
+library(ggplot2)
+library(stringr)
+library(tidyr)
 library(ggpubr)
-library(usethis)
-library(pheatmap)
 
-#' ## Increase meomeory if needed
+library(factoextra)
+
+library(pd.clariom.s.mouse) # get array sequences
+library(Biobase)
+library(BiocGenerics)
+library(DESeq2)
+library(affycoretools) # Functions useful for those doing repetitive analyses with Affymetrix GeneChips
+library(org.Mm.eg.db)
+
+library(swamp)
+
+library(pheatmap)
+library(EnhancedVolcano)
+
+# Unused - for 3D PCA
+# library(plotly)
+# library(htmlwidgets)
+
+# library(mgcv)
+# library(parallel, lib.loc = "/Users/paul/Library/Caches/org.R-project.R/R/renv/sandbox/R-4.2/aarch64-apple-darwin20/84ba8b13")
+# library(RVAideMemoire)
+# library("GCSscore")
+# library("oligoClasses") # to annotate array target
+# library("AnnoProbe")  # Annotate the Gene Symbols for Probes in Expression Array
+# # for GO analysis
+# library("limma")
+# library(gplots)
+# library(RColorBrewer)
+# library(KernSmooth)
+# library(data.table)
+# library(FactoMineR)
+# library(UpSetR)
+# library(usethis)
+
+#' ## Increase memory if needed
 
 # _3.) Increase meomeory if needed ----
 
@@ -120,15 +127,28 @@ get_pca_plot = function(expr_data_pca, expr_data_raw, variable, legend_title, pl
   require("factoextra")
   require("ggplot2")
   
+  # correct legend labels (inset 9-Oct-2023)
+  if(variable == "Tissue"){
+  correct_lables <- case_when(pData(expr_data_raw)[[variable]] == "BRAT" ~ "BAT",
+            pData(expr_data_raw)[[variable]] == "EVAT" ~ "EVAT",
+            pData(expr_data_raw)[[variable]] == "LIAT" ~ "L",
+            pData(expr_data_raw)[[variable]] == "SCAT" ~ "SCAT",
+            TRUE ~ pData(expr_data_raw)[[variable]])
+  } else if (variable != "Tissue") {
+    correct_lables <- pData(expr_data_raw)[[variable]]
+    
+  }
+  
   pca_plot <- fviz_pca_ind(
     expr_data_pca,
     label = "none",
-    habillage = factor(pData(expr_data_raw)[[variable]]),
+    habillage = factor(correct_lables),
     pointsize = 2,
     palette = c("firebrick3", "purple", "steelblue3", "gold3"),
     legend.title = legend_title,
-    invisible = "none",
+    invisible = "quali",
     addEllipses = FALSE,
+    ellipse.level=0.95,
     title = plot_title
   ) +
     labs(
@@ -426,7 +446,6 @@ get_model_data = function(ExprSet, PCsSet) {
   
 }
 
-
 # Get Volcano plots
 get_one_volcanoplot <- function(TopTableListItem, TopTableListItemName){
   
@@ -641,13 +660,20 @@ SCAT <- adjust_array_data(SCAT, mice_f1_modeled_data_with_rna_seq_data)
 LIAT <- adjust_array_data(LIAT, mice_f1_modeled_data_with_rna_seq_data)
 EVAT <- adjust_array_data(EVAT, mice_f1_modeled_data_with_rna_seq_data)
 
+# _5.) Save adjusted data ----
+
+saveRDS(BRAT, file = here("rds_storage", "050_r_array_analysis__BRAT.rds"))
+saveRDS(SCAT, file = here("rds_storage", "050_r_array_analysis__SCAT.rds"))
+saveRDS(LIAT, file = here("rds_storage", "050_r_array_analysis__LIAT.rds"))
+saveRDS(EVAT, file = here("rds_storage", "050_r_array_analysis__EVAT.rds"))
+
 # check, if you like, using `pData(BRAT)` and `exprs(BRAT)` - check available metadata - LIAT does not have a lot
 
 lapply(c(FLAT, BRAT, SCAT, LIAT, EVAT), pData)  
 
 #' ## Loading AHs dietary DGE analysis results
 
-# _5.) Loading AHs dietary DGE analysis results ----
+# _6.) Loading AHs dietary DGE analysis results ----
 
 #' ### Load data
 
@@ -746,14 +772,13 @@ ggsave(plot = plot_pca_flat, path = here("../manuscript/display_items"),
 
 # ___ Plot PCs in 3D (only for tissue types so far)  ----
 
-dataGG <- data.frame(PC1 = PCA_FLAT$x[,1], PC2 = PCA_FLAT$x[,2],PC3 = PCA_FLAT$x[,3])
-
-plot_pca_sptial <- plot_ly(dataGG, x = ~PC1, y = ~PC2, z = ~PC3) %>%
-  add_markers(color = ~pData(FLAT)$Tissue,colors = c("firebrick3","purple","steelblue3","gold3"),
-              symbol = ~pData(FLAT)$Tissue, symbols = c(19,19,19,19))
-
-saveWidget(plot_pca_sptial, file = paste0(here("plots"),"/", "050_r_array_analysis__plot_pca_flat.html"), selfcontained = T, libdir = "lib")
-
+# dataGG <- data.frame(PC1 = PCA_FLAT$x[,1], PC2 = PCA_FLAT$x[,2],PC3 = PCA_FLAT$x[,3])
+# 
+# plot_pca_sptial <- plot_ly(dataGG, x = ~PC1, y = ~PC2, z = ~PC3) %>%
+#   add_markers(color = ~pData(FLAT)$Tissue,colors = c("firebrick3","purple","steelblue3","gold3"),
+#               symbol = ~pData(FLAT)$Tissue, symbols = c(19,19,19,19))
+# 
+# saveWidget(plot_pca_sptial, file = paste0(here("plots"),"/", "050_r_array_analysis__plot_pca_flat.html"), selfcontained = T, libdir = "lib")
 
 #' ## Plot BRAT PCs in 2D for several variables types
 
