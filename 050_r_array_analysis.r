@@ -43,6 +43,8 @@ library(tibble)
 library(ggplot2)
 library(stringr)
 library(tidyr)
+
+library(data.table)
 library(ggpubr)
 
 library(factoextra)
@@ -69,15 +71,13 @@ library(EnhancedVolcano)
 # library("GCSscore")
 # library("oligoClasses") # to annotate array target
 # library("AnnoProbe")  # Annotate the Gene Symbols for Probes in Expression Array
+
 # # for GO analysis
-# library("limma")
-# library(gplots)
-# library(RColorBrewer)
-# library(KernSmooth)
-# library(data.table)
-# library(FactoMineR)
-# library(UpSetR)
-# library(usethis)
+library(limma)
+library(gplots)
+library(RColorBrewer)
+library(KernSmooth)
+library(FactoMineR)
 
 #' ## Increase memory if needed
 
@@ -484,7 +484,13 @@ get_entrez_ids = function(TopTable) {
   require("clusterProfiler")
   require("biomaRt")
   
-  message(paste0("Looking up Entrez IDs for data set."))  
+  # stop("remove function development code")
+  # TopTable <- FULL_TopTableList[[2]]
+  # rm(TopTable)
+  # rm(translations)
+  # rm(TopTableAppended)
+
+  message(paste0("Looking up Entrez IDs for data set, storing in column \"ENTREZID\"."))  
   
   # create target object
   TopTableAppended <- TopTable
@@ -492,9 +498,21 @@ get_entrez_ids = function(TopTable) {
   # lookup Entrez ID from RefSeq ID and store both columns for separtaion
   translations <- bitr(geneID = TopTable[["ID"]], fromType = "REFSEQ", toType = "ENTREZID", OrgDb = "org.Mm.eg.db", drop = FALSE)
   
+  # message("Debugging code")
+  # nrow(translations)
+  # head(translations)
+  # nrow(TopTableAppended)
+  # head(TopTableAppended)
+  
   # Move second column to traget obeject 
-  TopTableAppended[["ENTREZ"]] <- translations[ , 2]
-          
+  # Doesn't always work: 
+  #   TopTableAppended[["ENTREZ"]] <- translations[ , 2]
+  # Using dplyr instead: 
+  
+  message("Joing with \"by = c(\"ID\" = \"REFSEQ\")\": Hardcoded \"REFSEQ\" may need to be chanaged if looking at transcripts.")
+  
+  TopTableAppended <- left_join(as_tibble(TopTableAppended), as_tibble(translations),  by = c("ID" = "REFSEQ"), keep = FALSE)
+  
   return(TopTableAppended)
           
 }
@@ -505,12 +523,21 @@ get_one_kegg_dotplot <- function(TopTableListItem, TopTableListItemName){
   
   require("clusterProfiler")
   require("enrichplot")
+  require("stringr")
+  
+  # stop("Remove function building code")
+  # TopTableListItem = FULL_TopTableListAppended[[1]]
+  # TopTableListItemName = names(FULL_TopTableListAppended)[[1]]
+  # rm(list(TopTableListItem, TopTableListItemName))
   
   # diagnostic
   message(paste0("Creating KEGG dot-plot for data set: \"", TopTableListItemName, "\".", sep = ""))
   
   # lookup kegg pathways
-  kegg_result <- enrichKEGG(gene = TopTableListItem$ENTREZ, keyType = 'ncbi-geneid',  organism = 'mmu', minGSSize = 5)  # ncib-proteinid is not supported for mmu ...
+  kegg_result <- enrichKEGG(gene = TopTableListItem$ENTREZID, keyType = 'ncbi-geneid',  organism = 'mmu', minGSSize = 5)  # ncib-proteinid is not supported for mmu ...
+  
+  # erasing superflous descriptions
+  kegg_result@result$Description <- gsub(" - Mus musculus (house mouse)", "", kegg_result@result$Description, fixed = TRUE)
   
   # check resulting object
   print(kegg_result)
@@ -532,9 +559,9 @@ get_one_go_plot <- function(TopTableListItem, TopTableListItemName){
   message(paste0("Creating GO plot for data set: \"", TopTableListItemName, "\".", sep = ""))
   
   # lookup go pathways
-  go_result <- enrichGO(gene = TopTableListItem$ENTREZ, keyType = "ENTREZID",  OrgDb = "org.Mm.eg.db", ont = "all")  # ncib-proteinid is not supported for mmu ...
+  go_result <- enrichGO(gene = TopTableListItem$ENTREZID, keyType = "ENTREZID",  OrgDb = "org.Mm.eg.db", ont = "all")  # ncib-proteinid is not supported for mmu ...
   
-  # get dipslay item
+  # get display item
   go_plot <- enrichplot::dotplot(go_result, split="ONTOLOGY", title =  paste0("GO terms of data set: \"", TopTableListItemName, "\"", sep = ""), showCategory=15) + facet_grid(ONTOLOGY ~ ., scale="free")
   
   # return plot 
@@ -551,7 +578,7 @@ save_kegg_plots <- function(ggplot_list_item, ggplot_list_item_name){
   filename <- paste0("050_r_array_analysis__plot_kegg_", filename, ".pdf", collapse = "_")
   
   message(filename)
-  try(ggsave(plot = ggplot_list_item, path = here("plots"), filename, scale = 0.75))
+  try(ggsave(plot = ggplot_list_item, path = here("../manuscript/display_items"), filename, scale = 0.75, height = 297, width = 210, units = c("mm")))
   
 }
 
@@ -564,7 +591,7 @@ save_go_plots <- function(ggplot_list_item, ggplot_list_item_name){
   filename <- paste0("050_r_array_analysis__plot_go_", filename, ".pdf", collapse = "_")
   
   message(filename)
-  try(ggsave(plot = ggplot_list_item, path = here("plots"), filename, scale = 0.75, height = 800, width = 400, units = c("mm")))
+  try(ggsave(plot = ggplot_list_item, path = here("../manuscript/display_items"), filename, scale = 1.75, height = 297, width = 190, units = c("mm")))
   
 }
 
@@ -1409,7 +1436,7 @@ ggsave(plot = BRLI_VolcanoPlotsComposite, path = here("../manuscript/display_ite
 
 # get expression data as matrix with probe ids, subset for speed 
 foo <- as_tibble(exprs(BRAT), rownames = c("PROBEID")) %>% filter(PROBEID %in%  BRAT__Select_TopTableList[[1]][["PROBEID"]])
-foo_mat <- base::as.matrix(foo %>% select(-PROBEID))
+foo_mat <- base::as.matrix(foo %>% dplyr::select(-PROBEID))
 rownames(foo_mat) <- (foo %>% pull(PROBEID))
 
 # isolate the DEG top table
@@ -1422,9 +1449,8 @@ foobar <- left_join(bar, foo)
 foobar <- foobar %>% filter(logFC < -1 | logFC > 1) %>% arrange(logFC)
 foobar <- foobar %>% filter(adj.P.Val < 0.05 )%>% arrange(logFC)
 
-
 # pheatmap needs a matrix - hence converting tibble to matrix
-foo_mat <- base::as.matrix (foobar %>% select(contains("_BRAT")))
+foo_mat <- base::as.matrix (foobar %>% dplyr::select(contains("_BRAT")))
 rownames(foo_mat) <- foobar[["SYMBOL"]]
 
 # to add more sample annotations to heat map matrix colnames - isolating this data here
@@ -1450,7 +1476,7 @@ pheatmap(foo_mat, scale = "row", filename =  paste0(here("plots"),"/","050_r_arr
 
 # get expression data as matrix with probe ids, subset for speed 
 foo <- as_tibble(exprs(LIAT), rownames = c("PROBEID")) %>% filter(PROBEID %in%  LIAT__Select_TopTableList[[1]][["PROBEID"]])
-foo_mat <- base::as.matrix(foo %>% select(-PROBEID))
+foo_mat <- base::as.matrix(foo %>% dplyr::select(-PROBEID))
 rownames(foo_mat) <- (foo %>% pull(PROBEID))
 
 # isolate the DEG top table
@@ -1459,12 +1485,12 @@ bar <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotOb
 # join DEG top table and expression data to a new tibble  
 foobar <- left_join(bar, foo)
 
-# keep only relavent logFC
+# keep only relavent logFC and pValues
 foobar <- foobar %>% filter(logFC < -1 | logFC > 1) %>% arrange(logFC)
 foobar <- foobar %>% filter(adj.P.Val < 0.05 ) %>% arrange(logFC)
 
 # pheatmap needs a matrix - hence converting tibble to matrix
-foo_mat <- base::as.matrix (foobar %>% select(contains("_LIAT")))
+foo_mat <- base::as.matrix (foobar %>% dplyr::select(contains("_LIAT")))
 rownames(foo_mat) <- foobar[["SYMBOL"]]
 
 # to add more sample annotations to heat map matrix colnames - isolating this data here
@@ -1510,7 +1536,7 @@ openxlsx::write.xlsx(LIAT_TTL_uprg, paste0(here("tables"), "/050_r_array_analysi
 
 # _3.) Gene Set Enrichment Analysis (GSEA) ----
 
-# the following resources are susefule 
+# the following resources are useful 
 # step-by-step GSEA https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/08_practical_DE.pdf
 # step-by-step GSEA https://bioinformatics-core-shared-training.github.io/cruk-summer-school-2018/RNASeq2018/html/06_Gene_set_testing.nb.html
 # why shrinkage of LFCs is not necessary, or already done https://support.bioconductor.org/p/100804/
@@ -1523,33 +1549,46 @@ openxlsx::write.xlsx(LIAT_TTL_uprg, paste0(here("tables"), "/050_r_array_analysi
 
 FULL_TopTableListAppended <- lapply(FULL_TopTableList, get_entrez_ids) 
 
+# __b) Adjust data for KEGG and GO analysis ----
+
+# Keep only relavent logFC and pValues Clusterprofiler ----
+#  not needed - default values for `enrichGo()` and `enrichKegg()` are `pvalueCutoff = 0.05, pAdjustMethod = "BH"` # "holm"
+
+# FULL_TopTableListAppended <- lapply(FULL_TopTableListAppended, function (li) li %<>% filter(logFC < -1 | logFC > 1) %>% arrange(logFC))
+# FULL_TopTableListAppended <- lapply(FULL_TopTableListAppended, function (li) li %<>% filter(adj.P.Val < 0.05 ) %>% arrange(logFC))
+
+# Adjust names
+names(FULL_TopTableListAppended) <- gsub("BRAT", "BAT", names(FULL_TopTableListAppended), fixed = TRUE )
+names(FULL_TopTableListAppended) <- gsub("LIAT", "L", names(FULL_TopTableListAppended), fixed = TRUE )
+
 #' ### Get plots of KEEG pathways
 
-# __b) Get plots of KEEG pathways ----
+# __c) Get plots of KEEG pathways ----
 
 FULL_KeggPlots <- mapply(get_one_kegg_dotplot, TopTableListItem = FULL_TopTableListAppended, TopTableListItemName = names(FULL_TopTableListAppended), SIMPLIFY = FALSE)
 names(FULL_KeggPlots)
 
-# FULL_KeggPlots[1] - no result
-FULL_KeggPlots[2]
-
 #' ### Save plots of KEEG pathways
 
-# __c) Save plots of KEEG pathways ----
+# __d) Save plots of KEEG pathways ----
+
+FULL_KeggPlots[1]
+FULL_KeggPlots[2]
 
 mapply(save_kegg_plots, ggplot_list_item = FULL_KeggPlots, ggplot_list_item_name = names(FULL_KeggPlots), SIMPLIFY = FALSE)
 
+ggsave(plot = ggarrange(plotlist =  FULL_KeggPlots, ncol = 2, labels = "auto"), filename = "050_r_array_analysis__plot_kegg_both.pdf", path = here("../manuscript/display_items/"), width = 280, height = 420, unit = "mm", scale = 1)
 
 #' ### Implement GO analysis
 
-# __d) Implement GO analysis ----
+# __e) Implement GO analysis ----
 
 FULL_GoPlots <- mapply(get_one_go_plot, TopTableListItem = FULL_TopTableListAppended, TopTableListItemName = names(FULL_TopTableListAppended), SIMPLIFY = FALSE)
 names(FULL_GoPlots)
 
 #' ### Show and save plots of GO pathways
 
-# __e) Show and save plots of GO pathways ----
+# __f) Show and save plots of GO pathways ----
 
 FULL_GoPlots[[1]]
 FULL_GoPlots[[2]]
@@ -1557,7 +1596,6 @@ FULL_GoPlots[[2]]
 mapply(save_go_plots, ggplot_list_item = FULL_GoPlots, ggplot_list_item_name = names(FULL_KeggPlots), SIMPLIFY = FALSE)
 
 ggsave(plot = ggarrange(plotlist =  FULL_GoPlots, ncol = 2, labels = "auto"), filename = "050_r_array_analysis__plot_go_both.pdf", path = here("../manuscript/display_items/"), width = 280, height = 420, unit = "mm", scale = 1)
-
 
 # #' Experimental: DGE-analysis using GAMs - Investigate overall tissue specific expression differences based on obesity variables
 

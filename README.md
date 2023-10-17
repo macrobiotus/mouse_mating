@@ -620,30 +620,31 @@
  * adjusted `050_r_array_analysis.r`
    * added export code to save prepared input data (around line 665)
 
-## 13-10-2023 - inset - improved boxplot
+## 13-10-2023 -  work day 59 -  improved boxplot
   
  * in `010_r_define_obesity.r`
    * improved boxplot
  * commit `1d7ad2fe18eff90e9ed62966dd4a31025aa30f95 `
 
- **next** 
-   * in `050_r_array_analysis.r`
-      * re-run from first breakpoint in line 672 - environment not saved
-      * see break point in R script (environment saved up until there)
-      * see mark in manuscript
-      * for volcano plot plots possibly remove zero-count genes
+## 17-10-2023 -  work day 60 - adjusted figures
+ 
+  * in `050_r_array_analysis.r`
+    * [x] re-run from first breakpoint in line 672 - environment not saved
+    * [x] see break point in R script (environment saved up until there)
+    * [x]see mark in manuscript
+    * [x] ~~~for volcano plot plots possibly remove zero-count genes~~~
+    * [x] adjusted GO and Kegg plots
+    * [x] re-ran full script from start 
+  * [x] adjusted and re-ran `/Users/paul/Documents/HM_MouseMating/analysis/scripts/060_r_arrange_display_items.R`
+    * [x] now creates Figs 3, 4, 5
+  * adjusted mansucript further - inserted new figures - modified text (significance definition for KEGG and GO analysis)
  
 ## Todo queue
  
  * [x] **manuscript work**
    * [x] circulate to MB 
    * [x] revise as per MB and AH
-     * [ ] in `050_r_array_analysis.r`
-       * [ ] continue revision of `# _3.) Gene Set Enrichment Analysis (GSEA) ----`
-       * [ ] adjust lfc and p-cutoffs in heatmap code
-     * [ ] see file and descendants of `/Users/paul/Documents/HM_MouseMating/manuscript/230928_main_text.docx`
-       * [ ] for heat maps mention p and FSC changes
-   * [ ] update figure labels
+   * [ ] revise entire text and discussion
    * [ ] upload code
    * [ ] upload array data upon publication
   
@@ -659,7 +660,7 @@
    * [x] check if it is removed form analysis as it should - if so add to main text
    * [x] if it isn't removed re-run analysis without it
  
-  * [ ] _likely_ create analysis fork - `weight_deltas`
+  * ~~~[ ] _possibly_ create analysis fork - `weight_deltas`~~~
     * [ ] redefine obesity using weight deltas instead of curves and re-run everything
     * [ ] in script `010_r_define_obesity.r`
     * [ ] possibly define obesity using weight gain deltas instead of growth curves
