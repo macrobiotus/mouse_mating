@@ -682,7 +682,7 @@ mice_f0_slct %>% dplyr::select(AnimalId, Obesity) %>% distinct %>% tbl_summary(.
 
 # __b) Tables showing all information of section a) above, but also the relationship between mice ----
 
-# not implemnted here see script 40 and README.md 30-Aug-2023
+# not implemented here see script 40 and README.md 30-Aug-2023
 
 #' #  Save finished data
 
