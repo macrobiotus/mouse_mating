@@ -112,12 +112,12 @@ mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct.rds"))
 
 # __a) Show F0 Information ----
 
-mice_f0_slct %>% select(AnimalId, AnimalSex, Diet, MatingWith, PartnerDiet) %>% distinct 
+mice_f0_slct %>% dplyr::select(AnimalId, AnimalSex, Diet, MatingWith, PartnerDiet) %>% distinct 
 
 # __b) Show F1 Information ----
 
 mice_f1_slct %>% 
-  select(AnimalId, AnimalSex, MotherDiet, FatherDiet) %>% 
+  dplyr::select(AnimalId, AnimalSex, MotherDiet, FatherDiet) %>% 
   distinct %>% 
   arrange(AnimalSex, MotherDiet,FatherDiet) %>% print(n=Inf)
 
@@ -130,8 +130,8 @@ mice_f1_slct %>%
 
 # __a) Check for missing Measurement Days ----
 
-mice_f0_slct %>% select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
-mice_f1_slct %>% select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
+mice_f0_slct %>% dplyr::select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
+mice_f1_slct %>% dplyr::select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
 
 # __b) Remove week 16 from F1
 
@@ -139,8 +139,8 @@ mice_f1_slct %<>% filter(Week != 16)
 
 # __c) Check for missing Measurement Days ----
 
-mice_f0_slct %>% select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
-mice_f1_slct %>% select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
+mice_f0_slct %>% dplyr::select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
+mice_f1_slct %>% dplyr::select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
 
 # __d) Plot F0 and F1  weights by measurement day ----
 
@@ -216,8 +216,8 @@ F1_BodyWeight_Models_Coefficients <- lapply(F1_BodyWeight_Models[[2]], coefficie
 # __b) Isolate measurement days ----
 
 # inspect Measurement days
-mice_f0_slct %>% select(MeasurementDay, AnimalId, AnimalSex) %>% table()
-mice_f1_slct %>% select(MeasurementDay, AnimalId, AnimalSex) %>% table()
+mice_f0_slct %>% dplyr::select(MeasurementDay, AnimalId, AnimalSex) %>% table()
+mice_f1_slct %>% dplyr::select(MeasurementDay, AnimalId, AnimalSex) %>% table()
 
 # isolate measurement days
 F0_BodyWeight_Models_MDays <- split(as.numeric(mice_f0_slct$MeasurementDay), mice_f0_slct$AnimalId)
@@ -379,12 +379,12 @@ mice_f0_slct[["WeightGain"]] <- as.factor(mice_f0_slct[["WeightGain"]])
 
 # __b) Check successful marking ----
 
-mice_f0_slct %>% select(AnimalId) %>% distinct # next command below should have 12 animals
-mice_f0_slct %>% select(AnimalId, WeightGain) %>% distinct # 12 animals are marked as expected
+mice_f0_slct %>% dplyr::select(AnimalId) %>% distinct # next command below should have 12 animals
+mice_f0_slct %>% dplyr::select(AnimalId, WeightGain) %>% distinct # 12 animals are marked as expected
 
 # __c ) Export table with successful marking ----
 
-mice_f0_slct %>% select(AnimalId, WeightGain) %>% distinct %>% 
+mice_f0_slct %>% dplyr::select(AnimalId, WeightGain) %>% distinct %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f0_slct__weight_gain.docx")) 
@@ -400,12 +400,12 @@ mice_f1_slct[["WeightGain"]] <- as.factor(mice_f1_slct[["WeightGain"]])
 
 # __b) Check successful marking ----
 
-mice_f1_slct %>% select(AnimalId) %>% distinct # next command below should have 50 animals
-mice_f1_slct %>% select(AnimalId, WeightGain) %>% distinct # 50 animals are marked as expected
+mice_f1_slct %>% dplyr::select(AnimalId) %>% distinct # next command below should have 50 animals
+mice_f1_slct %>% dplyr::select(AnimalId, WeightGain) %>% distinct # 50 animals are marked as expected
 
 # __c ) Export table with successful marking ----
 
-mice_f1_slct %>% select(AnimalId, WeightGain) %>% distinct %>% 
+mice_f1_slct %>% dplyr::select(AnimalId, WeightGain) %>% distinct %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__weight_gain.docx")) 
@@ -422,15 +422,15 @@ mice_f0_slct[["Obesity"]] <- as.factor(mice_f0_slct[["Obesity"]])
 
 # __b) Check successful marking ----
 
-mice_f0_slct %>% select(AnimalId) %>% distinct # next command below should have 8 animals
+mice_f0_slct %>% dplyr::select(AnimalId) %>% distinct # next command below should have 8 animals
 
 # One F0 mouse with HFD did not get obese per our definition - 8992
 
-mice_f0_slct %>% select(AnimalId, Diet, WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) 
+mice_f0_slct %>% dplyr::select(AnimalId, Diet, WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) 
 
 # __c) Export table with successful obesity marking ----
 
-mice_f0_slct %>% select(AnimalId, Diet, WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) %>% 
+mice_f0_slct %>% dplyr::select(AnimalId, Diet, WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f0_slct__obesity.docx")) 
@@ -448,22 +448,22 @@ mice_f1_slct$Obesity %>% summary()
 
 # __b) Check successful marking ----
 
-mice_f1_slct %>% select(AnimalId) %>% distinct # next command below should have 50 animals
+mice_f1_slct %>% dplyr::select(AnimalId) %>% distinct # next command below should have 50 animals
 
 # obesity marking successful as object has 50 lines 
 
-mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) 
+mice_f1_slct %>% dplyr::select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) 
 
 # __c) Export table with successful obesity marking ----
 
 # table with summaries
-mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) %>% 
+mice_f1_slct %>% dplyr::select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__obesity_table.docx")) 
 
 # plain table for sanity
-mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) %>% 
+mice_f1_slct %>% dplyr::select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) %>% 
   openxlsx::write.xlsx(., file = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__obesity.xlsx"), asTable = TRUE) 
 
 # _8.) Add F0 obesity status to F1 data ----
@@ -505,9 +505,9 @@ mice_f1_slct[["ObeseParents"]] <- as.factor(mice_f1_slct[["ObeseParents"]])
 
 # __e) Inspecting and exporting parents obesity status ----
 
-mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity, ObeseParents) %>% distinct %>% arrange(AnimalId) %>% print(n = Inf)
+mice_f1_slct %>% dplyr::select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity, ObeseParents) %>% distinct %>% arrange(AnimalId) %>% print(n = Inf)
 
-mice_f1_slct %>% select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity, ObeseParents) %>% distinct %>% arrange(AnimalId) %>% 
+mice_f1_slct %>% dplyr::select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity, ObeseParents) %>% distinct %>% arrange(AnimalId) %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__parents_obesity.docx")) 
@@ -548,23 +548,23 @@ mice_f0_slct_mb  <- mice_f0_slct
 # __b) Get weight delta ----
 
 # getting time points for delta - min and max wont work as some mice don't ahve data at max weeks
-mice_f0_slct_mb %>% convert(num(Week)) %>% group_by(AnimalId) %>% slice(c(which.min(Week), which.max(Week))) %>% arrange 
+mice_f0_slct_mb %>% hablar::convert(num(Week)) %>% group_by(AnimalId) %>% dplyr::slice(c(which.min(Week), which.max(Week))) %>% arrange 
 
 # show available weeks:
 mice_f0_slct_mb %>% convert(num(Week)) %>% pull(Week) %>% unique
 
 # getting time points for delta - min week and week 14
-mice_f0_slct_mb %<>% convert(num(Week)) %>% group_by(AnimalId) %>% slice(c(which.min(Week), which(Week == 14)))
+mice_f0_slct_mb %<>% hablar::convert(num(Week)) %>% group_by(AnimalId) %>% dplyr::slice(c(which.min(Week), which(Week == 14)))
 
 # calculate weight gain by subtracting weight at week 14 from weight at week 4 - add this to caption
 mice_f0_slct_mb %<>% group_by(AnimalId) %>% mutate(BodyWeightGainDeltaG = BodyWeightG - first(BodyWeightG)) %>% relocate(BodyWeightGainDeltaG, .after = BodyWeightG)
 
 # keep only rows with the relevant weight gain delta - the second column of each group
-mice_f0_slct_mb %<>% group_by(AnimalId) %>% slice(min(n(), 2))
+mice_f0_slct_mb %<>% group_by(AnimalId) %>% dplyr::slice(min(n(), 2))
 
 # sanity check - compare to `010_r_define_obesity__mice_f1_slct__obesity.xlsx` for F1 exported above, should look similar
 mice_f0_slct_mb %>% 
-  select(AnimalId, AnimalSex, BodyWeightGainDeltaG,  Diet,  WeightGain, Obesity) %>% 
+  dplyr::select(AnimalId, AnimalSex, BodyWeightGainDeltaG,  Diet,  WeightGain, Obesity) %>% 
   distinct %>% 
   arrange(AnimalSex, BodyWeightGainDeltaG) %>%
   print(n = Inf)
@@ -616,7 +616,7 @@ mice_f1_slct_mb %<>% group_by(AnimalId) %>% slice(min(n(), 2))
 
 # sanity check - compare to `010_r_define_obesity__mice_f1_slct__obesity.xlsx` expoted above, shoul look similar
 mice_f1_slct_mb %>% 
-  select(AnimalId, AnimalSex, BodyWeightGainDeltaG,  MotherDiet, FatherDiet,  WeightGain, Obesity) %>% 
+  dplyr::select(AnimalId, AnimalSex, BodyWeightGainDeltaG,  MotherDiet, FatherDiet,  WeightGain, Obesity) %>% 
   distinct %>% 
   arrange(AnimalSex, BodyWeightGainDeltaG) %>%
   print(n = Inf)
@@ -665,20 +665,20 @@ ggsave(device = cairo_pdf, plot = f0_f1_mice_weights_sex_deltas, width = 210, he
 # __a) Default tables - of original draft ----
 
 mice_f0_slct %>% 
-  select(AnimalId, AnimalSex, WeightGain, Obesity) %>% distinct() %>% 
+  dplyr::select(AnimalId, AnimalSex, WeightGain, Obesity) %>% distinct() %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
   gt::gtsave(filename = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/010_r_define_obesity__mice_f0_slct__summary.docx") 
 
 mice_f1_slct %>% 
-  select(AnimalId, AnimalSex, WeightGain, Obesity, MotherDiet, FatherDiet, ObeseMother, ObeseFather) %>% distinct() %>% 
+  dplyr::select(AnimalId, AnimalSex, WeightGain, Obesity, MotherDiet, FatherDiet, ObeseMother, ObeseFather) %>% distinct() %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
   gt::gtsave(filename = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/010_r_define_obesity__mice_f1_slct__summary.docx") 
 
 # How many HFD mothers were not obese?
-mice_f0_slct %>% select(AnimalId, Obesity) %>% distinct 
-mice_f0_slct %>% select(AnimalId, Obesity) %>% distinct %>% tbl_summary(., missing = "no")
+mice_f0_slct %>% dplyr::select(AnimalId, Obesity) %>% distinct 
+mice_f0_slct %>% dplyr::select(AnimalId, Obesity) %>% distinct %>% tbl_summary(., missing = "no")
 
 # __b) Tables showing all information of section a) above, but also the relationship between mice ----
 

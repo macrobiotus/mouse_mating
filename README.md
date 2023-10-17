@@ -624,14 +624,11 @@
   
  * in `010_r_define_obesity.r`
    * improved boxplot
- * commit ``
-
-
-
+ * commit `1d7ad2fe18eff90e9ed62966dd4a31025aa30f95 `
 
  **next** 
    * in `050_r_array_analysis.r`
-      * re-run from first breakpoint
+      * re-run from first breakpoint in line 672 - environment not saved
       * see break point in R script (environment saved up until there)
       * see mark in manuscript
       * for volcano plot plots possibly remove zero-count genes
