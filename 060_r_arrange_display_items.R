@@ -22,8 +22,8 @@ library(dplyr)
 
 # created by 050_r_array_analysis
 
-path_volcano_brat <- c("/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__plot_volcano_brat.pdf")
-path_volcano_liat <- c("/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__plot_volcano_liat.pdf")
+path_volcano_brat <- c("/Users/paul/Documents/HM_MouseMating/manuscript/display_items/050_r_array_analysis__plot_volcano_brat.pdf")
+path_volcano_liat <- c("/Users/paul/Documents/HM_MouseMating/manuscript/display_items//050_r_array_analysis__plot_volcano_liat.pdf")
 
 path_heatmap_brat <- c("/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__plot_heatmap_brat.pdf")
 path_heatmap_liat <- c("/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__plot_heatmap_liat.pdf")

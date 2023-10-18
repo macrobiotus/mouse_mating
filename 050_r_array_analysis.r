@@ -1542,6 +1542,9 @@ colnames(foo_mat) <- paste0(colnames(foo_mat), " | " ,
 # adding stars to contrast
 colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))], "*")
 
+# renaming tissues
+colnames(foo_mat) <- gsub("LIAT", "L", gsub("BRAT", "BAT", colnames(foo_mat),  fixed = TRUE), fixed = TRUE)
+
 # print heat map to script and file
 pheatmap(foo_mat, scale = "row")
 pheatmap(foo_mat, scale = "row", filename =  paste0(here("../manuscript/display_items"),"/","050_r_array_analysis__plot_heatmap_brat.pdf"))

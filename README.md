@@ -635,11 +635,19 @@
     * [x] ~~~for volcano plot plots possibly remove zero-count genes~~~
     * [x] adjusted GO and Kegg plots
     * [x] re-ran full script from start 
-  * [x] adjusted and re-ran `/Users/paul/Documents/HM_MouseMating/analysis/scripts/060_r_arrange_display_items.R`
+  * [x] adjusted and re-ran `060_r_arrange_display_items.R`
     * [x] now creates Figs 3, 4, 5
   * adjusted manuscript further - inserted new figures - modified text (significance definition for KEGG and GO analysis)
   * commit `88e9e299782a3e2a792ad535b692d0fa9de0df23`
  
+## 18-10-2023 -  work day 61 - adjusted figures
+
+  * in `050_r_array_analysis.r`
+    * adjusted plotting functions
+    * now alos exporting all required tables
+    * re-ran entirely
+
+
 ## Todo queue
  
  * [x] **manuscript work**
