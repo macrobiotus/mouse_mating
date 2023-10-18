@@ -517,7 +517,7 @@ get_entrez_ids = function(TopTable) {
           
 }
 
-get_one_kegg_dotplot <- function(TopTableListItem, TopTableListItemName, save_to_disk = FALSE, table_path = NULL) {
+get_one_kegg_dotplot <- function(TopTableListItem, TopTableListItemName, save_to_disk = TRUE, table_path = NULL) {
     
   # see https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html
   
@@ -544,7 +544,7 @@ get_one_kegg_dotplot <- function(TopTableListItem, TopTableListItemName, save_to
   kegg_result@result$Description <- gsub(" - Mus musculus (house mouse)", "", kegg_result@result$Description, fixed = TRUE)
   
   # save table to disk
-  stop("Coding of function is not finished yet")
+  # stop("Coding of function is not finished yet")
   
   if (isTRUE(save_to_disk)) {
       
@@ -612,7 +612,7 @@ get_one_go_plot <- function(TopTableListItem, TopTableListItemName, save_to_disk
   go_result <- enrichGO(gene = TopTableListItem$ENTREZID, keyType = "ENTREZID",  OrgDb = "org.Mm.eg.db", ont = "all")
   
   # save table to disk
-  stop("Coding of function is not finished yet")
+  # stop("Coding of function is not finished yet")
   
   if (isTRUE(save_to_disk)) {
     message("Formatting results table.")
@@ -652,7 +652,7 @@ save_kegg_plots <- function(ggplot_list_item, ggplot_list_item_name){
   filename <- paste0("050_r_array_analysis__plot_kegg_", filename, ".pdf", collapse = "_")
   
   message(filename)
-  try(ggsave(plot = ggplot_list_item, path = here("../manuscript/display_items"), filename, scale = 0.75, height = 297, width = 210, units = c("mm")))
+  try(ggsave(plot = ggplot_list_item, path = here("../manuscript/display_items"), filename, scale = 0.75, height = 297/2, width = 210, units = c("mm")))
   
 }
 
@@ -665,7 +665,7 @@ save_go_plots <- function(ggplot_list_item, ggplot_list_item_name){
   filename <- paste0("050_r_array_analysis__plot_go_", filename, ".pdf", collapse = "_")
   
   message(filename)
-  try(ggsave(plot = ggplot_list_item, path = here("../manuscript/display_items"), filename, scale = 1.75, height = 297, width = 190, units = c("mm")))
+  try(ggsave(plot = ggplot_list_item, path = here("../manuscript/display_items"), filename, scale = 1.75, height = 210, width = 210, units = c("mm")))
   
 }
 
@@ -1437,7 +1437,7 @@ FULL_TopTableList <- c(
 # receiving a table with 2 slots, each containing DGE results fo a specific tissue and statistically relavent contrasts
 names(FULL_TopTableList)
 
-# __f) Filter Toptables further if required ----   
+# __f) Filter top tables further if required ----   
 
 # check tables
 FULL_TopTableList[[1]]
@@ -1447,7 +1447,7 @@ FULL_TopTableList[[2]]
 FULL_TopTableList[[1]][rowSums(is.na(FULL_TopTableList[[1]])) > 0, ]
 FULL_TopTableList[[2]][rowSums(is.na(FULL_TopTableList[[2]])) > 0, ]
 
-# Incpect data in question - green tail on Volcano plot
+# Inspect data in question - green tail on Volcano plot
 FULL_TopTableList[[1]][ which(  log2(FULL_TopTableList[[1]]$logFC) > 1 ) , ]
 FULL_TopTableList[[1]][ which(  log2(FULL_TopTableList[[1]]$logFC) > 1 ) , ]
 
@@ -1456,7 +1456,7 @@ FULL_TopTableList[[1]][ which(  log2(FULL_TopTableList[[1]]$logFC) > 1 ) , ]
 
 # __g)  Get, assort, arrange, and save Vulcano plots  ----
 
-FULL_VolcanoPlots <- mapply(get_one_volcanoplot, TopTableListItem = FULL_TopTableList, TopTableListItemName = names(FULL_TopTableList), SIMPLIFY = FALSE)
+FULL_VolcanoPlots <- mapply(get_one_volcanoplot, TopTableListItem = FULL_TopTableList, TopTableListItemName = gsub("LIAT", "L", gsub("BRAT", "BAT", names(FULL_TopTableList),  fixed = TRUE), fixed = TRUE), SIMPLIFY = FALSE)
 
 # the following three sets are undefined or serve no purpose (see 5-Jul-2023)
 #  FLAT_VolcanoPlots <- FULL_VolcanoPlots[grep("FLAT", names(FULL_VolcanoPlots))]
@@ -1486,11 +1486,11 @@ BRLI_VolcanoPlotsComposite <- ggarrange(plotlist = c(BRAT_VolcanoPlots, LIAT_Vol
 #        filename = "050_r_array_analysis__plot_volcano_evat.pdf",  
 #        width = 300, height = 125, units = "mm", dpi = 200,  limitsize = TRUE, scale = 3)
 
-ggsave(plot = BRAT_VolcanoPlotsComposite, path = here("plots"), 
+ggsave(plot = BRAT_VolcanoPlotsComposite, path = here("../manuscript/display_items"), 
        filename = "050_r_array_analysis__plot_volcano_brat.pdf",  
        width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 1)
 
-ggsave(plot = LIAT_VolcanoPlotsComposite, path = here("plots"), 
+ggsave(plot = LIAT_VolcanoPlotsComposite, path = here("../manuscript/display_items"), 
        filename = "050_r_array_analysis__plot_volcano_liat.pdf",  
        width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 1)
 
@@ -1544,7 +1544,7 @@ colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_m
 
 # print heat map to script and file
 pheatmap(foo_mat, scale = "row")
-pheatmap(foo_mat, scale = "row", filename =  paste0(here("plots"),"/","050_r_array_analysis__plot_heatmap_brat.pdf"))
+pheatmap(foo_mat, scale = "row", filename =  paste0(here("../manuscript/display_items"),"/","050_r_array_analysis__plot_heatmap_brat.pdf"))
 
 # ___ LIAT ----
 
@@ -1582,9 +1582,12 @@ colnames(foo_mat) <- paste0(colnames(foo_mat), " | " ,
 # adding stars to contrast
 colnames(foo_mat)[grep(pattern = "MotherFatherObese|MotherFatherNotObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|MotherFatherNotObese", colnames(foo_mat))], "*")
 
+# renaming tissues
+colnames(foo_mat) <- gsub("LIAT", "L", gsub("BRAT", "BAT", colnames(foo_mat),  fixed = TRUE), fixed = TRUE)
+
 # print heat map to script and file
 pheatmap(foo_mat, scale = "row")
-pheatmap(foo_mat, scale = "row", filename =  paste0(here("plots"),"/","050_r_array_analysis__plot_heatmap_liat.pdf"))
+pheatmap(foo_mat, scale = "row", filename =  paste0(here("../manuscript/display_items"),"/","050_r_array_analysis__plot_heatmap_liat.pdf"))
 
 #' ### Save DGE lists
 
