@@ -519,69 +519,62 @@ get_entrez_ids = function(TopTable) {
 
 get_one_kegg_dotplot <- function(TopTableListItem, TopTableListItemName, save_to_disk = FALSE, table_path = NULL) {
     
-    # see https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html
-    require("clusterProfiler")
-    require("enrichplot")
-    require("stringr")
+  # see https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html
+  
+  # packages
+  require("clusterProfiler")
+  require("enrichplot")
+  require("stringr")
+  
+  # for function building only
+  # stop("Remove function building code")
+  # TopTableListItem = FULL_TopTableListAppended[[1]]
+  # TopTableListItemName = names(FULL_TopTableListAppended)[[1]]
+  # save_to_disk = TRUE
+  # table_path = NULL
+  # rm(list(TopTableListItem, TopTableListItemName))
+  
+  # diagnostic
+  message(paste0("Creating KEGG plot for data set: \"", TopTableListItemName, "\".", sep = ""))
+  
+  # look- up KEGG pathways
+  kegg_result <- enrichKEGG(gene = TopTableListItem$ENTREZID, keyType = 'ncbi-geneid', organism = 'mmu', minGSSize = 5)
     
-    stop("Remove function building code")
-    # TopTableListItem = FULL_TopTableListAppended[[1]]
-    # TopTableListItemName = names(FULL_TopTableListAppended)[[1]]
-    # rm(list(TopTableListItem, TopTableListItemName))
-    
-    # diagnostic
-    message(
-      paste0(
-        "Creating KEGG dot-plot for data set: \"",
-        TopTableListItemName,
-        "\".",
-        sep = ""
-      )
-    )
-    
-    # lookup kegg pathways
-    kegg_result <-
-      enrichKEGG(
-        gene = TopTableListItem$ENTREZID,
-        keyType = 'ncbi-geneid',
-        organism = 'mmu',
-        minGSSize = 5
-      )  # ncib-proteinid is not supported for mmu ...
-    
-    # erasing superflous descriptions
-    kegg_result@result$Description <-
-      gsub(" - Mus musculus (house mouse)",
-           "",
-           kegg_result@result$Description,
-           fixed = TRUE)
-    
-    # save table to disk
-    stop("Coding of function is not finished yet")
-    if (isTRUE(save_to_disk)) {
-      message("Formatting results table")
+  # erasing superflous descriptions
+  kegg_result@result$Description <- gsub(" - Mus musculus (house mouse)", "", kegg_result@result$Description, fixed = TRUE)
+  
+  # save table to disk
+  stop("Coding of function is not finished yet")
+  
+  if (isTRUE(save_to_disk)) {
       
-      kegg_result_tibble <- as_tibble(kegg_result@result)
+    message("Formatting results table")
       
-      geneID_names_list <-
-        vector(mode = 'list', length = length(kegg_result_tibble[["geneID"]]))
+    kegg_result_tibble <- as_tibble(kegg_result@result)
       
-      for (i in seq(length(kegg_result_tibble[["geneID"]]))) {
-        geneID_names_list[[i]] <-
-          TopTableListItem[which(TopTableListItem[["entrezgene_id"]] %in% str_split(kegg_result_tibble[["geneID"]], pattern = "/")[[i]]), "mgi_symbol"] %>% pull(mgi_symbol)
-        
+    geneID_names_list <- vector(mode = 'list', length = length(kegg_result_tibble[["geneID"]]))
+      
+    for (i in seq(length(kegg_result_tibble[["geneID"]]))){
+      
+      geneID_names_list[[i]] <- TopTableListItem[ which(TopTableListItem[["ENTREZID"]] %in% str_split(kegg_result_tibble[["geneID"]], pattern = "/")[[i]]), "SYMBOL"] %>% pull(SYMBOL)
+      
       }
       
-      kegg_result_tibble[["mgi_symbols"]] <-
-        unlist(lapply(geneID_names_list,  function (x)
-          paste(x, collapse = "/")))
+    kegg_result_tibble[["geneName"]] <- unlist(lapply(geneID_names_list,  function (x) paste(x, collapse = "/")))
       
-      message("Saving table to disk.")
+    message("Saving table to disk.")
+    
+    # set table path if it isn't set
+    if(is.null(table_path)){
       
-      stopifnot("Please provide a full path for the xslx output." = !is.null(table_path))
+      message("Table export path not provided, using hard-coded one.")
       
-      openxlsx::write.xlsx(data.frame(kegg_result_tibble),
-                           file = table_path,
-                           asTable = TRUE)
+      table_path <- paste0(here("tables"), "/050_r_array_analysis_", "KEGG_terms_sign__", gsub(" ", "", TopTableListItemName)  , ".xlsx")
+    }
+      
+    stopifnot("Please provide a full path for the xslx output." = !is.null(table_path))
+      
+    openxlsx::write.xlsx(data.frame(kegg_result_tibble), file = table_path, asTable = TRUE)
       
     }
     
@@ -589,17 +582,9 @@ get_one_kegg_dotplot <- function(TopTableListItem, TopTableListItemName, save_to
     print(kegg_result)
     
     # get dipslay item
-    kegg_plot <-
-      enrichplot::dotplot(
-        kegg_result,
-        title =  paste0(
-          "KEGG pathways of data set: \"",
-          TopTableListItemName,
-          "\"",
-          sep = ""
-        ),
-        showCategory = 15
-      )
+    kegg_plot <- enrichplot::dotplot(kegg_result, title =  paste0("KEGG pathways of data set: \"", TopTableListItemName,
+          "\"", sep = ""
+        ), showCategory = 5)
     
     # return plot
     return(kegg_plot)
@@ -623,15 +608,7 @@ get_one_go_plot <- function(TopTableListItem, TopTableListItemName, save_to_disk
   # diagnostic
   message(paste0("Creating GO plot for data set: \"", TopTableListItemName, "\".", sep = ""))
   
-  # set table path if it isn't set
-  if(is.null(table_path)){
-    
-    message("Table export path not provided, using hard-coded one.")
-    
-    table_path <- paste0(here("tables"), "/050_r_array_analysis_", "GO_terms_sign__", gsub(" ", "", TopTableListItemName)  , ".xlsx")
-  }
-
-  # look- up go pathways
+ # look- up go pathways
   go_result <- enrichGO(gene = TopTableListItem$ENTREZID, keyType = "ENTREZID",  OrgDb = "org.Mm.eg.db", ont = "all")
   
   # save table to disk
@@ -643,7 +620,15 @@ get_one_go_plot <- function(TopTableListItem, TopTableListItemName, save_to_disk
     go_result_tibble <- as_tibble(go_result@result)
     
     message("Saving table to disk.")
-
+    
+    # set table path if it isn't set
+    if(is.null(table_path)){
+      
+      message("Table export path not provided, using hard-coded one.")
+      
+      table_path <- paste0(here("tables"), "/050_r_array_analysis_", "GO_terms_sign__", gsub(" ", "", TopTableListItemName)  , ".xlsx")
+    }
+    
     stopifnot("Please provide a full path for the xslx output." = !is.null(table_path))
     
     openxlsx::write.xlsx(go_result_tibble, file = table_path, asTable = TRUE)
@@ -651,7 +636,7 @@ get_one_go_plot <- function(TopTableListItem, TopTableListItemName, save_to_disk
   }
   
   # get display item
-  go_plot <- enrichplot::dotplot(go_result, split="ONTOLOGY", title =  paste0("GO terms of data set: \"", TopTableListItemName, "\"", sep = ""), showCategory=15) + facet_grid(ONTOLOGY ~ ., scale="free")
+  go_plot <- enrichplot::dotplot(go_result, split="ONTOLOGY", title =  paste0("GO terms of data set: \"", TopTableListItemName, "\"", sep = ""), showCategory = 5) + facet_grid(ONTOLOGY ~ ., scale="free")
   
   # return plot 
   return(go_plot)
