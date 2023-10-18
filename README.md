@@ -637,14 +637,17 @@
     * [x] re-ran full script from start 
   * [x] adjusted and re-ran `/Users/paul/Documents/HM_MouseMating/analysis/scripts/060_r_arrange_display_items.R`
     * [x] now creates Figs 3, 4, 5
-  * adjusted mansucript further - inserted new figures - modified text (significance definition for KEGG and GO analysis)
+  * adjusted manuscript further - inserted new figures - modified text (significance definition for KEGG and GO analysis)
+  * commit `88e9e299782a3e2a792ad535b692d0fa9de0df23`
  
 ## Todo queue
  
  * [x] **manuscript work**
    * [x] circulate to MB 
    * [x] revise as per MB and AH
-   * [ ] revise entire text and discussion
+   * [ ] rename heat map plot
+   * [ ] export KEGG and GO terms with gene names
+   * [ ] revise discussion further
    * [ ] upload code
    * [ ] upload array data upon publication
   
