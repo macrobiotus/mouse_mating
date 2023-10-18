@@ -642,10 +642,12 @@
  
 ## 18-10-2023 -  work day 61 - adjusted figures
 
-  * in `050_r_array_analysis.r`
-    * adjusted plotting functions
-    * now alos exporting all required tables
-    * re-ran entirely
+  * in manuscript of todays date adjusted results and discussion
+  * [x] in `050_r_array_analysis.r`
+    * [x] adjusted plotting functions
+    * [x] now alos exporting all required tables
+    * [x] re-ran entirely
+  * [x] adjusted and re-ran `060_r_arrange_display_items.R`
 
 
 ## Todo queue
@@ -653,7 +655,7 @@
  * [x] **manuscript work**
    * [x] circulate to MB 
    * [x] revise as per MB and AH
-   * [ ] rename heat map plot
+   * [x] rename heat map plot
    * [x] export KEGG and GO terms with gene names
    * [ ] format plots
    * [ ] revise discussion further
