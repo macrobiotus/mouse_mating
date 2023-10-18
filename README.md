@@ -648,7 +648,7 @@
     * [x] now alos exporting all required tables
     * [x] re-ran entirely
   * [x] adjusted and re-ran `060_r_arrange_display_items.R`
-
+  * [x] commit `bf3ab57f6f2186d381d71009aef7c8e277048549`
 
 ## Todo queue
  
@@ -657,8 +657,8 @@
    * [x] revise as per MB and AH
    * [x] rename heat map plot
    * [x] export KEGG and GO terms with gene names
-   * [ ] format plots
-   * [ ] revise discussion further
+   * [x] format plots
+   * [ ] revise results and discussion further
    * [ ] copy DEG and GSEA results tables
    * [ ] upload code
    * [ ] upload array data upon publication
