@@ -646,8 +646,10 @@
    * [x] circulate to MB 
    * [x] revise as per MB and AH
    * [ ] rename heat map plot
-   * [ ] export KEGG and GO terms with gene names
+   * [x] export KEGG and GO terms with gene names
+   * [ ] format plots
    * [ ] revise discussion further
+   * [ ] copy DEG and GSEA results tables
    * [ ] upload code
    * [ ] upload array data upon publication
   
