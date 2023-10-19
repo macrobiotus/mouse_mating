@@ -599,8 +599,8 @@ get_one_go_plot <- function(TopTableListItem, TopTableListItemName, save_to_disk
   
   # for function building only
   # stop("Remove function building code")
-  # TopTableListItem = FULL_TopTableListAppended[[1]]
-  # TopTableListItemName = names(FULL_TopTableListAppended)[[1]]
+  # TopTableListItem = FULL_TopTableListAppended[[2]]
+  # TopTableListItemName = names(FULL_TopTableListAppended)[[2]]
   # save_to_disk = TRUE
   # table_path = NULL
   # rm(list(TopTableListItem, TopTableListItemName))
@@ -615,9 +615,21 @@ get_one_go_plot <- function(TopTableListItem, TopTableListItemName, save_to_disk
   # stop("Coding of function is not finished yet")
   
   if (isTRUE(save_to_disk)) {
-    message("Formatting results table.")
+    message("Formatting results table")
     
     go_result_tibble <- as_tibble(go_result@result)
+    
+    geneID_names_list <- vector(mode = 'list', length = length(go_result_tibble[["geneID"]]))
+    
+    for (i in seq(length(go_result_tibble[["geneID"]]))){
+      
+      message(paste0("Looking up line ", i," of ", length(go_result_tibble[["geneID"]]) ," lines."))
+      
+      geneID_names_list[[i]] <- TopTableListItem[ which(TopTableListItem[["ENTREZID"]] %in% str_split(go_result_tibble[["geneID"]], pattern = "/")[[i]]), "SYMBOL"] %>% pull(SYMBOL)
+      
+    }
+    
+    go_result_tibble[["geneName"]] <- unlist(lapply(geneID_names_list,  function (x) paste(x, collapse = "/")))
     
     message("Saving table to disk.")
     

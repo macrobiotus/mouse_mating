@@ -648,7 +648,14 @@
     * [x] now alos exporting all required tables
     * [x] re-ran entirely
   * [x] adjusted and re-ran `060_r_arrange_display_items.R`
-  * [x] commit `5960d3337b30e5adb0f1989868aead70e0563baa`
+  * [x] commit `cfc340befcd6717c343985c347af1fae6712a610`
+
+## 19-10-2023 -  work day 61 - revised results in manuscript
+
+  * [x] in `050_r_array_analysis.r`
+    * [x] adjusted go plotting functions - now exports table with gene annotations
+
+
 
 ## Todo queue
  
@@ -658,6 +665,8 @@
    * [x] rename heat map plot
    * [x] export KEGG and GO terms with gene names
    * [x] format plots
+   * [x] implement GO term lookup
+   * [x] circulate to coauthors 
    * [ ] revise results and discussion further
    * [ ] copy DEG and GSEA results tables
    * [ ] upload code
