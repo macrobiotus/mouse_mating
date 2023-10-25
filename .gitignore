@@ -1,4 +1,5 @@
 *.RData
+*.RDataTmp
 *.html
 inspect_data.R
 main_analysis.R
