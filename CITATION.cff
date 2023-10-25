@@ -1,0 +1,9 @@
+cff-version: 1.1.0
+message: "If you use this software, please cite it as below."
+authors:
+- family-names: Paul
+  given-names: Czechowski
+orcid: https://orcid.org/0000-0001-7894-4042
+title: Analysis code for: Obesogenic diet exposure of parents induces sex-specific programming of overweight in mouse offspring 
+version: v.1.0.0
+date-released: 2023-10-25
