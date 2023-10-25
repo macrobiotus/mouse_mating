@@ -664,6 +664,9 @@
     * SOM tables
   * in `/HM_MouseMating/analysis/scripts`
     * updated `.gitingnore`
+  * cleaned git repository using `git filter-repo --invert-paths --path path_to_file --force`
+    * to retore file use backup before 25-Oct-2023 11:00 CET
+    
 
 ## Todo queue
  
