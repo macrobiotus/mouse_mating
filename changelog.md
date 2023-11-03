@@ -667,6 +667,17 @@
   * cleaned git repository using `git filter-repo --invert-paths --path path_to_file --force`
     * to retore file use backup before 25-Oct-2023 11:00 CET
     
+## 03-11-2023 -  work day 63 - adjusting code for seminar talk
+
+ * on branch `seminar_talk`, in `010_r_define_obesity.r`
+   * adjusting code for `mice_f1_slct_xyplot_final`
+   * exports males and females separately
+   * to `/HM_miscellaneous/231103_hm_seminar/231103_hm_on_mated_obese_mice`
+
+
+
+
+
 
 ## Todo queue
  

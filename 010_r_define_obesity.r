@@ -530,6 +530,8 @@ mice_f0_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, dat
 
 # _2.) Plotting F1 weight at measurement age, including sex and obesity status ----
 
+# __a.) Compound figure, for manuscript ----
+
 mice_f1_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="F1 weights at measurement ages, with sex and obesity status, and parents obesity status",
        panel=function(x, y,...){
          panel.xyplot(x,y,...)
@@ -538,6 +540,34 @@ mice_f1_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, dat
          panel.text(70,12, cex = 0.75, labels = mice_f1_slct$ObeseParents[panel.number()])
          panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
          })
+
+# __b.) Male offspring, for talks ----
+
+mice_f1_slct_xyplot_final_m <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m")), type = "b", sub="F1 **male** weights at measurement ages, with sex and obesity status, and parents obesity status",
+                                      panel=function(x, y,...){
+                                        panel.xyplot(x,y,...)
+                                        panel.text(35,30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$AnimalSex[panel.number()])
+                                        panel.text(70,30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$Obesity[panel.number()])
+                                        panel.text(70,12, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$ObeseParents[panel.number()])
+                                        panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
+                                      })
+
+
+# __b.) Female offspring, for talks ----
+
+mice_f1_slct_xyplot_final_f <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f")), type = "b", sub="F1 **female** weights at measurement ages, with sex and obesity status, and parents obesity status",
+                                      panel=function(x, y,...){
+                                        panel.xyplot(x,y,...)
+                                        panel.text(35,22, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$AnimalSex[panel.number()])
+                                        panel.text(70,22, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$Obesity[panel.number()])
+                                        panel.text(70,12, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$ObeseParents[panel.number()])
+                                        panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
+                                      })
+
+
+
+
+
 
 # _3.) Revision started 30.08.2023 - Adding new plots with weight deltas of F0 ----
 
