@@ -673,14 +673,15 @@
    * adjusting code for `mice_f1_slct_xyplot_final`
    * exports males and females separately
    * to `/HM_miscellaneous/231103_hm_seminar/231103_hm_on_mated_obese_mice`
-   * commit `a93ba018086272aebbe1cfb0fae4440356e4010a`
-
-
-
-
-
+ * commit `a93ba018086272aebbe1cfb0fae4440356e4010a`
+ * in `050_r_array_analysis.r`
+   * added PCA plot code for seminar, exported to plots folder, exported as `.png` and annotated
+ * commit `2fc00677eafd1c4824a1a60d981556c6ba3f18e3`
 
 ## Todo queue
+ 
+ * [ ] **revision work**
+   * possibly revise description of contrast finsing and definition, refer to seominar talk 7-Nov- 2023
  
  * [x] **manuscript work**
    * [x] circulate to MB 
