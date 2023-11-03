@@ -988,6 +988,21 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
        filename = "050_r_array_analysis__plot_pca_liat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
+# _6.) Plot individual tissue PCs in 2D for parental obesity only (for talks etc) ----
+
+plot_pca_brat_one <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "BAT: interscapular brown AT ", percent_var = BRAT_PV)
+plot_pca_evat_two <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "EVAT: epigonal visceral AT", percent_var = EVAT_PV)
+plot_pca_livr_thr <- get_pca_plot(expr_data_pca = PCA_LIAT, expr_data_raw = LIAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "L: liver T", percent_var = LIAT_PV)
+plot_pca_scat_for <- get_pca_plot(expr_data_pca = PCA_SCAT, expr_data_raw = SCAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "SCAT: inguinal subcutaneous AT", percent_var = SCAT_PV)
+
+plot_pca_summ <- ggarrange(plot_pca_brat_one,
+                           plot_pca_evat_two,
+                           plot_pca_livr_thr,
+                           plot_pca_scat_for, nrow = 2, ncol = 2)
+ggsave(plot = plot_pca_summ, path = here("plots"), 
+       filename = "050_r_array_analysis__plot_pca_summ.pdf",  
+       width = 500, height = 275, units = "mm", dpi = 300,  limitsize = TRUE, scale = 0.75)
+
 #' # Prepare getting numerical summaries of above PCAs
 
 # Prepare getting numerical summaries of above PCAs ----
