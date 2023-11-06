@@ -1007,7 +1007,7 @@ ggsave(plot = plot_pca_summ, path = here("plots"),
 
 # Prepare getting numerical summaries of above PCAs ----
 
-# use the PCA graphics and results above to get numerical summaties of hwat can be sees
+# use the PCA graphics and results above to get numerical summaries of what can be sees
 # follow https://lauren-blake.github.io/Regulatory_Evol/analysis/gene_exp_corr.html
 # in section "Correlations"
 
@@ -1016,9 +1016,9 @@ ggsave(plot = plot_pca_summ, path = here("plots"),
 # report those models used here and in DGE and write down the results
 # possibly adjust DGE models
 
-#' ## Isolate First 5 Pricipal Components
+#' ## Isolate First 5 Principal Components
 
-# _1.) Isolate First 5 Pricipal Components ----
+# _1.) Isolate First 5 Principal Components ----
 
 PCs_FLAT <- get_isolated_pcs(PCA_FLAT)
 PCs_BRAT <- get_isolated_pcs(PCA_BRAT)
