@@ -678,10 +678,18 @@
    * added PCA plot code for seminar, exported to plots folder, exported as `.png` and annotated
  * commit `2fc00677eafd1c4824a1a60d981556c6ba3f18e3`
 
+## 07-11-2023 -  work day 64 - gave seminar talk
+
+ * gave seminar talk
+   * `/231103_hm_seminar/231106_hm_on_mated_obese_mice_extended.pdf`
+  * updated todo
+
 ## Todo queue
  
  * [ ] **revision work**
-   * possibly revise description of contrast finsing and definition, refer to seominar talk 7-Nov- 2023
+   * [ ] possibly revise description of contrast finsing and definition, refer to seominar talk 7-Nov- 2023
+   * [ ] AJ: check diet definition and composition 
+   * [ ] OB BS: Check challenge for ITT GTT to see if they have a metabolic syndrom
  
  * [x] **manuscript work**
    * [x] circulate to MB 
