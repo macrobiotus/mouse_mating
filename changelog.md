@@ -690,6 +690,10 @@
    * [ ] possibly revise description of contrast finsing and definition, refer to seominar talk 7-Nov- 2023
    * [ ] AJ: check diet definition and composition 
    * [ ] OB BS: Check challenge for ITT GTT to see if they have a metabolic syndrom
+   * [ ] check communications folder for
+     * [ ] diet descriptions NK
+     * [ ] reviewer link AH
+    
  
  * [x] **manuscript work**
    * [x] circulate to MB 
