@@ -684,31 +684,80 @@
    * `/231103_hm_seminar/231106_hm_on_mated_obese_mice_extended.pdf`
   * updated todo
 
-## Todo queue
+## 13-11-2023 -  work day 65 - gave seminar talk
+
+ * gave retreat talk
+   * `/231103_hm_seminar/231103_hm_on_mated_obese_mice_compressed.pdf`
+  * updated todo
+  * commit `9de302375c7153ca6b1f8c1e0a972b4f282ccc6d`
+
+## 14-11-2023 -  work day 66 - learned more about GAMS and PCA interperations across 2 statistics course
  
- * [ ] **revision work**
-   * [ ] possibly revise description of contrast finsing and definition, refer to seominar talk 7-Nov- 2023
-   * [ ] AJ: check diet definition and composition 
-   * [ ] OB BS: Check challenge for ITT GTT to see if they have a metabolic syndrom
-   * [ ] check communications folder for
-     * [ ] diet descriptions NK
-     * [ ] reviewer link AH
-    
+ * updated todo - revisions needs improvent for
+   * actual diets
+   * PCA interpretation - imprecise and possiby odd
+   * GAM building of offsprings obesity, likely wrong
+
+## 21-03-2024 -  work day 67 - starting on first revision
+
+  * re-installed packages 
+  * commit prior to changing code
+  * started editing `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
+  * adding studies for first revision to distinct sub-folder
+  * updated Todo (below), for revision
+
+## Todo queue (last updated 21-03-2024)
  
- * [x] **manuscript work**
-   * [x] circulate to MB 
-   * [x] revise as per MB and AH
-   * [x] rename heat map plot
-   * [x] export KEGG and GO terms with gene names
-   * [x] format plots
-   * [x] implement GO term lookup
-   * [x] circulate to coauthors 
-   * [x] revise results and discussion further
-   * [x] copy DEG and GSEA results tables
-   * [x] upload code
-   * [x] upload array data upon publication
-   * [ ] insert array dat link
-  
+### **revision work** - after first submission
+ 
+ * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
+   * [x] commit - branch repository - commit
+   * [ ] start re-running code 
+   * [ ] see how diets can be included
+   * [ ] consider litter size 
+     * [ ] started to comment in revision file
+     * [ ] to correct body weight after weaning consider (Zhang et al. 2012)
+     * [ ] possibly report on the most profound effects of the aforementioned weight adjustments
+   * [ ] instead of trajectories use NMR data for obesity definition via body fat mass, if available
+   * [ ] revise introduction and study premise
+   * [ ] verify DEGs with human or web data
+   * [ ] improve figure 1
+   
+
+### **revision work** - previously urgent
+
+ * [ ]re-eavaluate all interpretation in the context of
+   * [ ] correct diets - Western vs Western Control
+   * [ ] correct interpretation of PCA
+    * [ ] use `dimdesc()`as in course notes and code examples Multivariate Statistics 1 23.11.2023 (**see example sheet (R) for anova on treatment in PCA** as [here](/Users/paul/Documents/HM_miscellaneous/231116_cf-statcon_mv_statistics/231123_day_3__exercises.R))
+  * [ ] correct GAM modeling of offsping obesity as in Gavin Simpsons rat hormone hgam example, Physalia course GAMs in R, day 4, 23.11.2023, possibly also pull GS repoitory from course and look at "chick example"
+
+### **revision work** - previously  additional notes
+
+ * [ ] possibly revise description of contrast finsing and definition, refer to seminar talk 7-Nov- 2023
+ * [ ] AJ: check diet definition and composition 
+ * [ ] OB BS: Check challenge for ITT GTT to see if they have a metabolic syndrom
+ * [ ] check communications folder for
+ * [ ] consider diet descriptions and other comments NK
+  * [ ] reviewer link AH
+     
+### **manuscript work** for first submission   
+
+ * [x] circulate to MB 
+ * [x] revise as per MB and AH
+ * [x] rename heat map plot
+ * [x] export KEGG and GO terms with gene names
+ * [x] format plots
+ * [x] implement GO term lookup
+ * [x] circulate to coauthors 
+ * [x] revise results and discussion further
+ * [x] copy DEG and GSEA results tables
+ * [x] upload code
+ * [x] upload array data upon publication
+ * [x] insert array dat link
+
+### possible further anslysis work
+
  * [x] create analysis fork - `more_bars`
    * [x] for NKB create additional version of SI Fig 1 b for main text
    * [x] calculate weight deltas for each f1 mouse between day 0 and 100 ("A...")
@@ -782,7 +831,7 @@
    * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
    * [x] the latter is needed but possibly the former data is the only one available
 
-## After revisions, if desired, or required
+## Additional ideas, if desired, or required
 
  * [ ] in script `050_r_array_analysis.r`
    * [ ] check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
