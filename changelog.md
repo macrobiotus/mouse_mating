@@ -705,6 +705,7 @@
   * started editing `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
   * adding studies for first revision to distinct sub-folder
   * updated Todo (below), for revision
+  * created branch for first revision
 
 ## Todo queue (last updated 21-03-2024)
  
