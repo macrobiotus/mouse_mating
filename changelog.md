@@ -750,7 +750,8 @@
    * [ ] re-run analysis
      * [ ] see how body fat could be included - continue in `/010_r_define_obesity.r` line 196
        * [ ] see what to do with the weight trajectories, given the reference data
-         * [ ] build model using diet - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`
+         * [ ] build non-linear model for f1 using own sex, diet, parental diet, litter size, time
+         * [ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`
        * [ ] check if body fat inclusion changes factor definitions yielded using trajectory definition
        * [ ] alter obesity definition if needed
      * [ ] see how diets could be included - relabel figures
