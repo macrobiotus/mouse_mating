@@ -721,7 +721,7 @@
 
 ## 10-04-2024 -  work day 70 - working on first revision
 
-  * checking revised introduction in file `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240410_4_outline_introduction.docx`
+  * checking revised introduction in file `/HM_MouseMating/manuscript/240321_submission_2_preparation/240410_4_outline_introduction.docx`
   * adjusting previous manuscript file with new introduction and further notes throughout (`/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240410_3_main_text.docx`)
   * working on code branch `mouse_mating/first_revision`
   * finished checking script `/000_r_format_data.r`
@@ -731,7 +731,11 @@
     * [ ] do not correct for litter size
     * [ ] use body fat to define obesity instead / in addition to weight - see if it correlates with current weight gain variable perfectly
     * [ ] attempt to include diet - see if it correlates with current weight gain variable perfectly
-
+  * for obesity definition and comparison saved reference weights table from `https://www.jax.org/jax-mice-and-services/strain-data-sheet-pages/body-weight-chart-005304`
+    * file is at `/HM_MouseMating/analysis/raw_data/240410_reference_weights.xlsx`
+    * caption was: "Groups of 80 males and 80 females were weighed weekly.  Mice were fed a diet containing 6% fat (LabDiet 5K52 formulation). Values represent mean and one standard deviation. Ages are ± 3 day"
+  
+  
 ## Todo queue (last updated 25-03-2024)
  
 ### **revision work** - after first submission

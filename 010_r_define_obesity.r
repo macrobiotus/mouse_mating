@@ -105,8 +105,17 @@ polynom_curvature <- function (x, pc) {
 
 # _1.) Get data ----
 
+# __a) Experiment data
+
 mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_slct.rds"))
 mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct.rds"))
+
+# __b) Weight reference data from the Jaxon Laboratory - see change log and `https://www.jax.org/jax-mice-and-services/strain-data-sheet-pages/body-weight-chart-005304` 
+
+mice_ref_weights <- read_excel(path = here("raw_data", "240410_reference_weights.xlsx"))
+mice_ref_weights %<>% clean_names(case = "upper_camel")
+# get upper and lower SD lines
+mice_ref_weights %<>% mutate(BodyWeightGLow = BodyWeightG - Sd) %>% mutate(BodyWeightGHigh = BodyWeightG + Sd)
 
 # _2.) Inspect data ----
 
@@ -121,12 +130,10 @@ mice_f1_slct %>%
   distinct %>% 
   arrange(AnimalSex, MotherDiet,FatherDiet) %>% print(n=Inf)
 
-
 # _3.) Remove week 16 from F1 ----
 
 # - Many NAs may affect growth curve analysis by yielding 0
 # - F0 has data only available to week 14
-
 
 # __a) Check for missing Measurement Days ----
 
@@ -142,7 +149,26 @@ mice_f1_slct %<>% filter(Week != 16)
 mice_f0_slct %>% dplyr::select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
 mice_f1_slct %>% dplyr::select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
 
-# __d) Plot F0 and F1  weights by measurement day ----
+# For revision: check obesity and diet-related variables ----
+
+# _1.) Plot reference weights
+
+# __a) Data with upper and lower 
+
+mice_f0_ref_xyplot <- xyplot(BodyWeightGLow + BodyWeightG + BodyWeightGHigh ~ MeasurementDay  | Sex,
+                             type = "l",
+                             data = mice_ref_weights,
+                             sub ="C57BL/6NJ reference weight gain over time",
+                             xlab = "measuerment day",
+                             ylab = "body weight [g] ± 1 sd"
+                               )
+
+# __b) Lower and upper - to hard with lattice - using ggplot2
+
+
+
+
+# _2.) Plot F0 and F1 weights by measurement day ----
 
 mice_f0_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="F0 weight at measurement age")
 mice_f1_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="F1 weight at measurement age")
