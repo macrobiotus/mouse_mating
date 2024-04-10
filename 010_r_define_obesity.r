@@ -110,12 +110,11 @@ polynom_curvature <- function (x, pc) {
 mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_slct.rds"))
 mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct.rds"))
 
-# __b) Weight reference data from the Jaxon Laboratory - see change log and `https://www.jax.org/jax-mice-and-services/strain-data-sheet-pages/body-weight-chart-005304` 
+# __b) Weight reference data see change log
 
 mice_ref_weights <- read_excel(path = here("raw_data", "240410_reference_weights.xlsx"))
 mice_ref_weights %<>% clean_names(case = "upper_camel")
-# get upper and lower SD lines
-mice_ref_weights %<>% mutate(BodyWeightGLow = BodyWeightG - Sd) %>% mutate(BodyWeightGHigh = BodyWeightG + Sd)
+mice_ref_weights %<>% rename(AnimalSex = Sex)
 
 # _2.) Inspect data ----
 
@@ -137,8 +136,8 @@ mice_f1_slct %>%
 
 # __a) Check for missing Measurement Days ----
 
-mice_f0_slct %>% dplyr::select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
-mice_f1_slct %>% dplyr::select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
+mice_f0_slct %>% dplyr::select(AnimalId, AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
+mice_f1_slct %>% dplyr::select(AnimalId, AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
 
 # __b) Remove week 16 from F1
 
@@ -146,27 +145,57 @@ mice_f1_slct %<>% filter(Week != 16)
 
 # __c) Check for missing Measurement Days ----
 
-mice_f0_slct %>% dplyr::select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
-mice_f1_slct %>% dplyr::select(AnimalId,AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
+mice_f0_slct %>% dplyr::select(AnimalId, AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
+mice_f1_slct %>% dplyr::select(AnimalId, AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
 
 # For revision: check obesity and diet-related variables ----
 
-# _1.) Plot reference weights
+# _1.) Plot reference weights ----
 
-# __a) Data with upper and lower 
+# __a) Data with upper and lower ----
 
-mice_f0_ref_xyplot <- xyplot(BodyWeightGLow + BodyWeightG + BodyWeightGHigh ~ MeasurementDay  | Sex,
+mice_f0_ref_xyplot <- xyplot(BodyWeightGLow + BodyWeightG + BodyWeightGHigh ~ MeasurementDay  | AnimalSex,
                              type = "l",
                              data = mice_ref_weights,
-                             sub ="C57BL/6NJ reference weight gain over time",
+                             sub ="C57BL/6NTac reference weight gain over time (Taconic)",
                              xlab = "measuerment day",
                              ylab = "body weight [g] ± 1 sd"
                                )
 
-# __b) Lower and upper - to hard with lattice - using ggplot2
+# __b) Lower and upper - to hard with lattice - using ggplot2 ----
+ 
+mice_f0_slct_ref <- ggplot() + 
+  
+  # weight measurement of f0  generation
+  geom_line(data = mice_f0_slct, mapping = aes( x = MeasurementDay, y = BodyWeightG, colour = AnimalSex, group = AnimalId)) + 
+  
+  # mean line of reference data
+  geom_line(data = mice_ref_weights, mapping = aes( x = MeasurementDay, y = BodyWeightG) , colour = "darkgrey") + 
+  # upper and lower SD of reference data
+  geom_ribbon( data = mice_ref_weights, mapping = aes(x = MeasurementDay, y = BodyWeightG, ymin = BodyWeightGLow, ymax = BodyWeightGHigh), linetype = 0, alpha=0.1) + 
+  
+  facet_grid(. ~ AnimalSex) +
+  theme_bw() +
+  ggtitle("F0 mice weights against reference \n mean weights (C57BL/6NTac)") 
 
+mice_f1_slct_ref <- ggplot() + 
+  
+  # weight measurement of f1  generation
+  geom_line(data = mice_f1_slct, mapping = aes( x = MeasurementDay, y = BodyWeightG, colour = AnimalSex, group = AnimalId)) + 
+  
+  # mean line of reference data
+  geom_line(data = mice_ref_weights, mapping = aes( x = MeasurementDay, y = BodyWeightG) , colour = "darkgrey") + 
+  # upper and lower SD of reference data
+  geom_ribbon( data = mice_ref_weights, mapping = aes(x = MeasurementDay, y = BodyWeightG, ymin = BodyWeightGLow, ymax = BodyWeightGHigh), linetype = 0, alpha=0.1) + 
+  
+  facet_grid(. ~ AnimalSex) +
+  theme_bw() +
+  ggtitle("F1 mice weights against reference \n mean weights (C57BL/6NTac)")
 
-
+mice_slct_ref <- ggarrange(plotlist = list(mice_f0_slct_ref, mice_f1_slct_ref), nrow = 2)
+ggsave(plot = mice_slct_ref, path = here("../manuscript/display_items"), 
+       filename = "010_r_define_obesity__mice_weights_references.pdf",
+       scale = 1.2, width =  7, height = 7)
 
 # _2.) Plot F0 and F1 weights by measurement day ----
 

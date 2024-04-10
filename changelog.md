@@ -734,6 +734,11 @@
   * for obesity definition and comparison saved reference weights table from `https://www.jax.org/jax-mice-and-services/strain-data-sheet-pages/body-weight-chart-005304`
     * file is at `/HM_MouseMating/analysis/raw_data/240410_reference_weights.xlsx`
     * caption was: "Groups of 80 males and 80 females were weighed weekly.  Mice were fed a diet containing 6% fat (LabDiet 5K52 formulation). Values represent mean and one standard deviation. Ages are ± 3 day"
+  * previous file edited agin with information from orignal provider `https://www.taconic.com/products/mouse-rat/standard-strains-and-stocks/black-6-b6ntac#tabsmobiledropdown-155d2d1ed8-item-dd16099164-tab` 
+    * also see info sheet downloaded to Zotero
+  * plotted out weights `/010_r_define_obesity__mice_weights_references.pdf`
+    
+
   
   
 ## Todo queue (last updated 25-03-2024)
@@ -744,9 +749,11 @@
    * [x] commit - branch repository - commit
    * [x] adress as many comments as reasonable without re-running code
    * [x] revise introduction - adjust for diets - use revised version
-     * [ ] re-build introduction after having received feedback
+     * [x] re-build introduction after having received feedback
    * [ ] re-run analysis
-     * [ ] see how body fat could be included 
+     * [ ] see how body fat could be included - continue in `/010_r_define_obesity.r` line 196
+       * [ ] see what to do with the weight trajectories, given the reference data
+         * [ ] build model using diet?
        * [ ] check if body fat inclusion changes factor definitions yielded using trajectory definition
        * [ ] alter obesity definition if needed
      * [ ] see how diets could be included - relabel figures
