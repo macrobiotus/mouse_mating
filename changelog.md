@@ -752,6 +752,8 @@
        * [ ] see what to do with the weight trajectories, given the reference data
          * [ ] build non-linear model for f1 using own sex, diet, parental diet, litter size, time
          * [ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`
+         * [ ] starting point - fit Gompertz curves and compare significant changes in `alpha` parameter - see `https://www.ipb.pt/~vcadavez/websiteVC/tutorial/rcode/2019-04-28-gompertzmodel/`
+         * [ ] tsrating point - compare different growth models - see `https://cran.r-project.org/web/packages/biogrowth/vignettes/v04_model_comparison.html`
        * [ ] check if body fat inclusion changes factor definitions yielded using trajectory definition
        * [ ] alter obesity definition if needed
      * [ ] see how diets could be included - relabel figures
