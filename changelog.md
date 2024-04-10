@@ -707,22 +707,61 @@
   * updated Todo (below), for revision
   * created branch for first revision
 
-## Todo queue (last updated 21-03-2024)
+## 22-03-2024 -  work day 68 - working on first revision
+
+  * text editing with current date - no commit yet - only text work
+
+## 25-03-2024 -  work day 69 - working on first revision
+
+  * text editing with current date - no commit yet - only text work
+  * see different versions with todays' date 
+    * ended up outlining introduction first
+    * saved introduction draft in sperate file 
+    * **this latest file also needs to be used to build the introduction in the new, revised docoment**
+
+## 10-04-2024 -  work day 70 - working on first revision
+
+  * checking revised introduction in file `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240410_4_outline_introduction.docx`
+  * adjusting previous manuscript file with new introduction and further notes throughout (`/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240410_3_main_text.docx`)
+  * working on code branch `mouse_mating/first_revision`
+  * finished checking script `/000_r_format_data.r`
+    * [x] found - check for dietary magnetic resonance imaging data and start carrying this through the analysis
+    * [x] found - check for litter size information
+  * starting checking script `/010_r_define_obesity.r`
+    * [ ] do not correct for litter size
+    * [ ] use body fat to define obesity instead / in addition to weight - see if it correlates with current weight gain variable perfectly
+    * [ ] attempt to include diet - see if it correlates with current weight gain variable perfectly
+
+## Todo queue (last updated 25-03-2024)
  
 ### **revision work** - after first submission
  
  * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
    * [x] commit - branch repository - commit
-   * [ ] start re-running code 
-   * [ ] see how diets can be included
-   * [ ] consider litter size 
-     * [ ] started to comment in revision file
-     * [ ] to correct body weight after weaning consider (Zhang et al. 2012)
-     * [ ] possibly report on the most profound effects of the aforementioned weight adjustments
-   * [ ] instead of trajectories use NMR data for obesity definition via body fat mass, if available
-   * [ ] revise introduction and study premise
+   * [x] adress as many comments as reasonable without re-running code
+   * [x] revise introduction - adjust for diets - use revised version
+     * [ ] re-build introduction after having received feedback
+   * [ ] re-run analysis
+     * [ ] see how body fat could be included 
+       * [ ] check if body fat inclusion changes factor definitions yielded using trajectory definition
+       * [ ] alter obesity definition if needed
+     * [ ] see how diets could be included - relabel figures
+   * [ ] re -outline individual manuscript sections after analysis
+     * [ ] check files of 25.03.2024
+     * [ ] start with introduction
+     * [ ] copy other sections from outline document first
+     * [ ] for results consider the rebuttal documnet on or after 25.3.2025
+     * [ ] for discussion consider the rebuttal document on or after 25.3.2025
+    
+   * [x] consider litter size 
+     * [x] started to comment in revision file
+     * [x] addressed in manuscript file
+     * [x] to correct body weight after weaning consider (Zhang et al. 2012)
+     * ~~[x] possibly report on the most profound effects of the aforementioned weight adjustments~~
+     * [ ] consider NKBs comment on litter sizes - see communications folder 25-Mar-204
+   * [ ] revise discussion
    * [ ] verify DEGs with human or web data
-   * [ ] improve figure 1
+   * [ ] improve figure 1 - diet labelling
    
 
 ### **revision work** - previously urgent
