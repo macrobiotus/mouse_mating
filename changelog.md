@@ -737,9 +737,6 @@
   * previous file edited agin with information from orignal provider `https://www.taconic.com/products/mouse-rat/standard-strains-and-stocks/black-6-b6ntac#tabsmobiledropdown-155d2d1ed8-item-dd16099164-tab` 
     * also see info sheet downloaded to Zotero
   * plotted out weights `/010_r_define_obesity__mice_weights_references.pdf`
-    
-
-  
   
 ## Todo queue (last updated 25-03-2024)
  
@@ -753,7 +750,7 @@
    * [ ] re-run analysis
      * [ ] see how body fat could be included - continue in `/010_r_define_obesity.r` line 196
        * [ ] see what to do with the weight trajectories, given the reference data
-         * [ ] build model using diet?
+         * [ ] build model using diet - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`
        * [ ] check if body fat inclusion changes factor definitions yielded using trajectory definition
        * [ ] alter obesity definition if needed
      * [ ] see how diets could be included - relabel figures
