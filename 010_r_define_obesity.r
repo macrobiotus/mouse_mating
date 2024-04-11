@@ -148,11 +148,11 @@ mice_f1_slct %<>% filter(Week != 16)
 mice_f0_slct %>% dplyr::select(AnimalId, AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
 mice_f1_slct %>% dplyr::select(AnimalId, AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
 
-# For revision: Check obesity and diet-related variables ----
+# For revision: Check weight trajectory with reference data ----
 
 # _1.) Plot reference weights ----
 
-# __a) Data with upper and lower ----
+# __a) Reference weights with upper and lower bounds ----
 
 mice_f0_ref_xyplot <- xyplot(BodyWeightGLow + BodyWeightG + BodyWeightGHigh ~ MeasurementDay  | AnimalSex,
                              type = "l",
@@ -162,7 +162,7 @@ mice_f0_ref_xyplot <- xyplot(BodyWeightGLow + BodyWeightG + BodyWeightGHigh ~ Me
                              ylab = "body weight [g] ± 1 sd"
                                )
 
-# __b) Lower and upper - to hard with lattice - using ggplot2 ----
+# __b) Reference weights with upper and lower bounds against experiment data - to hard with lattice, using ggplot2 ----
  
 mice_f0_slct_ref <- ggplot() + 
   
@@ -193,11 +193,13 @@ mice_f1_slct_ref <- ggplot() +
   ggtitle("F1 mice weights against reference \n mean weights (C57BL/6NTac)")
 
 mice_slct_ref <- ggarrange(plotlist = list(mice_f0_slct_ref, mice_f1_slct_ref), nrow = 2)
+mice_slct_ref
+
 ggsave(plot = mice_slct_ref, path = here("../manuscript/display_items"), 
        filename = "010_r_define_obesity__mice_weights_references.pdf",
        scale = 1.2, width =  7, height = 7)
 
-# _2.) Plot F0 and F1 weights by measurement day ----
+# _2.) Retained old code: Experiment data only, per individual  ----
 
 mice_f0_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="F0 weight at measurement age")
 mice_f1_slct_xyplot <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="F1 weight at measurement age")
@@ -209,21 +211,28 @@ mice_slct_xyplots <- ggarrange(mice_f0_slct_xyplot, mice_f1_slct_xyplot, labels 
 
 ggsave(plot = mice_slct_xyplots, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights.pdf")
 
-# _3.) Check applicability of Gompertz Curve ----
+# _3.) For modelling using saemix test fit Gompertz curves ----
 
-foo <- mice_ref_weights %>% filter(AnimalSex == "f") %>% pull(BodyWeightG) 
-bar <- mice_ref_weights %>% filter(AnimalSex == "m") %>% pull(BodyWeightG) 
-fara <-  mice_f0_slct %>% filter(AnimalId == "8986") %>% pull(BodyWeightG) 
-baz <-  mice_f1_slct %>% filter(AnimalId == "A288") %>% pull(BodyWeightG) 
+# __a) Isolate example data ----
 
-GmptzCurve::gmptz(foo)
-GmptzCurve::gmptz(bar)
-GmptzCurve::gmptz(fara)
-GmptzCurve::gmptz(baz)
+m_mice_ref <- mice_ref_weights %>% filter(AnimalSex == "m") %>% pull(BodyWeightG) 
+f_mice_ref <- mice_ref_weights %>% filter(AnimalSex == "f") %>% pull(BodyWeightG) 
+f_mouse_exp_f0 <-  mice_f0_slct %>% filter(AnimalId == "8986") %>% pull(BodyWeightG) 
+f_mouse_exp_f1 <-  mice_f1_slct %>% filter(AnimalId == "A288") %>% pull(BodyWeightG) 
+
+# __b) Test fit example data ----
+
+GmptzCurve::gmptz(m_mice_ref)
+GmptzCurve::gmptz(f_mice_ref)
+GmptzCurve::gmptz(f_mouse_exp_f0)
+GmptzCurve::gmptz(f_mouse_exp_f1)
 
 #' # Define Obesity
 
-# Define Obesity ----
+# Retained old code: Define an obesity variable ----
+
+# This code is needed for DESEQ definitions in script 50. Code will stay useful if diet matches obesity perfectly
+# and saemix modelling of growth trajectories yields consitant results - see changelog.md, 11-Apr-2024
 
 # _1.) Model 2nd degree polynomials ----
 
@@ -245,6 +254,7 @@ F1_BodyWeight_Models <-  mice_f1_slct %>% group_by(AnimalId) %>% do(model = lm(B
 # __b) Show model summaries graphically ----
 
 # - graphically, can only be done in lattice using poly() but result should be similar
+
 mice_f0_slct_xyplot_poly <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct,
       aspect = "xy", pch = 16, grid = TRUE,
       panel = function(x, y, ...) {
@@ -255,6 +265,7 @@ mice_f0_slct_xyplot_poly <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data
       xlab = "MeasurementDay", ylab = "BodyWeightG", sub="modelled F0 weight at measurement age")
 
 # - graphically, can only be done in lattice using poly() but result shoul be similar
+
 mice_f1_slct_xyplot_poly <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct,
        aspect = "xy", pch = 16, grid = TRUE,
        panel = function(x, y, ...) {
@@ -295,10 +306,8 @@ F0_BodyWeight_Models_MDays <- list_drop_empty(F0_BodyWeight_Models_MDays)
 F1_BodyWeight_Models_MDays <- list_drop_empty(F1_BodyWeight_Models_MDays)
 
 # check filtering
-length(F0_BodyWeight_Models_MDays)
-length(F1_BodyWeight_Models_MDays)
-
-
+length(F0_BodyWeight_Models_MDays) # 8
+length(F1_BodyWeight_Models_MDays) # 50
 
 # _4.) Get curvatures (2nd derivative) of polynomials at each time point ----
 
@@ -312,15 +321,17 @@ F1_PCurvature <- Map(polynom_curvature, F1_BodyWeight_Models_MDays, F1_BodyWeigh
 F0_PCurvature_Results <- lapply(F0_PCurvature, sum) %>% unlist 
 F1_PCurvature_Results <- lapply(F1_PCurvature, sum) %>% unlist 
 
-# _6.) Check if curvature calculatoins make sense ----
+# _6.) Check if curvature calculations make sense ----
 
 # __a) Show animal's id's and summed curvatures ----
+
 sort(F0_PCurvature_Results)
 sort(F1_PCurvature_Results)
 
 # __b) Plot F0 and F1 weights by measurement day ----
 
 # Including sums of 2nd curvatures
+
 mice_f0_slct_xyplot_curves <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f0_slct, type = "b", sub="F0 weight at measuerment age, inlcuding curvature summary",
        panel=function(x, y,...){
          panel.xyplot(x,y,...)
@@ -341,13 +352,16 @@ ggsave(plot = mice_slct_xyplots_curves, path = here("../manuscript/display_items
 
 #' # Separate obese from non-obese mice
 
-# Separate obese from non-obese mice ----
+# Retained old code: Separate obese from non-obese mice ----
+
+# This code is needed for DESEQ definitions in script 50. Code will stay useful if diet matches obesity perfectly
+# and saemix modelling of growth trajectories yields consitant results - see changelog.md, 11-Apr-2024
 
 # _1.) Finding a measure for splitting data in obese and non-obese ----
 
 # __a) Trying to define a mode ----
 
-# modes don't work well to separte bimodal distribution of second derivatives - will use medeian instead
+# modes don't work well to separate bimodal distribution of second derivatives - will use median instead
 plot(density(F0_PCurvature_Results), main = "F0 weight gain curvatures - Estimated mode")
 abline(v = naive(F0_PCurvature_Results, bw = 0.001), col = 2)
 
@@ -395,14 +409,14 @@ F1_Median <- median(F1_PCurvature_Results)
 
 # _2.) Defining F0 animals with high or low weight gain ----
 
-# __a) Not used anymore: Define hi and lo gain via median of growth curv derivatives ---- 
+# __a) Not used anymore in 1st submission: Define hi and lo gain via median of growth curve derivatives ---- 
 
 # Does not give results that make any sense - makes only sens for F0
 #  presumably because ist splits positive and negative values
 F0_HiGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results >= F0_Median) ]   
 F0_LoGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results < F0_Median) ]   
 
-# __b) Used 30-Aug-2023e: Define hi and lo gain via positive or negative curvature summary ---- 
+# __b) Used 30-Aug-2023 for 1st submission: Define hi and lo gain via positive or negative curvature summary ---- 
 F0_HiGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results >= 0) ]   
 F0_LoGain <- names(F0_PCurvature_Results)[which(F0_PCurvature_Results < 0) ]   
 
@@ -416,14 +430,14 @@ F0_LoGain
 
 # _3.) Defining F1 animals with high or low weight gain ----
 
-# __a) Not used anymore: Define hi and lo gain via median of growth curv derivatives ---- 
+# __a) Not used anymore for first submission: Define hi and lo gain via median of growth curv derivatives ---- 
 
 # Does not give results that make any sense - makes only sens for F0
 #  presumably because ist splits positive and negative values
 F1_HiGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results >= F1_Median) ]   
 F1_LoGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results < F1_Median) ]   
 
-# __b) Used 30-Aug-2023e: Define hi and lo gain via positive or negative curvature summary ---- 
+# __b) Used 30-Aug-2023 for first submission: Define hi and lo gain via positive or negative curvature summary ---- 
 F1_HiGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results >= 0) ]   
 F1_LoGain <- names(F1_PCurvature_Results)[which(F1_PCurvature_Results < 0) ]   
 
@@ -435,7 +449,7 @@ F1_HiGain
 # LoGain F1 are
 F1_LoGain
 
-# _4.) Mark obese mice in F0 table ----
+# _4.) Important for 2nd revision: Mark obese mice in F0 table ----
 
 # __a) Mark animals ----
 
@@ -444,10 +458,13 @@ mice_f0_slct[which(as.character(mice_f0_slct[["AnimalId"]]) %in% F0_HiGain), ]["
 mice_f0_slct[which(as.character(mice_f0_slct[["AnimalId"]]) %in% F0_LoGain), ]["WeightGain"] <- "lo"
 mice_f0_slct[["WeightGain"]] <- as.factor(mice_f0_slct[["WeightGain"]])
 
-# __b) Check successful marking ----
+# __b) Important for 2nd submission: Check successful marking ----
+
+# For second submission including dietary variable to check whether weight gain is congruent with diet, in third line
 
 mice_f0_slct %>% dplyr::select(AnimalId) %>% distinct # next command below should have 12 animals
 mice_f0_slct %>% dplyr::select(AnimalId, WeightGain) %>% distinct # 12 animals are marked as expected
+mice_f0_slct %>% dplyr::select(AnimalId, WeightGain, Diet) %>% distinct # 12 animals are marked as expected - F0 8992 had HFD but no gain
 
 # __c ) Export table with successful marking ----
 
@@ -456,7 +473,7 @@ mice_f0_slct %>% dplyr::select(AnimalId, WeightGain) %>% distinct %>%
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f0_slct__weight_gain.docx")) 
 
-# _5.) Mark mice in F1 table ----
+# _5.) Important for 2nd submission: Mark mice in F1 table ----
 
 # __a) Mark animals ----
 
@@ -465,10 +482,13 @@ mice_f1_slct[which(as.character(mice_f1_slct[["AnimalId"]]) %in% F1_HiGain), ]["
 mice_f1_slct[which(as.character(mice_f1_slct[["AnimalId"]]) %in% F1_LoGain), ]["WeightGain"] <- "lo"
 mice_f1_slct[["WeightGain"]] <- as.factor(mice_f1_slct[["WeightGain"]])
 
-# __b) Check successful marking ----
+# __b) Important for 2nd submission: Check successful marking ----
+
+# For second submission including dietary variable to check whether weight gain is congruent with diet, in third line
 
 mice_f1_slct %>% dplyr::select(AnimalId) %>% distinct # next command below should have 50 animals
 mice_f1_slct %>% dplyr::select(AnimalId, WeightGain) %>% distinct # 50 animals are marked as expected
+mice_f1_slct %>% dplyr::select(AnimalId, WeightGain, MotherDiet, FatherDiet) %>% distinct %>% print(n = Inf) # All animals are with low weight gain
 
 # __c ) Export table with successful marking ----
 
@@ -477,7 +497,7 @@ mice_f1_slct %>% dplyr::select(AnimalId, WeightGain) %>% distinct %>%
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__weight_gain.docx")) 
 
-# _6.) Define obese F0 mice ----
+# _6.) Important for second submission: Define obese F0 mice ----
 
 # __a) Mark F0 with any HFD and hi weight gain as classified obese and all others are not obese! ----
 
@@ -502,7 +522,7 @@ mice_f0_slct %>% dplyr::select(AnimalId, Diet, WeightGain, Obesity) %>% distinct
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f0_slct__obesity.docx")) 
 
-# _7.) Define obese F1 mice ----
+# _7.) Important for second submission: Define obese F1 mice ----
 
 # __a) Mark F1 with hi weight gain as obese and all others are not obese ----
 
@@ -519,7 +539,7 @@ mice_f1_slct %>% dplyr::select(AnimalId) %>% distinct # next command below shoul
 
 # obesity marking successful as object has 50 lines 
 
-mice_f1_slct %>% dplyr::select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) 
+mice_f1_slct %>% dplyr::select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) %>% print(n = Inf)
 
 # __c) Export table with successful obesity marking ----
 
@@ -533,11 +553,11 @@ mice_f1_slct %>% dplyr::select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Ob
 mice_f1_slct %>% dplyr::select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) %>% 
   openxlsx::write.xlsx(., file = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__obesity.xlsx"), asTable = TRUE) 
 
-# _8.) Add F0 obesity status to F1 data ----
+# _8.) Important for second submission: Add F0 obesity status to F1 data ----
 
 # __a) Check F0 Obesity status ----
 
-# ***Weight data is available for mothers - using HFD AND weight gain as  proxy variables for obesity ***
+# ***Weight data is available for mothers - using HFD AND weight gain as proxy variables for obesity ***
 
 F0_ObeseMothers <- mice_f0_slct %>% filter(Obesity == "Obese" & AnimalSex == "f") %>% pull("AnimalId")  %>% unique
 
@@ -590,8 +610,8 @@ mice_f0_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, dat
          panel.xyplot(x,y,...)
          panel.text(45,27, cex = 0.75, labels = mice_f0_slct$AnimalSex[panel.number()])
          panel.text(51,27, cex = 0.75, labels = mice_f0_slct$Diet[panel.number()])
-         panel.text(66,27, cex = 0.75, labels = mice_f0_slct$Obesity[panel.number()])
-         panel.text(80,17, cex = 0.75, labels = signif(F0_PCurvature_Results[panel.number()]), digits = 4)
+         # panel.text(66,27, cex = 0.75, labels = mice_f0_slct$WeightGain[panel.number()])
+         # panel.text(80,17, cex = 0.75, labels = signif(F0_PCurvature_Results[panel.number()]), digits = 4)
          }
        )
 
@@ -603,9 +623,10 @@ mice_f1_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, dat
        panel=function(x, y,...){
          panel.xyplot(x,y,...)
          panel.text(35,30, cex = 0.75, labels = mice_f1_slct$AnimalSex[panel.number()])
-         panel.text(70,30, cex = 0.75, labels = mice_f1_slct$Obesity[panel.number()])
-         panel.text(70,12, cex = 0.75, labels = mice_f1_slct$ObeseParents[panel.number()])
-         panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
+         # panel.text(45,30, cex = 0.75, labels = mice_f1_slct$WeightGain[panel.number()])
+         panel.text(60,30, cex = 0.75, labels = mice_f1_slct$MotherDiet[panel.number()])
+         panel.text(75,30, cex = 0.75, labels = mice_f1_slct$FatherDiet[panel.number()])
+         # panel.text(60,50, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
          })
 
 # __b.) Male offspring, for talks ----
@@ -613,10 +634,12 @@ mice_f1_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, dat
 mice_f1_slct_xyplot_final_m <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m")), type = "b", sub="F1 **male** weights at measurement ages, with sex and obesity status, and parents obesity status",
                                       panel=function(x, y,...){
                                         panel.xyplot(x,y,...)
-                                        panel.text(35,30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$AnimalSex[panel.number()])
-                                        panel.text(70,30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$Obesity[panel.number()])
-                                        panel.text(70,12, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$ObeseParents[panel.number()])
-                                        panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
+                                        panel.text(35, 30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$AnimalSex[panel.number()])
+                                        # panel.text(70,30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$Obesity[panel.number()])
+                                        # panel.text(70,12, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$ObeseParents[panel.number()])
+                                        panel.text(45, 30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$MotherDiet[panel.number()])
+                                        panel.text(55, 30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$FatherDiet[panel.number()])
+                                        # panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
                                       })
 
 
@@ -625,15 +648,13 @@ mice_f1_slct_xyplot_final_m <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, d
 mice_f1_slct_xyplot_final_f <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f")), type = "b", sub="F1 **female** weights at measurement ages, with sex and obesity status, and parents obesity status",
                                       panel=function(x, y,...){
                                         panel.xyplot(x,y,...)
-                                        panel.text(35,22, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$AnimalSex[panel.number()])
-                                        panel.text(70,22, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$Obesity[panel.number()])
-                                        panel.text(70,12, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$ObeseParents[panel.number()])
-                                        panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
+                                        panel.text(35, 22, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$AnimalSex[panel.number()])
+                                        # panel.text(70,30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$Obesity[panel.number()])
+                                        # panel.text(70,12, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$ObeseParents[panel.number()])
+                                        panel.text(45, 22, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$MotherDiet[panel.number()])
+                                        panel.text(55, 22, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$FatherDiet[panel.number()])
+                                        # panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
                                       })
-
-
-
-
 
 
 # _3.) Revision started 30.08.2023 - Adding new plots with weight deltas of F0 ----
@@ -678,7 +699,8 @@ mice_f0_slct_mb %>%
 # __d) Plot weight delta ----
 
 f0_mice_weights_sex_deltas <- ggplot(data = mice_f0_slct_mb, aes(x = AnimalSex, y = BodyWeightGainDeltaG)) +
-  geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black", size = 3) +
+  geom_point(position = position_jitter(seed = 1, width = 0.2), color = "black", size = 3) +
+  # geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black", size = 3) +
   geom_boxplot(width = 0.2, alpha = 0.2) +
   facet_wrap(Diet ~ . , ncol = 2) + 
   coord_cartesian(ylim = c(0, 16)) +
@@ -730,7 +752,8 @@ mice_f1_slct_mb %<>%
 # __d) Plot weight delta ----
 
 f1_mice_weights_sex_deltas <- ggplot(data = mice_f1_slct_mb, aes(x = AnimalSex, y = BodyWeightGainDeltaG)) +
-  geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black", size=3) +
+  geom_point(position = position_jitter(seed = 1, width = 0.2), color = "black", size=3) +
+  # geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black", size=3) +
   geom_boxplot(width = 0.2, alpha = 0.2) +
   facet_wrap(MotherDiet ~ FatherDiet, ncol = 4) + 
   coord_cartesian(ylim = c(0, 15)) +
@@ -762,13 +785,15 @@ ggsave(device = cairo_pdf, plot = f0_f1_mice_weights_sex_deltas, width = 210, he
 # __a) Default tables - of original draft ----
 
 mice_f0_slct %>% 
-  dplyr::select(AnimalId, AnimalSex, WeightGain, Obesity) %>% distinct() %>% 
+  # dplyr::select(AnimalId, AnimalSex, WeightGain, Obesity) %>% distinct() %>% 
+  dplyr::select(AnimalId, AnimalSex, Diet, PartnerDiet) %>% distinct() %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
   gt::gtsave(filename = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/010_r_define_obesity__mice_f0_slct__summary.docx") 
 
 mice_f1_slct %>% 
-  dplyr::select(AnimalId, AnimalSex, WeightGain, Obesity, MotherDiet, FatherDiet, ObeseMother, ObeseFather) %>% distinct() %>% 
+  # dplyr::select(AnimalId, AnimalSex, WeightGain, Obesity, MotherDiet, FatherDiet, ObeseMother, ObeseFather) %>% distinct() %>% 
+  dplyr::select(AnimalId, AnimalSex, MotherDiet, FatherDiet) %>% distinct() %>% 
   tbl_summary(., missing = "no") %>%
   as_gt() %>%
   gt::gtsave(filename = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/010_r_define_obesity__mice_f1_slct__summary.docx") 

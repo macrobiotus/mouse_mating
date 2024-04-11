@@ -736,11 +736,30 @@
   
 ## 11-04-2024 -  work day 71 - working on first revision 
 
-  * updated todo
-  * training for Nonlinear Mixed-Effects Growth Models
+  * updated todo - multiple times
+  * worked in script `000_r_test_saemix.R`
+    * finished training for Nonlinear Mixed-Effects Growth Models
     * using `https://doi.org/10.5964/meth.7061`
-    * in script `000_test_saemix.R`
-    * finished testing saemix in script `000_test_saemix.R`
+    * to substitute hypothesis testing
+      * defined in introduction
+      * currently done in `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` 
+      * with saemix code
+  * worked in script `010_r_define obesity.r`
+    * checked wether or not Diet and Obesity variables overlap perfectly
+      * line 467: **F0 8992 had HFD but no gain - is this important for the anaslysis?**
+      * line 491: **all F1 have low weight gain, regardless of diet**
+      * line 500: here is definition of "Obesity"
+        * `F0 with any HFD and hi weight gain as classified "obese" and all others are "not obese"`
+        * `F0 with any HFD and hi weight gain as classified "obese" and all others are "not obese"`
+        * "Obesity" variable indicates HFD of parents, rightfully apart from **F0 8992**
+    * during execution gathered notes for writing
+      * "obesity" variable can be substituted with HFD throughout the text, for DEG analysis
+      * remove mention of curve trajectories curve trajectories
+      * where needed still: these were useful in confirming that parent individual 8992 didn't gain weight
+      * effects of diet needs to be evaluated with saemix
+      * lattice plots were re-exported without "obesity" and "weight gain" difinitions
+      * tables were re-exported without "obesity" and "weight gain" difinitions
+      * model descriptions can describe teh effcet instead of the lattice plot mentioned in the previous line
   
 ## Todo queue (last updated 11-04-2024)
  
@@ -749,48 +768,43 @@
  * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
    * [x] commit - branch repository - commit
    * [x] adress as many comments as reasonable without re-running code
-   * [x] revise introduction - adjust for diets - use revised version
-     * [x] re-build introduction after having received feedback
-   * [ ] re-run analysis - see how diets could be included
-     * [ ] see how "diets" could be used instead of "obesity" 
-       * [ ] in code check wether or not Diet and Obesity variables overlap perfectly
-       * [ ] id so re-check all code, possibly adjust throughout out
-       * [ ] keep all old results in script 50, but with relabeled figures 
-     * [ ] see what to do with the weight trajectories, 
-       * ~~[ ] consider using the the reference data beyond the initial plots~~
-       * [x] look at `saemix` example - learn how to correlate variables with treajectories
-       * [ ] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
+   * [x] revise introduction
+   * [ ] re-run analysis - see how "diets" could be used instead of "obesity" 
+     * ~~[ ] consider using the the reference data beyond the initial plots~~
+     * ~~[ ] starting point - fit Gompertz curves and compare significant changes in `alpha` parameter - see `https://www.ipb.pt/~vcadavez/websiteVC/tutorial/rcode/2019-04-28-gompertzmodel/`~~
+     * ~~[ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`~~
+     * ~~[ ] starting point - compare different growth models - see `https://cran.r-project.org/web/packages/biogrowth/vignettes/v04_model_comparison.html`~~
+     
+     * [x] keep all current results in script `010_r_define obesity.r`
+     * [ ] of script `010_r_define obesity.r` integrate re-exported items
+     * [x] look at `saemix` example - learn how to correlate variables with trajectories
+     * [x] using SAEMIX instead: ~~correct GAM modeling of offsping obesity as in Gavin Simpsons rat hormone hgam example, Physalia course GAMs in R, day 4, 23.11.2023, possibly also pull GS repoitory from course and look at "chick example"~~
+     * [ ] see what to do with the weight trajectories
+         * [ ] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
          * [ ] both parents obese - offspring sex neglected - male  - female
          * [ ] one parent obese - offspring sex neglected - male - female
-         * ~~[ ] starting point - fit Gompertz curves and compare significant changes in `alpha` parameter - see `https://www.ipb.pt/~vcadavez/websiteVC/tutorial/rcode/2019-04-28-gompertzmodel/`~~
-         * ~~[ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`~~
-         * ~~[ ] starting point - compare different growth models - see `https://cran.r-project.org/web/packages/biogrowth/vignettes/v04_model_comparison.html`~~
-      
-   * [ ] re -outline individual manuscript sections after analysis
-     * [ ] check files of 25.03.2024
-     * [ ] start with introduction
-     * [ ] copy other sections from outline document first
-     * [ ] for results consider the rebuttal documnet on or after 25.3.2025
-     * [ ] for discussion consider the rebuttal document on or after 25.3.2025
-    
-   * [x] consider litter size 
-     * [x] started to comment in revision file
-     * [x] addressed in manuscript file
-     * [x] to correct body weight after weaning consider (Zhang et al. 2012)
-     * ~~[x] possibly report on the most profound effects of the aforementioned weight adjustments~~
-     * [ ] consider NKBs comment on litter sizes - see communications folder 25-Mar-204
-   * [ ] revise discussion
-   * [ ] verify DEGs with human or web data
-   * [ ] improve figure 1 - diet labelling
+     * [ ] likely keep all old results in script `50_r_array_analysis.r`, but with relabel figures (in text or code) 
+     * [ ] verify DEGs with human or web data
+     * [ ] improve figure 1 - diet labelling
+ * [ ] re -outline individual manuscript sections after analysis
+   * [ ] consider the rebuttal document on or after 25.3.2025
+   * [ ] revise methods
+   * [ ] revise results
+   * [ ] copy other sections from outline document first
+ * [x] consider litter size 
+   * [x] started to comment in revision file
+   * [x] addressed in manuscript file
+   * [x] to correct body weight after weaning consider (Zhang et al. 2012)
+   * ~~[x] possibly report on the most profound effects of the aforementioned weight adjustments~~
+   * [ ] consider NKBs comment on litter sizes - see communications folder 25-Mar-204
    
-
 ### **revision work** - previously urgent
 
- * [ ]re-eavaluate all interpretation in the context of
+ * [ ] re-eavaluate all interpretation in the context of
    * [ ] correct diets - Western vs Western Control
    * [ ] correct interpretation of PCA
-    * [ ] use `dimdesc()`as in course notes and code examples Multivariate Statistics 1 23.11.2023 (**see example sheet (R) for anova on treatment in PCA** as [here](/Users/paul/Documents/HM_miscellaneous/231116_cf-statcon_mv_statistics/231123_day_3__exercises.R))
-  * [ ] correct GAM modeling of offsping obesity as in Gavin Simpsons rat hormone hgam example, Physalia course GAMs in R, day 4, 23.11.2023, possibly also pull GS repoitory from course and look at "chick example"
+   * [ ] use `dimdesc()`as in course notes and code examples Multivariate Statistics 1 23.11.2023 (**see example sheet (R) for anova on treatment in PCA** as [here](/Users/paul/Documents/HM_miscellaneous/231116_cf-statcon_mv_statistics/231123_day_3__exercises.R))
+   
 
 ### **revision work** - previously  additional notes
 
