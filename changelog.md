@@ -751,18 +751,20 @@
    * [x] revise introduction - adjust for diets - use revised version
      * [x] re-build introduction after having received feedback
    * [ ] re-run analysis - see how diets could be included
-     * [ ] see how body fat could be included - continue in `/010_r_define_obesity.r` line 196
-       * [ ] see what to do with the weight trajectories, given the reference data
-         * [ ] look at `saemix` example - learn how to correlate variables with treajectories
-         * [ ] build non-linear model for f1 using own sex, diet, parental diet, litter size, time
-         * [ ] test hypotheses in `020_r_h1.r` `030_r_h2.r` `040_r_h2.r`
-         * [ ] if diet is influential and conforms with previous obesity variables keep old code in `050_r_array_analysis.R`
-           * [ ] check if body fat inclusion changes factor definitions yielded using trajectory definition
-           * [ ] alter obesity definition if needed
+     * [ ] see how "diets" could be used instead of "obesity" 
+       * [ ] in code check wether or not Diet and Obesity variables overlap perfectly
+       * [ ] id so re-check all code, possibly adjust throughout out
+       * [ ] keep all old results in script 50, but with relabeled figures 
+     * [ ] see what to do with the weight trajectories, 
+       * ~~[ ] consider using the the reference data beyond the initial plots~~
+       * [ ] look at `saemix` example - learn how to correlate variables with treajectories
+       * [ ] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
+         * [ ] both parents obese - offspring sex neglegted - male  - feamle
+         * [ ] one parent obese - offspring sex neglegted - male - femaale
          * ~~[ ] starting point - fit Gompertz curves and compare significant changes in `alpha` parameter - see `https://www.ipb.pt/~vcadavez/websiteVC/tutorial/rcode/2019-04-28-gompertzmodel/`~~
          * ~~[ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`~~
-         * [ ] starting point - compare different growth models - see `https://cran.r-project.org/web/packages/biogrowth/vignettes/v04_model_comparison.html`
-      * [ ] see how diets could be included instead of obesity - relabel figures
+         * ~~[ ] starting point - compare different growth models - see `https://cran.r-project.org/web/packages/biogrowth/vignettes/v04_model_comparison.html`~~
+      
    * [ ] re -outline individual manuscript sections after analysis
      * [ ] check files of 25.03.2024
      * [ ] start with introduction
