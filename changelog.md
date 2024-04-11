@@ -740,6 +740,7 @@
   * training for Nonlinear Mixed-Effects Growth Models
     * using `https://doi.org/10.5964/meth.7061`
     * in script `000_test_saemix.R`
+    * finished testing saemix in script `000_test_saemix.R`
   
 ## Todo queue (last updated 11-04-2024)
  
@@ -757,7 +758,7 @@
        * [ ] keep all old results in script 50, but with relabeled figures 
      * [ ] see what to do with the weight trajectories, 
        * ~~[ ] consider using the the reference data beyond the initial plots~~
-       * [ ] look at `saemix` example - learn how to correlate variables with treajectories
+       * [x] look at `saemix` example - learn how to correlate variables with treajectories
        * [ ] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
          * [ ] both parents obese - offspring sex neglected - male  - female
          * [ ] one parent obese - offspring sex neglected - male - female

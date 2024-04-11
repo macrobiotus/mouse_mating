@@ -139,3 +139,64 @@ GompertzModel.RQ2 <- saemixModel(model = gompertz.model,
 GompertzFit.RQ2 <- saemix(GompertzModel.RQ2, GompertzData.RQ2, NLMEGM.options)
 
 
+# RQ3: Does adding SES (socioeconomic status) to the model in addition to Sex as a predictor of total growth, rate of approach to the upper asymptotic, or point of inflection improve model fit? If so, how do SES and Sex relate to achievement growth? ----
+
+# _1.) Define data ----
+
+GompertzData.RQ3 <- saemixData(
+  name.data = NLMEGMExData, header = TRUE, name.group = c("ID"), name.predictors = c("time"), name.response = c("Achievement"), name.X = "time", 
+  name.covariates = c("Sex", "SES")
+  )
+
+# _2.) Define model object ----
+
+GompertzModel.RQ3 <- saemixModel(model = gompertz.model, 
+                                 description = 'Gompertz', 
+                                 psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), # starting values for each of the four growth parameters
+                                 covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE), # which of the four parameter shoul be estimated? All but the last here
+                                 covariate.model = matrix(c(1,1,1,0, 1,1,1,0), ncol = 4, byrow = TRUE), # which parameters are influenced by the covariates? Length n paramters x covariates
+                                 transform.par = c(0, 0, 0, 0) # distribution of each of the four parameter
+                                 )
+
+# _3.) Fit model ----
+
+GompertzFit.RQ3 <- saemix(GompertzModel.RQ3, GompertzData.RQ3, NLMEGM.options)
+
+
+# RQ4: Does Sex moderate the association between SES and total growth, rate of approach to the upper asymptotic, or point of inflection? ----
+
+# A test of moderation allows the investigator to determine if the relationship
+# between a predictor and outcome is dependent on the value of a third variable.
+# Moderation analyses can be used to determine for whom relationships hold or
+# treatments are most effective. In growth modeling, moderation can be used to
+# determine if, for example, the positive association between SES and the Total
+# Growth parameter is equivalent for males and fe­ males or if for one sex the
+# relationship is stronger.
+
+# _1.) Define data ----
+
+GompertzData.RQ4 <- saemixData(
+  name.data = NLMEGMExData, header = TRUE, name.group = c("ID"), name.predictors = c("time"), name.response = c("Achievement"), name.X = "time", 
+  name.covariates = c("Sex", "SES", "SexSESmod") # third covariate added - Conditional Growth / Moderation / Interaction
+  )
+
+# _2.) Define model object ----
+
+GompertzModel.RQ4 <- saemixModel(model = gompertz.model, 
+                                 description = 'Gompertz', 
+                                 psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), # starting values for each of the four growth parameters
+                                 covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE), # which of the four parameter shoul be estimated? All but the last here
+                                 covariate.model = matrix(c(1,1,1,0, 1,1,1,0, 1,1,1,0), ncol = 4, byrow = TRUE), # which parameters are influenced by the covariates? Length n paramters x covariates
+                                 transform.par = c(0, 0, 0, 0) # distribution of each of the four parameter
+                                 )
+
+# _3.) Fit model ----
+
+GompertzFit.RQ4 <- saemix(GompertzModel.RQ4, GompertzData.RQ4, NLMEGM.options)
+
+summary(GompertzFit.RQ4)
+
+
+
+
+

@@ -148,7 +148,7 @@ mice_f1_slct %<>% filter(Week != 16)
 mice_f0_slct %>% dplyr::select(AnimalId, AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
 mice_f1_slct %>% dplyr::select(AnimalId, AnimalSex, Week, BodyWeightG) %>% arrange(AnimalId) %>% print(n = Inf)
 
-# For revision: check obesity and diet-related variables ----
+# For revision: Check obesity and diet-related variables ----
 
 # _1.) Plot reference weights ----
 
@@ -209,7 +209,7 @@ mice_slct_xyplots <- ggarrange(mice_f0_slct_xyplot, mice_f1_slct_xyplot, labels 
 
 ggsave(plot = mice_slct_xyplots, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights.pdf")
 
-# _3.) Check applicability of Gompertz Curve
+# _3.) Check applicability of Gompertz Curve ----
 
 foo <- mice_ref_weights %>% filter(AnimalSex == "f") %>% pull(BodyWeightG) 
 bar <- mice_ref_weights %>% filter(AnimalSex == "m") %>% pull(BodyWeightG) 
