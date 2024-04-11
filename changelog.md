@@ -727,18 +727,21 @@
   * finished checking script `/000_r_format_data.r`
     * [x] found - check for dietary magnetic resonance imaging data and start carrying this through the analysis
     * [x] found - check for litter size information
-  * starting checking script `/010_r_define_obesity.r`
-    * [ ] do not correct for litter size
-    * [ ] use body fat to define obesity instead / in addition to weight - see if it correlates with current weight gain variable perfectly
-    * [ ] attempt to include diet - see if it correlates with current weight gain variable perfectly
   * for obesity definition and comparison saved reference weights table from `https://www.jax.org/jax-mice-and-services/strain-data-sheet-pages/body-weight-chart-005304`
     * file is at `/HM_MouseMating/analysis/raw_data/240410_reference_weights.xlsx`
     * caption was: "Groups of 80 males and 80 females were weighed weekly.  Mice were fed a diet containing 6% fat (LabDiet 5K52 formulation). Values represent mean and one standard deviation. Ages are ± 3 day"
   * previous file edited agin with information from orignal provider `https://www.taconic.com/products/mouse-rat/standard-strains-and-stocks/black-6-b6ntac#tabsmobiledropdown-155d2d1ed8-item-dd16099164-tab` 
     * also see info sheet downloaded to Zotero
-  * plotted out weights `/010_r_define_obesity__mice_weights_references.pdf`
+  * plotted out weights with reference weight  in  `/010_r_define_obesity__mice_weights_references.pdf`
   
-## Todo queue (last updated 25-03-2024)
+## 11-04-2024 -  work day 71 - working on first revision 
+
+  * updated todo
+  * training for Nonlinear Mixed-Effects Growth Models
+    * using `https://doi.org/10.5964/meth.7061`
+    * in script `000_test_saemix.R`
+  
+## Todo queue (last updated 11-04-2024)
  
 ### **revision work** - after first submission
  
@@ -747,16 +750,19 @@
    * [x] adress as many comments as reasonable without re-running code
    * [x] revise introduction - adjust for diets - use revised version
      * [x] re-build introduction after having received feedback
-   * [ ] re-run analysis
+   * [ ] re-run analysis - see how diets could be included
      * [ ] see how body fat could be included - continue in `/010_r_define_obesity.r` line 196
        * [ ] see what to do with the weight trajectories, given the reference data
+         * [ ] look at `saemix` example - learn how to correlate variables with treajectories
          * [ ] build non-linear model for f1 using own sex, diet, parental diet, litter size, time
-         * [ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`
-         * [ ] starting point - fit Gompertz curves and compare significant changes in `alpha` parameter - see `https://www.ipb.pt/~vcadavez/websiteVC/tutorial/rcode/2019-04-28-gompertzmodel/`
-         * [ ] tsrating point - compare different growth models - see `https://cran.r-project.org/web/packages/biogrowth/vignettes/v04_model_comparison.html`
-       * [ ] check if body fat inclusion changes factor definitions yielded using trajectory definition
-       * [ ] alter obesity definition if needed
-     * [ ] see how diets could be included - relabel figures
+         * [ ] test hypotheses in `020_r_h1.r` `030_r_h2.r` `040_r_h2.r`
+         * [ ] if diet is influential and conforms with previous obesity variables keep old code in `050_r_array_analysis.R`
+           * [ ] check if body fat inclusion changes factor definitions yielded using trajectory definition
+           * [ ] alter obesity definition if needed
+         * ~~[ ] starting point - fit Gompertz curves and compare significant changes in `alpha` parameter - see `https://www.ipb.pt/~vcadavez/websiteVC/tutorial/rcode/2019-04-28-gompertzmodel/`~~
+         * ~~[ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`~~
+         * [ ] starting point - compare different growth models - see `https://cran.r-project.org/web/packages/biogrowth/vignettes/v04_model_comparison.html`
+      * [ ] see how diets could be included instead of obesity - relabel figures
    * [ ] re -outline individual manuscript sections after analysis
      * [ ] check files of 25.03.2024
      * [ ] start with introduction

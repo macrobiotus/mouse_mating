@@ -209,15 +209,17 @@ mice_slct_xyplots <- ggarrange(mice_f0_slct_xyplot, mice_f1_slct_xyplot, labels 
 
 ggsave(plot = mice_slct_xyplots, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights.pdf")
 
-# _3.) Check applicabilty of Gompertz Curve
+# _3.) Check applicability of Gompertz Curve
 
 foo <- mice_ref_weights %>% filter(AnimalSex == "f") %>% pull(BodyWeightG) 
 bar <- mice_ref_weights %>% filter(AnimalSex == "m") %>% pull(BodyWeightG) 
 fara <-  mice_f0_slct %>% filter(AnimalId == "8986") %>% pull(BodyWeightG) 
+baz <-  mice_f1_slct %>% filter(AnimalId == "A288") %>% pull(BodyWeightG) 
 
 GmptzCurve::gmptz(foo)
 GmptzCurve::gmptz(bar)
 GmptzCurve::gmptz(fara)
+GmptzCurve::gmptz(baz)
 
 #' # Define Obesity
 
