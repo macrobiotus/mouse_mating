@@ -759,8 +759,8 @@
        * ~~[ ] consider using the the reference data beyond the initial plots~~
        * [ ] look at `saemix` example - learn how to correlate variables with treajectories
        * [ ] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
-         * [ ] both parents obese - offspring sex neglegted - male  - feamle
-         * [ ] one parent obese - offspring sex neglegted - male - femaale
+         * [ ] both parents obese - offspring sex neglected - male  - female
+         * [ ] one parent obese - offspring sex neglected - male - female
          * ~~[ ] starting point - fit Gompertz curves and compare significant changes in `alpha` parameter - see `https://www.ipb.pt/~vcadavez/websiteVC/tutorial/rcode/2019-04-28-gompertzmodel/`~~
          * ~~[ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`~~
          * ~~[ ] starting point - compare different growth models - see `https://cran.r-project.org/web/packages/biogrowth/vignettes/v04_model_comparison.html`~~
