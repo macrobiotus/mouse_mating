@@ -257,6 +257,38 @@ npde.LogisticModel.RQ3.f <- npdeSaemix(LogisticModel.RQ3.f) # skewness and kurto
 
 # RQ4: What are the effects of diet within each sex? ----
 
+# ** drafted out only so far **
+
+# _1.) Define data (Logistic) ----
+
+LogisticData.RQ4.m <- saemixData(
+  name.data = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m")), header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
+  name.covariates = c("MotherDiet", "FatherDiet")
+)
+
+LogisticData.RQ4.f <- saemixData(
+  name.data = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f")), header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
+  name.covariates = c("MotherDiet", "FatherDiet")
+)
+
+
+
+# _2.) Define model (Logistic) ----
+
+LogisticModel.RQ4 <- saemixModel(model = logistic.model,
+                                 description = 'Logistic', 
+                                 psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), 
+                                 covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE),
+                                 covariate.model = matrix(c(1, 1, 1, 0, 1, 1, 1, 0), ncol = 4, byrow = TRUE),
+                                 transform.par=c(0,0,0,0)
+                                 )
+
+# _2.) Fit models (Logistic) ----
+
+LogisticModel.RQ4.m <- saemix(LogisticModel.RQ4, LogisticData.RQ4.m, NLMEGM.options)
+LogisticModel.RQ4.f <- saemix(LogisticModel.RQ4, LogisticData.RQ4.f, NLMEGM.options)
+
+
 
 
 
