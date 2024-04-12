@@ -765,9 +765,18 @@
 
   * created script `015_r_check_accumulation_curves.R` to use with SAEMIX
     * tested Gompertz and log growth, Gompertz seems to fit better as described in script
-  
-  
-## Todo queue (last updated 11-04-2024)
+    * **for manuscript introduction** 
+      * hypothesis to be adjusted to hypotheses RQ3 and RQs in this script: 
+      * "tested interaction parental of female and male diet on weight "
+    * **for manuscript methods** 
+      * using saemix to estimate curve parameters, better possible then in GAMs
+      * tested Gompertz and logistic curves - log curves proved to have better distributed residuals across all data
+      * (devided sex because model did not converge on sex effect)
+      * (lower asymptote was fixed)
+      * (estimated differences in total gain, gain rate (approach), weigh gain inflection, birth weight fixed)
+      
+ 
+## Todo queue (last updated 12-04-2024)
  
 ### **revision work** - after first submission
  
@@ -789,8 +798,9 @@
      * [x] using SAEMIX instead: 
      * [ ] see what to do with the weight trajectories
        * [ ] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
-       * [ ] both parents obese - offspring sex neglected - male  - female
-       * [ ] one parent obese - offspring sex neglected - male - female
+       * ~~[ ] both parents obese - offspring sex neglected - male  - female~~
+       * ~~[ ] one parent obese - offspring sex neglected - male - female~~
+       * [ ] as per `015_r_check_accumulation_curves.R` (12-04-2024) testing males and females separately for perental diet interaction on weight gain
      * [ ] likely keep all old results in script `50_r_array_analysis.r`, 
        * [ ] but with relabel figures (in text or code)
        * [ ] check wether axis correct axis is being looked at in PCA

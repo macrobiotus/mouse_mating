@@ -37,19 +37,6 @@ library("here")
 library("saemix")
 library("npde")
 
-# _3.) Revise when script is writte, or erase: Research questions ----
-
-# RQ1: Does Sex have an association with the total growth, rate of approach to
-# the upper asymptotic, or point of inflection (of the curve found optimal in
-# answering the first research question?)
-
-# RQ2: Does adding SES to the model in addition to Sex as a predictor of total
-# growth, rate of approach to the upper asymptotic, or point of inflection
-# improve model fit? If so, how do SES and Sex relate to achievement growth?
-
-# RQ3: Does Sex moderate the association between SES and total growth, rate of
-# approach to the upper asymptotic, or point of inflection?
-
 # Setup data and model ----
 
 # _1.) Read in data ----
@@ -67,7 +54,6 @@ ggplot(data = mice_f1_slct, aes(x = "Week", y="BodyWeightG",  group = "AnimalId"
   theme_bw()
 
 # _3.) Define possible function ----
-
 
 # __a) Gompertz ----
 
@@ -119,7 +105,6 @@ GompertzData.RQ1 <- saemixData(
   name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay"
 )
 
-
 # __b) Logistic ----
 
 LogisticData.RQ1 <- saemixData(
@@ -170,19 +155,17 @@ LogisticFIT.RQ1 <- saemix(LogisticModel.RQ1, LogisticData.RQ1, NLMEGM.options)
 
 # __a) Gompertz ----
 
-plot(GompertzData.RQ1)
 plot(GompertzFit.RQ1, plot.type="observations.vs.predictions" )
 plot(GompertzFit.RQ1, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-npde.GompertzFit.RQ1 <- npdeSaemix(GompertzFit.RQ1) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
+npde.GompertzFit.RQ1 <- npdeSaemix(GompertzFit.RQ1) # skewness and kurtosis of normalised prediction discrepancies lower then in log model - but no normal distribution ?
 
 # __b) Logistic ----
 
 plot(LogisticFIT.RQ1, plot.type = "observations.vs.predictions")
 plot(LogisticFIT.RQ1, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-npde.LogisticFIT.RQ1 <- npdeSaemix(LogisticFIT.RQ1)
+npde.LogisticFIT.RQ1 <- npdeSaemix(LogisticFIT.RQ1) # normlaity of residual within range
 
-
-# RQ2: Does Sex have an association with the total growth, rate of approach to the upper asymptotic, or point of inflection (of the curve found optimal in answering the first research question?) ----
+# Superfluous, does not converge: RQ2: Does Sex have an association with the total growth, rate of approach to the upper asymptotic, or point of inflection (of the curve found optimal in answering the first research question?) ----
 
 # _1.) Define data (Gompertz and Logistic) ----
 
@@ -204,7 +187,7 @@ GompertzModel.RQ2 <- saemixModel(model = gompertz.model,
 
 # _3.) Fit model ----
 
-# no convergence
+# no convergence - also not with logistic model
 GompertzFit.RQ2 <- saemix(GompertzModel.RQ2, GompertzData.RQ2, NLMEGM.options)
 
 # _3.) Plot model ----
@@ -215,69 +198,65 @@ plot(GompertzFit.RQ2, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
 npde.GompertzFit.RQ2 <- npdeSaemix(GompertzFit.RQ1) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
 
 
+# RQ3: What are the effects within each sex? ----
 
+# _1.) Define model (Logistic) ----
 
-# Contineu below
+LogisticModel.RQ3 <- saemixModel(model = logistic.model,
+                                 description = 'Logistic', 
+                                 psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), 
+                                 covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE),
+                                 transform.par=c(0,0,0,0)
+                                 )
 
-# RQ3: Does adding SES (socioeconomic status) to the model in addition to Sex as a predictor of total growth, rate of approach to the upper asymptotic, or point of inflection improve model fit? If so, how do SES and Sex relate to achievement growth? ----
+# _2.) Define data (Logistic) ----
 
-# _1.) Define data ----
+LogisticData.RQ3.m <- saemixData(
+  name.data = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m")), header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay"
+  )
 
-GompertzData.RQ3 <- saemixData(
-  name.data = NLMEGMExData, header = TRUE, name.group = c("ID"), name.predictors = c("time"), name.response = c("Achievement"), name.X = "time", 
-  name.covariates = c("Sex", "SES")
-)
+LogisticData.RQ3.f <- saemixData(
+  name.data = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f")), header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay"
+  )
 
-# _2.) Define model object ----
-
-GompertzModel.RQ3 <- saemixModel(model = gompertz.model, 
-                                 description = 'Gompertz', 
-                                 psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), # starting values for each of the four growth parameters
-                                 covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE), # which of the four parameter shoul be estimated? All but the last here
-                                 covariate.model = matrix(c(1,1,1,0, 1,1,1,0), ncol = 4, byrow = TRUE), # which parameters are influenced by the covariates? Length n paramters x covariates
-                                 transform.par = c(0, 0, 0, 0) # distribution of each of the four parameter
-)
 
 # _3.) Fit model ----
 
-GompertzFit.RQ3 <- saemix(GompertzModel.RQ3, GompertzData.RQ3, NLMEGM.options)
+LogisticModel.RQ3.m <- saemix(LogisticModel.RQ1, LogisticData.RQ3.m, NLMEGM.options)
 
-plot(GompertzFit.RQ3, plot.type="observations.vs.predictions" )
+# Fixed effects
+# Parameter Estimate   SE     CV(%)
+# TtlGrwth  18.6298  3.04572 16.35  [total weight gain over time (pop ref NA g)] 
+# Apprch     0.0714  0.00861 12.05  [steepness (pop ref )]
+# Timing    32.4976  4.41948 13.60  [growth inflection (pop ref 27.6 d) ]
+# LwrAsy     7.8448  2.90706 37.06  [not estimated  - birth weight ]
+# a.1        1.0240  0.07689  7.51 
+
+LogisticModel.RQ3.f <- saemix(LogisticModel.RQ1, LogisticData.RQ3.f, NLMEGM.options)
+
+# Fixed effects
+# Parameter Estimate   SE     CV(%)
+# TtlGrwth  14.2765  2.19220 15.36  [less total gain then in males, less variable]
+# Apprch     0.0747  0.00864 11.57  [less steeper approach, less variable]
+# Timing    32.6176  4.06872 12.47  [growth inflection slightly later then in males]
+# LwrAsy     7.7248  2.10042 27.19  [birth weight slightly lower then in males, less variable]
+# a.1        0.6232  0.05537  8.88 
 
 
+# _3.) Plot model ----
 
-# RQ4: Does Sex moderate the association between SES and total growth, rate of approach to the upper asymptotic, or point of inflection? ----
+plot(LogisticModel.RQ3.m, plot.type="observations.vs.predictions" )
+plot(LogisticModel.RQ3.f, plot.type="observations.vs.predictions" )
 
-# A test of moderation allows the investigator to determine if the relationship
-# between a predictor and outcome is dependent on the value of a third variable.
-# Moderation analyses can be used to determine for whom relationships hold or
-# treatments are most effective. In growth modeling, moderation can be used to
-# determine if, for example, the positive association between SES and the Total
-# Growth parameter is equivalent for males and females or if for one sex the
-# relationship is stronger.
+plot(LogisticModel.RQ3.m, plot.type = "both.fit",  ilist = 10:21, smooth = TRUE)
+plot(LogisticModel.RQ3.f, plot.type = "both.fit",  ilist = 10:21, smooth = TRUE)
 
-# _1.) Define data ----
+npde.LogisticModel.RQ3.m <- npdeSaemix(LogisticModel.RQ3.m) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
+npde.LogisticModel.RQ3.f <- npdeSaemix(LogisticModel.RQ3.f) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
 
-GompertzData.RQ4 <- saemixData(
-  name.data = NLMEGMExData, header = TRUE, name.group = c("ID"), name.predictors = c("time"), name.response = c("Achievement"), name.X = "time", 
-  name.covariates = c("Sex", "SES", "SexSESmod") # third covariate added - Conditional Growth / Moderation / Interaction
-)
 
-# _2.) Define model object ----
+# RQ4: What are the effects of diet within each sex? ----
 
-GompertzModel.RQ4 <- saemixModel(model = gompertz.model, 
-                                 description = 'Gompertz', 
-                                 psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), # starting values for each of the four growth parameters
-                                 covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE), # which of the four parameter shoul be estimated? All but the last here
-                                 covariate.model = matrix(c(1,1,1,0, 1,1,1,0, 1,1,1,0), ncol = 4, byrow = TRUE), # which parameters are influenced by the covariates? Length n paramters x covariates
-                                 transform.par = c(0, 0, 0, 0) # distribution of each of the four parameter
-)
-
-# _3.) Fit model ----
-
-GompertzFit.RQ4 <- saemix(GompertzModel.RQ4, GompertzData.RQ4, NLMEGM.options)
-
-summary(GompertzFit.RQ4)
 
 
 
