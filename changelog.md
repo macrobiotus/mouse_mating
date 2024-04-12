@@ -774,7 +774,11 @@
       * (devided sex because model did not converge on sex effect)
       * (lower asymptote was fixed)
       * (estimated differences in total gain, gain rate (approach), weigh gain inflection, birth weight fixed)
-      
+
+* **todo** 
+ * after conuslting `https://stats.stackexchange.com/questions/76488/error-system-is-computationally-singular-when-running-a-glm`
+ * revise for total growth only, then inlcude sex
+ * update code and changelog
  
 ## Todo queue (last updated 12-04-2024)
  
