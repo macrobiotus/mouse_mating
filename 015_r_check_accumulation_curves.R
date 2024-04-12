@@ -257,8 +257,6 @@ npde.LogisticModel.RQ3.f <- npdeSaemix(LogisticModel.RQ3.f) # skewness and kurto
 
 # RQ4: What are the effects of diet within each sex? ----
 
-# ** drafted out only so far **
-
 # _1.) Define data (Logistic) ----
 
 LogisticData.RQ4.m <- saemixData(
@@ -287,11 +285,4 @@ LogisticModel.RQ4 <- saemixModel(model = logistic.model,
 
 LogisticModel.RQ4.m <- saemix(LogisticModel.RQ4, LogisticData.RQ4.m, NLMEGM.options)
 LogisticModel.RQ4.f <- saemix(LogisticModel.RQ4, LogisticData.RQ4.f, NLMEGM.options)
-
-
-
-
-
-
-
 
