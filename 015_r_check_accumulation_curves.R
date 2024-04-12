@@ -62,8 +62,9 @@ mice_f1_slct <- readRDS( file = here("rds_storage", "mice_f1_slct_with_obesity.r
 mice_f1_slct %>% dplyr::select(MeasurementDay, BodyWeightG, AnimalId, AnimalSex) %>% arrange(AnimalSex, AnimalId, MeasurementDay) %>% print(n = Inf)
 
 ggplot(data = mice_f1_slct, aes(x = "Week", y="BodyWeightG",  group = "AnimalId")) +
-  geom_line( mapping = aes( x = Week, y = BodyWeightG, group = AnimalId, color = AnimalSex))
-
+  geom_line( mapping = aes( x = Week, y = BodyWeightG, group = AnimalId, color = AnimalId)) + 
+  facet_grid(. ~ AnimalSex) +
+  theme_bw()
 
 # _3.) Define possible function ----
 
@@ -107,8 +108,6 @@ logistic.model <- function(psi, id, x) { # psi, id, and x components are passed 
 # _3.) Set modelling options ----
 
 NLMEGM.options <- list(seed = 1234, displayProgress = FALSE)
-
-
 
 # RQ1 Use Gompertz or logistic curve to model weight gain? ----
 
@@ -158,7 +157,7 @@ GompertzFit.RQ1 <- saemix(GompertzModel.RQ1, GompertzData.RQ1, NLMEGM.options)
 # TtlGrwth  16.4638  1.16170  7.06  [16.4 g total weight gain over time] 
 # Apprch     0.0575  0.00279  4.86  [steepness (reference value)]
 # Timing    27.6851  1.81702  6.56  [growth inflection time at 27 days ]
-# LwrAsy     8.4239  1.05141 12.48  [not estimated  - 8.4 g birth weight - not very precise]
+# LwrAsy     8.4239  1.05141 12.48  [not estimated  - 8.4 g birth weight - model not very precise]
 # a.1        0.8498  0.04786  5.63 
 
 # __b) Logistic ----
@@ -171,6 +170,7 @@ LogisticFIT.RQ1 <- saemix(LogisticModel.RQ1, LogisticData.RQ1, NLMEGM.options)
 
 # __a) Gompertz ----
 
+plot(GompertzData.RQ1)
 plot(GompertzFit.RQ1, plot.type="observations.vs.predictions" )
 plot(GompertzFit.RQ1, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
 npde.GompertzFit.RQ1 <- npdeSaemix(GompertzFit.RQ1) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
