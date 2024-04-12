@@ -209,7 +209,7 @@ GompertzFit.RQ2 <- saemix(GompertzModel.RQ2, GompertzData.RQ2, NLMEGM.options)
 
 # _3.) Plot model ----
 
-# doesn't fit well
+# doesn't fit well - splitting males and females
 plot(GompertzFit.RQ2, plot.type="observations.vs.predictions" )
 plot(GompertzFit.RQ2, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
 npde.GompertzFit.RQ2 <- npdeSaemix(GompertzFit.RQ1) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
