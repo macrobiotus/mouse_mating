@@ -277,7 +277,7 @@ LogisticModel.RQ4 <- saemixModel(model = logistic.model,
                                  description = 'Logistic', 
                                  psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), 
                                  covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE),
-                                 covariate.model = matrix(c(1, 1, 1, 0, 1, 1, 1, 0), ncol = 4, byrow = TRUE),
+                                 covariate.model = matrix(c(1, 0, 0, 0, 1, 0, 0, 0), ncol = 4, byrow = TRUE),
                                  transform.par=c(0,0,0,0)
                                  )
 
