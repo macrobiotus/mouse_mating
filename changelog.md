@@ -760,6 +760,11 @@
       * lattice plots were re-exported without "obesity" and "weight gain" difinitions
       * tables were re-exported without "obesity" and "weight gain" difinitions
       * model descriptions can describe teh effcet instead of the lattice plot mentioned in the previous line
+
+## 12-04-2024 -  work day 72 - working on first revision 
+
+  * created script `015_r_check_accumulation_curves.R` to use with SAEMIX
+  
   
 ## Todo queue (last updated 11-04-2024)
  
@@ -774,17 +779,21 @@
      * ~~[ ] starting point - fit Gompertz curves and compare significant changes in `alpha` parameter - see `https://www.ipb.pt/~vcadavez/websiteVC/tutorial/rcode/2019-04-28-gompertzmodel/`~~
      * ~~[ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`~~
      * ~~[ ] starting point - compare different growth models - see `https://cran.r-project.org/web/packages/biogrowth/vignettes/v04_model_comparison.html`~~
-     
      * [x] keep all current results in script `010_r_define obesity.r`
      * [ ] of script `010_r_define obesity.r` integrate re-exported items
-     * [x] look at `saemix` example - learn how to correlate variables with trajectories
-     * [x] using SAEMIX instead: ~~correct GAM modeling of offsping obesity as in Gavin Simpsons rat hormone hgam example, Physalia course GAMs in R, day 4, 23.11.2023, possibly also pull GS repoitory from course and look at "chick example"~~
+     * [ ] learn how to correlate variables with trajectories
+       * [x] look at `saemix` example
+       * [ ] ~~correct GAM modeling of offspring obesity as in Gavin Simpsons rat hormone hgam example, Physalia course GAMs in R, day 4, 23.11.2023, possibly also pull GS repoitory from course and look at "chick example"~~
+       * [ ] ~~possibly use GAM approach - see Winter and Wieling (2016), https://doi.org/10.1093/jole/lzv003~~
+     * [x] using SAEMIX instead: 
      * [ ] see what to do with the weight trajectories
-         * [ ] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
-         * [ ] both parents obese - offspring sex neglected - male  - female
-         * [ ] one parent obese - offspring sex neglected - male - female
-     * [ ] likely keep all old results in script `50_r_array_analysis.r`, but with relabel figures (in text or code) 
-     * [ ] verify DEGs with human or web data
+       * [ ] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
+       * [ ] both parents obese - offspring sex neglected - male  - female
+       * [ ] one parent obese - offspring sex neglected - male - female
+     * [ ] likely keep all old results in script `50_r_array_analysis.r`, 
+       * [ ] but with relabel figures (in text or code)
+       * [ ] check wether axis correct axis is being looked at in PCA
+       * [ ] verify DEGs with human or web data
      * [ ] improve figure 1 - diet labelling
  * [ ] re -outline individual manuscript sections after analysis
    * [ ] consider the rebuttal document on or after 25.3.2025
@@ -797,14 +806,18 @@
    * [x] to correct body weight after weaning consider (Zhang et al. 2012)
    * ~~[x] possibly report on the most profound effects of the aforementioned weight adjustments~~
    * [ ] consider NKBs comment on litter sizes - see communications folder 25-Mar-204
-   
+  
+
+- note reference for GAM modeling, from Zotero
+- in script 50 
+  
+  
 ### **revision work** - previously urgent
 
  * [ ] re-eavaluate all interpretation in the context of
    * [ ] correct diets - Western vs Western Control
    * [ ] correct interpretation of PCA
    * [ ] use `dimdesc()`as in course notes and code examples Multivariate Statistics 1 23.11.2023 (**see example sheet (R) for anova on treatment in PCA** as [here](/Users/paul/Documents/HM_miscellaneous/231116_cf-statcon_mv_statistics/231123_day_3__exercises.R))
-   
 
 ### **revision work** - previously  additional notes
 

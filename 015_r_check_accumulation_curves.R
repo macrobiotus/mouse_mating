@@ -1,5 +1,34 @@
+#' ---
+#' title: "Mice Mating Study"
+#' subtitle: "Modelling for Hypothesis testing"
+#' author: "Paul Czechowski `paul.czechowski@helmholtz-munich.de`"
+#' date: "`r Sys.Date()`"
+#' output:
+#'  html_notebook:
+#'     toc: true
+#'     toc_float: true
+#'     number_sections: true
+#'     code_folding: show
+#'  pdf_document:
+#'     toc: true
+#'     number_sections: true
+#'  html_document:
+#'     toc: true
+#'     toc_float: true
+#'     number_sections: true
+#'     code_folding: show
+#' ---
 
-# 2024-4-11 - Paul Czechowski
+
+# Prepare environment ---- 
+
+
+# _1.) Collect garbage ----
+
+rm(list=ls())
+gc()
+
+# _2.) Packages ----
 
 # Nonlinear Mixed-Effects Growth Models: A Tutorial Using 'saemix' in R
 # Methodology, 2021, Vol. 17(4), 250–270, https://doi.org/10.5964/meth.7061
@@ -7,25 +36,22 @@
 library("here")
 library("saemix")
 
-# Research questions ----
+# _3.) Research questions ----
 
-# RQ1: Which of the Logistic, Gompertz, or Richards curves models best the
-# growth in achievement?
-
-# RQ2: Does Sex have an association with the total growth, rate of approach to
+# RQ1: Does Sex have an association with the total growth, rate of approach to
 # the upper asymptotic, or point of inflection (of the curve found optimal in
 # answering the first research question?)
 
-# RQ3: Does adding SES to the model in addition to Sex as a predictor of total
+# RQ2: Does adding SES to the model in addition to Sex as a predictor of total
 # growth, rate of approach to the upper asymptotic, or point of inflection
 # improve model fit? If so, how do SES and Sex relate to achievement growth?
 
-# RQ4: Does Sex moderate the association between SES and total growth, rate of
+# RQ3: Does Sex moderate the association between SES and total growth, rate of
 # approach to the upper asymptotic, or point of inflection?
 
 # Setup data and model ----
 
-# _1.) Get example data ----
+# _1.) Read in data ----
 
 NLMEGMExData <- read.csv(here("../communication/Boedeker_2021_Nonlinear_mixed_effects_growth_models_SUPPL_Dataset_Code/7061_Dataset_for_replicating_example_analyses.csv"))
 
@@ -56,7 +82,7 @@ NLMEGM.options <- list(seed = 1234, displayProgress = FALSE)
 
 GompertzData.RQ1 <- saemixData(
   name.data = NLMEGMExData, header = TRUE, name.group = c("ID"), name.predictors = c("time"), name.response = c("Achievement"), name.X = "time"
-  )
+)
 
 # _2.) Define model object ----
 
@@ -65,7 +91,7 @@ GompertzModel.RQ1 <- saemixModel(model = gompertz.model,
                                  psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), # starting values for each of the four growth parameters
                                  covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE), # which of the four parameter shoul be estimated? All but the last here
                                  transform.par = c(0, 0, 0, 0) # distribution of each of the four parameter
-                                 )
+)
 
 # _3.) Fit model ----
 
@@ -122,7 +148,7 @@ GompertzFit.RQ1 <- saemix(GompertzModel.RQ1, GompertzData.RQ1, NLMEGM.options)
 GompertzData.RQ2 <- saemixData(
   name.data = NLMEGMExData, header = TRUE, name.group = c("ID"), name.predictors = c("time"), name.response = c("Achievement"), name.X = "time", 
   name.covariates = c("Sex")
-  )
+)
 
 # _2.) Define model object ----
 
@@ -146,7 +172,7 @@ GompertzFit.RQ2 <- saemix(GompertzModel.RQ2, GompertzData.RQ2, NLMEGM.options)
 GompertzData.RQ3 <- saemixData(
   name.data = NLMEGMExData, header = TRUE, name.group = c("ID"), name.predictors = c("time"), name.response = c("Achievement"), name.X = "time", 
   name.covariates = c("Sex", "SES")
-  )
+)
 
 # _2.) Define model object ----
 
@@ -156,7 +182,7 @@ GompertzModel.RQ3 <- saemixModel(model = gompertz.model,
                                  covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE), # which of the four parameter shoul be estimated? All but the last here
                                  covariate.model = matrix(c(1,1,1,0, 1,1,1,0), ncol = 4, byrow = TRUE), # which parameters are influenced by the covariates? Length n paramters x covariates
                                  transform.par = c(0, 0, 0, 0) # distribution of each of the four parameter
-                                 )
+)
 
 # _3.) Fit model ----
 
@@ -178,7 +204,7 @@ GompertzFit.RQ3 <- saemix(GompertzModel.RQ3, GompertzData.RQ3, NLMEGM.options)
 GompertzData.RQ4 <- saemixData(
   name.data = NLMEGMExData, header = TRUE, name.group = c("ID"), name.predictors = c("time"), name.response = c("Achievement"), name.X = "time", 
   name.covariates = c("Sex", "SES", "SexSESmod") # third covariate added - Conditional Growth / Moderation / Interaction
-  )
+)
 
 # _2.) Define model object ----
 
@@ -188,13 +214,14 @@ GompertzModel.RQ4 <- saemixModel(model = gompertz.model,
                                  covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE), # which of the four parameter shoul be estimated? All but the last here
                                  covariate.model = matrix(c(1,1,1,0, 1,1,1,0, 1,1,1,0), ncol = 4, byrow = TRUE), # which parameters are influenced by the covariates? Length n paramters x covariates
                                  transform.par = c(0, 0, 0, 0) # distribution of each of the four parameter
-                                 )
+)
 
 # _3.) Fit model ----
 
 GompertzFit.RQ4 <- saemix(GompertzModel.RQ4, GompertzData.RQ4, NLMEGM.options)
 
 summary(GompertzFit.RQ4)
+
 
 
 

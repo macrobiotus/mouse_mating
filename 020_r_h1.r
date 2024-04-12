@@ -1,7 +1,7 @@
 #' ---
 #' title: "Mice Mating Study"
 #' subtitle: "Modelling for Hypothesis 1: Inheritance of Obesity – Any or both parents’ obesity"
-#' author: "Paul Czechowski ``paul.czechowski@helmholtz-munich.de``"
+#' author: "Paul Czechowski `paul.czechowski@helmholtz-munich.de`"
 #' date: "`r Sys.Date()`"
 #' output:
 #'  html_notebook:
