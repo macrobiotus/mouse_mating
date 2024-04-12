@@ -35,8 +35,9 @@ gc()
 
 library("here")
 library("saemix")
+library("npde")
 
-# _3.) Research questions ----
+# _3.) Revise when script is writte, or erase: Research questions ----
 
 # RQ1: Does Sex have an association with the total growth, rate of approach to
 # the upper asymptotic, or point of inflection (of the curve found optimal in
@@ -53,93 +54,140 @@ library("saemix")
 
 # _1.) Read in data ----
 
+# Remove this test date in the line below upon script completion
 NLMEGMExData <- read.csv(here("../communication/Boedeker_2021_Nonlinear_mixed_effects_growth_models_SUPPL_Dataset_Code/7061_Dataset_for_replicating_example_analyses.csv"))
 
-# _2.) Define Gompertz function ----
+mice_f0_slct <- readRDS( file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
+mice_f1_slct <- readRDS( file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
+
+# _2.) Define possible function ----
+
+
+# __a) Gompertz ----
 
 gompertz.model <- function(psi, id, x) { # psi, id, and x components are passed in from data - data frame, subject variable, time variable
   
+  # Gompertz parameters - see https://doi.org/10.5964/meth.7061
   t <- x[ , 1] 
   LwrAsy   <- psi[id, 4]   # (d) lower asymptote for subject - where growth begins on y axis
   Apprch   <- psi[id, 2]   # (b) approach rate to upper asymtote - larger values indicate quicker growth - curve steepness - where growth begins on x axis
   Timing   <- psi[id, 3]   # (c) inflection point - time with greatest change - when large accelerated growth toward the upper limit occurs later
   TtlGrwth <- psi[id, 1]   # (a) total change for subject over time - large values indicate greater total growth -  range of y values
   
+  # Gompertz curve formula
   ypred <- LwrAsy + TtlGrwth * exp(-exp(-Apprch * (t - Timing)))
   
   return(ypred)
   
 }
 
+# __b) Logistic ----
+
+logistic.model <- function(psi, id, x) { # psi, id, and x components are passed in from data - data frame, subject variable, time variable
+  
+  # Logistic parameters - see https://doi.org/10.5964/meth.7061
+  t <- x[ ,1]
+  LwrAsy <- psi[id, 4]
+  Apprch <- psi[id, 2]
+  Timing <- psi[id, 3]
+  TtlGrwth <- psi[id, 1]
+  
+  # Logistic curve formula
+  ypred  <- LwrAsy + TtlGrwth/ (1+exp ( -Apprch * (t-Timing)))
+  
+  return(ypred)
+}
+
+
 # _3.) Set modelling options ----
 
 NLMEGM.options <- list(seed = 1234, displayProgress = FALSE)
 
 
-# RQ1 Which of the Logistic, Gompertz, or Richards curves models best the growth in achievement? ----
+
+# RQ1 Use Gompertz or logistic curve to model weight gain? ----
 
 # _1.) Define data ----
 
+# __a) Gompertz ----
+
 GompertzData.RQ1 <- saemixData(
-  name.data = NLMEGMExData, header = TRUE, name.group = c("ID"), name.predictors = c("time"), name.response = c("Achievement"), name.X = "time"
+  name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay"
 )
 
+
+# __b) Logistic ----
+
+LogisticData.RQ1 <- saemixData(
+  name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay"
+  )
+
 # _2.) Define model object ----
+
+# __a) Gompertz ----
 
 GompertzModel.RQ1 <- saemixModel(model = gompertz.model, 
                                  description = 'Gompertz', 
                                  psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), # starting values for each of the four growth parameters
                                  covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE), # which of the four parameter shoul be estimated? All but the last here
                                  transform.par = c(0, 0, 0, 0) # distribution of each of the four parameter
-)
+                                 )
+
+# __b) Logistic ----
+
+LogisticModel.RQ1 <- saemixModel(model = logistic.model,
+                                 description = 'Logistic', 
+                                 psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), 
+                                 covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE),
+                                 transform.par=c(0,0,0,0)
+                                 )
+
 
 # _3.) Fit model ----
 
+# __a) Gompertz ----
+
 GompertzFit.RQ1 <- saemix(GompertzModel.RQ1, GompertzData.RQ1, NLMEGM.options)
 
-# Nonlinear mixed-effects model fit by the SAEM algorithm
+# Parameter Estimate   SE     CV(%)
+# TtlGrwth  16.4638  1.16170  7.06  [16.4 g over time] 
+# Apprch     0.0575  0.00279  4.86  [steepness reference value - modest]
+# Timing    27.6851  1.81702  6.56  [growth inflection time at 27 days ]
+# LwrAsy     8.4239  1.05141 12.48  [not estimated 8.4 g birth weight]
+# a.1        0.8498  0.04786  5.63 
 
-# ----         Data and Model          
-# Data
-# Dataset NLMEGMExData 
-# Longitudinal data: Achievement ~ time | ID 
-# 
-# [...]
-#
-# ----                  Results                   ---
-#
-# Fixed effects
-# Parameter Estimate   SE     CV(%)  # estimates in units of measurement per time
-# TtlGrwth   5.0692  0.06830  1.35 
-# Apprch     0.9489  0.04099  4.32 
-# Timing     1.8065  0.04571  2.53 
-# LwrAsy    -0.0915  0.02691 29.42   # variation is high as value is constrained?
-# a.1        0.2352  0.00932  3.96 
-# 
-# Variance of random effects
-# Parameter           Estimate   SE    CV(%) # large veraition indicates additional factors may contribute to this
-# omega2.TtlGrwth      0.18546 0.0439   23.7
-# omega2.Apprch        0.12201 0.0223   18.3
-# omega2.Timing        0.16876 0.0276   16.4
-# cov.TtlGrwth.Apprch  0.02935 0.0232   78.9
-# cov.TtlGrwth.Timing -0.00556 0.0246 -441.8
-# cov.Apprch.Timing   -0.00837 0.0179 -213.8
-# 
-# Correlation matrix of random effects   # check for insights into the relationships between these paramter
-# omega2.TtlGrwth omega2.Apprch omega2.Timing
-# omega2.TtlGrwth  1.0000          0.1951       -0.0315      
-# omega2.Apprch    0.1951          1.0000       -0.0583      
-# omega2.Timing   -0.0315         -0.0583        1.0000      
-# 
-# Statistical criteria
-# Likelihood computed by linearisation
-# -2LL= 623.3004 
-# AIC= 645.3004 
-# BIC= 673.9573 
-# Likelihood computed by importance sampling
-# -2LL= 622.5147 
-# AIC= 644.5147 
-# BIC= 673.1715
+TtlGrwth <- psi[id, 1]   # (a) total change for subject over time - large values indicate greater total growth -  range of y values
+Apprch   <- psi[id, 2]   # (b) approach rate to upper asymtote - larger values indicate quicker growth - curve steepness - where growth begins on x axis
+Timing   <- psi[id, 3]   # (c) inflection point - time with greatest change - when large accelerated growth toward the upper limit occurs later
+LwrAsy   <- psi[id, 4]   # (d) lower asymptote for subject - where growth begins on y axis
+
+
+
+
+
+# __b) Logistic ----
+
+LogisticFIT.RQ1 <- saemix(LogisticModel.RQ1, LogisticData.RQ1, NLMEGM.options)
+
+
+# _4.) Plot model
+
+# Compute normalised prediction distribution errors (npde) and normalized prediction discrepancies (npd).
+
+# __a) Gompertz ----
+
+plot(GompertzFit.RQ1, plot.type="observations.vs.predictions" )
+plot(GompertzFit.RQ1, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
+npde.GompertzFit.RQ1 <- npdeSaemix(GompertzFit.RQ1) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
+
+# __b) Logistic ----
+
+plot(LogisticFIT.RQ1, plot.type = "observations.vs.predictions")
+plot(LogisticFIT.RQ1, plot.type="observations.vs.predictions" )
+plot(LogisticFIT.RQ1, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
+npde.LogisticFIT.RQ1 <- npdeSaemix(LogisticFIT.RQ1)
+
+# Continue here - define effcet on sex
 
 # RQ2: Does Sex have an association with the total growth, rate of approach to the upper asymptotic, or point of inflection (of the curve found optimal in answering the first research question?) ----
 

@@ -764,6 +764,7 @@
 ## 12-04-2024 -  work day 72 - working on first revision 
 
   * created script `015_r_check_accumulation_curves.R` to use with SAEMIX
+    * tested Gompertz and log growth, Gompertz seems to fit better as described in script
   
   
 ## Todo queue (last updated 11-04-2024)
