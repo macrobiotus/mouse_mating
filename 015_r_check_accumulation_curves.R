@@ -119,7 +119,6 @@ decay.model <- function(psi, id, xidep) {
 
 # _3.) Set modelling options ----
 
-NLMEGM.options <- list(seed = 1234, displayProgress = FALSE)
 saemix.options <- list(algorithms = c(1,1,1), nbiter.saemix = c(200,100), nb.chains=1, save=FALSE, save.graphs=FALSE, seed = 1234, displayProgress = FALSE)
 
 # RQ1 Use Gompertz, logistic, or exponential decay curve to model weight gain? ----
@@ -230,38 +229,84 @@ plot(DecayFIT.RQ1, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
 npde.DecayFIT.RQ1 <- npdeSaemix(DecayFIT.RQ1) # skew, curtosis of residuals best of all three - use this model
 
 
-# Continue here
-# Superfluous, does not converge: RQ2: Does Sex have an association with the total growth, rate of approach to the upper asymptotic, or point of inflection (of the curve found optimal in answering the first research question?) ----
 
-# _1.) Define data (Gompertz and Logistic) ----
+# RQ2: Does Sex have an association with the total growth, rate of approach to the upper asymptotic, or point of inflection (of the curve found optimal in answering the first research question?) ----
 
-GompertzData.RQ2 <- saemixData(
+# _1.) Define data with sex covariate ----
+
+ModelData.RQ2 <- saemixData(
   name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
   name.covariates = c("AnimalSex")
   )
 
-
 # _2.) Define model object ----
 
-GompertzModel.RQ2 <- saemixModel(model = gompertz.model, 
-                                 description = 'Gompertz', 
-                                 psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), # starting values for each of the four growth parameters
-                                 covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE), # which of the four parameter shoul be estimated? All but the last here
-                                 covariate.model = matrix(c(1, 1, 1, 0), ncol = 4, byrow = TRUE),
-                                 transform.par = c(0, 0, 0, 0) # distribution of each of the four parameter
-                                 )
+DecayModel.RQ2 <- saemixModel(model = decay.model,
+                              description= "Exponential decay", 
+                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
+                              transform.par = c(1,1,1), 
+                              fixed.estim = c(1,1,1),
+                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
+                              covariate.model = matrix(c(1,1,1), ncol=3, byrow=TRUE),
+                              omega.init = matrix(c(1,0,0,0,1,0,0,0,1),ncol=3, byrow=TRUE), 
+                              error.model="constant")
+
+
+
 
 # _3.) Fit model ----
 
-# no convergence - also not with logistic model
-GompertzFit.RQ2 <- saemix(GompertzModel.RQ2, GompertzData.RQ2, NLMEGM.options)
+DecayFIT.RQ2 <- saemix(DecayModel.RQ2, ModelData.RQ2, saemix.options)
 
 # _3.) Plot model ----
 
-# doesn't fit well - splitting males and females
-plot(GompertzFit.RQ2, plot.type="observations.vs.predictions" )
-plot(GompertzFit.RQ2, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-npde.GompertzFit.RQ2 <- npdeSaemix(GompertzFit.RQ1) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
+plot(DecayFIT.RQ2, plot.type="observations.vs.predictions" )
+plot(DecayFIT.RQ2, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
+plot(DecayFIT.RQ2, plot.type="parameters.vs.covariates")
+npde.DecayFIT.RQ2 <- npdeSaemix(DecayFIT.RQ2) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
+
+# _4.) Compare models ----
+DecayFIT.RQ1
+
+# Fixed effects
+# Parameter Estimate   SE     CV(%)
+# A         25.3005  0.39486 1.56  
+# B          1.2644  0.05365 4.24  
+# k          0.0392  0.00154 3.93  
+# a.1        0.7390  0.03702 5.01  
+# 
+# Variance of random effects
+# Parameter Estimate   SE     CV(%)
+# omega2.A  0.010457 0.00215  20.6 
+# omega2.B  0.005064 0.00438  86.4 
+# omega2.k  0.000583 0.00364 625.7 
+
+DecayFIT.RQ2
+
+# Fixed effects
+# Parameter         Estimate   SE     CV(%) p-value
+#  A                 23.1599  0.38612   1.67 -      
+#  beta_AnimalSex(A)  0.1746  0.02097  12.01 0.000   # upper asymptote higher
+#  B                  1.1081  0.08347   7.53 -      
+#  beta_AnimalSex(B)  0.0962  0.09323  96.89 0.302   # starting value higher - insignificant
+#  k                  0.0349  0.00267   7.65 -      
+#  beta_AnimalSex(k)  0.0438  0.09197 209.79 0.634   # approach steeper  - insignificant
+#  a.1                0.7285  0.03997   5.49 -      
+#   
+# 
+# Correlation matrix of random effects
+#         omega2.A omega2.B omega2.k
+# omega2.A  1.000   -0.078   -0.176  # upper asymptote negatively correlated with starting value   
+# omega2.B -0.078    1.000    0.952   
+# omega2.k -0.176    0.952    1.000  
+
+# second model is batter in log-likelihood ratio test - see Likelihood Ratio Tests
+teststatRQ12 <- -2 * (as.numeric(logLik(DecayFIT.RQ1)) - as.numeric(logLik(DecayFIT.RQ2)))
+p.val <- pchisq(teststatRQ12, df = 3, lower.tail = FALSE)
+p.val
+
+# **Continue here** ----
+
 
 
 # RQ3: What are the effects within each sex? ----

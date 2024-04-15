@@ -782,14 +782,14 @@
      * added logistic decay model - best of all there
 
 * **todo - work in above and below** 
-- use cow example 
-- revise all code - check sex again
-- finish modeling: include sex, only estimate total growth
-(- attempt to constrain lower asymptote)
-- email Emmanuelle Comets - for constraint and error
- * after conuslting `https://stats.stackexchange.com/questions/76488/error-system-is-computationally-singular-when-running-a-glm`
- * revise for total growth only, then inlcude sex
- * update code and changelog
+  - use cow example 
+  - revise all code - check sex again
+  - finish modeling: include sex, only estimate total growth
+  (- attempt to constrain lower asymptote)
+  - email Emmanuelle Comets - for constraint and error
+  * after consulting `https://stats.stackexchange.com/questions/76488/error-system-is-computationally-singular-when-running-a-glm`
+  * revise for total growth only, then include sex
+  * update code and change log
  
 ## Todo queue (last updated 12-04-2024)
  
