@@ -258,14 +258,15 @@ DecayModel.RQ2 <- saemixModel(model = decay.model,
 
 DecayFIT.RQ2 <- saemix(DecayModel.RQ2, ModelData.RQ2, saemix.options)
 
-# _3.) Plot model ----
+# _4.) Plot model ----
 
 plot(DecayFIT.RQ2, plot.type="observations.vs.predictions" )
 plot(DecayFIT.RQ2, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
 plot(DecayFIT.RQ2, plot.type="parameters.vs.covariates")
 npde.DecayFIT.RQ2 <- npdeSaemix(DecayFIT.RQ2) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
 
-# _4.) Compare models ----
+# _5.) Compare models ----
+
 DecayFIT.RQ1
 
 # Fixed effects
@@ -300,16 +301,91 @@ DecayFIT.RQ2
 # omega2.B -0.078    1.000    0.952   
 # omega2.k -0.176    0.952    1.000  
 
-# second model is batter in log-likelihood ratio test - see Likelihood Ratio Tests
+# second model is better in log-likelihood ratio test - see Likelihood Ratio Tests
 teststatRQ12 <- -2 * (as.numeric(logLik(DecayFIT.RQ1)) - as.numeric(logLik(DecayFIT.RQ2)))
 p.val <- pchisq(teststatRQ12, df = 3, lower.tail = FALSE)
 p.val
 
 # **Continue here** ----
 
+# RQ3: What are the effects of diet within each sex? ----
+
+# _1.) Define data with sex covariate ----
+
+ModelData.RQ3 <- saemixData(
+  name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
+  name.covariates = c("AnimalSex", "FatherDiet", "MotherDiet")
+)
+
+# _2.) Define model object ----
+
+DecayModel.RQ3 <- saemixModel(model = decay.model,
+                              description= "Exponential approach", 
+                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
+                              transform.par = c(1,1,1), 
+                              fixed.estim = c(1,1,1),
+                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
+                              covariate.model = matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow=TRUE),
+                              omega.init = matrix(c(1,0,0,0,1,0,0,0,1),ncol=3, byrow=TRUE), 
+                              error.model="constant")
 
 
-# RQ3: What are the effects within each sex? ----
+
+
+# _3.) Fit model ----
+
+DecayFIT.RQ3 <- saemix(DecayModel.RQ3, ModelData.RQ3, saemix.options)
+
+# Fixed effects
+# Parameter          Estimate   SE     CV(%) p-value
+#   A                  24.0758  0.55485   2.30 -      
+#   beta_AnimalSex(A)   0.1744  0.01899  10.89 0.00000
+#   beta_FatherDiet(A) -0.0498  0.01907  38.27 0.00898 # regardless of sex, fathers HFD lowered body weight by 4%
+#   beta_MotherDiet(A) -0.0302  0.01829  60.65 0.09916
+
+# Likelihood computed by linearisation
+# -2LL= 832.928 
+# AIC= 870.928 
+# BIC= 907.2564 
+# Likelihood computed by importance sampling
+# -2LL= 831.6653 
+# AIC= 869.6653 
+# BIC= 905.9937
+
+# _4.) Plot model ----
+
+plot(DecayFIT.RQ3, plot.type="observations.vs.predictions" )
+plot(DecayFIT.RQ3, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
+plot(DecayFIT.RQ3, plot.type="parameters.vs.covariates", ask=TRUE)
+npde.DecayFIT.RQ3 <- npdeSaemix(DecayFIT.RQ2) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
+
+
+# _5.) Compare models ----
+
+
+# adding diets resulted in Likelihood increases
+
+
+teststatRQ12 <- -2 * (as.numeric(logLik(DecayFIT.RQ2)) - as.numeric(logLik(DecayFIT.RQ3)))
+p.val <- pchisq(teststatRQ12, df = 3, lower.tail = FALSE)
+p.val # significant
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# **Sex split below** ----
+
+# RQ4: What are the effects within each sex? ----
 
 # _1.) Define model (Logistic) ----
 
