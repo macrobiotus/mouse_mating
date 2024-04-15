@@ -22,7 +22,6 @@
 
 # Prepare environment ---- 
 
-
 # _1.) Collect garbage ----
 
 rm(list=ls())
@@ -53,7 +52,7 @@ ggplot(data = mice_f1_slct, aes(x = "Week", y="BodyWeightG",  group = "AnimalId"
   facet_grid(. ~ AnimalSex) +
   theme_bw()
 
-# _3.) Define possible function ----
+# _3.) Define possible model functions ----
 
 # __a) Gompertz ----
 
@@ -70,8 +69,7 @@ gompertz.model <- function(psi, id, x) { # psi, id, and x components are passed 
   ypred <- LwrAsy + TtlGrwth * exp(-exp(-Apprch * (t - Timing)))
   
   return(ypred)
-  
-}
+  }
 
 # __b) Logistic ----
 
@@ -88,14 +86,43 @@ logistic.model <- function(psi, id, x) { # psi, id, and x components are passed 
   ypred  <- LwrAsy + TtlGrwth/ (1+exp ( -Apprch * (t-Timing)))
   
   return(ypred)
-}
+  }
 
+# __c) Exponential ----
+
+exponential.model <- function(psi, id, xidep) { 
+  # input: 
+  #    psi : matrix of parameters (3 columns, ka, V, CL) 
+  #     id : vector of indices 
+  #  xidep : dependent variables (same nb of rows as length of id) 
+  # returns: 
+  #   a vector of predictions of length equal to length of id 
+  x <- xidep[ , 1]  
+  a <- psi[id, 1]   # upper asymptote
+  b <- psi[id, 2]   # starting value
+  k <- psi[id, 3]   # approach steepness, a will be reached later
+  
+  # Exponential Decay (increasing form) - 
+  # https://people.richland.edu/james/lecture/m116/logs/models.html
+  
+  ypred <- a * (1 - b * exp( -k * x))
+  
+  return(ypred) 
+  }
+
+
+
+a = 10
+b = 0.5
+k = 0.04
+
+curve(a * (1 - b * exp( -k * x)), from = 0, to = 150, xlab="x", ylab="y", add = TRUE)
 
 # _3.) Set modelling options ----
 
 NLMEGM.options <- list(seed = 1234, displayProgress = FALSE)
 
-# RQ1 Use Gompertz or logistic curve to model weight gain? ----
+# RQ1 Use Gompertz, logistic, or exponential curve to model weight gain? ----
 
 # _1.) Define data ----
 
@@ -130,6 +157,11 @@ LogisticModel.RQ1 <- saemixModel(model = logistic.model,
                                  covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE),
                                  transform.par=c(0,0,0,0)
                                  )
+
+
+# __b) Exponential ----
+
+ExponentialModel.RQ1 <- saemixModel(model=growthcow,description="Exponential model", psi0=matrix(c(700,0.9,0.02,0,0,0),ncol=3,byrow=TRUE, dimnames=list(NULL,c("A","B","k"))),transform.par=c(1,1,1),fixed.estim=c(1,1,1), covariate.model=matrix(c(0,0,0,0,0,0,0,0,0),ncol=3,byrow=TRUE), covariance.model=matrix(c(1,0,0,0,1,0,0,0,1),ncol=3,byrow=TRUE), omega.init=matrix(c(1,0,0,0,1,0,0,0,1),ncol=3,byrow=TRUE),error.model="constant") saemix.options<-list(algorithms=c(1,1,1),nbiter.saemix=c(200,100),nb.chains=1, save=FALSE,save.graphs=FALSE
 
 
 # _3.) Fit model ----

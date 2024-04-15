@@ -775,7 +775,17 @@
       * (lower asymptote was fixed)
       * (estimated differences in total gain, gain rate (approach), weigh gain inflection, birth weight fixed)
 
-* **todo** 
+## 15-04-2024 -  work day 73 - working on first revision 
+
+   * working in script `015_r_check_accumulation_curves.R`
+     * implementing exponential model as in cow growth example of SAEMIX manual
+
+* **todo - work in above and below** 
+- use cow example 
+- revise all code - check sex again
+- finish modeling: include sex, only estimate total growth
+(- attempt to constrain lower asymptote)
+- email Emmanuelle Comets - for constraint and error
  * after conuslting `https://stats.stackexchange.com/questions/76488/error-system-is-computationally-singular-when-running-a-glm`
  * revise for total growth only, then inlcude sex
  * update code and changelog
