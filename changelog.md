@@ -777,19 +777,14 @@
 
 ## 15-04-2024 -  work day 73 - working on first revision 
 
-   * working in script `015_r_check_accumulation_curves.R`
-     * implementing exponential model as in cow growth example of SAEMIX manual
-     * added logistic decay model - best of all there
-
-* **todo - work in above and below** 
-  - use cow example 
-  - revise all code - check sex again
-  - finish modeling: include sex, only estimate total growth
-  (- attempt to constrain lower asymptote)
-  - email Emmanuelle Comets - for constraint and error
-  * after consulting `https://stats.stackexchange.com/questions/76488/error-system-is-computationally-singular-when-running-a-glm`
-  * revise for total growth only, then include sex
-  * update code and change log
+  * working in script `015_r_check_accumulation_curves.R`
+    * implementing exponential model as in cow growth example of SAEMIX manual
+    * added logistic decay model - best of all there
+    * testing effect of sex, litter size, diets
+    * **in males: Mother HFD has an effect, as plotted**
+    * **in females: Mother HFD has an effect, and litter size has an effect, as plotted**
+    * interaction effect **not yet checked**, but see code on how to do this with {seamix} in communications folder
+  * updated todo
  
 ## Todo queue (last updated 12-04-2024)
  
@@ -805,19 +800,25 @@
      * ~~[ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`~~
      * ~~[ ] starting point - compare different growth models - see `https://cran.r-project.org/web/packages/biogrowth/vignettes/v04_model_comparison.html`~~
      * [x] keep all current results in script `010_r_define obesity.r`
-     * [ ] of script `010_r_define obesity.r` integrate re-exported items
-     * [ ] learn how to correlate variables with trajectories
+     * [ ] from script `010_r_define obesity.r` integrate re-exported items
+     * [x] learn how to correlate variables with trajectories
        * [x] look at `saemix` example
-       * [ ] ~~correct GAM modeling of offspring obesity as in Gavin Simpsons rat hormone hgam example, Physalia course GAMs in R, day 4, 23.11.2023, possibly also pull GS repoitory from course and look at "chick example"~~
-       * [ ] ~~possibly use GAM approach - see Winter and Wieling (2016), https://doi.org/10.1093/jole/lzv003~~
+       * [x] ~~correct GAM modeling of offspring obesity as in Gavin Simpsons rat hormone hgam example, Physalia course GAMs in R, day 4, 23.11.2023, possibly also pull GS repoitory from course and look at "chick example"~~
+       * [x] ~~possibly use GAM approach - see Winter and Wieling (2016), https://doi.org/10.1093/jole/lzv003~~
      * [x] using SAEMIX instead: 
-     * [ ] see what to do with the weight trajectories
-       * [ ] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
+     * [x] see what to do with the weight trajectories
+       * [x] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
        * ~~[ ] both parents obese - offspring sex neglected - male  - female~~
        * ~~[ ] one parent obese - offspring sex neglected - male - female~~
-       * [ ] as per `015_r_check_accumulation_curves.R` (12-04-2024) testing males and females separately for perental diet interaction on weight gain
-     * [ ] likely keep all old results in script `50_r_array_analysis.r`, 
-       * [ ] but with relabel figures (in text or code)
+     * [x] as per `015_r_check_accumulation_curves.R` (12-04-2024) testing males and females separately for perental diet interaction on weight gain
+       * [x] in males: Mother HFD has an effect, as plotted
+       * [x] in females: Mother HFD has an effect, and litter size has an effect, as plotted
+       * [ ] improve plots and export
+       * [ ] check diet interaction
+     * [ ] script `50_r_array_analysis.r`
+       * [ ] relabel variables `obese` to (succesful) `HFD` in code
+       * [ ] relabel variables `obese` to (succesful) `HFD` in figures
+       * [ ] only investigate effect of mothers obese
        * [ ] check wether axis correct axis is being looked at in PCA
        * [ ] verify DEGs with human or web data
      * [ ] improve figure 1 - diet labelling
