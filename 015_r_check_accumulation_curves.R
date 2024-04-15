@@ -33,6 +33,8 @@ gc()
 # Methodology, 2021, Vol. 17(4), 250–270, https://doi.org/10.5964/meth.7061
 
 library("here")
+library("dplyr")
+
 library("saemix")
 library("npde")
 
@@ -43,7 +45,11 @@ library("npde")
 mice_f0_slct <- readRDS( file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
 mice_f1_slct <- readRDS( file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
 
-# _2.) Check data ----
+# _2.) Add litter size to f1 ----
+
+mice_f1_slct <- left_join(mice_f1_slct, {mice_f0_slct %>% dplyr::select(AnimalId, MatingWith, LitterSize) %>% distinct}, by = c("MotherId" = "AnimalId", "FatherId" = "MatingWith"))
+
+# _3.) Check data ----
 
 mice_f1_slct %>% dplyr::select(MeasurementDay, BodyWeightG, AnimalId, AnimalSex) %>% arrange(AnimalSex, AnimalId, MeasurementDay) %>% print(n = Inf)
 
@@ -52,7 +58,7 @@ ggplot(data = mice_f1_slct, aes(x = "Week", y="BodyWeightG",  group = "AnimalId"
   facet_grid(. ~ AnimalSex) +
   theme_bw()
 
-# _3.) Define possibly applicable model functions ----
+# _4.) Define possibly applicable model functions ----
 
 # __a) Gompertz
 
@@ -117,7 +123,7 @@ decay.model <- function(psi, id, xidep) {
 # k = 0.04
 # curve(a * (1 - b * exp( -k * x)), from = 0, to = 150, xlab="x", ylab="y", add = TRUE)
 
-# _3.) Set modelling options ----
+# _5.) Set modelling options ----
 
 saemix.options <- list(algorithms = c(1,1,1), nbiter.saemix = c(200,100), nb.chains=1, save=FALSE, save.graphs=FALSE, seed = 1234, displayProgress = FALSE)
 
@@ -230,7 +236,7 @@ npde.DecayFIT.RQ1 <- npdeSaemix(DecayFIT.RQ1) # skew, curtosis of residuals best
 
 
 
-# RQ2: Does Sex have an association with the total growth, rate of approach to the upper asymptotic, or point of inflection (of the curve found optimal in answering the first research question?) ----
+# RQ2: Do Sex and litter size have an association with the total growth ?----
 
 # _1.) Define data with sex covariate ----
 
