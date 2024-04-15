@@ -52,9 +52,9 @@ ggplot(data = mice_f1_slct, aes(x = "Week", y="BodyWeightG",  group = "AnimalId"
   facet_grid(. ~ AnimalSex) +
   theme_bw()
 
-# _3.) Define possible model functions ----
+# _3.) Define possibly applicable model functions ----
 
-# __a) Gompertz ----
+# __a) Gompertz
 
 gompertz.model <- function(psi, id, x) { # psi, id, and x components are passed in from data - data frame, subject variable, time variable
   
@@ -71,7 +71,7 @@ gompertz.model <- function(psi, id, x) { # psi, id, and x components are passed 
   return(ypred)
   }
 
-# __b) Logistic ----
+# __b) Logistic
 
 logistic.model <- function(psi, id, x) { # psi, id, and x components are passed in from data - data frame, subject variable, time variable
   
@@ -88,9 +88,10 @@ logistic.model <- function(psi, id, x) { # psi, id, and x components are passed 
   return(ypred)
   }
 
-# __c) Exponential ----
+# __c) Exponential decay
 
-exponential.model <- function(psi, id, xidep) { 
+decay.model <- function(psi, id, xidep) { 
+  
   # input: 
   #    psi : matrix of parameters (3 columns, ka, V, CL) 
   #     id : vector of indices 
@@ -110,35 +111,26 @@ exponential.model <- function(psi, id, xidep) {
   return(ypred) 
   }
 
-
-
-a = 10
-b = 0.5
-k = 0.04
-
-curve(a * (1 - b * exp( -k * x)), from = 0, to = 150, xlab="x", ylab="y", add = TRUE)
+# testing function
+# a = 10
+# b = 0.5
+# k = 0.04
+# curve(a * (1 - b * exp( -k * x)), from = 0, to = 150, xlab="x", ylab="y", add = TRUE)
 
 # _3.) Set modelling options ----
 
 NLMEGM.options <- list(seed = 1234, displayProgress = FALSE)
+saemix.options <- list(algorithms = c(1,1,1), nbiter.saemix = c(200,100), nb.chains=1, save=FALSE, save.graphs=FALSE, seed = 1234, displayProgress = FALSE)
 
-# RQ1 Use Gompertz, logistic, or exponential curve to model weight gain? ----
+# RQ1 Use Gompertz, logistic, or exponential decay curve to model weight gain? ----
 
 # _1.) Define data ----
 
-# __a) Gompertz ----
-
-GompertzData.RQ1 <- saemixData(
-  name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay"
-)
-
-# __b) Logistic ----
-
-LogisticData.RQ1 <- saemixData(
+ModelData.RQ1 <- saemixData(
   name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay"
   )
 
-# _2.) Define model object ----
+# _2.) Define model objects ----
 
 # __a) Gompertz ----
 
@@ -152,36 +144,70 @@ GompertzModel.RQ1 <- saemixModel(model = gompertz.model,
 # __b) Logistic ----
 
 LogisticModel.RQ1 <- saemixModel(model = logistic.model,
-                                 description = 'Logistic', 
+                                 description = 'Logistic growth', 
                                  psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), 
                                  covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE),
                                  transform.par=c(0,0,0,0)
                                  )
 
 
-# __b) Exponential ----
+# __c) Exponential decay  ----
 
-ExponentialModel.RQ1 <- saemixModel(model=growthcow,description="Exponential model", psi0=matrix(c(700,0.9,0.02,0,0,0),ncol=3,byrow=TRUE, dimnames=list(NULL,c("A","B","k"))),transform.par=c(1,1,1),fixed.estim=c(1,1,1), covariate.model=matrix(c(0,0,0,0,0,0,0,0,0),ncol=3,byrow=TRUE), covariance.model=matrix(c(1,0,0,0,1,0,0,0,1),ncol=3,byrow=TRUE), omega.init=matrix(c(1,0,0,0,1,0,0,0,1),ncol=3,byrow=TRUE),error.model="constant") saemix.options<-list(algorithms=c(1,1,1),nbiter.saemix=c(200,100),nb.chains=1, save=FALSE,save.graphs=FALSE
+DecayModel.RQ1 <- saemixModel(model = decay.model,
+                              description= "Exponential decay", 
+                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
+                              transform.par = c(1,1,1), 
+                              fixed.estim = c(1,1,1),
+                              covariance.model= matrix(c(1,0,0,0,1,0,0,0,1), ncol=3, byrow = TRUE),
+                              omega.init = matrix(c(1,0,0,0,1,0,0,0,1),ncol=3, byrow=TRUE), 
+                              error.model="constant")
 
 
 # _3.) Fit model ----
 
 # __a) Gompertz ----
 
-GompertzFit.RQ1 <- saemix(GompertzModel.RQ1, GompertzData.RQ1, NLMEGM.options)
+GompertzFit.RQ1 <- saemix(GompertzModel.RQ1, ModelData.RQ1, saemix.options)
 
-# Parameter Estimate   SE     CV(%)
-# TtlGrwth  16.4638  1.16170  7.06  [16.4 g total weight gain over time] 
-# Apprch     0.0575  0.00279  4.86  [steepness (reference value)]
-# Timing    27.6851  1.81702  6.56  [growth inflection time at 27 days ]
-# LwrAsy     8.4239  1.05141 12.48  [not estimated  - 8.4 g birth weight - model not very precise]
-# a.1        0.8498  0.04786  5.63 
+# Likelihood computed by linearisation
+# -2LL= 944.1051 
+# AIC = 966.1051 
+# BIC = 987.1373 
+# 
+# Likelihood computed by importance sampling
+# -2LL= 941.8332 
+# AIC = 963.8332 
+# BIC = 984.8654 
 
 # __b) Logistic ----
 
-LogisticFIT.RQ1 <- saemix(LogisticModel.RQ1, LogisticData.RQ1, NLMEGM.options)
+LogisticFIT.RQ1 <- saemix(LogisticModel.RQ1, ModelData.RQ1, saemix.options)
 
-# _4.) Plot model ----
+# Likelihood computed by linearisation
+# -2LL= 946.9261 
+# AIC = 968.9261 
+# BIC = 989.9584 
+# 
+# Likelihood computed by importance sampling
+# -2LL= 946.2228 
+# AIC = 968.2228 
+# BIC = 989.2551 <- all values higher then above - so worse
+
+# __c) Decay ----
+
+DecayFIT.RQ1 <- saemix(DecayModel.RQ1, ModelData.RQ1, saemix.options)
+
+# Likelihood computed by linearisation
+# -2LL= 906.7097 
+# AIC = 920.7097 
+# BIC = 934.0938 
+# 
+# Likelihood computed by importance sampling
+# -2LL= 906.5984 
+# AIC = 920.5984 
+# BIC = 933.9826 <- all values lower then both above - so best of the three
+
+# _4.) Plot models ----
 
 # Compute normalised prediction distribution errors (npde) and normalised prediction discrepancies (npd).
 
@@ -195,8 +221,16 @@ npde.GompertzFit.RQ1 <- npdeSaemix(GompertzFit.RQ1) # skewness and kurtosis of n
 
 plot(LogisticFIT.RQ1, plot.type = "observations.vs.predictions")
 plot(LogisticFIT.RQ1, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-npde.LogisticFIT.RQ1 <- npdeSaemix(LogisticFIT.RQ1) # normlaity of residual within range
+npde.LogisticFIT.RQ1 <- npdeSaemix(LogisticFIT.RQ1) # normality of residual within range
 
+# __b) Decay ----
+
+plot(DecayFIT.RQ1, plot.type = "observations.vs.predictions")
+plot(DecayFIT.RQ1, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
+npde.DecayFIT.RQ1 <- npdeSaemix(DecayFIT.RQ1) # skew, curtosis of residuals best of all three - use this model
+
+
+# Continue here
 # Superfluous, does not converge: RQ2: Does Sex have an association with the total growth, rate of approach to the upper asymptotic, or point of inflection (of the curve found optimal in answering the first research question?) ----
 
 # _1.) Define data (Gompertz and Logistic) ----

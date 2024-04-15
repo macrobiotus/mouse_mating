@@ -779,6 +779,7 @@
 
    * working in script `015_r_check_accumulation_curves.R`
      * implementing exponential model as in cow growth example of SAEMIX manual
+     * added logistic decay model - best of all there
 
 * **todo - work in above and below** 
 - use cow example 
