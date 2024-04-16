@@ -1,6 +1,6 @@
 #' ---
 #' title: "Mice Mating Study"
-#' subtitle: "Modelling for Hypothesis testing"
+#' subtitle: "Modelling for Hypothesis testing - using {nlme}"
 #' author: "Paul Czechowski `paul.czechowski@helmholtz-munich.de`"
 #' date: "`r Sys.Date()`"
 #' output:
@@ -29,23 +29,18 @@ gc()
 
 # _2.) Packages ----
 
-# Nonlinear Mixed-Effects Growth Models: A Tutorial Using 'saemix' in R
-# Methodology, 2021, Vol. 17(4), 250–270, https://doi.org/10.5964/meth.7061
-
 library("here")
 library("dplyr")
 library("ggplot2")
 
-
-library("saemix")
-library("npde")
+library("nlme")
 
 # Setup data and model ----
 
 # _1.) Read in data ----
 
-mice_f0_slct <- readRDS( file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
-mice_f1_slct <- readRDS( file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
+mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
+mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
 
 # _2.) Add litter size to f1 ----
 
@@ -55,186 +50,66 @@ mice_f1_slct <- left_join(mice_f1_slct, {mice_f0_slct %>% dplyr::select(AnimalId
 
 mice_f1_slct %>% dplyr::select(MeasurementDay, BodyWeightG, AnimalId, AnimalSex) %>% arrange(AnimalSex, AnimalId, MeasurementDay) %>% print(n = Inf)
 
-ggplot(data = mice_f1_slct, aes(x = "Week", y="BodyWeightG",  group = "AnimalId")) +
-  geom_line( mapping = aes( x = Week, y = BodyWeightG, group = AnimalId, color = AnimalId)) + 
+ggplot(data = mice_f1_slct, aes(x = "MeasurementDay", y="BodyWeightG",  group = "AnimalId")) +
+  geom_line( mapping = aes( x = MeasurementDay, y = BodyWeightG, group = AnimalId, color = AnimalId)) + 
   facet_grid(. ~ AnimalSex) +
   theme_bw()
 
 # _4.) Define possibly applicable model functions ----
 
-# __a) Gompertz
 
-gompertz.model <- function(psi, id, x) { # psi, id, and x components are passed in from data - data frame, subject variable, time variable
-  
-  # Gompertz parameters - see https://doi.org/10.5964/meth.7061
-  t <- x[ , 1] 
-  LwrAsy   <- psi[id, 4]   # (d) lower asymptote for subject - where growth begins on y axis
-  Apprch   <- psi[id, 2]   # (b) approach rate to upper asymtote - larger values indicate quicker growth - curve steepness - where growth begins on x axis
-  Timing   <- psi[id, 3]   # (c) inflection point - time with greatest change - when large accelerated growth toward the upper limit occurs later
-  TtlGrwth <- psi[id, 1]   # (a) total change for subject over time - large values indicate greater total growth -  range of y values
-  
-  # Gompertz curve formula
-  ypred <- LwrAsy + TtlGrwth * exp(-exp(-Apprch * (t - Timing)))
-  
-  return(ypred)
-}
+# __a) Exponential approach as in {015_r_use_saemix.R}
 
-# __b) Logistic
+decay.formula <-  as.formula(y ~ a * (1 - b * exp( -k * x)))
+    
 
-logistic.model <- function(psi, id, x) { # psi, id, and x components are passed in from data - data frame, subject variable, time variable
-  
-  # Logistic parameters - see https://doi.org/10.5964/meth.7061
-  t <- x[ ,1]
-  LwrAsy <- psi[id, 4]
-  Apprch <- psi[id, 2]
-  Timing <- psi[id, 3]
-  TtlGrwth <- psi[id, 1]
-  
-  # Logistic curve formula
-  ypred  <- LwrAsy + TtlGrwth/ (1+exp ( -Apprch * (t-Timing)))
-  
-  return(ypred)
-}
+# __b) Testing function to get starting values
 
-# __c) Exponential decay
+# from estimated previous values
+a = 22.41907
+b = 2.87427
+k = 0.07869
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgray")
 
-decay.model <- function(psi, id, xidep) { 
-  
-  # input: 
-  #    psi : matrix of parameters (3 columns, ka, V, CL) 
-  #     id : vector of indices 
-  #  xidep : dependent variables (same nb of rows as length of id) 
-  # returns: 
-  #   a vector of predictions of length equal to length of id 
-  x <- xidep[ , 1]  
-  a <- psi[id, 1]   # upper asymptote
-  b <- psi[id, 2]   # starting value
-  k <- psi[id, 3]   # approach steepness, a will be reached later
-  
-  # Exponential Decay (increasing form) - 
-  # https://people.richland.edu/james/lecture/m116/logs/models.html
-  
-  ypred <- a * (1 - b * exp( -k * x))
-  
-  return(ypred) 
-}
+# lower trajectory
+a = 21
+b = 2.5
+k = 0.06
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "lightgray", add = TRUE)
 
-# testing function
-# a = 10
-# b = 0.5
-# k = 0.04
-# curve(a * (1 - b * exp( -k * x)), from = 0, to = 150, xlab="x", ylab="y", add = TRUE)
-
-# _5.) Set modelling options ----
-
-saemix.options <- list(algorithms = c(1,1,1), nbiter.saemix = c(200,100), nb.chains=1, save=FALSE, save.graphs=FALSE, seed = 1234, displayProgress = FALSE)
-
-# RQ1 Use Gompertz, logistic, or exponential decay curve to model weight gain? ----
-
-# _1.) Define data ----
-
-ModelData.RQ1 <- saemixData(
-  name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay"
-)
-
-# _2.) Define model objects ----
-
-# __a) Gompertz ----
-
-GompertzModel.RQ1 <- saemixModel(model = gompertz.model, 
-                                 description = 'Gompertz', 
-                                 psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), # starting values for each of the four growth parameters
-                                 covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE), # which of the four parameter shoul be estimated? All but the last here
-                                 transform.par = c(0, 0, 0, 0) # distribution of each of the four parameter
-)
-
-# __b) Logistic ----
-
-LogisticModel.RQ1 <- saemixModel(model = logistic.model,
-                                 description = 'Logistic growth', 
-                                 psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), 
-                                 covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE),
-                                 transform.par=c(0,0,0,0)
-)
+# higher trajectory
+a = 23
+b = 3
+k = 0.08
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "lightgray", add = TRUE)
 
 
-# __c) Exponential decay  ----
+# RQ2: Fit exponential approach to data to get a null model for comparison
 
-DecayModel.RQ1 <- saemixModel(model = decay.model,
-                              description= "Exponential decay", 
-                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
-                              transform.par = c(1,1,1), 
-                              fixed.estim = c(1,1,1),
-                              covariance.model= matrix(c(1,0,0,0,1,0,0,0,1), ncol=3, byrow = TRUE),
-                              omega.init = matrix(c(1,0,0,0,1,0,0,0,1),ncol=3, byrow=TRUE), 
-                              error.model="constant")
+exp.appr.fit.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                          data = mice_f1_slct,
+                          fixed  = a + b + k,
+                          random = a + b + k,
+                          groups = ~ AnimalId,
+                          start = c(22.41907, 2.87427, 0.07869),
+                          na.action = na.exclude,
+                          control = nlmeControl(maxIter = 300, msVerbose = FALSE))
+
+summary(exp.appr.fit.null) 
 
 
-# _3.) Fit model ----
 
-# __a) Gompertz ----
 
-GompertzFit.RQ1 <- saemix(GompertzModel.RQ1, ModelData.RQ1, saemix.options)
 
-# Likelihood computed by linearisation
-# -2LL= 944.1051 
-# AIC = 966.1051 
-# BIC = 987.1373 
-# 
-# Likelihood computed by importance sampling
-# -2LL= 941.8332 
-# AIC = 963.8332 
-# BIC = 984.8654 
+# null model infereed above
+a = 25.445679
+b = 1.247048
+k = 0.038791
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", add = TRUE)
 
-# __b) Logistic ----
 
-LogisticFIT.RQ1 <- saemix(LogisticModel.RQ1, ModelData.RQ1, saemix.options)
 
-# Likelihood computed by linearisation
-# -2LL= 946.9261 
-# AIC = 968.9261 
-# BIC = 989.9584 
-# 
-# Likelihood computed by importance sampling
-# -2LL= 946.2228 
-# AIC = 968.2228 
-# BIC = 989.2551 <- all values higher then above - so worse
 
-# __c) Decay ----
-
-DecayFIT.RQ1 <- saemix(DecayModel.RQ1, ModelData.RQ1, saemix.options)
-
-# Likelihood computed by linearisation
-# -2LL= 906.7097 
-# AIC = 920.7097 
-# BIC = 934.0938 
-# 
-# Likelihood computed by importance sampling
-# -2LL= 906.5984 
-# AIC = 920.5984 
-# BIC = 933.9826 <- all values lower then both above - so best of the three
-
-# _4.) Plot models ----
-
-# Compute normalised prediction distribution errors (npde) and normalised prediction discrepancies (npd).
-
-# __a) Gompertz ----
-
-plot(GompertzFit.RQ1, plot.type="observations.vs.predictions" )
-plot(GompertzFit.RQ1, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-npde.GompertzFit.RQ1 <- npdeSaemix(GompertzFit.RQ1) # skewness and kurtosis of normalised prediction discrepancies lower then in log model - but no normal distribution ?
-
-# __b) Logistic ----
-
-plot(LogisticFIT.RQ1, plot.type = "observations.vs.predictions")
-plot(LogisticFIT.RQ1, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-npde.LogisticFIT.RQ1 <- npdeSaemix(LogisticFIT.RQ1) # normality of residual within range
-
-# __b) Decay ----
-
-plot(DecayFIT.RQ1, plot.type = "observations.vs.predictions")
-plot(DecayFIT.RQ1, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-npde.DecayFIT.RQ1 <- npdeSaemix(DecayFIT.RQ1) # skew, curtosis of residuals best of all three - use this model
 
 # RQ2: Does Sex have an association with the total weight gain? Yes.----
 
@@ -544,11 +419,11 @@ npde.DecayFIT.RQ4 <- npdeSaemix(DecayFIT.RQ5.male) # skewness and kurtosis of no
 
 # _5.) Compare models ----
 
-# no model for comparison built yet, needed would be apove data sets without diets
+# no model for comparison built yet, needed would be above data sets without diets
 
 # Snapshot environment ----
 
 sessionInfo()
-save.image(file = here("scripts", "015_r_check_accumulation_curves.Rdata"))
+save.image(file = here("scripts", "017_r_use_nlme.Rdata"))
 renv::snapshot()
 

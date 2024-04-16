@@ -763,7 +763,7 @@
 
 ## 12-04-2024 -  work day 72 - working on first revision 
 
-  * created script `015_r_check_accumulation_curves.R` to use with SAEMIX
+  * created script `015_r_use_saemix.R` to use with SAEMIX
     * tested Gompertz and log growth, Gompertz seems to fit better as described in script
     * **for manuscript introduction** 
       * hypothesis to be adjusted to hypotheses RQ3 and RQs in this script: 
@@ -771,13 +771,13 @@
     * **for manuscript methods** 
       * using saemix to estimate curve parameters, better possible then in GAMs
       * tested Gompertz and logistic curves - log curves proved to have better distributed residuals across all data
-      * (devided sex because model did not converge on sex effect)
+      * (divided sex because model did not converge on sex effect)
       * (lower asymptote was fixed)
       * (estimated differences in total gain, gain rate (approach), weigh gain inflection, birth weight fixed)
 
 ## 15-04-2024 -  work day 73 - working on first revision 
 
-  * working in script `015_r_check_accumulation_curves.R`
+  * working in script `015_r_use_saemix.R`
     * implementing exponential model as in cow growth example of SAEMIX manual
     * added logistic decay model - best of all there
     * testing effect of sex, litter size, diets
@@ -785,6 +785,12 @@
     * **in females: Mother HFD has an effect, and litter size has an effect, as plotted**
     * interaction effect **not yet checked**, but see code on how to do this with {seamix} in communications folder
   * updated todo
+
+## 16-04-2024 -  work day 74 - working on first revision 
+
+  * working in script `017_r_use_nlme.R`
+    * use to implement analysis of `015_r_use_saemix.R` but with factor interactions
+
  
 ## Todo queue (last updated 12-04-2024)
  
@@ -810,7 +816,7 @@
        * [x] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
        * ~~[ ] both parents obese - offspring sex neglected - male  - female~~
        * ~~[ ] one parent obese - offspring sex neglected - male - female~~
-     * [x] as per `015_r_check_accumulation_curves.R` (12-04-2024) testing males and females separately for perental diet interaction on weight gain
+     * [x] as per `015_r_use_saemix.R` (12-04-2024) testing males and females separately for perental diet interaction on weight gain
        * [x] in males: Mother HFD has an effect, as plotted
        * [x] in females: Mother HFD has an effect, and litter size has an effect, as plotted
        * [ ] improve plots and export
