@@ -73,13 +73,12 @@ curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", yl
 
 # RQ1: Fit exponential approach to data to get a null model for comparison ----
 
-# __a) Get null model as in RQ1 {015_r_use_saemix.R} ----
+# _1.) Get null model as in RQ1 of `015_r_use_saemix.R` ----
 
 exp.appr.fit.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                           data = mice_f1_slct,
                           fixed  = a + b + k ~ 1,
-                          random = a ~ 1,
-                          groups = ~ AnimalId,
+                          random = a ~ 1 | AnimalId,
                           start = c(22.41907, 2.87427, 0.07869),
                           na.action = na.exclude,
                           control = nlmeControl(maxIter = 300, msVerbose = FALSE))
@@ -89,7 +88,7 @@ summary(exp.appr.fit.null)
 #      AIC      BIC    logLik
 # 937.2057 955.7246 -463.6028
 
-# __b) Plot null model ----
+# _2.) Plot null model ----
 
 # null model coefficients of exp.appr.fit.null
 a = 25.302337
@@ -98,24 +97,20 @@ k = 0.040536
 
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", xlim =c(30, 100), ylim=c(15, 25),  add = TRUE)
 
-
-
 # RQ2: Does Sex have an association with the total weight gain? ----
 
-# __a) Get null model as in RQ1 {015_r_use_saemix.R} ----
+# _1.) Get sex model as in RQ1 of `015_r_use_saemix.R` ----
 
 # https://stats.stackexchange.com/questions/536364/help-understanding-fixed-effects-interaction-terms-in-nlme
-
 
 exp.appr.fit.sex <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                          data = mice_f1_slct,
                          fixed  = a + b + k ~ AnimalSex,
-                         random = a ~ 1,
-                         groups = ~ AnimalId,
+                         random = a ~ 1 | AnimalId,
                          na.action = na.exclude,
-                         start = c(25.30,  1.31,  0.040,
+                         start = c(25.30,  1.31,   0.04,
                                     0.17,  0.09,   0.04),
-                         control = nlmeControl(maxIter = 300, msVerbose = FALSE))
+                         control = nlmeControl(msMaxIter = 1000, msVerbose = FALSE))
 
 summary(exp.appr.fit.sex) 
 
@@ -124,7 +119,11 @@ summary(exp.appr.fit.sex)
 
 plot(exp.appr.fit.sex)
 
-# __b) Plot null and sex model ----
+# _2.) Compare null and sex model ----
+
+anova(exp.appr.fit.null,exp.appr.fit.sex) # <- sex model is better
+
+# _3.) Plot null and sex model ----
 
 # null model coefficients of exp.appr.fit.null
 a = 25.302337
@@ -147,205 +146,184 @@ k = k - 0.0005498267
 
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-# __c) Compare null and sex model ----
-
-anova(exp.appr.fit.null,exp.appr.fit.sex) # <- sex model is better
 
 
+# RQ3: Do Sex and litter size associate with the total weight gain? ----
 
-# RQ4: What are the effects of diet within each sex and, and dependent on litter sizes? ----
-
-# _1.) Define data with sex covariate ----
-
-ModelData.RQ4 <- saemixData(
-  name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
-  name.covariates = c("AnimalSex", "LitterSize", "FatherDiet", "MotherDiet")
-)
-
-# _2.) Define model object ----
-
-DecayModel.RQ4 <- saemixModel(model = decay.model,
-                              description= "Exponential approach", 
-                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
-                              transform.par = c(1,1,1), 
-                              fixed.estim = c(1,1,1),
-                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
-                              covariate.model = matrix(c(1,1,1, 1,1,1, 1,1,1, 1,1,1), ncol=3, byrow=TRUE),
-                              omega.init = matrix(c(1,0,0,0, 1,0,0,0,1),ncol=3, byrow=TRUE), 
-                              error.model="constant")
-
-# _3.) Fit model ----
-
-DecayFIT.RQ4 <- saemix(DecayModel.RQ4, ModelData.RQ4, saemix.options)
-
-# _4.) Plot model ----
-
-plot(DecayFIT.RQ4, plot.type="observations.vs.predictions" )
-plot(DecayFIT.RQ4, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-plot(DecayFIT.RQ4, plot.type="parameters.vs.covariates", ask=TRUE)
-npde.DecayFIT.RQ4 <- npdeSaemix(DecayFIT.RQ4) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
+# _1.) Get litter model as in RQ3 of `015_r_use_saemix.R` ----
 
 
-# _5.) Compare models ----
+# exp.appr.fit.litter <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+#                          data = mice_f1_slct,
+#                          fixed  = a + b + k ~ AnimalSex + LitterSize,
+#                          random = a  ~ 1 | AnimalId,
+#                          na.action = na.exclude,
+#                          start = c(25.30,  1.31,  0.04,
+#                                     0.17,  0.09,   0.04,
+#                                     0.01,  0.08,   0.02),
+#                          control = nlmeControl(msMaxIter = 1000, msVerbose = TRUE))
 
-DecayFIT.RQ3
-DecayFIT.RQ4 # <- BIC AIC with diets worse then sex and litter size alone
+# summary(exp.appr.fit.litter) 
 
-teststatRQ12 <- -2 * (as.numeric(logLik(DecayFIT.RQ3)) - as.numeric(logLik(DecayFIT.RQ4)))
-p.val <- pchisq(teststatRQ12, df = 3, lower.tail = FALSE)
-p.val # model with diets is not distinctly differnet from when not adding diets
+# Effect of litter size is to small to be estimated with nlme package and was insignificant in {seamix}
 
+# RQ4: What are the effects of diet within each sex ? ----
 
-# RQ5: What are the effects of diet within each sex and, and dependent on litter sizes? ----
+# _1.) Get sex/diet model as in RQ4 in `015_r_use_saemix.R` but without litter size ----
 
-# _1.) Define data with sex covariate ----
+exp.appr.fit.diet <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                          data = mice_f1_slct,
+                          fixed  = a + b + k ~ AnimalSex + FatherDiet + MotherDiet,
+                          random = a  ~ 1 | AnimalId,
+                          na.action = na.exclude,
+                          start = c(25.30,  1.31,  0.04,
+                                     0.17,  0.09,  0.04,
+                                     0.01,  0.08,  0.02,
+                                     0.01,  0.08,  0.02),
+                          control = nlmeControl(msMaxIter = 1000, msVerbose = TRUE))
+ 
 
-ModelData.RQ5.male <- saemixData(
-  name.data = {mice_f1_slct %>% filter(AnimalSex == "m")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
-  name.covariates = c("LitterSize", "FatherDiet", "MotherDiet")
-)
+summary(exp.appr.fit.diet) 
 
-ModelData.RQ5.female <- saemixData(
-  name.data = {mice_f1_slct %>% filter(AnimalSex == "f")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
-  name.covariates = c("LitterSize", "FatherDiet", "MotherDiet")
-)
+# AIC      BIC    logLik
+# 873.7234 925.5763 -422.8617 <- better 
 
-# _2.) Define model object ----
+plot(exp.appr.fit.diet)
 
-DecayModel.RQ5 <- saemixModel(model = decay.model,
-                              description= "Exponential approach", 
-                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
-                              transform.par = c(1,1,1), 
-                              fixed.estim = c(1,1,1),
-                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
-                              covariate.model = matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow=TRUE),
-                              omega.init = matrix(c(1,0,0,0, 1,0,0,0,1),ncol=3, byrow=TRUE), 
-                              error.model="constant")
+# _2.) Compare sex and diet model ----
 
-# _3.) Fit model ----
+anova(exp.appr.fit.sex,exp.appr.fit.diet) # <- diet model is better
 
-DecayFIT.RQ5.male <- saemix(DecayModel.RQ5, ModelData.RQ5.male, saemix.options)
+# _3.) Plot sex/diet model ----
 
-# Fixed effects
-# Parameter          Estimate    SE    CV(%)  p-value
-# A                  28.566939 2.5112    8.79 -      
-#   beta_LitterSize(A)  0.000838 0.0184 2199.03 0.9637 
-#   beta_FatherDiet(A) -0.035472 0.0285   80.24 0.2127 
-#   beta_MotherDiet(A) -0.053695 0.0285   53.04 0.0594 
-# B                   1.906307 0.7931   41.60 -      
-#   beta_LitterSize(B) -0.090955 0.0844   92.83 0.2814 
-#   beta_FatherDiet(B)  0.012596 0.1280 1016.57 0.9216 
-#   beta_MotherDiet(B)  0.059983 0.1354  225.69 0.6577 
-# k                   0.045201 0.0160   35.44 -      
-#   beta_LitterSize(k) -0.059031 0.0739  125.14 0.4242 
-#   beta_FatherDiet(k)  0.060994 0.1139  186.66 0.5921 
-#   beta_MotherDiet(k)  0.173567 0.1191   68.64 0.1451 * 
-# a.1                 0.834962 0.0589    7.05 -      
+# __a) Curve plots ----
 
+# null model coefficients of exp.appr.fit.diet
+a = 25.302337
+b = 1.312241
+k = 0.040536
 
-# testing male model
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgrey", xlim =c(30, 100), ylim=c(15, 25))
 
-# male mice growth
-a = 28.566939
-b = 1.906307
-k = 0.045201
+# females in exp.appr.fit.diet
 
-curve(
-  a * (1 - b * exp(-k * x)),
-  from = min(mice_f1_slct$MeasurementDay),
-  to = max(mice_f1_slct$MeasurementDay),
-  xlab = "days [d]",
-  ylab = "weight [g]",
-  main = "male mice weight gain (C57BL6/NTac)"
-  )
+af = 23.781456
+bf = 1.251589
+kf = 0.037969
 
-# male mice growth - mother on HFD
-a <- a
-b <- b 
-k <- k + (0.173567 * k)
+curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "lightgrey", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-curve(
-  a * (1 - b * exp(-k * x)),
-  add = TRUE,
-  col = "red"
-)
+# females and father diet
 
+afd = af - 0.927409
+bfd = bf + 0.038206
+kfd = kf - 0.002177
 
-DecayFIT.RQ5.female <- saemix(DecayModel.RQ5, ModelData.RQ5.female, saemix.options)
+curve(afd * (1 - bfd * exp( -kfd * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "orange", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-# Fixed effects
-# Parameter          Estimate   SE    CV(%) p-value
-# A                  22.41907 1.2216   5.45 -      
-#   beta_LitterSize(A)  0.00652 0.0116 178.40 0.57510
-#   beta_FatherDiet(A) -0.02591 0.0204  78.61 0.20333
-#   beta_MotherDiet(A) -0.00363 0.0194 535.06 0.85174
-# B                   2.87427 0.9309  32.39 -      
-#   beta_LitterSize(B) -0.13740 0.0688  50.09 0.04590 * 
-#   beta_FatherDiet(B) -0.03240 0.1159 357.75 0.77984
-#   beta_MotherDiet(B) -0.29874 0.1095  36.65 0.00637 * 
-# k                   0.07869 0.0207  26.27 -      
-#   beta_LitterSize(k) -0.11206 0.0558  49.81 0.04469
-#   beta_FatherDiet(k) -0.04751 0.1003 211.08 0.63567
-#   beta_MotherDiet(k) -0.21824 0.0945  43.28 0.02086 * 
-# a.1                 0.52514 0.0433   8.25 - 
+# females  and mother diet
 
+afd = af - 0.926447
+bfd = bf - 0.005355
+kfd = kf - 0.003048
 
+curve(afd * (1 - bfd * exp( -kfd * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkorange", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-# female mice growth
+# males in exp.appr.fit.diet
 
-a = 22.41907
-b = 2.87427
-k = 0.07869
+am = af + 4.491561 # <- the only significant change according to model output
+bm = bf + 0.065160
+km = kf - 0.000464
 
-curve(
-  a * (1 - b * exp(-k * x)),
-  from = min(mice_f1_slct$MeasurementDay),
-  to = max(mice_f1_slct$MeasurementDay),
-  xlab = "days [d]",
-  ylab = "weight [g]",
-  main = "female mice weight gain (C57BL6/NTac)"
-)
+curve(am * (1 - bm * exp( -km * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "lightgrey", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-# female mice growth - with mother on HFD
+# males in and father diet
 
-a <- a
-b <- b + (- 0.29874 * b)
-k <- k + (- 0.21824 * k)
-curve(
-  a * (1 - b * exp(-k * x)),
-  add = TRUE,
-  col = "red"
-)
+amd = am - 0.927409
+bmd = bm + 0.038206
+kmd = km - 0.002177
 
-# female mice growth - with increasing litter size + 1
+curve(amd * (1 - bmd * exp( -kmd * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-a <- a
-b <- b + (- 0.13740 * b)
-k <- k
-curve(
-  a * (1 - b * exp(-k * x)),
-  add = TRUE,
-  col = "blue"
-)
+# males in and mother diet
+
+amd = am - 0.926447
+bmd = bm - 0.005355
+kmd = km - 0.003048
+
+curve(amd * (1 - bmd * exp( -kmd * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkred", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+
+# __b) Prediction plots ----
+
+# not yet implemented
+
+# RQ5: What are the effects of diet within regardless of sex ? ----
+
+# Intercations was not significant
+
+# _1.) Get sex/diet model as in RQ4 in `015_r_use_saemix.R` but without litter size ----
 
 
-# _4.) Plot model ----
+exp.appr.fit.diet.nosex <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                          data = mice_f1_slct,
+                          fixed  = a + b + k ~  FatherDiet + MotherDiet,
+                          random = a  ~ AnimalSex | AnimalId,
+                          na.action = na.exclude,
+                          start = c(25.30,  1.31,  0.04,
+                                    0.17,  0.09,  0.04,
+                                    0.01,  0.08,  0.02),
+                          control = nlmeControl(msMaxIter = 1000, msVerbose = TRUE))
 
-plot(DecayFIT.RQ5.female, plot.type="observations.vs.predictions" )
-plot(DecayFIT.RQ5.male, plot.type="observations.vs.predictions" )
 
-plot(DecayFIT.RQ5.female, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-plot(DecayFIT.RQ5.male, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
+summary(exp.appr.fit.diet.nosex) 
+plot(exp.appr.fit.diet.nosex) 
 
-plot(DecayFIT.RQ5.female, plot.type="parameters.vs.covariates", ask=TRUE)
-plot(DecayFIT.RQ5.male, plot.type="parameters.vs.covariates", ask=TRUE)
+# _2.) Compare model ----
 
-npde.DecayFIT.RQ4 <- npdeSaemix(DecayFIT.RQ5.female) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
-npde.DecayFIT.RQ4 <- npdeSaemix(DecayFIT.RQ5.male) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
+# __a) Get matching null model ----
 
-# _5.) Compare models ----
+exp.appr.fit.diet.nosex.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                                data = mice_f1_slct,
+                                fixed  = a + b + k ~  1,
+                                random = a  ~ AnimalSex | AnimalId,
+                                na.action = na.exclude,
+                                start = c(25.30,  1.31,  0.04),
+                                control = nlmeControl(msMaxIter = 1000, msVerbose = TRUE))
 
-# no model for comparison built yet, needed would be above data sets without diets
+# __b) Compare models
+
+anova(exp.appr.fit.diet.nosex.null, exp.appr.fit.diet.nosex)
+
+# _3.) Plot sex/diet model ----
+
+# __a) Curve plots ----
+
+# null model coefficients of exp.appr.fit.diet.nosex - popultaion average chow diet
+a = 24.262459
+b = 1.329206
+k = 0.038565
+
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgrey", xlim =c(30, 100), ylim=c(15, 25))
+
+# fathers hfd
+
+af = a - 1.037515 # * 
+bf = b + 0.001529
+kf = k + 0.001229
+
+curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "orange", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+
+# mothers hfd
+
+af = a - 0.943602 # * 
+bf = b  -0.030819
+kf = k + 0.002341
+
+curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkorange", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+
+# __b) Prediction plots ----
+
+# not yet implemented
 
 # Snapshot environment ----
 

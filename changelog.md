@@ -792,9 +792,9 @@
     * use to implement analysis of `015_r_use_saemix.R` but with factor interactions
     * got working 0 model matching 0 model of {saemix}
     * got working sex model matching sex model of {saemix}
-    
+    * finished all models
+  * updated todo below  
 
- 
 ## Todo queue (last updated 12-04-2024)
  
 ### **revision work** - after first submission
@@ -819,12 +819,18 @@
        * [x] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
        * ~~[ ] both parents obese - offspring sex neglected - male  - female~~
        * ~~[ ] one parent obese - offspring sex neglected - male - female~~
-     * [x] as per `015_r_use_saemix.R` (12-04-2024) testing males and females separately for perental diet interaction on weight gain
+     * [x] as shown in `015_r_use_saemix.R` (12-04-2024) testing males and females separately for perental diet interaction on weight gain
        * [x] in males: Mother HFD has an effect, as plotted
        * [x] in females: Mother HFD has an effect, and litter size has an effect, as plotted
        * [ ] improve plots and export
-       * [ ] check diet interaction
+       * ~~[ ] check diet interaction~~ impossible using saemix and nlme - too few data
+     * [ ] in 017_`r_use_nlme.R`
+       * [x] repated all analyses as in `015_r_use_saemix.R`
+       * [ ] **sort script**
+       * [ ] **update text**
+       * [ ] and **export plot** 
      * [ ] script `50_r_array_analysis.r`
+       * [ ] adjust new version as per results in `015_r_use_saemix.R` and `r_use_nlme.R`
        * [ ] relabel variables `obese` to (succesful) `HFD` in code
        * [ ] relabel variables `obese` to (succesful) `HFD` in figures
        * [ ] only investigate effect of mothers obese
