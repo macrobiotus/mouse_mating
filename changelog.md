@@ -794,7 +794,7 @@
     * got working sex model matching sex model of {saemix}
     * finished all models
   * updated todo below 
-  * _started sorting script_ `017_r_use_nlme.R` for write-up
+  * sorted `017_r_use_nlme.R` for write-up
 
 ## Todo queue (last updated 12-04-2024)
  
@@ -827,7 +827,8 @@
        * ~~[ ] check diet interaction~~ impossible using saemix and nlme - too few data
      * [ ] in 017_`r_use_nlme.R`
        * [x] repated all analyses as in `015_r_use_saemix.R`
-       * [ ] **sort script**
+       * [x] sort script
+       * [ ] **label significant effects**
        * [ ] **update text**
        * [ ] and **export plot** 
      * [ ] script `50_r_array_analysis.r`

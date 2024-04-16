@@ -280,53 +280,48 @@ b = fixed.effects(exp.appr.fit.diet)[5]
 k = fixed.effects(exp.appr.fit.diet)[9]
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgrey", xlim =c(30, 100), ylim=c(15, 25))
 
+# fathers hfd diet females 
+a = fixed.effects(exp.appr.fit.diet)[1] + fixed.effects(exp.appr.fit.diet)[1+2] 
+b = fixed.effects(exp.appr.fit.diet)[5] + fixed.effects(exp.appr.fit.diet)[5+2] 
+k = fixed.effects(exp.appr.fit.diet)[9] + fixed.effects(exp.appr.fit.diet)[9+2]
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "orange", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+
+# mothers hfd diet females 
+a = fixed.effects(exp.appr.fit.diet)[1] + fixed.effects(exp.appr.fit.diet)[1+3] 
+b = fixed.effects(exp.appr.fit.diet)[5] + fixed.effects(exp.appr.fit.diet)[5+3] 
+k = fixed.effects(exp.appr.fit.diet)[9] + fixed.effects(exp.appr.fit.diet)[9+3]
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkorange", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+
+# mothers and fathers hfd diet females 
+a = fixed.effects(exp.appr.fit.diet)[1] + fixed.effects(exp.appr.fit.diet)[1+3] + fixed.effects(exp.appr.fit.diet)[1+2]
+b = fixed.effects(exp.appr.fit.diet)[5] + fixed.effects(exp.appr.fit.diet)[5+3] + fixed.effects(exp.appr.fit.diet)[5+2] 
+k = fixed.effects(exp.appr.fit.diet)[9] + fixed.effects(exp.appr.fit.diet)[9+3] + fixed.effects(exp.appr.fit.diet)[9+2]
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+
 # chow diet males
 a = fixed.effects(exp.appr.fit.diet)[1] + fixed.effects(exp.appr.fit.diet)[1+1]
 b = fixed.effects(exp.appr.fit.diet)[5] + fixed.effects(exp.appr.fit.diet)[5+1]
 k = fixed.effects(exp.appr.fit.diet)[9] + fixed.effects(exp.appr.fit.diet)[9+1]
-curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "lightgrey", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgrey", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-# **continue here** ----
 
-# females and father diet
+# fathers hfd diet males
+a = fixed.effects(exp.appr.fit.diet)[1] + fixed.effects(exp.appr.fit.diet)[1+1] + fixed.effects(exp.appr.fit.diet)[1+2] 
+b = fixed.effects(exp.appr.fit.diet)[5] + fixed.effects(exp.appr.fit.diet)[5+1] + fixed.effects(exp.appr.fit.diet)[5+2] 
+k = fixed.effects(exp.appr.fit.diet)[9] + fixed.effects(exp.appr.fit.diet)[9+1] + fixed.effects(exp.appr.fit.diet)[9+2]
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "lightblue", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-afd = af - 0.927409
-bfd = bf + 0.038206
-kfd = kf - 0.002177
+# mothers hfd diet males
+a = fixed.effects(exp.appr.fit.diet)[1] + fixed.effects(exp.appr.fit.diet)[1+1] + fixed.effects(exp.appr.fit.diet)[1+3] 
+b = fixed.effects(exp.appr.fit.diet)[5] + fixed.effects(exp.appr.fit.diet)[5+1] + fixed.effects(exp.appr.fit.diet)[5+3] 
+k = fixed.effects(exp.appr.fit.diet)[9] + fixed.effects(exp.appr.fit.diet)[9+1] + fixed.effects(exp.appr.fit.diet)[9+3]
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "skyblue", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-curve(afd * (1 - bfd * exp( -kfd * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "orange", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
-
-# females  and mother diet
-
-afd = af - 0.926447
-bfd = bf - 0.005355
-kfd = kf - 0.003048
-
-curve(afd * (1 - bfd * exp( -kfd * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkorange", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
-
-# males in exp.appr.fit.diet
-
-am = af + 4.491561 # <- the only significant change according to model output
-bm = bf + 0.065160
-km = kf - 0.000464
-
-curve(am * (1 - bm * exp( -km * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "lightgrey", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
-
-# males in and father diet
-
-amd = am - 0.927409
-bmd = bm + 0.038206
-kmd = km - 0.002177
-
-curve(amd * (1 - bmd * exp( -kmd * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
-
-# males in and mother diet
-
-amd = am - 0.926447
-bmd = bm - 0.005355
-kmd = km - 0.003048
-
-curve(amd * (1 - bmd * exp( -kmd * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkred", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+# mothers and fathers hfd diet males
+a = fixed.effects(exp.appr.fit.diet)[1] + fixed.effects(exp.appr.fit.diet)[1+1] + fixed.effects(exp.appr.fit.diet)[1+2] + fixed.effects(exp.appr.fit.diet)[1+3]
+b = fixed.effects(exp.appr.fit.diet)[5] + fixed.effects(exp.appr.fit.diet)[5+1] + fixed.effects(exp.appr.fit.diet)[5+2] + fixed.effects(exp.appr.fit.diet)[5+3] 
+k = fixed.effects(exp.appr.fit.diet)[9] + fixed.effects(exp.appr.fit.diet)[9+1] + fixed.effects(exp.appr.fit.diet)[9+2] + fixed.effects(exp.appr.fit.diet)[9+3]
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "blue", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
 # __b) Prediction plots ----
 
