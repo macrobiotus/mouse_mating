@@ -34,6 +34,7 @@ library("dplyr")
 library("ggplot2")
 
 library("nlme")
+library("performance") # Model inspection
 
 # Setup data and model ----
 
@@ -57,7 +58,6 @@ ggplot(data = mice_f1_slct, aes(x = "MeasurementDay", y="BodyWeightG",  group = 
 
 # _4.) Define possibly applicable model functions ----
 
-
 # __a) Exponential approach as in {015_r_use_saemix.R}
 
 decay.formula <-  as.formula(y ~ a * (1 - b * exp( -k * x)))
@@ -65,31 +65,18 @@ decay.formula <-  as.formula(y ~ a * (1 - b * exp( -k * x)))
 
 # __b) Testing function to get starting values
 
-# from estimated previous values
-a = 22.41907
-b = 2.87427
-k = 0.07869
-curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgray")
+# from estimated previous values - equivalent model (RQ1)
+a = 25.3005
+b = 1.2644
+k = 0.0392
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgray", xlim =c(30, 100), ylim=c(15, 25))
 
-# lower trajectory
-a = 21
-b = 2.5
-k = 0.06
-curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "lightgray", add = TRUE)
-
-# higher trajectory
-a = 23
-b = 3
-k = 0.08
-curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "lightgray", add = TRUE)
-
-
-# RQ2: Fit exponential approach to data to get a null model for comparison
+# RQ1: Fit exponential approach to data to get a null model for comparison
 
 exp.appr.fit.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                           data = mice_f1_slct,
-                          fixed  = a + b + k,
-                          random = a + b + k,
+                          fixed  = a + b + k ~ 1,
+                          random = a ~ 1,
                           groups = ~ AnimalId,
                           start = c(22.41907, 2.87427, 0.07869),
                           na.action = na.exclude,
@@ -97,15 +84,12 @@ exp.appr.fit.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
 
 summary(exp.appr.fit.null) 
 
+# null model coefficients of exp.appr.fit.null
+a = 25.302337
+b = 1.312241
+k = 0.040536
 
-
-
-
-# null model infereed above
-a = 25.445679
-b = 1.247048
-k = 0.038791
-curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", add = TRUE)
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", xlim =c(30, 100), ylim=c(15, 25),  add = TRUE)
 
 
 
