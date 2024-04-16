@@ -58,12 +58,12 @@ ggplot(data = mice_f1_slct, aes(x = "MeasurementDay", y="BodyWeightG",  group = 
 
 # _4.) Define possibly applicable model functions ----
 
-# __a) Exponential approach as in {015_r_use_saemix.R}
+# __a) Exponential approach as in {015_r_use_saemix.R}  ----
 
 decay.formula <-  as.formula(y ~ a * (1 - b * exp( -k * x)))
     
 
-# __b) Testing function to get starting values
+# __b) Testing function to get starting values ----
 
 # from estimated previous values - equivalent model (RQ1)
 a = 25.3005
@@ -73,7 +73,7 @@ curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", yl
 
 # RQ1: Fit exponential approach to data to get a null model for comparison ----
 
-# __a) Get null model as in RQ1 {015_r_use_saemix.R}
+# __a) Get null model as in RQ1 {015_r_use_saemix.R} ----
 
 exp.appr.fit.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                           data = mice_f1_slct,
@@ -89,7 +89,7 @@ summary(exp.appr.fit.null)
 #      AIC      BIC    logLik
 # 937.2057 955.7246 -463.6028
 
-# __b) Plot null model
+# __b) Plot null model ----
 
 # null model coefficients of exp.appr.fit.null
 a = 25.302337
@@ -102,7 +102,8 @@ curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", yl
 
 # RQ2: Does Sex have an association with the total weight gain? ----
 
-# __a) Get null model as in RQ1 {015_r_use_saemix.R}
+# __a) Get null model as in RQ1 {015_r_use_saemix.R} ----
+
 # https://stats.stackexchange.com/questions/536364/help-understanding-fixed-effects-interaction-terms-in-nlme
 
 
@@ -123,7 +124,7 @@ summary(exp.appr.fit.sex)
 
 plot(exp.appr.fit.sex)
 
-# __b) Plot null and sex model
+# __b) Plot null and sex model ----
 
 # null model coefficients of exp.appr.fit.null
 a = 25.302337
@@ -132,7 +133,7 @@ k = 0.040536
 
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgrey", xlim =c(30, 100), ylim=c(15, 25))
 
-# feamles in exp.appr.fit.sex
+# females in exp.appr.fit.sex
 
 a = 22.6461642335
 b = 1.2684247933
@@ -145,6 +146,10 @@ b = b + 0.0640978693
 k = k - 0.0005498267
 
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+
+# __c) Compare null and sex model ----
+
+anova(exp.appr.fit.null,exp.appr.fit.sex) # <- sex model is better
 
 
 
