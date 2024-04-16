@@ -91,9 +91,9 @@ summary(exp.appr.fit.null)
 # _2.) Plot null model ----
 
 # null model coefficients of exp.appr.fit.null
-a = 25.302337
-b = 1.312241
-k = 0.040536
+a = 25.171575
+b = 1.365506
+k = 0.042072
 
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", xlim =c(30, 100), ylim=c(15, 25),  add = TRUE)
 
@@ -285,10 +285,14 @@ plot(exp.appr.fit.diet.nosex)
 exp.appr.fit.diet.nosex.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                                 data = mice_f1_slct,
                                 fixed  = a + b + k ~  1,
-                                random = a  ~ AnimalSex | AnimalId,
+                                random = a  ~  AnimalSex | AnimalId,
                                 na.action = na.exclude,
                                 start = c(25.30,  1.31,  0.04),
                                 control = nlmeControl(msMaxIter = 1000, msVerbose = TRUE))
+
+summary(exp.appr.fit.diet.nosex.null)
+plot(exp.appr.fit.diet.nosex.null)
+
 
 # __b) Compare models
 
