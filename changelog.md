@@ -790,6 +790,9 @@
 
   * working in script `017_r_use_nlme.R`
     * use to implement analysis of `015_r_use_saemix.R` but with factor interactions
+    * got working 0 model matching 0 model of {saemix}
+    * got working sex model matching sex model of {saemix}
+    
 
  
 ## Todo queue (last updated 12-04-2024)

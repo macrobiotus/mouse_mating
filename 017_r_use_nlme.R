@@ -71,7 +71,9 @@ b = 1.2644
 k = 0.0392
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgray", xlim =c(30, 100), ylim=c(15, 25))
 
-# RQ1: Fit exponential approach to data to get a null model for comparison
+# RQ1: Fit exponential approach to data to get a null model for comparison ----
+
+# __a) Get null model as in RQ1 {015_r_use_saemix.R}
 
 exp.appr.fit.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                           data = mice_f1_slct,
@@ -84,6 +86,11 @@ exp.appr.fit.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
 
 summary(exp.appr.fit.null) 
 
+#      AIC      BIC    logLik
+# 937.2057 955.7246 -463.6028
+
+# __b) Plot null model
+
 # null model coefficients of exp.appr.fit.null
 a = 25.302337
 b = 1.312241
@@ -93,122 +100,52 @@ curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", yl
 
 
 
+# RQ2: Does Sex have an association with the total weight gain? ----
+
+# __a) Get null model as in RQ1 {015_r_use_saemix.R}
+# https://stats.stackexchange.com/questions/536364/help-understanding-fixed-effects-interaction-terms-in-nlme
 
 
-# RQ2: Does Sex have an association with the total weight gain? Yes.----
+exp.appr.fit.sex <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                         data = mice_f1_slct,
+                         fixed  = a + b + k ~ AnimalSex,
+                         random = a ~ 1,
+                         groups = ~ AnimalId,
+                         na.action = na.exclude,
+                         start = c(25.30,  1.31,  0.040,
+                                    0.17,  0.09,   0.04),
+                         control = nlmeControl(maxIter = 300, msVerbose = FALSE))
 
-# _1.) Define data with sex covariate ----
+summary(exp.appr.fit.sex) 
 
-ModelData.RQ2 <- saemixData(
-  name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
-  name.covariates = c("AnimalSex")
-)
+# AIC      BIC    logLik
+# 879.7389 909.3691 -431.8694 - better
 
-# _2.) Define model object ----
+plot(exp.appr.fit.sex)
 
-DecayModel.RQ2 <- saemixModel(model = decay.model,
-                              description= "Exponential decay", 
-                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
-                              transform.par = c(1,1,1), 
-                              fixed.estim = c(1,1,1),
-                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
-                              covariate.model = matrix(c(1,1,1), ncol=3, byrow=TRUE),
-                              omega.init = matrix(c(1,0,0,0,1,0,0,0,1),ncol=3, byrow=TRUE), 
-                              error.model="constant")
+# __b) Plot null and sex model
 
-# _3.) Fit model ----
+# null model coefficients of exp.appr.fit.null
+a = 25.302337
+b = 1.312241
+k = 0.040536
 
-DecayFIT.RQ2 <- saemix(DecayModel.RQ2, ModelData.RQ2, saemix.options)
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgrey", xlim =c(30, 100), ylim=c(15, 25))
 
-# _4.) Plot model ----
+# feamles in exp.appr.fit.sex
 
-plot(DecayFIT.RQ2, plot.type="observations.vs.predictions" )
-plot(DecayFIT.RQ2, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-plot(DecayFIT.RQ2, plot.type="parameters.vs.covariates")
-npde.DecayFIT.RQ2 <- npdeSaemix(DecayFIT.RQ2) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
+a = 22.6461642335
+b = 1.2684247933
+k = 0.0408665699
 
-# _5.) Compare models ----
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "black", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-DecayFIT.RQ1
+a = a + 4.5663630884 # <- the only significant change according to model output
+b = b + 0.0640978693
+k = k - 0.0005498267
 
-# Fixed effects
-# Parameter Estimate   SE     CV(%)
-# A         25.3005  0.39486 1.56  
-# B          1.2644  0.05365 4.24  
-# k          0.0392  0.00154 3.93  
-# a.1        0.7390  0.03702 5.01  
-# 
-# Variance of random effects
-# Parameter Estimate   SE     CV(%)
-# omega2.A  0.010457 0.00215  20.6 
-# omega2.B  0.005064 0.00438  86.4 
-# omega2.k  0.000583 0.00364 625.7 
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-DecayFIT.RQ2
-
-# Fixed effects
-# Parameter         Estimate   SE     CV(%) p-value
-#  A                 23.1599  0.38612   1.67 -      
-#  beta_AnimalSex(A)  0.1746  0.02097  12.01 0.000   # upper asymptote higher
-#  B                  1.1081  0.08347   7.53 -      
-#  beta_AnimalSex(B)  0.0962  0.09323  96.89 0.302   # starting value higher - insignificant
-#  k                  0.0349  0.00267   7.65 -      
-#  beta_AnimalSex(k)  0.0438  0.09197 209.79 0.634   # approach steeper  - insignificant
-#  a.1                0.7285  0.03997   5.49 -      
-#   
-# 
-# Correlation matrix of random effects
-#         omega2.A omega2.B omega2.k
-# omega2.A  1.000   -0.078   -0.176  # upper asymptote negatively correlated with starting value   
-# omega2.B -0.078    1.000    0.952   
-# omega2.k -0.176    0.952    1.000  
-
-# second model is better in log-likelihood ratio test - see Likelihood Ratio Tests
-teststatRQ12 <- -2 * (as.numeric(logLik(DecayFIT.RQ1)) - as.numeric(logLik(DecayFIT.RQ2)))
-p.val <- pchisq(teststatRQ12, df = 3, lower.tail = FALSE)
-p.val
-
-# RQ3: Do Sex and litter size have an association with the total growth? Sex only, not litter size ----
-
-# _1.) Define data with sex and litter size covariates ----
-
-ModelData.RQ3 <- saemixData(
-  name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
-  name.covariates = c("AnimalSex", "LitterSize")
-)
-
-# _2.) Define model object ----
-
-DecayModel.RQ3 <- saemixModel(model = decay.model,
-                              description= "exponential approach", 
-                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
-                              transform.par = c(1,1,1), 
-                              fixed.estim = c(1,1,1),
-                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
-                              covariate.model = matrix(c(1,1,1, 1, 1,1 ), ncol=3, byrow=TRUE),
-                              omega.init = matrix(c(1,0,0,0,1,0,0,0,1),ncol=3, byrow=TRUE), 
-                              error.model="constant")
-
-
-# _3.) Fit model ----
-
-DecayFIT.RQ3 <- saemix(DecayModel.RQ3, ModelData.RQ3, saemix.options)
-
-# _4.) Plot model ----
-
-plot(DecayFIT.RQ3, plot.type="observations.vs.predictions" )
-plot(DecayFIT.RQ3, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-plot(DecayFIT.RQ3, plot.type="parameters.vs.covariates", ask = TRUE)
-npde.DecayFIT.RQ3 <- npdeSaemix(DecayFIT.RQ3) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
-
-# _5.) Compare models ----
-
-DecayFIT.RQ2
-DecayFIT.RQ3 # <- BIC AIC better then in sex alone
-
-teststatRQ12 <- -2 * (as.numeric(logLik(DecayFIT.RQ2)) - as.numeric(logLik(DecayFIT.RQ3)))
-p.val <- pchisq(teststatRQ12, df = 3, lower.tail = FALSE)
-p.val #  (significant when adding litter size to sex)
 
 
 # RQ4: What are the effects of diet within each sex and, and dependent on litter sizes? ----
