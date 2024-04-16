@@ -793,7 +793,8 @@
     * got working 0 model matching 0 model of {saemix}
     * got working sex model matching sex model of {saemix}
     * finished all models
-  * updated todo below  
+  * updated todo below 
+  * _started sorting script_ `017_r_use_nlme.R` for write-up
 
 ## Todo queue (last updated 12-04-2024)
  

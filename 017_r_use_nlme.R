@@ -62,7 +62,6 @@ ggplot(data = mice_f1_slct, aes(x = "MeasurementDay", y="BodyWeightG",  group = 
 
 decay.formula <-  as.formula(y ~ a * (1 - b * exp( -k * x)))
     
-
 # __b) Testing function to get starting values ----
 
 # from estimated previous values - equivalent model (RQ1)
@@ -71,7 +70,89 @@ b = 1.2644
 k = 0.0392
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgray", xlim =c(30, 100), ylim=c(15, 25))
 
-# RQ1: Fit exponential approach to data to get a null model for comparison ----
+# RQ1: What are the effects of diet regardless of sex ? ----
+
+# _1.) Get a suitable null model which is comparable to the subsequent one ----
+
+exp.appr.fit.diet.nosex.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                                     data = mice_f1_slct,
+                                     fixed  = a + b + k ~  1,
+                                     random = a  ~  AnimalSex | AnimalId,
+                                     na.action = na.exclude,
+                                     start = c(25.30,  1.31,  0.04),
+                                     control = nlmeControl(msMaxIter = 1000, msVerbose = TRUE))
+
+# _2.) Check null model ----
+
+summary(exp.appr.fit.diet.nosex.null)
+# AIC      BIC    logLik
+# 932.4092 958.3356 -459.2046
+
+# _3.) Plot null model residuals ----
+
+plot(exp.appr.fit.diet.nosex.null) # residuals seem ok
+
+# _4.) Get diet model as in RQ4 in `015_r_use_saemix.R` but without litter size ----
+
+# Diet interactions were not significant
+
+exp.appr.fit.diet.nosex <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                                data = mice_f1_slct,
+                                fixed  = a + b + k ~  FatherDiet + MotherDiet,
+                                random = a  ~ AnimalSex | AnimalId,
+                                na.action = na.exclude,
+                                start = c(25.30,  1.31,  0.04,
+                                          0.17,  0.09,  0.04,
+                                          0.01,  0.08,  0.02),
+                                control = nlmeControl(msMaxIter = 1000, msVerbose = TRUE))
+
+# _5.) Check diet model ----
+
+summary(exp.appr.fit.diet.nosex)
+# AIC      BIC    logLik
+# 924.2106 972.3597 -449.1053
+
+# _6.) Plot diet model residuals ----
+
+plot(exp.appr.fit.diet.nosex) # residuals seem ok
+
+# _7.) Compare models ----
+
+anova(exp.appr.fit.diet.nosex.null, exp.appr.fit.diet.nosex) # adding diet imporves model
+
+# _8.) Plot model predictions ----
+
+# __a) Curve plots ----
+
+# null model curve - all mice ragrdless of sex
+a = fixed.effects(exp.appr.fit.diet.nosex.null)[1]
+b = fixed.effects(exp.appr.fit.diet.nosex.null)[2]
+k = fixed.effects(exp.appr.fit.diet.nosex.null)[3]
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgray", xlim =c(30, 100), ylim=c(15, 25))
+
+
+# chow diet curve  - all mice ragrdless of sex
+a = fixed.effects(exp.appr.fit.diet.nosex)[1]
+b = fixed.effects(exp.appr.fit.diet.nosex)[4]
+k = fixed.effects(exp.appr.fit.diet.nosex)[7]
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "black", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+
+# father hfd diet curve  - all mice ragrdless of sex
+
+af = a + fixed.effects(exp.appr.fit.diet.nosex)[2] # * 
+bf = b + fixed.effects(exp.appr.fit.diet.nosex)[5]
+kf = k + fixed.effects(exp.appr.fit.diet.nosex)[8]
+curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkorange", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+
+# mother hfd diet curve  - all mice ragrdless of sex
+af = a + fixed.effects(exp.appr.fit.diet.nosex)[3] # * 
+bf = b + fixed.effects(exp.appr.fit.diet.nosex)[6]
+kf = k + fixed.effects(exp.appr.fit.diet.nosex)[9]
+curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+
+# __b) Prediction plots ----
+
+# RQ2: Get a null model to investigate the sex specific effcet more ----
 
 # _1.) Get null model as in RQ1 of `015_r_use_saemix.R` ----
 
@@ -88,16 +169,7 @@ summary(exp.appr.fit.null)
 #      AIC      BIC    logLik
 # 937.2057 955.7246 -463.6028
 
-# _2.) Plot null model ----
-
-# null model coefficients of exp.appr.fit.null
-a = 25.171575
-b = 1.365506
-k = 0.042072
-
-curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", xlim =c(30, 100), ylim=c(15, 25),  add = TRUE)
-
-# RQ2: Does Sex have an association with the total weight gain? ----
+# RQ3: Does Sex have an association with the total weight gain? ----
 
 # _1.) Get sex model as in RQ1 of `015_r_use_saemix.R` ----
 
@@ -112,43 +184,44 @@ exp.appr.fit.sex <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                                     0.17,  0.09,   0.04),
                          control = nlmeControl(msMaxIter = 1000, msVerbose = FALSE))
 
+# _2.) Check sex model ----
+
 summary(exp.appr.fit.sex) 
 
 # AIC      BIC    logLik
 # 879.7389 909.3691 -431.8694 - better
 
+# _3.) Plot sex model residuals ----
+
 plot(exp.appr.fit.sex)
 
-# _2.) Compare null and sex model ----
+# _3.) Compare null and sex model ----
 
 anova(exp.appr.fit.null,exp.appr.fit.sex) # <- sex model is better
 
-# _3.) Plot null and sex model ----
+# _4.) Plot null and sex model ----
+
+# __a) Curve plots ----
 
 # null model coefficients of exp.appr.fit.null
-a = 25.302337
-b = 1.312241
-k = 0.040536
-
+a = fixef(exp.appr.fit.null)[1]
+b = fixef(exp.appr.fit.null)[2]
+k = fixef(exp.appr.fit.null)[3]
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgrey", xlim =c(30, 100), ylim=c(15, 25))
 
 # females in exp.appr.fit.sex
-
-a = 22.6461642335
-b = 1.2684247933
-k = 0.0408665699
-
+a = fixef(exp.appr.fit.sex)[1]
+b = fixef(exp.appr.fit.sex)[3]
+k = fixef(exp.appr.fit.sex)[5]
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "black", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-a = a + 4.5663630884 # <- the only significant change according to model output
-b = b + 0.0640978693
-k = k - 0.0005498267
-
+# male in exp.appr.fit.sex
+a = a + fixef(exp.appr.fit.sex)[2]
+b = b + fixef(exp.appr.fit.sex)[4]
+k = k + fixef(exp.appr.fit.sex)[6]
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-
-
-# RQ3: Do Sex and litter size associate with the total weight gain? ----
+# RQ4: Do Sex and litter size associate with the total weight gain? ----
 
 # _1.) Get litter model as in RQ3 of `015_r_use_saemix.R` ----
 
@@ -167,7 +240,7 @@ curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", yl
 
 # Effect of litter size is to small to be estimated with nlme package and was insignificant in {seamix}
 
-# RQ4: What are the effects of diet within each sex ? ----
+# RQ5: What are the effects of diet within each sex ? ----
 
 # _1.) Get sex/diet model as in RQ4 in `015_r_use_saemix.R` but without litter size ----
 
@@ -182,36 +255,38 @@ exp.appr.fit.diet <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                                      0.01,  0.08,  0.02),
                           control = nlmeControl(msMaxIter = 1000, msVerbose = TRUE))
  
+# _2.) Check diet model----
 
 summary(exp.appr.fit.diet) 
 
 # AIC      BIC    logLik
 # 873.7234 925.5763 -422.8617 <- better 
 
+# _3.) Plot diet model resiudals ----
+
 plot(exp.appr.fit.diet)
 
-# _2.) Compare sex and diet model ----
+# _4.) Compare sex and diet model ----
 
 anova(exp.appr.fit.sex,exp.appr.fit.diet) # <- diet model is better
 
-# _3.) Plot sex/diet model ----
+# _5.) Plot sex/diet model ----
 
 # __a) Curve plots ----
 
-# null model coefficients of exp.appr.fit.diet
-a = 25.302337
-b = 1.312241
-k = 0.040536
-
+# chow diet females 
+a = fixed.effects(exp.appr.fit.diet)[1]
+b = fixed.effects(exp.appr.fit.diet)[5]
+k = fixed.effects(exp.appr.fit.diet)[9]
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgrey", xlim =c(30, 100), ylim=c(15, 25))
 
-# females in exp.appr.fit.diet
+# chow diet males
+a = fixed.effects(exp.appr.fit.diet)[1] + fixed.effects(exp.appr.fit.diet)[1+1]
+b = fixed.effects(exp.appr.fit.diet)[5] + fixed.effects(exp.appr.fit.diet)[5+1]
+k = fixed.effects(exp.appr.fit.diet)[9] + fixed.effects(exp.appr.fit.diet)[9+1]
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "lightgrey", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-af = 23.781456
-bf = 1.251589
-kf = 0.037969
-
-curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "lightgrey", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+# **continue here** ----
 
 # females and father diet
 
@@ -257,77 +332,6 @@ curve(amd * (1 - bmd * exp( -kmd * x)), from = 35, to = 100, xlab="MeasurementDa
 
 # not yet implemented
 
-# RQ5: What are the effects of diet within regardless of sex ? ----
-
-# Intercations was not significant
-
-# _1.) Get sex/diet model as in RQ4 in `015_r_use_saemix.R` but without litter size ----
-
-
-exp.appr.fit.diet.nosex <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
-                          data = mice_f1_slct,
-                          fixed  = a + b + k ~  FatherDiet + MotherDiet,
-                          random = a  ~ AnimalSex | AnimalId,
-                          na.action = na.exclude,
-                          start = c(25.30,  1.31,  0.04,
-                                    0.17,  0.09,  0.04,
-                                    0.01,  0.08,  0.02),
-                          control = nlmeControl(msMaxIter = 1000, msVerbose = TRUE))
-
-
-summary(exp.appr.fit.diet.nosex) 
-plot(exp.appr.fit.diet.nosex) 
-
-# _2.) Compare model ----
-
-# __a) Get matching null model ----
-
-exp.appr.fit.diet.nosex.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
-                                data = mice_f1_slct,
-                                fixed  = a + b + k ~  1,
-                                random = a  ~  AnimalSex | AnimalId,
-                                na.action = na.exclude,
-                                start = c(25.30,  1.31,  0.04),
-                                control = nlmeControl(msMaxIter = 1000, msVerbose = TRUE))
-
-summary(exp.appr.fit.diet.nosex.null)
-plot(exp.appr.fit.diet.nosex.null)
-
-
-# __b) Compare models
-
-anova(exp.appr.fit.diet.nosex.null, exp.appr.fit.diet.nosex)
-
-# _3.) Plot sex/diet model ----
-
-# __a) Curve plots ----
-
-# null model coefficients of exp.appr.fit.diet.nosex - popultaion average chow diet
-a = 24.262459
-b = 1.329206
-k = 0.038565
-
-curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkgrey", xlim =c(30, 100), ylim=c(15, 25))
-
-# fathers hfd
-
-af = a - 1.037515 # * 
-bf = b + 0.001529
-kf = k + 0.001229
-
-curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "orange", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
-
-# mothers hfd
-
-af = a - 0.943602 # * 
-bf = b  -0.030819
-kf = k + 0.002341
-
-curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab="MeasurementDay", ylab="BodyWeightG", col = "darkorange", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
-
-# __b) Prediction plots ----
-
-# not yet implemented
 
 # Snapshot environment ----
 
