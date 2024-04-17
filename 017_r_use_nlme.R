@@ -182,8 +182,6 @@ plot(exp.appr.fit.diet.nosex) # residuals seem ok
 
 anova(exp.appr.fit.diet.nosex.null, exp.appr.fit.diet.nosex) # adding diet improves model
 
-# ** Continue here **
-
 # _9.) Plot diet model predictions ----
 
 # null model curve - all mice regardless of sex
@@ -199,7 +197,6 @@ k = fixed.effects(exp.appr.fit.diet.nosex)[7]
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]", col = "black", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
 # father hfd diet curve  - all mice regardless of sex
-
 af = a + fixed.effects(exp.appr.fit.diet.nosex)[2] # * 
 bf = b + fixed.effects(exp.appr.fit.diet.nosex)[5]
 kf = k + fixed.effects(exp.appr.fit.diet.nosex)[8]
@@ -211,9 +208,11 @@ bf = b + fixed.effects(exp.appr.fit.diet.nosex)[6]
 kf = k + fixed.effects(exp.appr.fit.diet.nosex)[9]
 curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]", col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
-# RQ2: Get a null model to investigate the sex specific effcet more ----
+# RQ2: What is the sex specific effect of diets on body weight over time? ----
 
 # _1.) Get null model as in RQ1 of `015_r_use_saemix.R` ----
+
+# eliminating sex from the random effect structure
 
 exp.appr.fit.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                           data = mice_f1_slct,
@@ -221,18 +220,19 @@ exp.appr.fit.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                           random = a ~ 1 | AnimalId,
                           start = c(22.41907, 2.87427, 0.07869),
                           na.action = na.exclude,
-                          control = nlmeControl(maxIter = 300, msVerbose = FALSE))
+                          control = nlmeControl(maxIter = 50, msVerbose = FALSE))
+
+# _2.) Check null model ----
 
 summary(exp.appr.fit.null) 
 
 #      AIC      BIC    logLik
 # 937.2057 955.7246 -463.6028
 
-# RQ3: Does Sex have an association with the total weight gain? ----
-
-# _1.) Get sex model as in RQ1 of `015_r_use_saemix.R` ----
+# _3.) Get sex model as in RQ1 of `015_r_use_saemix.R` ----
 
 # https://stats.stackexchange.com/questions/536364/help-understanding-fixed-effects-interaction-terms-in-nlme
+# adding sex as fixed effect
 
 exp.appr.fit.sex <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                          data = mice_f1_slct,
@@ -243,24 +243,37 @@ exp.appr.fit.sex <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                                     0.17,  0.09,   0.04),
                          control = nlmeControl(msMaxIter = 1000, msVerbose = FALSE))
 
-# _2.) Check sex model ----
+# _4.) Check sex model ----
 
 summary(exp.appr.fit.sex) 
 
 # AIC      BIC    logLik
-# 879.7389 909.3691 -431.8694 - better
+# 879.7389 909.3691 -431.8694 - better then matching null model
 
-# _3.) Plot sex model residuals ----
+# Fixed effects:  a + b + k ~ AnimalSex 
+# Value Std.Error  DF  t-value p-value
+# a.(Intercept) 22.646164 0.3937909 245 57.50809  0.0000
+# a.AnimalSexm   4.566363 0.5185962 245  8.80524  0.0000 * 
+# b.(Intercept)  1.268425 0.1087662 245 11.66194  0.0000
+# b.AnimalSexm   0.064098 0.1325391 245  0.48361  0.6291
+# k.(Intercept)  0.040867 0.0031790 245 12.85519  0.0000
+# k.AnimalSexm  -0.000550 0.0038096 245 -0.14433  0.8854
+
+# _5.) Plot sex model residuals ----
 
 plot(exp.appr.fit.sex)
 
-# _3.) Compare null and sex model ----
+# _6.) Compare null and sex model ----
 
-anova(exp.appr.fit.null,exp.appr.fit.sex) # <- sex model is better
+anova(exp.appr.fit.null,exp.appr.fit.sex) # <- sex model is then matching null model better
 
-# _4.) Plot null and sex model ----
+# _7.) Plot null and sex model ----
 
-# __a) Curve plots ----
+# __a) Trellis plots ----
+
+# **continue here: plot sex model with lattice** ---
+
+# __b) Curve plots ----
 
 # null model coefficients of exp.appr.fit.null
 a = fixef(exp.appr.fit.null)[1]
