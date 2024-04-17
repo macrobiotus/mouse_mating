@@ -796,7 +796,13 @@
   * updated todo below 
   * sorted `017_r_use_nlme.R` for write-up
 
-## Todo queue (last updated 12-04-2024)
+## 16-04-2024 -  work day 74 - working on first revision 
+  
+  * working in script `017_r_use_nlme.R`
+    * added plotting code
+    * added comment for write up
+
+## Todo queue (last updated 16-04-2024)
  
 ### **revision work** - after first submission
  
@@ -826,9 +832,9 @@
        * [ ] improve plots and export
        * ~~[ ] check diet interaction~~ impossible using saemix and nlme - too few data
      * [ ] in 017_`r_use_nlme.R`
-       * [x] repated all analyses as in `015_r_use_saemix.R`
+       * [x] repeated all analyses as in `015_r_use_saemix.R`
        * [x] sort script
-       * [ ] **label significant effects**
+       * [ ] **get significant effects and plot those dedicatetly**
        * [ ] **update text**
        * [ ] and **export plot** 
      * [ ] script `50_r_array_analysis.r`
