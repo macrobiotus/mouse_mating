@@ -796,11 +796,16 @@
   * updated todo below 
   * sorted `017_r_use_nlme.R` for write-up
 
-## 16-04-2024 -  work day 74 - working on first revision 
+## 17-04-2024 - work day 75 - working on first revision 
   
   * working in script `017_r_use_nlme.R`
     * added plotting code
     * added comment for write up
+    
+## 18-04-2024 - work day 76 - working on first revision 
+  
+  * working in script `017_r_use_nlme.R`
+    * finished code for RQ1
 
 ## Todo queue (last updated 16-04-2024)
  

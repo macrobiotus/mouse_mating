@@ -118,6 +118,8 @@ plot_rq1_null_model_fit <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data 
        },
        xlab = "day [d]", ylab = "body weight [g]")
 
+plot_rq1_null_model_fit
+
 ggsave("017_r_use_nlme__plot_rq1_null_model_fit.pdf", plot = ggarrange(plot_rq1_null_model_fit), path = here("../manuscript/display_items"),
        scale = 1, width = 12, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
 
@@ -171,6 +173,8 @@ plot_rq1_diet_model_fit <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data 
                                   },
                                   xlab = "day [d]", ylab = "body weight [g]")
 
+plot_rq1_diet_model_fit
+
 ggsave("017_r_use_nlme__plot_rq1_diet_model_fit.pdf", plot = ggarrange(plot_rq1_diet_model_fit), path = here("../manuscript/display_items"),
        scale = 1, width = 12, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
 
@@ -188,7 +192,8 @@ anova(exp.appr.fit.diet.nosex.null, exp.appr.fit.diet.nosex) # adding diet impro
 a = fixed.effects(exp.appr.fit.diet.nosex.null)[1]
 b = fixed.effects(exp.appr.fit.diet.nosex.null)[2]
 k = fixed.effects(exp.appr.fit.diet.nosex.null)[3]
-curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]", col = "darkgray", xlim =c(30, 100), ylim=c(15, 25))
+curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]",
+      col = "black", xlim =c(30, 100), ylim=c(15, 25), lty = "dashed")
 
 # chow diet curve  - all mice regardless of sex
 a = fixed.effects(exp.appr.fit.diet.nosex)[1]
@@ -197,16 +202,23 @@ k = fixed.effects(exp.appr.fit.diet.nosex)[7]
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]", col = "black", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
 
 # father hfd diet curve  - all mice regardless of sex
-af = a + fixed.effects(exp.appr.fit.diet.nosex)[2] # * 
+af = a + fixed.effects(exp.appr.fit.diet.nosex)[2] 
 bf = b + fixed.effects(exp.appr.fit.diet.nosex)[5]
 kf = k + fixed.effects(exp.appr.fit.diet.nosex)[8]
-curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]", col = "darkorange", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]", col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE, lty = "dashed")
 
 # mother hfd diet curve  - all mice regardless of sex
 af = a + fixed.effects(exp.appr.fit.diet.nosex)[3] # * 
 bf = b + fixed.effects(exp.appr.fit.diet.nosex)[6]
 kf = k + fixed.effects(exp.appr.fit.diet.nosex)[9]
-curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]", col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, 
+      xlab = "day [d]", ylab = "body weight [g]", col = "red", xlim =c(30, 100), ylim=c(15, 25),
+      add = TRUE)
+
+legend(67, 19, legend=c("null model", "low-caloric", "father high-caloric", "mother high-caloric"),
+       col=c("black", "black", "red", "red"), lty = c(2,1,2,1), cex=0.8)
+
+# **continue here** ----
 
 # RQ2: What is the sex specific effect of diets on body weight over time? ----
 
