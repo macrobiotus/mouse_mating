@@ -806,6 +806,9 @@
   
   * working in script `017_r_use_nlme.R`
     * finished code for RQ1
+    * finished code for all RQ4
+    * diet not significant, unless sex is random effect, there only mothers hfd is significant
+  * next: **plot out saemix results**
 
 ## Todo queue (last updated 16-04-2024)
  
