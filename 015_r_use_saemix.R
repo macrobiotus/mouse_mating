@@ -19,7 +19,6 @@
 #'     code_folding: show
 #' ---
 
-
 # Prepare environment ---- 
 
 # _1.) Collect garbage ----
@@ -32,15 +31,17 @@ gc()
 # Nonlinear Mixed-Effects Growth Models: A Tutorial Using 'saemix' in R
 # Methodology, 2021, Vol. 17(4), 250–270, https://doi.org/10.5964/meth.7061
 
-library("here")
-library("dplyr")
-library("ggplot2")
+library("here")    # handle path names
+library("dplyr")   # handle data more easily
 
+library("lattice") # create trellis graphs
+library("ggpubr")  # save trellis graphs
+library("ggplot2") # save trellis graphs
 
-library("saemix")
-library("npde")
+library("saemix")  # model non-linear mixed-effect dependencies
+library("npde")    # model non-linear mixed-effect dependencies
 
-# Setup data and model ----
+# Get and check data ----
 
 # _1.) Read in data ----
 
@@ -55,12 +56,15 @@ mice_f1_slct <- left_join(mice_f1_slct, {mice_f0_slct %>% dplyr::select(AnimalId
 
 mice_f1_slct %>% dplyr::select(MeasurementDay, BodyWeightG, AnimalId, AnimalSex) %>% arrange(AnimalSex, AnimalId, MeasurementDay) %>% print(n = Inf)
 
-ggplot(data = mice_f1_slct, aes(x = "Week", y="BodyWeightG",  group = "AnimalId")) +
-  geom_line( mapping = aes( x = Week, y = BodyWeightG, group = AnimalId, color = AnimalId)) + 
-  facet_grid(. ~ AnimalSex) +
-  theme_bw()
+plot_data_check <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, groups = AnimalSex, data = mice_f1_slct, xlab = "day [d]", ylab = "body weight [g]", auto.key = list(title = "sex"))
+plot_data_check
 
-# _4.) Define possibly applicable model functions ----
+ggsave("015_r_use_saemix__data_check.pdf", plot = ggarrange(plot_data_check), path = here("../manuscript/display_items"),
+       scale = 1, width = 9, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
+
+# RQ1 Which function is best suited to model weight gain (in a null model)? Gompertz, logistic, or exponential approach curve? ----
+
+# _1.) Define possibly applicable model functions ----
 
 # __a) Gompertz
 
@@ -91,7 +95,7 @@ logistic.model <- function(psi, id, x) { # psi, id, and x components are passed 
   TtlGrwth <- psi[id, 1]
   
   # Logistic curve formula
-  ypred  <- LwrAsy + TtlGrwth/ (1+exp ( -Apprch * (t-Timing)))
+  ypred  <- LwrAsy + TtlGrwth / (1+exp ( -Apprch * (t-Timing)))
   
   return(ypred)
 }
@@ -119,25 +123,18 @@ decay.model <- function(psi, id, xidep) {
   return(ypred) 
 }
 
-# testing function
-# a = 10
-# b = 0.5
-# k = 0.04
-# curve(a * (1 - b * exp( -k * x)), from = 0, to = 150, xlab="x", ylab="y", add = TRUE)
 
-# _5.) Set modelling options ----
+# _2.) Set modelling options ----
 
 saemix.options <- list(algorithms = c(1,1,1), nbiter.saemix = c(200,100), nb.chains=1, save=FALSE, save.graphs=FALSE, seed = 1234, displayProgress = FALSE)
 
-# RQ1 Use Gompertz, logistic, or exponential decay curve to model weight gain? ----
-
-# _1.) Define data ----
+# _3.) Define data (already grouped)----
 
 ModelData.RQ1 <- saemixData(
   name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay"
-)
+  )
 
-# _2.) Define model objects ----
+# _4.) Define model objects ----
 
 # __a) Gompertz ----
 
@@ -146,7 +143,7 @@ GompertzModel.RQ1 <- saemixModel(model = gompertz.model,
                                  psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), # starting values for each of the four growth parameters
                                  covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE), # which of the four parameter shoul be estimated? All but the last here
                                  transform.par = c(0, 0, 0, 0) # distribution of each of the four parameter
-)
+                                 )
 
 # __b) Logistic ----
 
@@ -155,10 +152,10 @@ LogisticModel.RQ1 <- saemixModel(model = logistic.model,
                                  psi0 = c(TtlGrwth = 0, Apprch = 0, Timing = 0, LwrAsy = 0), 
                                  covariance.model = matrix( c(1, 1, 1, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0), ncol = 4, byrow = TRUE),
                                  transform.par=c(0,0,0,0)
-)
+                                 )
 
 
-# __c) Exponential decay  ----
+# __c) Exponential approach  ----
 
 DecayModel.RQ1 <- saemixModel(model = decay.model,
                               description= "Exponential decay", 
@@ -169,8 +166,7 @@ DecayModel.RQ1 <- saemixModel(model = decay.model,
                               omega.init = matrix(c(1,0,0,0,1,0,0,0,1),ncol=3, byrow=TRUE), 
                               error.model="constant")
 
-
-# _3.) Fit model ----
+# _5.) Fit models ----
 
 # __a) Gompertz ----
 
@@ -200,7 +196,7 @@ LogisticFIT.RQ1 <- saemix(LogisticModel.RQ1, ModelData.RQ1, saemix.options)
 # AIC = 968.2228 
 # BIC = 989.2551 <- all values higher then above - so worse
 
-# __c) Decay ----
+# __c) Approach ----
 
 DecayFIT.RQ1 <- saemix(DecayModel.RQ1, ModelData.RQ1, saemix.options)
 
@@ -212,11 +208,11 @@ DecayFIT.RQ1 <- saemix(DecayModel.RQ1, ModelData.RQ1, saemix.options)
 # Likelihood computed by importance sampling
 # -2LL= 906.5984 
 # AIC = 920.5984 
-# BIC = 933.9826 <- all values lower then both above - so best of the three
+# BIC = 933.9826  <- all values lower then both above - so best of the three
 
-# _4.) Plot models ----
+# _6.) Plot models ----
 
-# Compute normalised prediction distribution errors (npde) and normalised prediction discrepancies (npd).
+# Compute normalized prediction distribution errors (npde) and normalized prediction discrepancies (npd).
 
 # __a) Gompertz ----
 
@@ -228,22 +224,26 @@ npde.GompertzFit.RQ1 <- npdeSaemix(GompertzFit.RQ1) # skewness and kurtosis of n
 
 plot(LogisticFIT.RQ1, plot.type = "observations.vs.predictions")
 plot(LogisticFIT.RQ1, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-npde.LogisticFIT.RQ1 <- npdeSaemix(LogisticFIT.RQ1) # normality of residual within range
+npde.LogisticFIT.RQ1 <- npdeSaemix(LogisticFIT.RQ1) # good - normality of residual within range
 
-# __b) Decay ----
+# __b) Approach model  ----
 
 plot(DecayFIT.RQ1, plot.type = "observations.vs.predictions")
 plot(DecayFIT.RQ1, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-npde.DecayFIT.RQ1 <- npdeSaemix(DecayFIT.RQ1) # skew, curtosis of residuals best of all three - use this model
+npde.DecayFIT.RQ1 <- npdeSaemix(DecayFIT.RQ1) # best - normality of residual within range
 
-# RQ2: Does Sex have an association with the total weight gain? Yes.----
+# _7.) Answer RQ1 ----
+
+# The approach model is best for modeling body weights, and fits well to the data.
+
+# RQ2: Does Sex have an association with the total weight gain? ----
 
 # _1.) Define data with sex covariate ----
 
 ModelData.RQ2 <- saemixData(
   name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
   name.covariates = c("AnimalSex")
-)
+  )
 
 # _2.) Define model object ----
 
@@ -266,7 +266,7 @@ DecayFIT.RQ2 <- saemix(DecayModel.RQ2, ModelData.RQ2, saemix.options)
 plot(DecayFIT.RQ2, plot.type="observations.vs.predictions" )
 plot(DecayFIT.RQ2, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
 plot(DecayFIT.RQ2, plot.type="parameters.vs.covariates")
-npde.DecayFIT.RQ2 <- npdeSaemix(DecayFIT.RQ2) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
+npde.DecayFIT.RQ2 <- npdeSaemix(DecayFIT.RQ2) # residuals still considered normally distributed albeit weakly
 
 # _5.) Compare models ----
 
@@ -292,9 +292,9 @@ DecayFIT.RQ2
 #  A                 23.1599  0.38612   1.67 -      
 #  beta_AnimalSex(A)  0.1746  0.02097  12.01 0.000   # upper asymptote higher
 #  B                  1.1081  0.08347   7.53 -      
-#  beta_AnimalSex(B)  0.0962  0.09323  96.89 0.302   # starting value higher - insignificant
+#  beta_AnimalSex(B)  0.0962  0.09323  96.89 0.302   # insignificant - starting value higher 
 #  k                  0.0349  0.00267   7.65 -      
-#  beta_AnimalSex(k)  0.0438  0.09197 209.79 0.634   # approach steeper  - insignificant
+#  beta_AnimalSex(k)  0.0438  0.09197 209.79 0.634   # insignificant- approach steeper  
 #  a.1                0.7285  0.03997   5.49 -      
 #   
 # 
@@ -309,14 +309,18 @@ teststatRQ12 <- -2 * (as.numeric(logLik(DecayFIT.RQ1)) - as.numeric(logLik(Decay
 p.val <- pchisq(teststatRQ12, df = 3, lower.tail = FALSE)
 p.val
 
-# RQ3: Do Sex and litter size have an association with the total growth? Sex only, not litter size ----
+# _6.) Answer RQ2 ----
+
+# Sex has an influence on the body weight, the upper assymptote is higher for males.
+
+# RQ3: Do Sex and litter size have an association with the total growth? ----
 
 # _1.) Define data with sex and litter size covariates ----
 
 ModelData.RQ3 <- saemixData(
   name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
   name.covariates = c("AnimalSex", "LitterSize")
-)
+  )
 
 # _2.) Define model object ----
 
@@ -329,7 +333,6 @@ DecayModel.RQ3 <- saemixModel(model = decay.model,
                               covariate.model = matrix(c(1,1,1, 1, 1,1 ), ncol=3, byrow=TRUE),
                               omega.init = matrix(c(1,0,0,0,1,0,0,0,1),ncol=3, byrow=TRUE), 
                               error.model="constant")
-
 
 # _3.) Fit model ----
 
@@ -345,11 +348,57 @@ npde.DecayFIT.RQ3 <- npdeSaemix(DecayFIT.RQ3) # skewness and kurtosis of normali
 # _5.) Compare models ----
 
 DecayFIT.RQ2
-DecayFIT.RQ3 # <- BIC AIC better then in sex alone
+DecayFIT.RQ3 # <- BIC AIC slightly better then in sex alone
 
 teststatRQ12 <- -2 * (as.numeric(logLik(DecayFIT.RQ2)) - as.numeric(logLik(DecayFIT.RQ3)))
 p.val <- pchisq(teststatRQ12, df = 3, lower.tail = FALSE)
 p.val #  (significant when adding litter size to sex)
+
+# _6.) Answer RQ3 ----
+
+# _a) In text ----
+
+# Only sex, not litter size influence the body weight significantly. 
+# (Litter is borderline insignificant, perhaps influences k parameter)
+
+# _b) In plot ----
+
+coefficients(DecayFIT.RQ3)$fixed
+
+# male mice growth
+a = coefficients(DecayFIT.RQ3)$fixed[1] * 1.19165
+b = coefficients(DecayFIT.RQ3)$fixed[2]
+k = coefficients(DecayFIT.RQ3)$fixed[3]
+
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      xlab = "days [d]", ylab = "weight [g]", col = "black")
+
+# female mice growth
+a = coefficients(DecayFIT.RQ3)$fixed[1]
+b = coefficients(DecayFIT.RQ3)$fixed[2]
+k = coefficients(DecayFIT.RQ3)$fixed[3]
+
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+  xlab = "days [d]", ylab = "weight [g]", col = "red", add = TRUE)
+
+# male mice growth - increased litter size
+a = coefficients(DecayFIT.RQ3)$fixed[1] * 1.19165
+b = coefficients(DecayFIT.RQ3)$fixed[2]
+k = coefficients(DecayFIT.RQ3)$fixed[3] * (1-0.09171)
+
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      xlab = "days [d]", ylab = "weight [g]", col = "black", add = TRUE, lty = "dashed")
+
+# female mice growth  - increased litter size
+a = coefficients(DecayFIT.RQ3)$fixed[1]
+b = coefficients(DecayFIT.RQ3)$fixed[2]
+k = coefficients(DecayFIT.RQ3)$fixed[3] * (1-0.09171)
+
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      xlab = "days [d]", ylab = "weight [g]", col = "red", add = TRUE, lty = "dashed")
+
+legend(65, 20.5, legend=c("male", "male - larger litter", "female", "female - larger litter"),
+       col=c("black", "black", "red", "red"), lty = c(1,2,1,2), cex=0.8)
 
 
 # RQ4: What are the effects of diet within each sex and, and dependent on litter sizes? ----
@@ -359,7 +408,7 @@ p.val #  (significant when adding litter size to sex)
 ModelData.RQ4 <- saemixData(
   name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
   name.covariates = c("AnimalSex", "LitterSize", "FatherDiet", "MotherDiet")
-)
+  )
 
 # _2.) Define model object ----
 
@@ -383,7 +432,6 @@ plot(DecayFIT.RQ4, plot.type="observations.vs.predictions" )
 plot(DecayFIT.RQ4, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
 plot(DecayFIT.RQ4, plot.type="parameters.vs.covariates", ask=TRUE)
 npde.DecayFIT.RQ4 <- npdeSaemix(DecayFIT.RQ4) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
-
 
 # _5.) Compare models ----
 
