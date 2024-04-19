@@ -816,7 +816,9 @@
 
   * working in script `015_r_use_saemix.R`
     * finished plotting out model predictions - mothers high-caloric diet lowers body weight birth in males and females
-
+  * working in script `017_r_use_nlme.R`
+    * revised plotting code, results congruent with  {saemix}
+  * started updating rebuttal text and manuscript file (copy with new date created today)
   
 
 ## Todo queue (last updated 16-04-2024)
@@ -848,10 +850,10 @@
        * [x] in females: Mother HFD has an effect, and litter size has an effect, as plotted
        * [ ] improve plots and export
        * ~~[ ] check diet interaction~~ impossible using saemix and nlme - too few data
-     * [ ] in 017_`r_use_nlme.R`
+     * [x] in 017_`r_use_nlme.R`
        * [x] repeated all analyses as in `015_r_use_saemix.R`
        * [x] sort script
-       * [ ] **get significant effects and plot those dedicatetly**
+       * [x] **get significant effects and plot those dedicatedly**
        * [ ] **update text**
        * [ ] and **export plot** 
      * [ ] script `50_r_array_analysis.r`
