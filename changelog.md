@@ -811,6 +811,12 @@
   * working in script `015_r_use_saemix.R`
     * started plotting out results better - got to RQ5
     * (continue with plotting out model predictions)
+
+## 19-04-2024 - work day 76 - working on first revision 
+
+  * working in script `015_r_use_saemix.R`
+    * finished plotting out model predictions - mothers high-caloric diet lowers body weight birth in males and females
+
   
 
 ## Todo queue (last updated 16-04-2024)

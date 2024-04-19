@@ -588,80 +588,29 @@ k = coefficients(DecayFIT.RQ5.female)$fixed[3] * (1-0.11206) * (1-0.21824)
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
       xlab = "days [d]", ylab = "weight [g]", col = "red", lty = "dashed", add = TRUE)
 
-legend(45, 18, legend=c("female", "female, larger litter", "female, mother on HCD", "female, larger litter, mother on HCD"),
+legend(42, 18, legend=c("female", "female, larger litter", "female, mother on HCD", "female, larger litter, mother on HCD"),
        col=c("black", "red", "black", "red"), lty = c(1,1,2,2), cex=0.8)
 
-# __a) males ----
+# __b) males ----
 
+# male mice, both parents on low caloric diet 
+a = coefficients(DecayFIT.RQ5.male)$fixed[1]
+b = coefficients(DecayFIT.RQ5.male)$fixed[2]
+k = coefficients(DecayFIT.RQ5.male)$fixed[3]
 
-# testing male model
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      xlab = "days [d]", ylab = "weight [g]", col = "black", lty = "solid")
 
-# male mice growth
-a = 28.566939
-b = 1.906307
-k = 0.045201
+# male mice, mother on HCD 
+a = coefficients(DecayFIT.RQ5.male)$fixed[1] * (1-0.053695)
+b = coefficients(DecayFIT.RQ5.male)$fixed[2]
+k = coefficients(DecayFIT.RQ5.male)$fixed[3]
 
-curve(
-  a * (1 - b * exp(-k * x)),
-  from = min(mice_f1_slct$MeasurementDay),
-  to = max(mice_f1_slct$MeasurementDay),
-  xlab = "days [d]",
-  ylab = "weight [g]",
-  main = "male mice weight gain (C57BL6/NTac)"
-)
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      xlab = "days [d]", ylab = "weight [g]", col = "black", lty = "dashed", add = TRUE)
 
-# male mice growth - mother on HFD
-a <- a
-b <- b 
-k <- k + (0.173567 * k)
-
-curve(
-  a * (1 - b * exp(-k * x)),
-  add = TRUE,
-  col = "red"
-)
-
-
-
-
-# female mice growth
-
-a = 22.41907
-b = 2.87427
-k = 0.07869
-
-curve(
-  a * (1 - b * exp(-k * x)),
-  from = min(mice_f1_slct$MeasurementDay),
-  to = max(mice_f1_slct$MeasurementDay),
-  xlab = "days [d]",
-  ylab = "weight [g]",
-  main = "female mice weight gain (C57BL6/NTac)"
-)
-
-# female mice growth - with mother on HFD
-
-a <- a
-b <- b + (- 0.29874 * b)
-k <- k + (- 0.21824 * k)
-curve(
-  a * (1 - b * exp(-k * x)),
-  add = TRUE,
-  col = "red"
-)
-
-# female mice growth - with increasing litter size + 1
-
-a <- a
-b <- b + (- 0.13740 * b)
-k <- k
-curve(
-  a * (1 - b * exp(-k * x)),
-  add = TRUE,
-  col = "blue"
-)
-
-
+legend(42, 18, legend=c("male", "male, mother on HCD"),
+       col=c("black", "black"), lty = c(1,2), cex=0.8)
 
 # _6.) Compare models ----
 
