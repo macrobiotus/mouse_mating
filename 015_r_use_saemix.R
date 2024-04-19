@@ -554,7 +554,45 @@ npde.DecayFIT.RQ4 <- npdeSaemix(DecayFIT.RQ5.male) # skewness and kurtosis of no
 
 # _5.) Plot model predictions ----
 
-# **continue here** ----
+# __a) females ----
+
+# female mice, both parents on low caloric diet 
+a = coefficients(DecayFIT.RQ5.female)$fixed[1]
+b = coefficients(DecayFIT.RQ5.female)$fixed[2]
+k = coefficients(DecayFIT.RQ5.female)$fixed[3]
+
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      xlab = "days [d]", ylab = "weight [g]", col = "black", lty = "solid")
+
+# female mice with increasing litter size, both parents on low caloric diet 
+a = coefficients(DecayFIT.RQ5.female)$fixed[1]
+b = coefficients(DecayFIT.RQ5.female)$fixed[2] * (1-0.13740) 
+k = coefficients(DecayFIT.RQ5.female)$fixed[3] * (1-0.11206)
+
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      xlab = "days [d]", ylab = "weight [g]", col = "red", lty = "solid", add = TRUE)
+
+# female mice, mother on HCD 
+a = coefficients(DecayFIT.RQ5.female)$fixed[1]
+b = coefficients(DecayFIT.RQ5.female)$fixed[2] * (1-0.29874)
+k = coefficients(DecayFIT.RQ5.female)$fixed[3] * (1-0.21824)
+
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      xlab = "days [d]", ylab = "weight [g]", col = "black", lty = "dashed", add = TRUE)
+
+# female mice with increasing litter size, mother on HCD
+a = coefficients(DecayFIT.RQ5.female)$fixed[1]
+b = coefficients(DecayFIT.RQ5.female)$fixed[2] * (1-0.13740) * (1-0.29874)
+k = coefficients(DecayFIT.RQ5.female)$fixed[3] * (1-0.11206) * (1-0.21824)
+
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      xlab = "days [d]", ylab = "weight [g]", col = "red", lty = "dashed", add = TRUE)
+
+legend(45, 18, legend=c("female", "female, larger litter", "female, mother on HCD", "female, larger litter, mother on HCD"),
+       col=c("black", "red", "black", "red"), lty = c(1,1,2,2), cex=0.8)
+
+# __a) males ----
+
 
 # testing male model
 
