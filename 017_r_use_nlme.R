@@ -153,8 +153,8 @@ summary(exp.appr.fit.diet.nosex)
 # Fixed effects:  a + b + k ~ FatherDiet + MotherDiet 
 # Value Std.Error  DF  t-value p-value
 # a.(Intercept)   24.262459 0.4877282 242 49.74586  0.0000 *
-# a.FatherDietHFD -1.037515 0.4913831 242 -2.11142  0.0358
-# a.MotherDietHFD -0.943602 0.4729634 242 -1.99508  0.0472 * only a.MotherDietHFD significant
+# a.FatherDietHFD -1.037515 0.4913831 242 -2.11142  0.0358 * a.FatherDietHFD significant
+# a.MotherDietHFD -0.943602 0.4729634 242 -1.99508  0.0472 * a.MotherDietHFD significant
 # b.(Intercept)    1.329206 0.1167432 242 11.38572  0.0000
 # b.FatherDietHFD  0.001529 0.1247160 242  0.01226  0.9902
 # b.MotherDietHFD -0.030819 0.1234833 242 -0.24958  0.8031
@@ -189,25 +189,25 @@ anova(exp.appr.fit.diet.nosex.null, exp.appr.fit.diet.nosex) # adding diet impro
 # _9.) Plot diet model predictions ----
 
 # null model curve - all mice regardless of sex
-a = fixed.effects(exp.appr.fit.diet.nosex.null)[1]
-b = fixed.effects(exp.appr.fit.diet.nosex.null)[2]
-k = fixed.effects(exp.appr.fit.diet.nosex.null)[3]
-curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]",
-      col = "black", xlim =c(30, 100), ylim=c(15, 25), lty = "dashed")
+# a = fixed.effects(exp.appr.fit.diet.nosex.null)[1]
+# b = fixed.effects(exp.appr.fit.diet.nosex.null)[2]
+# k = fixed.effects(exp.appr.fit.diet.nosex.null)[3]
+# curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]",
+#       col = "black", xlim =c(30, 100), ylim=c(15, 25), lty = "dashed")
 
 # chow diet curve  - all mice regardless of sex
 a = fixed.effects(exp.appr.fit.diet.nosex)[1]
 b = fixed.effects(exp.appr.fit.diet.nosex)[4]
 k = fixed.effects(exp.appr.fit.diet.nosex)[7]
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]", 
-      col = "black", xlim =c(30, 100), ylim=c(15, 25), add = TRUE)
+      col = "black", xlim =c(30, 100), ylim=c(15, 25))
 
 # father hfd diet curve  - all mice regardless of sex
 af = a + fixed.effects(exp.appr.fit.diet.nosex)[2] 
 bf = b + fixed.effects(exp.appr.fit.diet.nosex)[5]
 kf = k + fixed.effects(exp.appr.fit.diet.nosex)[8]
 curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]", 
-      col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE, lty = "dashed")
+      col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE, lty = "dotted")
 
 # mother hfd diet curve  - all mice regardless of sex
 af = a + fixed.effects(exp.appr.fit.diet.nosex)[3] # * 
@@ -215,10 +215,18 @@ bf = b + fixed.effects(exp.appr.fit.diet.nosex)[6]
 kf = k + fixed.effects(exp.appr.fit.diet.nosex)[9]
 curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, 
       xlab = "day [d]", ylab = "body weight [g]", col = "red", xlim =c(30, 100), ylim=c(15, 25),
-      add = TRUE)
+      add = TRUE, lty = "dashed")
 
-legend(67, 19, legend=c("null model", "low-caloric", "father high-caloric", "mother high-caloric"),
-       col=c("black", "black", "red", "red"), lty = c(2,1,2,1), cex=0.8)
+# mother and father hfd diet curve  - all mice regardless of sex
+af = a + fixed.effects(exp.appr.fit.diet.nosex)[3] + fixed.effects(exp.appr.fit.diet.nosex)[2]
+bf = b + fixed.effects(exp.appr.fit.diet.nosex)[6] + fixed.effects(exp.appr.fit.diet.nosex)[5]
+kf = k + fixed.effects(exp.appr.fit.diet.nosex)[9] + fixed.effects(exp.appr.fit.diet.nosex)[8]
+curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, 
+      xlab = "day [d]", ylab = "body weight [g]", col = "red", xlim =c(30, 100), ylim=c(15, 25),
+      add = TRUE, lty = "dotdash")
+
+legend(67, 19, legend=c("low-caloric", "father high-caloric", "mother high-caloric", "parents high-caloric"),
+       col=c("black", "red", "red", "red"), lty = c(1,2,3,4), cex=0.8)
 
 # RQ2: What is the sex specific effect on body weight over time? ----
 
