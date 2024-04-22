@@ -38,6 +38,8 @@ library("lattice") # create trellis graphs
 library("ggpubr")  # save trellis graphs
 library("ggplot2") # save trellis graphs
 
+library("GGally")  # pair plot
+
 library("saemix")  # model non-linear mixed-effect dependencies
 library("npde")    # model non-linear mixed-effect dependencies
 
@@ -54,13 +56,29 @@ mice_f1_slct <- left_join(mice_f1_slct, {mice_f0_slct %>% dplyr::select(AnimalId
 
 # _3.) Check data ----
 
-mice_f1_slct %>% dplyr::select(MeasurementDay, BodyWeightG, AnimalId, AnimalSex) %>% arrange(AnimalSex, AnimalId, MeasurementDay) %>% print(n = Inf)
+# __a) Table ----
+
+mice_f1_slct %>% dplyr::select(MeasurementDay, BodyWeightG, AnimalSex, AnimalId, LitterSize) %>% arrange(AnimalSex, AnimalId, MeasurementDay) %>% print(n = Inf)
+
+# __b) Drop superfluous factor levels ----
+
+mice_f1_slct$MotherDiet <- droplevels(mice_f1_slct$MotherDiet)
+
+# __c) XY plots ----
 
 plot_data_check <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, groups = AnimalSex, data = mice_f1_slct, xlab = "day [d]", ylab = "body weight [g]", auto.key = list(title = "sex"))
 plot_data_check
 
 ggsave("015_r_use_saemix__data_check.pdf", plot = ggarrange(plot_data_check), path = here("../manuscript/display_items"),
        scale = 1, width = 9, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
+
+# __d) Check correlation ----
+
+splom({mice_f1_slct %>% dplyr::select(LitterSize, FatherDiet,  MotherDiet, AnimalSex,  BodyWeightG)}, main = "F1 mice")
+
+ggpairs({mice_f1_slct %>% dplyr::select(LitterSize, FatherDiet,  MotherDiet, AnimalSex,  BodyWeightG)}, 
+        title = "F1 mice", 
+        axisLabels = "show") 
 
 # RQ1 Which function is best suited to model weight gain (in a null model)? Gompertz, logistic, or exponential approach curve? ----
 
@@ -502,6 +520,7 @@ DecayModel.RQ5 <- saemixModel(model = decay.model,
 # _3.) Fit models ----
 
 DecayFIT.RQ5.male <- saemix(DecayModel.RQ5, ModelData.RQ5.male, saemix.options)
+summary(DecayFIT.RQ5.male)
 
 # Fixed effects
 # Parameter          Estimate    SE    CV(%)  p-value
@@ -520,6 +539,7 @@ DecayFIT.RQ5.male <- saemix(DecayModel.RQ5, ModelData.RQ5.male, saemix.options)
 # a.1                 0.834962 0.0589    7.05 - 
 
 DecayFIT.RQ5.female <- saemix(DecayModel.RQ5, ModelData.RQ5.female, saemix.options)
+summary(DecayFIT.RQ5.female)
 
 # Fixed effects
 # Parameter          Estimate   SE    CV(%) p-value

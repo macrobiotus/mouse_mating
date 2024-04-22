@@ -819,7 +819,15 @@
   * working in script `017_r_use_nlme.R`
     * revised plotting code, results congruent with  {saemix}
   * started updating rebuttal text and manuscript file (copy with new date created today)
+
+## 22-04-2024 - work day 77 - working on first revision 
+
+ * working in script `015_r_use_saemix.R`
+   * checking correlation between litter site and diets
   
+  * **contact CF Statcon**
+  * **addd confidence intervals**
+
 
 ## Todo queue (last updated 16-04-2024)
  
