@@ -483,9 +483,21 @@ legend(62, 20.3, legend=c("sons: parents low-caloric", "father high-caloric", "m
 ggsave("017_r_use_nlme__foo.pdf", path = here("../manuscript/display_items"),
        scale = 1, width = 12, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
 
+
+# RQ5: Use SSAsymp (null model only) ----
+
+fit_nlme_null <- nlme(BodyWeightG ~ SSasymp(MeasurementDay, Asym, R0, lrc),
+                      data = mice_f1_slct,
+                      fixed = Asym + R0 + lrc  ~ 1,
+                      random = Asym ~ 1,
+                      groups = ~ AnimalId, 
+                      start = getInitial(BodyWeightG ~ SSasymp(MeasurementDay, Asym, R0, lrc), data = mice_f1_slct))
+
+summary(fit_nlme_null)
+
+
 # Snapshot environment ----
 
 sessionInfo()
 save.image(file = here("scripts", "017_r_use_nlme.Rdata"))
 renv::snapshot()
-
