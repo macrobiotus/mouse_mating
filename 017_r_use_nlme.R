@@ -495,7 +495,6 @@ fit_nlme_null <- nlme(BodyWeightG ~ SSasymp(MeasurementDay, Asym, R0, lrc),
 
 summary(fit_nlme_null)
 
-
 # Snapshot environment ----
 
 sessionInfo()
