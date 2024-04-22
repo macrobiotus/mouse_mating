@@ -479,15 +479,15 @@ npde.DecayFIT.RQ4 <- npdeSaemix(DecayFIT.RQ4) # skewness and kurtosis of normali
 DecayFIT.RQ3
 DecayFIT.RQ4 # <- BIC AIC with diets worse then sex and litter size alone
 
-teststatRQ12 <- -2 * (as.numeric(logLik(DecayFIT.RQ3)) - as.numeric(logLik(DecayFIT.RQ4)))
-p.val <- pchisq(teststatRQ12, df = 3, lower.tail = FALSE)
+teststatRQ34 <- -2 * (as.numeric(logLik(DecayFIT.RQ3)) - as.numeric(logLik(DecayFIT.RQ4)))
+p.val <- pchisq(teststatRQ34, df = 3, lower.tail = FALSE)
 p.val # model with diets is not distinctly different from when not adding diets
 
 # _7.) Answer RQ4 ----
 
-# Adding diet to the model with sex and litter size does not improve, but worsens it.
+# Adding diet to the model with sex and litter size does not improve it, but worsen it.
 # Adding diet to the model with sex and litter does not make it significantly different
-# from the respective null-model. The model is likely overfitted.
+# from the respective null-model. The model is likely over fitted.
 
 # RQ5: What are the effects of diet within each sex individually dependent on litter sizes? ----
 
@@ -569,8 +569,8 @@ plot(DecayFIT.RQ5.male, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
 plot(DecayFIT.RQ5.female, plot.type="parameters.vs.covariates", ask=TRUE)
 plot(DecayFIT.RQ5.male, plot.type="parameters.vs.covariates", ask=TRUE)
 
-npde.DecayFIT.RQ4 <- npdeSaemix(DecayFIT.RQ5.female) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
-npde.DecayFIT.RQ4 <- npdeSaemix(DecayFIT.RQ5.male) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
+npde.DecayFIT.RQ5 <- npdeSaemix(DecayFIT.RQ5.female) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
+npde.DecayFIT.RQ5 <- npdeSaemix(DecayFIT.RQ5.male) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
 
 # _5.) Plot model predictions ----
 
@@ -635,6 +635,118 @@ legend(42, 18, legend=c("male", "male, mother on HCD"),
 # _6.) Compare models ----
 
 # no null model for comparison built yet, needed would be above data sets without diets
+
+# RQ6: Disentangle Litter Size and Diet effect on Body weight ----
+
+# Same model as in RQ5 but without diets, but only with litter size
+
+ModelData.RQ6.male <- saemixData(
+  name.data = {mice_f1_slct %>% filter(AnimalSex == "m")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
+  name.covariates = c("LitterSize")
+)
+
+ModelData.RQ6.female <- saemixData(
+  name.data = {mice_f1_slct %>% filter(AnimalSex == "f")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
+  name.covariates = c("LitterSize")
+)
+
+# _2.) Define model object ----
+
+DecayModel.RQ6 <- saemixModel(model = decay.model,
+                              description= "Exponential approach", 
+                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
+                              transform.par = c(1,1,1), 
+                              fixed.estim = c(1,1,1),
+                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
+                              covariate.model = matrix(c(1,1,1), ncol=3, byrow=TRUE),
+                              omega.init = matrix(c(1,0,0,0, 1,0,0,0,1),ncol=3, byrow=TRUE), 
+                              error.model="constant")
+
+# _3.) Fit models ----
+
+DecayFIT.RQ6.male <- saemix(DecayModel.RQ6, ModelData.RQ6.male, saemix.options)
+summary(DecayFIT.RQ6.male)
+
+# Litter size not significant
+
+DecayFIT.RQ6.female <- saemix(DecayModel.RQ6, ModelData.RQ6.female, saemix.options)
+summary(DecayFIT.RQ6.female)
+
+# Litter size significant for b and k
+
+
+# _4.) Plot model fits ----
+
+# all looking good
+plot(DecayFIT.RQ6.female, plot.type="observations.vs.predictions" )
+plot(DecayFIT.RQ6.male, plot.type="observations.vs.predictions" )
+
+plot(DecayFIT.RQ6.female, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
+plot(DecayFIT.RQ6.male, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
+
+plot(DecayFIT.RQ6.female, plot.type="parameters.vs.covariates", ask=TRUE)
+plot(DecayFIT.RQ6.male, plot.type="parameters.vs.covariates", ask=TRUE)
+
+npde.DecayFIT.RQ6 <- npdeSaemix(DecayFIT.RQ6.female) # residuals not normal - skewed
+npde.DecayFIT.RQ6 <- npdeSaemix(DecayFIT.RQ6.male)   # residuals less sked then among females but still skewed
+
+# _5.) Plot model predictions ----
+
+# __a) females ----
+
+# female mice, both parents on low caloric diet 
+a = coefficients(DecayFIT.RQ6.female)$fixed[1]
+b = coefficients(DecayFIT.RQ6.female)$fixed[2]
+k = coefficients(DecayFIT.RQ6.female)$fixed[3]
+
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      xlab = "days [d]", ylab = "weight [g]", col = "black", lty = "solid")
+
+# female mice with increasing litter size, both parents on low caloric diet 
+a = coefficients(DecayFIT.RQ6.female)$fixed[1]
+b = coefficients(DecayFIT.RQ6.female)$fixed[2] * (1-0.14491) 
+k = coefficients(DecayFIT.RQ6.female)$fixed[3] * (1-0.13252)
+
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      xlab = "days [d]", ylab = "weight [g]", col = "red", lty = "solid", add = TRUE)
+
+# _6.) Compare models ----
+
+DecayFIT.RQ5.female
+
+# Statistical criteria
+# Likelihood computed by linearisation
+#  -2LL = 248.7304 
+#   AIC = 286.7304 
+#   BIC = 306.5763 
+# Likelihood computed by importance sampling
+#  -2LL = 249.3118 
+#   AIC = 287.3118 
+#   BIC = 307.1577 
+
+DecayFIT.RQ6.female # <- simpler model is better 
+
+# Statistical criteria
+# Likelihood computed by linearisation
+#  -2LL= 260.5673 
+#   AIC= 286.5673 
+#   BIC= 300.1461 
+# Likelihood computed by importance sampling
+#  -2LL = 258.9584 
+#   AIC = 284.9584 
+#   BIC = 298.5372
+
+teststatRQ56.female <- -2 * (as.numeric(logLik(DecayFIT.RQ5.female)) - as.numeric(logLik(DecayFIT.RQ6.female)))
+p.val <- pchisq(teststatRQ56.female, df = 3, lower.tail = FALSE)
+p.val # model with diets is not distinctly different from when not adding diets
+
+
+DecayFIT.RQ5.male
+DecayFIT.RQ6.male # <- simpler model is better 
+
+teststatRQ56.male <- -2 * (as.numeric(logLik(DecayFIT.RQ5.male)) - as.numeric(logLik(DecayFIT.RQ6.male)))
+p.val <- pchisq(teststatRQ12, df = 3, lower.tail = FALSE)
+p.val # model with diets is not distinctly different from when not adding diets
 
 # Snapshot environment ----
 
