@@ -489,7 +489,7 @@ p.val # model with diets is not distinctly different from when not adding diets
 # Adding diet to the model with sex and litter does not make it significantly different
 # from the respective null-model. The model is likely over fitted.
 
-# RQ5: What are the effects of diet within each sex individually dependent on litter sizes? ----
+# RQ5: Part 1 - What are the effects of diet within each sex individually dependent on litter sizes? ----
 
 # _1.) Split data by sexes ----
 
@@ -636,7 +636,7 @@ legend(42, 18, legend=c("male", "male, mother on HCD"),
 
 # no null model for comparison built yet, needed would be above data sets without diets
 
-# RQ6: Disentangle Litter Size and Diet effect on Body weight ----
+# RQ6: Part 2 - Disentangle Litter Size and Diet effect on Body weight ----
 
 # Same model as in RQ5 but without diets, but only with litter size
 
@@ -713,44 +713,111 @@ curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = m
 # _6.) Compare models ----
 
 DecayFIT.RQ5.female
-
-# Statistical criteria
-# Likelihood computed by linearisation
-#  -2LL = 248.7304 
-#   AIC = 286.7304 
-#   BIC = 306.5763 
-# Likelihood computed by importance sampling
-#  -2LL = 249.3118 
-#   AIC = 287.3118 
-#   BIC = 307.1577 
-
 DecayFIT.RQ6.female # <- simpler model is better 
-
-# Statistical criteria
-# Likelihood computed by linearisation
-#  -2LL= 260.5673 
-#   AIC= 286.5673 
-#   BIC= 300.1461 
-# Likelihood computed by importance sampling
-#  -2LL = 258.9584 
-#   AIC = 284.9584 
-#   BIC = 298.5372
 
 teststatRQ56.female <- -2 * (as.numeric(logLik(DecayFIT.RQ5.female)) - as.numeric(logLik(DecayFIT.RQ6.female)))
 p.val <- pchisq(teststatRQ56.female, df = 3, lower.tail = FALSE)
 p.val # model with diets is not distinctly different from when not adding diets
 
-
 DecayFIT.RQ5.male
 DecayFIT.RQ6.male # <- simpler model is better 
 
 teststatRQ56.male <- -2 * (as.numeric(logLik(DecayFIT.RQ5.male)) - as.numeric(logLik(DecayFIT.RQ6.male)))
-p.val <- pchisq(teststatRQ12, df = 3, lower.tail = FALSE)
+p.val <- pchisq(teststatRQ56.male, df = 3, lower.tail = FALSE)
 p.val # model with diets is not distinctly different from when not adding diets
+
+# RQ7: Part 3 - Disentangle Litter Size and Diet effect on Body weight ----
+
+# Same model as in RQ5 but only diets, not with litter size
+
+ModelData.RQ7.male <- saemixData(
+  name.data = {mice_f1_slct %>% filter(AnimalSex == "m")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
+  name.covariates = c("FatherDiet", "MotherDiet")
+)
+
+ModelData.RQ7.female <- saemixData(
+  name.data = {mice_f1_slct %>% filter(AnimalSex == "f")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
+  name.covariates = c("FatherDiet", "MotherDiet")
+)
+
+# _2.) Define model object ----
+
+DecayModel.RQ7 <- saemixModel(model = decay.model,
+                              description= "Exponential approach", 
+                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
+                              transform.par = c(1,1,1), 
+                              fixed.estim = c(1,1,1),
+                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
+                              covariate.model = matrix(c(1,1,1, 1,1,1), ncol=3, byrow=TRUE),
+                              omega.init = matrix(c(1,0,0,0, 1,0,0,0,1),ncol=3, byrow=TRUE), 
+                              error.model="constant")
+
+# _3.) Fit models ----
+
+DecayFIT.RQ7.male <- saemix(DecayModel.RQ7, ModelData.RQ7.male, saemix.options)
+summary(DecayFIT.RQ7.male)
+
+# Mother's diet significant on all parameters, father's on some 
+
+DecayFIT.RQ7.female <- saemix(DecayModel.RQ7, ModelData.RQ7.female, saemix.options)
+summary(DecayFIT.RQ7.female)
+
+# Litter size significant for b and k
+
+# Mother's diet significant b only
+
+# _4.) Plot model fits ----
+
+# all looking good
+plot(DecayFIT.RQ7.female, plot.type="observations.vs.predictions" )
+plot(DecayFIT.RQ7.male, plot.type="observations.vs.predictions" )
+
+plot(DecayFIT.RQ7.female, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
+plot(DecayFIT.RQ7.male, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
+
+plot(DecayFIT.RQ7.female, plot.type="parameters.vs.covariates", ask=TRUE)
+plot(DecayFIT.RQ7.male, plot.type="parameters.vs.covariates", ask=TRUE)
+
+npde.DecayFIT.RQ7 <- npdeSaemix(DecayFIT.RQ7.female) # residuals not normal - skewed
+npde.DecayFIT.RQ7 <- npdeSaemix(DecayFIT.RQ7.male)   # residuals less sked then among females but still skewed
+
+# _5.) Compare models ----
+
+# __a) IC's ----
+
+DecayFIT.RQ5.female # litter size and diets - same as below
+DecayFIT.RQ6.female # litter size - same as above
+DecayFIT.RQ7.female # diet only - worst
+
+DecayFIT.RQ5.male # litter size and diets - worst 
+DecayFIT.RQ6.male # litter size only - best
+DecayFIT.RQ7.male # diet only - second best
+
+# __b) LRTs ----
+
+# females - litter size only vs diet only
+teststatRQ67.female <- -2 * (as.numeric(logLik(DecayFIT.RQ6.female)) - as.numeric(logLik(DecayFIT.RQ7.female)))
+p.val <- pchisq(teststatRQ67.female, df = 3, lower.tail = FALSE)
+p.val # model with diets is not distinctly different from model with litter sizes for females
+
+# males - litter size only vs diet only
+teststatRQ67.male <- -2 * (as.numeric(logLik(DecayFIT.RQ6.male)) - as.numeric(logLik(DecayFIT.RQ7.male)))
+p.val <- pchisq(teststatRQ67.male, df = 3, lower.tail = FALSE)
+p.val # model with diets is not distinctly different from model with litter sizes for females
+
+# females - diet vs diet and litter size
+teststatRQ57.female <- -2 * (as.numeric(logLik(DecayFIT.RQ5.female)) - as.numeric(logLik(DecayFIT.RQ7.female)))
+p.val <- pchisq(teststatRQ57.female, df = 3, lower.tail = FALSE)
+p.val # no differnces
+
+# males - diet vs diet and litter size
+teststatRQ57.male <- -2 * (as.numeric(logLik(DecayFIT.RQ5.male)) - as.numeric(logLik(DecayFIT.RQ7.male)))
+p.val <- pchisq(teststatRQ57.male, df = 3, lower.tail = FALSE)
+p.val # no differnces
 
 # Snapshot environment ----
 
 sessionInfo()
-save.image(file = here("scripts", "015_r_use_saemix.R.Rdata"))
+save.image(file = here("scripts", "015_r_use_saemix.Rdata"))
 renv::snapshot()
 

@@ -822,14 +822,13 @@
 
 ## 22-04-2024 - work day 77 - working on first revision 
 
+ * created new versions of word files in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation`
  * working in script `015_r_use_saemix.R`
-   * checking correlation between litter site and diets
-  
-  * **contact CF Statcon**
-  * **addd confidence intervals**
+   * checking correlation between litter site and diets in sex-specific data sets
+   * cannot find a significant difference between litter size and dietary effect in males or females
+   * contacted CF-STACON for evaluation
 
-
-## Todo queue (last updated 16-04-2024)
+## Todo queue (last updated 22-04-2024)
  
 ### **revision work** - after first submission
  
@@ -837,7 +836,7 @@
    * [x] commit - branch repository - commit
    * [x] adress as many comments as reasonable without re-running code
    * [x] revise introduction
-   * [ ] re-run analysis - see how "diets" could be used instead of "obesity" 
+   * [x] re-run analysis - see how "diets" could be used instead of "obesity" 
      * ~~[ ] consider using the the reference data beyond the initial plots~~
      * ~~[ ] starting point - fit Gompertz curves and compare significant changes in `alpha` parameter - see `https://www.ipb.pt/~vcadavez/websiteVC/tutorial/rcode/2019-04-28-gompertzmodel/`~~
      * ~~[ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`~~
@@ -856,14 +855,14 @@
      * [x] as shown in `015_r_use_saemix.R` (12-04-2024) testing males and females separately for perental diet interaction on weight gain
        * [x] in males: Mother HFD has an effect, as plotted
        * [x] in females: Mother HFD has an effect, and litter size has an effect, as plotted
-       * [ ] improve plots and export
+       * [x] in females and females: effect of litter size and diet cannot be disentangled
+       * [x] improve plots and export
        * ~~[ ] check diet interaction~~ impossible using saemix and nlme - too few data
+       * [ ] **export plots and update methods text**
      * [x] in 017_`r_use_nlme.R`
        * [x] repeated all analyses as in `015_r_use_saemix.R`
        * [x] sort script
        * [x] **get significant effects and plot those dedicatedly**
-       * [ ] **update text**
-       * [ ] and **export plot** 
      * [ ] script `50_r_array_analysis.r`
        * [ ] adjust new version as per results in `015_r_use_saemix.R` and `r_use_nlme.R`
        * [ ] relabel variables `obese` to (succesful) `HFD` in code
