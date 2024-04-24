@@ -35,7 +35,8 @@ library("lattice") # create trellis graphs
 library("ggpubr")  # save trellis graphs
 library("ggplot2") # save trellis graphs
 
-library("nlme")    # model non-linear mixed-effect dependencies
+library("nlme")      # model non-linear mixed-effect dependencies
+library("nlstools")  # model diagnosis
 
 # Setup data and model ----
 
@@ -50,11 +51,18 @@ mice_f1_slct <- left_join(mice_f1_slct, {mice_f0_slct %>% dplyr::select(AnimalId
 
 # _3.) Check data ----
 
-plot_data_check <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, groups = AnimalSex, data = mice_f1_slct, xlab = "day [d]", ylab = "body weight [g]", auto.key = list(title = "sex"))
-plot_data_check
+# __a) Body weight ----
 
-ggsave("017_r_use_nlme__data_check.pdf", plot = ggarrange(plot_data_check), path = here("../manuscript/display_items"),
+plot_data_check_a <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, groups = AnimalSex, data = mice_f1_slct, xlab = "day [d]", ylab = "body weight [g]", auto.key = list(title = "sex"))
+plot_data_check_a
+
+ggsave("017_r_use_nlme__data_check.pdf", plot = ggarrange(plot_data_check_a), path = here("../manuscript/display_items"),
   scale = 1, width = 9, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
+
+# __b) Body fat ----
+
+plot_data_check_b <- xyplot(FatWeightG ~ MeasurementDay | AnimalId, groups = AnimalSex, data = mice_f1_slct, xlab = "day [d]", ylab = "body weight [g]", auto.key = list(title = "sex"))
+plot_data_check_b  # There is only one measurement point for body fat, need at least three.  
 
 # _4.) Define possibly applicable model functions ----
 
@@ -73,18 +81,19 @@ curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab = "day [d]", ylab = 
 
 # _1.) Get a suitable null model ----
 
-# __a) Intended model:
+# __a) Show intended model:
 
 plot_rq1_null_model <- xyplot(BodyWeightG ~ MeasurementDay | AnimalSex, groups = AnimalId , data = mice_f1_slct, xlab = "day [d]", ylab = "body weight [g]",
                               panel = function(x, y) {
                                 panel.xyplot(x, y)
                                 panel.loess(x, y)
                                 })
+plot_rq1_null_model
 
 ggsave("017_r_use_nlme__rq1_null_model.pdf", plot = ggarrange(plot_rq1_null_model), path = here("../manuscript/display_items"),
        scale = 1, width = 5, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
 
-# __a) Build model:
+# __b) Build model:
 
 exp.appr.fit.diet.nosex.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                                      data = mice_f1_slct,
@@ -107,6 +116,7 @@ summary(exp.appr.fit.diet.nosex.null)
 # b              1.311560 0.06272352 248 20.91018       0
 # k              0.040515 0.00176842 248 22.91022       0
 
+
 # _3.) Plot null model fits  ----
 
 plot_rq1_null_model_fit <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, fit = exp.appr.fit.diet.nosex.null,
@@ -126,8 +136,6 @@ ggsave("017_r_use_nlme__plot_rq1_null_model_fit.pdf", plot = ggarrange(plot_rq1_
 # _4.) Plot null model residuals ----
 
 plot(exp.appr.fit.diet.nosex.null) # residuals seem ok
-
-# ** continue here **
 
 # _5.) Get matching diet model as in RQ4 in `015_r_use_saemix.R` but without litter size ----
 
@@ -228,7 +236,7 @@ curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100,
 legend(67, 19, legend=c("low-caloric", "father high-caloric", "mother high-caloric", "parents high-caloric"),
        col=c("black", "red", "red", "red"), lty = c(1,2,3,4), cex=0.8)
 
-# RQ2: What is the sex specific effect on body weight over time? ----
+# RQ2 - likely most suitable approach: What is the sex specific effect on body weight over time? ----
 
 # _1.) Get null model as in RQ1 of `015_r_use_saemix.R` ----
 
@@ -284,11 +292,17 @@ summary(exp.appr.fit.sex)
 
 plot(exp.appr.fit.sex)
 
-# _6.) Compare null and sex model ----
+# _6.) Plot sex model autocorrelation  ----
+
+# leaving this as negligible
+plot(ACF(exp.appr.fit.sex), alpha=0.05) # for determining an MA aspect
+plot(pacf(resid(exp.appr.fit.sex)))     # plot partial autocorrelation
+
+# _7.) Compare null and sex model ----
 
 anova(exp.appr.fit.null, exp.appr.fit.sex) # <- sex model is then matching null model better
 
-# _7.) Plot null and sex model ----
+# _8.) Plot null and sex model ----
 
 # __a) Trellis plots ----
 
@@ -484,7 +498,7 @@ ggsave("017_r_use_nlme__foo.pdf", path = here("../manuscript/display_items"),
        scale = 1, width = 12, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
 
 
-# RQ5: Use SSAsymp (null model only) ----
+# RQ5 - not pursued further: Use SSAsymp (null model only) ----
 
 fit_nlme_null <- nlme(BodyWeightG ~ SSasymp(MeasurementDay, Asym, R0, lrc),
                       data = mice_f1_slct,

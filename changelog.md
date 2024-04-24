@@ -831,8 +831,20 @@
 ## 23-04-2024 - work day 78 - working on first revision
 
  * met with AH and TH, happy with results, suggest using body fat
- * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
 
+## 24-04-2024 - work day 79 - working on first revision
+
+  * working in `017_r_use_nlme.R`
+    * there is only one measurement point for body fat, need at least three
+    * adding diagnostics of autocorrelation 
+    * using these resources:
+      * for interpretation: `https://ilyasbinsalih.medium.com/what-are-acf-and-pacf-plots-in-time-series-analysis-cb586b119c5d`
+      * for plotting: `https://medium.com/@marc.jacobs012/non-linear-mixed-model-in-r-a6fc054c3f82`
+    * skipping accounting for autocorrelation - deemed negligible
+    * use **RQ2** as equivalent to `015_r_use_saemix.R`'s **RQ5**
+
+    * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
+    
 ## Todo queue (last updated 22-04-2024)
  
 ### **revision work** - after first submission
@@ -869,18 +881,24 @@
        * [x] repeated all analyses as in `015_r_use_saemix.R`
        * [x] sort script
        * [x] **get significant effects and plot those dedicatedly**
-       * [ ] possibly apply further diagnostics as per `https://medium.com/@marc.jacobs012/non-linear-mixed-model-in-r-a6fc054c3f82`
+       * [x] possibly apply further diagnostics as per `https://medium.com/@marc.jacobs012/non-linear-mixed-model-in-r-a6fc054c3f82`
      * [ ] script `50_r_array_analysis.r`
        * [ ] adjust new version as per results in `015_r_use_saemix.R` and `r_use_nlme.R`
+         * [ ] use `015_r_use_saemix.R`'s **RQ2** 
+         * [ ] as equivalent to `015_r_use_saemix.R`'s **RQ5**
        * [ ] relabel variables `obese` to (succesful) `HFD` in code
        * [ ] relabel variables `obese` to (succesful) `HFD` in figures
        * [ ] only investigate effect of mothers obese
        * [ ] check wether axis correct axis is being looked at in PCA
        * [ ] verify DEGs with human or web data
      * [ ] improve figure 1 - diet labelling
- * [ ] re -outline individual manuscript sections after analysis
+ * [ ] re-outline individual manuscript sections after analysis
    * [ ] consider the rebuttal document on or after 25.3.2025
+   * [ ] revise introduction and discussion
+     * [ ]  **check articles:** met with NKB who suggests parental HFD will lower offsprings body weight -  
    * [ ] revise methods
+     * [ ] use `015_r_use_saemix.R`'s **RQ2** 
+     * [ ] as equivalent to `015_r_use_saemix.R`'s **RQ5**
    * [ ] revise results
    * [ ] copy other sections from outline document first
  * [x] consider litter size 
