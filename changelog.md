@@ -842,6 +842,8 @@
       * for plotting: `https://medium.com/@marc.jacobs012/non-linear-mixed-model-in-r-a6fc054c3f82`
     * skipping accounting for autocorrelation - deemed negligible
     * use **RQ2** as equivalent to `015_r_use_saemix.R`'s **RQ5**
+  * in manuscript text
+    * working `/HM_MouseMating/manuscript/240321_submission_2_preparation/240424_3_main_text.docx`
 
     * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
     
