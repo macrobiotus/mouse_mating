@@ -389,7 +389,7 @@ summary(exp.appr.fit.diet)
 # k.FatherDietHFD  0.002177 0.0034452 239  0.63182  0.5281
 # k.MotherDietHFD  0.003048 0.0033996 239  0.89669  0.3708
 
-# _3.) Plot diet model resiudals ----
+# _3.) Plot diet model residuals ----
 
 plot(exp.appr.fit.diet)
 

@@ -828,6 +828,11 @@
    * cannot find a significant difference between litter size and dietary effect in males or females
    * contacted CF-STACON for evaluation
 
+## 23-04-2024 - work day 78 - working on first revision
+
+ * met with AH and TH, happy with results, suggest using body fat
+ * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
+
 ## Todo queue (last updated 22-04-2024)
  
 ### **revision work** - after first submission
@@ -859,10 +864,12 @@
        * [x] improve plots and export
        * ~~[ ] check diet interaction~~ impossible using saemix and nlme - too few data
        * [ ] **export plots and update methods text**
+       * [ ] check usage of body fat
      * [x] in 017_`r_use_nlme.R`
        * [x] repeated all analyses as in `015_r_use_saemix.R`
        * [x] sort script
        * [x] **get significant effects and plot those dedicatedly**
+       * [ ] possibly apply further diagnostics as per `https://medium.com/@marc.jacobs012/non-linear-mixed-model-in-r-a6fc054c3f82`
      * [ ] script `50_r_array_analysis.r`
        * [ ] adjust new version as per results in `015_r_use_saemix.R` and `r_use_nlme.R`
        * [ ] relabel variables `obese` to (succesful) `HFD` in code

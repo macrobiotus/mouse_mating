@@ -674,7 +674,6 @@ summary(DecayFIT.RQ6.female)
 
 # Litter size significant for b and k
 
-
 # _4.) Plot model fits ----
 
 # all looking good
