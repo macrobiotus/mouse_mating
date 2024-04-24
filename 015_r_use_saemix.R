@@ -43,6 +43,18 @@ library("GGally")  # pair plot
 library("saemix")  # model non-linear mixed-effect dependencies
 library("npde")    # model non-linear mixed-effect dependencies
 
+# _3.) Functions ----
+
+get_p_from_seamix_lrt = function(sfit1, sfit2){
+  
+  # compute LRT test of two models - see 10.5964/meth.7061
+  ts <- -2 * (as.numeric(logLik(sfit1)) - as.numeric(logLik(sfit2)))
+  pv <-  pchisq(ts, df = 3, lower.tail = FALSE)
+  
+  return(pv)
+  
+}
+
 # Get and check data ----
 
 # _1.) Read in data ----
@@ -634,7 +646,7 @@ legend(42, 18, legend=c("male", "male, mother on HCD"),
 
 # _6.) Compare models ----
 
-# no null model for comparison built yet, needed would be above data sets without diets
+# see below in RQ8
 
 # RQ6 - relevant for DEG are only males - Part 2: Disentangle Litter Size and Diet effect on Body weight ----
 
@@ -805,14 +817,68 @@ p.val <- pchisq(teststatRQ67.male, df = 3, lower.tail = FALSE)
 p.val # model with diets is not distinctly different from model with litter sizes for females
 
 # females - diet vs diet and litter size
-teststatRQ57.female <- -2 * (as.numeric(logLik(DecayFIT.RQ5.female)) - as.numeric(logLik(DecayFIT.RQ7.female)))
-p.val <- pchisq(teststatRQ57.female, df = 3, lower.tail = FALSE)
-p.val # no differnces
-
+get_p_from_seamix_lrt(DecayFIT.RQ7.female, DecayFIT.RQ5.female) # sign differnce when adding litter
+                                                                # model better with litter size
 # males - diet vs diet and litter size
 teststatRQ57.male <- -2 * (as.numeric(logLik(DecayFIT.RQ5.male)) - as.numeric(logLik(DecayFIT.RQ7.male)))
 p.val <- pchisq(teststatRQ57.male, df = 3, lower.tail = FALSE)
 p.val # no differnces
+
+
+# RQ8 - relevant for DEG are only males -  Part 4: Get matching null models for RQ5 thru RQ7  ----
+
+# Same model as in RQ5 thru RQ7 but no covariates
+
+ModelData.RQ8.male.null <- saemixData(
+  name.data = {mice_f1_slct %>% filter(AnimalSex == "m")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay"
+  )
+
+ModelData.RQ8.female.null <- saemixData(
+  name.data = {mice_f1_slct %>% filter(AnimalSex == "f")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay"
+  )
+
+# _2.) Define model object ----
+
+DecayModel.RQ8.null <- saemixModel(model = decay.model,
+                              description= "Exponential approach", 
+                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
+                              transform.par = c(1,1,1), 
+                              fixed.estim = c(1,1,1),
+                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
+                              omega.init = matrix(c(1,0,0,0, 1,0,0,0,1),ncol=3, byrow=TRUE), 
+                              error.model="constant")
+
+# _3.) Fit models ----
+
+DecayFIT.RQ8.male.null <- saemix(DecayModel.RQ8.null, ModelData.RQ8.male.null, saemix.options)
+summary(DecayFIT.RQ8.male.null) # AIC = 562.4538, AIC = 561.7869
+
+DecayFIT.RQ8.female.null <- saemix(DecayModel.RQ8.null, ModelData.RQ8.female.null, saemix.options)
+summary(DecayFIT.RQ8.female.null) # AIC = 287.3807, AIC = 287.5092
+
+# _4.) Compare models ----
+
+# __a) IC's ----
+
+DecayFIT.RQ5.female # litter size and diets - same as below - AIC 286.7304, 287.3118 - better then null
+DecayFIT.RQ6.female # litter size - same as above - AIC 286.5673, 284.9584 - better then null
+DecayFIT.RQ7.female # diet only - worst - AIC - 289.3388, 289.3458 - worse then null
+
+DecayFIT.RQ5.male # litter size and diets - worst - AIC= 568.6449, AIC= 569.5282 - worse then null
+DecayFIT.RQ6.male # litter size only - best - AIC= 563.8716, AIC= 563.9557 - worse then null
+DecayFIT.RQ7.male # diet only - second best - AIC= 565.2276, AIC= 564.3591 - worse then null
+
+# __b) LRTs ----
+
+get_p_from_seamix_lrt(DecayFIT.RQ8.male.null, DecayFIT.RQ6.male) # no sign difference - with litter size
+get_p_from_seamix_lrt(DecayFIT.RQ8.male.null, DecayFIT.RQ7.male) # sign difference - with diet - gets worse
+get_p_from_seamix_lrt(DecayFIT.RQ8.male.null, DecayFIT.RQ5.male) # sign difference - with both parameters - gets worse
+get_p_from_seamix_lrt(DecayFIT.RQ7.male, DecayFIT.RQ5.male)      # no sign differences - with or without litter with diets
+
+get_p_from_seamix_lrt(DecayFIT.RQ8.female.null, DecayFIT.RQ6.female) # sign difference - when only litter - gets better
+get_p_from_seamix_lrt(DecayFIT.RQ8.female.null, DecayFIT.RQ7.female) # sign difference - when only diet - gets worse
+get_p_from_seamix_lrt(DecayFIT.RQ8.female.null, DecayFIT.RQ5.female) # sign difference - when both litter and diet - gets better
+get_p_from_seamix_lrt(DecayFIT.RQ6.female, DecayFIT.RQ5.female)      # sign differences - litter only is better
 
 # Snapshot environment ----
 

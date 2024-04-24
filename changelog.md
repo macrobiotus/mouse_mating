@@ -793,9 +793,10 @@
     * got working 0 model matching 0 model of {saemix}
     * got working sex model matching sex model of {saemix}
     * finished all models
-  * updated todo below 
-  * woeking in  `017_r_use_nlme.R`
+    * got null models and ranked them - now see RQ5 to RQ8 
+  * working in  `017_r_use_nlme.R`
     * got all possible sex specific models as in `015_r_use_saemix.R`
+  * updated todo below 
 
 ## 17-04-2024 - work day 75 - working on first revision 
   
@@ -848,17 +849,29 @@
   * working in script `015_r_use_saemix.R`
     * for DEG discovery only males are relavant - adding statment to modelling code
     * **focus on RQ5,6,7** 
+  * updated todo
 
+## 25-04-2024 - work day 80 - working on first revision
+
+ * meeting with CF-STATCON
+   * in `017_r_use_nlme.R`
+     * [ ] check model diagnostics - done right?
+   * in `015_r_use_saemix.R`
+     * [ ] check LRT test syntax - done right?
+     * [ ] check model diagnostics - done right?
+     
+    
+    
     * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
     
-## Todo queue (last updated 22-04-2024)
+## Todo queue (last updated 24-04-2024)
  
 ### **revision work** - after first submission
  
  * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
    * [x] commit - branch repository - commit
    * [x] adress as many comments as reasonable without re-running code
-   * [x] revise introduction
+   * [x] revise introduction - **now done up until modelling**
    * [x] re-run analysis - see how "diets" could be used instead of "obesity" 
      * ~~[ ] consider using the the reference data beyond the initial plots~~
      * ~~[ ] starting point - fit Gompertz curves and compare significant changes in `alpha` parameter - see `https://www.ipb.pt/~vcadavez/websiteVC/tutorial/rcode/2019-04-28-gompertzmodel/`~~
@@ -875,35 +888,36 @@
        * [x] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
        * ~~[ ] both parents obese - offspring sex neglected - male  - female~~
        * ~~[ ] one parent obese - offspring sex neglected - male - female~~
-     * [x] as shown in `015_r_use_saemix.R` (12-04-2024) testing males and females separately for perental diet interaction on weight gain
+     * [x] in `015_r_use_saemix.R` - also testing males and females separately for perental diet interaction on weight gain
        * [x] in males: Mother HFD has an effect, as plotted
        * [x] in females: Mother HFD has an effect, and litter size has an effect, as plotted
        * [x] in females and females: effect of litter size and diet cannot be disentangled
        * [x] improve plots and export
        * ~~[ ] check diet interaction~~ impossible using saemix and nlme - too few data
-       * [ ] **export plots and update methods text**
-       * [ ] check usage of body fat
-     * [x] in 017_`r_use_nlme.R`
+       * [x] check usage of body fat - only one measurement point availabel
+       * [ ] **for relevant results and model comparisons see RQ6**
+     * [x] in `017_r_use_nlme.R` - also testing males and females separately for perental diet interaction on weight gain
        * [x] repeated all analyses as in `015_r_use_saemix.R`
-       * [x] sort script
-       * [x] **get significant effects and plot those dedicatedly**
+       * [x] sorted script
        * [x] possibly apply further diagnostics as per `https://medium.com/@marc.jacobs012/non-linear-mixed-model-in-r-a6fc054c3f82`
+       * [ ] **for relevant results and model comparisons see RQ5, 6, 7, 8**
+       * [ ] possibly further implement usage of function `get_p_from_seamix_lrt()`
      * [ ] script `50_r_array_analysis.r`
        * [ ] adjust new version as per results in `015_r_use_saemix.R` and `r_use_nlme.R`
-         * [ ] in `015_r_use_saemix.R` for DEG discovery only males are relavant
-         * [ ] in `015_r_use_saemix.R`- **focus on RQ5,6,7**  
-         * [ ] as equivalent to `015_r_use_saemix.R`'s **RQ5**
+         * [ ] for DEG discovery only males are relavent as there are only males in the RNA seq data
+         * [ ] in `015_r_use_saemix.R` - **null model best for males** - **litter size is best for females** - see **focus on RQ5,6,7 and 8**
+         * [ ] in `017_r_use_nlme.R` - **diet is borderline best for males** - **diet is worse for females, litter size can't be estimated-  **see RQ6** 
        * [ ] relabel variables `obese` to (succesful) `HFD` in code
        * [ ] relabel variables `obese` to (succesful) `HFD` in figures
-       * [ ] only investigate effect of mothers obese
-       * [ ] include suitable sample size estimation
-       * [ ] check wether axis correct axis is being looked at in PCA
-       * [ ] verify DEGs with human or web data
-     * [ ] improve figure 1 - diet labelling
+       * [ ] DEG analysis: check wether axis correct axis is being looked at in PCA
+       * [ ] DEG analysis: include suitable sample size estimation
+       * [ ] DEG analysis:  **only investigate effect of mothers obese among males as per nlme results**
+       * [ ] DEG analysis: check wether axis correct axis is being looked at in PCAverify DEGs with human or web data
+       * [ ] improve figure 1 - diet labelling
  * [ ] re-outline individual manuscript sections after analysis
    * [ ] consider the rebuttal document on or after 25.3.2025
    * [ ] revise introduction and discussion
-     * [ ]  **check articles:** met with NKB who suggests parental HFD will lower offsprings body weight -  
+     * [ ] **check articles:** met with NKB who suggests parental HFD will lower offsprings body weight -  
    * [ ] revise methods
      * [ ] use `015_r_use_saemix.R`'s **RQ2** 
      * [ ] as equivalent to `015_r_use_saemix.R`'s **RQ5**
