@@ -519,8 +519,151 @@ fit_nlme_null <- nlme(BodyWeightG ~ SSasymp(MeasurementDay, Asym, R0, lrc),
 summary(fit_nlme_null)
 
 
-# RQ6: Use male and female data separately for DEG, find the diet effect.
+# RQ6: Use male and female data separately for DEG, find the diet effect. ----
 
+# _1.) Seperate data sets ----
+
+mice_f1_slct.male <- mice_f1_slct %>% filter(AnimalSex == "m")
+mice_f1_slct.female <- mice_f1_slct %>% filter(AnimalSex == "f")
+
+# _2.) Get  diet and litter models as in `015_r_use_saemix.R` ----
+
+# __a) Males ----
+
+exp.appr.fit.litter.diet.male <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                                      data = mice_f1_slct.male,
+                                      fixed  = a + b + k ~ LitterSize + FatherDiet + MotherDiet,
+                                      random = a  ~ 1 | AnimalId,
+                                      na.action = na.exclude,
+                                      start = c(25.30,  1.31,  0.04,
+                                                0.17,  0.09,  0.04,
+                                                0.01,  0.08,  0.02,
+                                                0.01,  0.08,  0.02),
+                                      control = nlmeControl(msMaxIter = 50, msVerbose = FALSE))
+
+summary(exp.appr.fit.litter.diet.male) # mother diet borderline significant for a - lowers it
+
+# __b) Females ----
+
+exp.appr.fit.litter.diet.female <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                                      data = mice_f1_slct.female,
+                                      fixed  = a + b + k ~ LitterSize + FatherDiet + MotherDiet,
+                                      random = a  ~ 1 | AnimalId,
+                                      na.action = na.exclude,
+                                      start = c(25.30,  1.31,  0.04,
+                                                0.17,  0.09,  0.04,
+                                                0.01,  0.08,  0.02,
+                                                0.01,  0.08,  0.02),
+                                      control = nlmeControl(msMaxIter = 50, msVerbose = FALSE))
+
+# no convergence
+
+# _3.) Get  diet models as in `015_r_use_saemix.R` ----
+
+# __a) Males ----
+
+exp.appr.fit.diet.male <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                                      data = mice_f1_slct.male,
+                                      fixed  = a + b + k ~ FatherDiet + MotherDiet,
+                                      random = a  ~ 1 | AnimalId,
+                                      na.action = na.exclude,
+                                      start = c(25.30,  1.31,  0.04,
+                                                0.17,  0.09,  0.04, 
+                                                0.01,  0.08,  0.02),
+                                      control = nlmeControl(msMaxIter = 50, msVerbose = FALSE))
+
+summary(exp.appr.fit.diet.male) # diets insignificant
+
+# __b) Females ----
+
+exp.appr.fit.diet.female <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                               data = mice_f1_slct.female,
+                               fixed  = a + b + k ~ FatherDiet + MotherDiet,
+                               random = a  ~ 1 | AnimalId,
+                               na.action = na.exclude,
+                               start = c(25.30,  1.31,  0.04,
+                                         0.17,  0.09,  0.04, 
+                                         0.01,  0.08,  0.02),
+                               control = nlmeControl(msMaxIter = 50, msVerbose = FALSE))
+
+summary(exp.appr.fit.diet.female) # diets insignificant
+
+
+# _4.) Get litter size models as in `015_r_use_saemix.R` ----
+
+# __a) Males ----
+
+exp.appr.fit.litter.male <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                               data = mice_f1_slct.male,
+                               fixed  = a + b + k ~ LitterSize,
+                               random = a  ~ 1 | AnimalId,
+                               na.action = na.exclude,
+                               start = c(25.30,  1.31,  0.04,
+                                         0.17,  0.09,  0.04),
+                               control = nlmeControl(msMaxIter = 50, msVerbose = FALSE))
+
+# can't be estimated
+
+# __b) Females ----
+
+exp.appr.fit.litter.female <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                                 data = mice_f1_slct.female,
+                                 fixed  = a + b + k ~ LitterSize,
+                                 random = a  ~ 1 | AnimalId,
+                                 na.action = na.exclude,
+                                 start = c(25.30,  1.31,  0.04,
+                                           0.17,  0.09,  0.04),
+                                 control = nlmeControl(msMaxIter = 50, msVerbose = FALSE))
+
+# can't be estimated
+
+# _5.) Get matching null models  ----
+
+# __a) Males ----
+
+exp.appr.fit.null.male <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                                 data = mice_f1_slct.male,
+                                 fixed  = a + b + k ~ 1,
+                                 random = a  ~ 1 | AnimalId,
+                                 na.action = na.exclude,
+                                 start = c(25.30,  1.31,  0.04),
+                                 control = nlmeControl(msMaxIter = 50, msVerbose = FALSE))
+
+summary(exp.appr.fit.null.male)
+
+# __b) Females ----
+
+exp.appr.fit.null.female <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                                   data = mice_f1_slct.female,
+                                   fixed  = a + b + k ~ 1,
+                                   random = a  ~ 1 | AnimalId,
+                                   na.action = na.exclude,
+                                   start = c(25.30,  1.31,  0.04),
+                                   control = nlmeControl(msMaxIter = 50, msVerbose = FALSE))
+
+summary(exp.appr.fit.null.female)
+
+
+# _6.) Rank models ----
+
+AIC(exp.appr.fit.null.male)        # 564.3531
+AIC(exp.appr.fit.diet.male)        # 563.9041 - better then null - best !
+AIC(exp.appr.fit.litter.diet.male) # 568.8875 - worse then previeous !
+
+anova(exp.appr.fit.litter.diet.male, exp.appr.fit.diet.male) # litter not significantly different from diet alone
+anova(exp.appr.fit.null.male, exp.appr.fit.diet.male)        # adding diet is borderline significant over null model
+
+
+
+AIC(exp.appr.fit.null.female) # 285.689
+AIC(exp.appr.fit.diet.female) # 288.3013 - worse !
+
+anova(exp.appr.fit.null.female, exp.appr.fit.diet.female) # adding diet is makes the model significantly worse for females
+
+
+# _7.) Plot models 
+
+plot(exp.appr.fit.diet.male)
 
 # Snapshot environment ----
 

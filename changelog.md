@@ -794,7 +794,8 @@
     * got working sex model matching sex model of {saemix}
     * finished all models
   * updated todo below 
-  * sorted `017_r_use_nlme.R` for write-up
+  * woeking in  `017_r_use_nlme.R`
+    * got all possible sex specific models as in `015_r_use_saemix.R`
 
 ## 17-04-2024 - work day 75 - working on first revision 
   
