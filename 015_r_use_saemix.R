@@ -489,7 +489,7 @@ p.val # model with diets is not distinctly different from when not adding diets
 # Adding diet to the model with sex and litter does not make it significantly different
 # from the respective null-model. The model is likely over fitted.
 
-# RQ5: Part 1 - What are the effects of diet within each sex individually dependent on litter sizes? ----
+# RQ5 - relevant for DEG are only males -  Part 1: What are the effects of diet within each sex individually dependent on litter sizes? ----
 
 # _1.) Split data by sexes ----
 
@@ -636,7 +636,7 @@ legend(42, 18, legend=c("male", "male, mother on HCD"),
 
 # no null model for comparison built yet, needed would be above data sets without diets
 
-# RQ6: Part 2 - Disentangle Litter Size and Diet effect on Body weight ----
+# RQ6 - relevant for DEG are only males - Part 2: Disentangle Litter Size and Diet effect on Body weight ----
 
 # Same model as in RQ5 but without diets, but only with litter size
 
@@ -725,7 +725,7 @@ teststatRQ56.male <- -2 * (as.numeric(logLik(DecayFIT.RQ5.male)) - as.numeric(lo
 p.val <- pchisq(teststatRQ56.male, df = 3, lower.tail = FALSE)
 p.val # model with diets is not distinctly different from when not adding diets
 
-# RQ7: Part 3 - Disentangle Litter Size and Diet effect on Body weight ----
+# RQ7 - relevant for DEG are only males -  Part 3: - Disentangle Litter Size and Diet effect on Body weight ----
 
 # Same model as in RQ5 but only diets, not with litter size
 

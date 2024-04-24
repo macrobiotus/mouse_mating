@@ -844,6 +844,9 @@
     * use **RQ2** as equivalent to `015_r_use_saemix.R`'s **RQ5**
   * in manuscript text
     * working `/HM_MouseMating/manuscript/240321_submission_2_preparation/240424_3_main_text.docx`
+  * working in script `015_r_use_saemix.R`
+    * for DEG discovery only males are relavant - adding statment to modelling code
+    * **focus on RQ5,6,7** 
 
     * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
     
@@ -886,11 +889,13 @@
        * [x] possibly apply further diagnostics as per `https://medium.com/@marc.jacobs012/non-linear-mixed-model-in-r-a6fc054c3f82`
      * [ ] script `50_r_array_analysis.r`
        * [ ] adjust new version as per results in `015_r_use_saemix.R` and `r_use_nlme.R`
-         * [ ] use `015_r_use_saemix.R`'s **RQ2** 
+         * [ ] in `015_r_use_saemix.R` for DEG discovery only males are relavant
+         * [ ] in `015_r_use_saemix.R`- **focus on RQ5,6,7**  
          * [ ] as equivalent to `015_r_use_saemix.R`'s **RQ5**
        * [ ] relabel variables `obese` to (succesful) `HFD` in code
        * [ ] relabel variables `obese` to (succesful) `HFD` in figures
        * [ ] only investigate effect of mothers obese
+       * [ ] include suitable sample size estimation
        * [ ] check wether axis correct axis is being looked at in PCA
        * [ ] verify DEGs with human or web data
      * [ ] improve figure 1 - diet labelling

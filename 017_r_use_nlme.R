@@ -77,7 +77,7 @@ approach.formula <- as.formula(y ~ a * (1 - b * exp( -k * x)))
 a = 25.3005; b = 1.2644; k = 0.0392
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]", col = "darkgray", xlim =c(30, 100), ylim=c(15, 25))
 
-# RQ1: What are the effects of diet regardless of sex ? ----
+# RQ1: What are the effects of diet regardless of sex? (RE structure possibly wrong) ----
 
 # _1.) Get a suitable null model ----
 
@@ -236,7 +236,7 @@ curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100,
 legend(67, 19, legend=c("low-caloric", "father high-caloric", "mother high-caloric", "parents high-caloric"),
        col=c("black", "red", "red", "red"), lty = c(1,2,3,4), cex=0.8)
 
-# RQ2 - likely most suitable approach: What is the sex specific effect on body weight over time? ----
+# RQ2: What is the sex specific effect on body weight over time? (For reporting in manuscript, but not for DEG analysis) ----
 
 # _1.) Get null model as in RQ1 of `015_r_use_saemix.R` ----
 
@@ -361,7 +361,6 @@ legend(67, 19, legend=c("null model", "male offsrping", "female offsrping"),
 
 # _1.) Get litter model as in RQ3 of `015_r_use_saemix.R` ----
 
-
 # exp.appr.fit.litter <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
 #                          data = mice_f1_slct,
 #                          fixed  = a + b + k ~ AnimalSex + LitterSize,
@@ -376,7 +375,7 @@ legend(67, 19, legend=c("null model", "male offsrping", "female offsrping"),
 
 # Effect of litter size is to small to be estimated with nlme package and was insignificant in {seamix}
 
-# RQ4: What are the effects of diet, within each sex, on body weight ? ----
+# RQ4: What are the effects of diet, within each sex, on body weight ? (For reporting in manuscript, but not for DEG analysis) ----
 
 # _1.) Get sex/diet model as in RQ4 in `015_r_use_saemix.R` but without litter size ----
 
@@ -518,6 +517,10 @@ fit_nlme_null <- nlme(BodyWeightG ~ SSasymp(MeasurementDay, Asym, R0, lrc),
                       start = getInitial(BodyWeightG ~ SSasymp(MeasurementDay, Asym, R0, lrc), data = mice_f1_slct))
 
 summary(fit_nlme_null)
+
+
+# RQ6: Use male and female data separately for DEG, find the diet effect.
+
 
 # Snapshot environment ----
 
