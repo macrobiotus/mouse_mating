@@ -347,6 +347,16 @@ legend(67, 19, legend=c("null model", "male offsrping", "female offsrping"),
        col=c("black", "black", "red"), lty = c(2,1,1), cex=0.8)
 
 
+# _9.) Get model formulae for manuscript ----
+
+# doe not work for nlme:
+# equatiomatic::extract_eq(exp.appr.fit.sex) 
+
+# nothing obviously useful here:
+# broom.mixed::tidy(exp.appr.fit.sex) # No tidy method for objects of class nlme
+# broom.mixed::augment(exp.appr.fit.sex, data = mice_f1_slct))
+# broom.mixed::glance(exp.appr.fit.sex)
+
 # RQ3: Do Sex and litter size associate with the total weight gain? ----
 
 # _1.) Get litter model as in RQ3 of `015_r_use_saemix.R` ----
