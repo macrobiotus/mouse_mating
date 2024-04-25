@@ -877,19 +877,33 @@
     * added data with correctly defined litter sizes - doesn't work as good anymore
   * in `015_r_use_saemix.R`
     * added data with correctly defined litter sizes - **works well now**
+    * started plotting results
+  * erased the following files - restore using git and time machine backup 16:54
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/017_r_use_nlme.R`
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/017_r_use_nlme.Rdata`
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/020_r_h1.r`
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/020_r_h1.RData`
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/030_r_h2.r`
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/030_r_h2.RData`
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/040_r_h3.r`
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/040_r_h3.RData`
 
+ ## 26-04-2024 - work day 81 - working on first revision
 
-
-
-    * [ ] in  `015_r_use_saemix.R`
-      * [ ] run through entire script 
-      * [ ] plot and note notes results
-      * [ ] estimate Nora's question - model pup number by diet
-      * [ ] possibly retire other scripts (`017`, `018`)
-      * [ ] sort this document
+ **todo today!**
+ * [ ] in  `015_r_use_saemix.R`
+   * [x] run through entire script 
+   * [x] plot and notes results
+   * [ ] check for interactions
+   * [ ] estimate Nora's question - model pup number by diet
+ * [x] possibly retire other scripts (`017`, `018`)
+ * [ ] sort this document
       
-    * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
+  * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
     
+
+
+
 ## Todo queue (last updated 24-04-2024)
  
 ### **revision work** - after first submission
