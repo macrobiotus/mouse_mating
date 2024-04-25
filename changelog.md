@@ -853,15 +853,27 @@
 
 ## 25-04-2024 - work day 80 - working on first revision
 
- * meeting with CF-STATCON
+ * working in `017_r_use_nlme.R`
+   * minor formatting correction
+ * manuscript file and rebuttal letter 
+   * minor changes in introduction
+   * some comments addressed in rebuttal lettre - advanced slightly
+ * meeting with CF-STATCON (10:30)
    * in `017_r_use_nlme.R`
-     * [ ] check model diagnostics - done right?
+     * [x] check model diagnostics - done right?
    * in `015_r_use_saemix.R`
-     * [ ] check LRT test syntax - done right?
-     * [ ] check model diagnostics - done right?
-     
-    
-    
+     * [x] check LRT test syntax - done right?
+     * [x] check model diagnostics - done right?
+  * after meeting with CF-STATCON and NKB
+    * [x] create `018_r_use_nlme.R`
+    * [ ] correct litter size variable
+    * [ ] save number of male and female pups 
+    * [ ] model weight gain
+      * [ ] linearize predict by log-transform
+      * [ ] start with complex model - sex, diet, litter size
+      * [ ] decrease complexity
+    * [ ] model pup number by diet
+            
     * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
     
 ## Todo queue (last updated 24-04-2024)
