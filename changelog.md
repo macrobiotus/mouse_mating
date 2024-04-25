@@ -887,6 +887,11 @@
     * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/030_r_h2.RData`
     * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/040_r_h3.r`
     * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/040_r_h3.RData`
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R`
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.RData`
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/main_analysis.R`
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/main_analysis.RData`
+    * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/scratch_code_main_analysis.R`
 
  ## 26-04-2024 - work day 81 - working on first revision
 
