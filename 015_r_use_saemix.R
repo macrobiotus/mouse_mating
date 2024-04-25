@@ -423,7 +423,7 @@ curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = m
       xlab = "days [d]", ylab = "weight [g]", col = "black", add = TRUE)
 
 
-# __b) Male mice growth - increased litter size by one----
+# __d) Male mice growth - increased litter size by one----
 
 a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.181) * (1 - 0.017)
 b = coefficients(DecayFIT.RQ4)$fixed[2] 
@@ -432,7 +432,7 @@ k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 - 0.074)
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
       xlab = "days [d]", ylab = "weight [g]", col = "blue", add = TRUE)
 
-# __c) Female mice growth - increased litter size by one ----
+# __e) Female mice growth - increased litter size by one ----
 
 a = coefficients(DecayFIT.RQ3)$fixed[1] * (1 + -0.017)
 b = coefficients(DecayFIT.RQ3)$fixed[2]
@@ -441,39 +441,51 @@ k = coefficients(DecayFIT.RQ3)$fixed[3] * (1 - 0.074)
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
       xlab = "days [d]", ylab = "weight [g]", col = "blue", add = TRUE)
 
+# **continue here with plotting ** ----
 
+# __f) Male mice growth - mother diet ----
 
-# **continue here with plotting **
-
-
-
-
-
-
-
-
-
-# male mice growth - increased litter size
-a = coefficients(DecayFIT.RQ3)$fixed[1] * 1.19165
-b = coefficients(DecayFIT.RQ3)$fixed[2]
-k = coefficients(DecayFIT.RQ3)$fixed[3] * (1-0.09171)
+a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.181)
+b = coefficients(DecayFIT.RQ4)$fixed[2]
+k = coefficients(DecayFIT.RQ4)$fixed[3]
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "black", add = TRUE, lty = "dashed")
+      xlab = "days [d]", ylab = "weight [g]", col = "darkorange")
 
-# female mice growth  - increased litter size
+# __g) Female mice growth  - mother diet ----
+
 a = coefficients(DecayFIT.RQ3)$fixed[1]
 b = coefficients(DecayFIT.RQ3)$fixed[2]
-k = coefficients(DecayFIT.RQ3)$fixed[3] * (1-0.09171)
+k = coefficients(DecayFIT.RQ3)$fixed[3]
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "red", add = TRUE, lty = "dashed")
+      xlab = "days [d]", ylab = "weight [g]", col = "darkorange", add = TRUE)
 
+
+# __h) Male mice growth - father diet ----
+
+a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.181)
+b = coefficients(DecayFIT.RQ4)$fixed[2]
+k = coefficients(DecayFIT.RQ4)$fixed[3]
+
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      xlab = "days [d]", ylab = "weight [g]", col = "red")
+
+# __i) Female mice growth  - mother diet ----
+
+a = coefficients(DecayFIT.RQ3)$fixed[1]
+b = coefficients(DecayFIT.RQ3)$fixed[2]
+k = coefficients(DecayFIT.RQ3)$fixed[3]
+
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      xlab = "days [d]", ylab = "weight [g]", col = "red", add = TRUE)
+
+# adjust and export  / "all effects are additive"
 legend(65, 20.5, legend=c("male", "male - larger litter", "female", "female - larger litter"),
        col=c("black", "black", "red", "red"), lty = c(1,2,1,2), cex=0.8)
 
 
-
+# **continue here with testing interactions ** ----
 
 
 

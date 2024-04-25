@@ -878,7 +878,7 @@
   * in `015_r_use_saemix.R`
     * added data with correctly defined litter sizes - **works well now**
     * started plotting results
-  * erased the following files - restore using git and time machine backup 16:54
+  * erased the following files - restore using git and time machine backup on and before 16:54
     * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/017_r_use_nlme.R`
     * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/017_r_use_nlme.Rdata`
     * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/020_r_h1.r`
@@ -901,7 +901,7 @@
    * [x] plot and notes results
    * [ ] check for interactions
    * [ ] estimate Nora's question - model pup number by diet
- * [x] possibly retire other scripts (`017`, `018`)
+ * [x] possibly deletw other scripts (`017`, `018`) - see yesterday
  * [ ] sort this document
       
   * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
