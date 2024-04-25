@@ -28,8 +28,10 @@ gc()
 
 # _2.) Packages ----
 
-library("here")    # handle path names
-library("dplyr")   # handle data more easily
+library("here")     # handle path names
+library("dplyr")    # handle data more easily
+library("magrittr") # handle data more easily
+library("stringr")
 
 library("lattice") # create trellis graphs
 library("ggpubr")  # save trellis graphs
@@ -45,11 +47,26 @@ library("nlstools")  # model diagnosis
 mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
 mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
 
-# _2.) Add litter size to f1 ----
+# _2.) Add and correct litter sizes  ----
+
+# __a) Add litter sizes ----
 
 mice_f1_slct <- left_join(mice_f1_slct, {mice_f0_slct %>% dplyr::select(AnimalId, MatingWith, LitterSize) %>% distinct}, by = c("MotherId" = "AnimalId", "FatherId" = "MatingWith"))
 
-mice_f1_slct$LitterSize
+# __b) Indicate descriptive status of variable ----
+
+mice_f1_slct %<>% rename(LitterSizeDescription =  LitterSize)
+
+# __c) Isolate pup counts for each sex ----
+
+mice_f1_slct %<>% mutate(LitterSizeMale = as.double(sub("\\..*", "", LitterSizeDescription)))
+mice_f1_slct %<>% mutate(LitterSizeFemale = as.double(sub(".*\\.", "", LitterSizeDescription)))
+
+# __d) Redefine litter size  ----
+
+# to match with previous model formulae
+
+mice_f1_slct %<>% mutate(LitterSize = LitterSizeMale +  LitterSizeFemale)
 
 # _3.) Check data ----
 
@@ -58,7 +75,7 @@ mice_f1_slct$LitterSize
 plot_data_check_a <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, groups = AnimalSex, data = mice_f1_slct, xlab = "day [d]", ylab = "body weight [g]", auto.key = list(title = "sex"))
 plot_data_check_a
 
-ggsave("017_r_use_nlme__data_check.pdf", plot = ggarrange(plot_data_check_a), path = here("../manuscript/display_items"),
+ggsave("018_r_use_nlme__data_check.pdf", plot = ggarrange(plot_data_check_a), path = here("../manuscript/display_items"),
   scale = 1, width = 9, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
 
 # __b) Body fat ----
@@ -79,170 +96,12 @@ approach.formula <- as.formula(y ~ a * (1 - b * exp( -k * x)))
 a = 25.3005; b = 1.2644; k = 0.0392
 curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]", col = "darkgray", xlim =c(30, 100), ylim=c(15, 25))
 
-# RQ1: What are the effects of diet regardless of sex? (RE structure possibly wrong) ----
 
-# _1.) Get a suitable null model ----
+# RQ1: Effect of sex, litter size, parental diets  ----
 
-# __a) Show intended model:
+# _1.) Null model ----
 
-plot_rq1_null_model <- xyplot(BodyWeightG ~ MeasurementDay | AnimalSex, groups = AnimalId , data = mice_f1_slct, xlab = "day [d]", ylab = "body weight [g]",
-                              panel = function(x, y) {
-                                panel.xyplot(x, y)
-                                panel.loess(x, y)
-                                })
-plot_rq1_null_model
-
-ggsave("017_r_use_nlme__rq1_null_model.pdf", plot = ggarrange(plot_rq1_null_model), path = here("../manuscript/display_items"),
-       scale = 1, width = 5, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
-
-# __b) Build model:
-
-exp.appr.fit.diet.nosex.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
-                                     data = mice_f1_slct,
-                                     fixed  = a + b + k ~  1,
-                                     random = a  ~  AnimalSex | AnimalId,
-                                     na.action = na.exclude,
-                                     start = c(25.30,  1.31,  0.04),
-                                     control = nlmeControl(msMaxIter = 50, msVerbose = FALSE))
-
-# _2.) Check null model ----
-
-summary(exp.appr.fit.diet.nosex.null)
-
-# AIC      BIC    logLik
-# 932.4092 958.3356 -459.2046
-
-# Fixed effects:  a + b + k ~ 1 
-# Value  Std.Error  DF  t-value p-value
-# a.(Intercept) 23.112100 0.25354413 248 91.15613       0
-# b              1.311560 0.06272352 248 20.91018       0
-# k              0.040515 0.00176842 248 22.91022       0
-
-
-# _3.) Plot null model fits  ----
-
-plot_rq1_null_model_fit <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, fit = exp.appr.fit.diet.nosex.null,
-       strip = TRUE, aspect = "xy", grid = TRUE,
-       panel = function(x, y, ..., fit, subscripts) {
-         panel.xyplot(x, y, ...)
-         ypred <- fitted(fit)[subscripts]
-         panel.lines(x, ypred, col = "black")
-       },
-       xlab = "day [d]", ylab = "body weight [g]")
-
-plot_rq1_null_model_fit
-
-ggsave("017_r_use_nlme__plot_rq1_null_model_fit.pdf", plot = ggarrange(plot_rq1_null_model_fit), path = here("../manuscript/display_items"),
-       scale = 1, width = 12, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
-
-# _4.) Plot null model residuals ----
-
-plot(exp.appr.fit.diet.nosex.null) # residuals seem ok
-
-# _5.) Get matching diet model as in RQ4 in `015_r_use_saemix.R` but without litter size ----
-
-# (Diet interactions were not significant)
-
-exp.appr.fit.diet.nosex <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
-                                data = mice_f1_slct,
-                                fixed  = a + b + k ~  FatherDiet + MotherDiet,
-                                random = a  ~  AnimalSex | AnimalId,
-                                na.action = na.exclude,
-                                start = c(25.30,  1.31,  0.04,
-                                          0.17,  0.09,  0.04,
-                                          0.01,  0.08,  0.02),
-                                control = nlmeControl(msMaxIter = 50, msVerbose = FALSE))
-
-# _5.) Check diet model ----
-
-summary(exp.appr.fit.diet.nosex)
-
-# AIC      BIC    logLik
-# 924.2106 972.3597 -449.1053 <- better then null model - see LRT below
-
-# Fixed effects:  a + b + k ~ FatherDiet + MotherDiet 
-# Value Std.Error  DF  t-value p-value
-# a.(Intercept)   24.262459 0.4877282 242 49.74586  0.0000 *
-# a.FatherDietHFD -1.037515 0.4913831 242 -2.11142  0.0358 * a.FatherDietHFD significant
-# a.MotherDietHFD -0.943602 0.4729634 242 -1.99508  0.0472 * a.MotherDietHFD significant
-# b.(Intercept)    1.329206 0.1167432 242 11.38572  0.0000
-# b.FatherDietHFD  0.001529 0.1247160 242  0.01226  0.9902
-# b.MotherDietHFD -0.030819 0.1234833 242 -0.24958  0.8031
-# k.(Intercept)    0.038565 0.0032705 242 11.79192  0.0000
-# k.FatherDietHFD  0.001229 0.0035098 242  0.35004  0.7266
-# k.MotherDietHFD  0.002341 0.0034729 242  0.67419  0.5008
-
-# _6.) Plot diet model fits  ----
-
-plot_rq1_diet_model_fit <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, fit = exp.appr.fit.diet.nosex,
-                                  strip = TRUE, aspect = "xy", grid = TRUE,
-                                  panel = function(x, y, ..., fit, subscripts) {
-                                    panel.xyplot(x, y, ...)
-                                    ypred <- fitted(fit)[subscripts]
-                                    panel.lines(x, ypred, col = "black")
-                                  },
-                                  xlab = "day [d]", ylab = "body weight [g]")
-
-plot_rq1_diet_model_fit
-
-ggsave("017_r_use_nlme__plot_rq1_diet_model_fit.pdf", plot = ggarrange(plot_rq1_diet_model_fit), path = here("../manuscript/display_items"),
-       scale = 1, width = 12, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
-
-# _7.) Plot diet model residuals ----
-
-plot(exp.appr.fit.diet.nosex) # residuals seem ok
-
-# _8.) Compare models ----
-
-anova(exp.appr.fit.diet.nosex.null, exp.appr.fit.diet.nosex) # adding diet improves model
-
-# _9.) Plot diet model predictions ----
-
-# null model curve - all mice regardless of sex
-# a = fixed.effects(exp.appr.fit.diet.nosex.null)[1]
-# b = fixed.effects(exp.appr.fit.diet.nosex.null)[2]
-# k = fixed.effects(exp.appr.fit.diet.nosex.null)[3]
-# curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]",
-#       col = "black", xlim =c(30, 100), ylim=c(15, 25), lty = "dashed")
-
-# chow diet curve  - all mice regardless of sex
-a = fixed.effects(exp.appr.fit.diet.nosex)[1]
-b = fixed.effects(exp.appr.fit.diet.nosex)[4]
-k = fixed.effects(exp.appr.fit.diet.nosex)[7]
-curve(a * (1 - b * exp( -k * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]", 
-      col = "black", xlim =c(30, 100), ylim=c(15, 25))
-
-# father hfd diet curve  - all mice regardless of sex
-af = a + fixed.effects(exp.appr.fit.diet.nosex)[2] 
-bf = b + fixed.effects(exp.appr.fit.diet.nosex)[5]
-kf = k + fixed.effects(exp.appr.fit.diet.nosex)[8]
-curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, xlab = "day [d]", ylab = "body weight [g]", 
-      col = "red", xlim =c(30, 100), ylim=c(15, 25), add = TRUE, lty = "dotted")
-
-# mother hfd diet curve  - all mice regardless of sex
-af = a + fixed.effects(exp.appr.fit.diet.nosex)[3] # * 
-bf = b + fixed.effects(exp.appr.fit.diet.nosex)[6]
-kf = k + fixed.effects(exp.appr.fit.diet.nosex)[9]
-curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, 
-      xlab = "day [d]", ylab = "body weight [g]", col = "red", xlim =c(30, 100), ylim=c(15, 25),
-      add = TRUE, lty = "dashed")
-
-# mother and father hfd diet curve  - all mice regardless of sex
-af = a + fixed.effects(exp.appr.fit.diet.nosex)[3] + fixed.effects(exp.appr.fit.diet.nosex)[2]
-bf = b + fixed.effects(exp.appr.fit.diet.nosex)[6] + fixed.effects(exp.appr.fit.diet.nosex)[5]
-kf = k + fixed.effects(exp.appr.fit.diet.nosex)[9] + fixed.effects(exp.appr.fit.diet.nosex)[8]
-curve(af * (1 - bf * exp( -kf * x)), from = 35, to = 100, 
-      xlab = "day [d]", ylab = "body weight [g]", col = "red", xlim =c(30, 100), ylim=c(15, 25),
-      add = TRUE, lty = "dotdash")
-
-legend(67, 19, legend=c("low-caloric", "father high-caloric", "mother high-caloric", "parents high-caloric"),
-       col=c("black", "red", "red", "red"), lty = c(1,2,3,4), cex=0.8)
-
-# RQ2: What is the sex specific effect on body weight over time? (For reporting in manuscript, but not for DEG analysis) ----
-
-# _1.) Get null model as in RQ1 of `015_r_use_saemix.R` ----
-
-# eliminating sex from the random effect structure
+# __a.) Model definition ----
 
 exp.appr.fit.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                           data = mice_f1_slct,
@@ -252,12 +111,35 @@ exp.appr.fit.null <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
                           na.action = na.exclude,
                           control = nlmeControl(maxIter = 50, msVerbose = FALSE))
 
-# _2.) Check null model ----
+# __b.) Model summary ----
 
 summary(exp.appr.fit.null) 
 
 #      AIC      BIC    logLik
 # 937.2057 955.7246 -463.6028
+
+
+# _2.) Most complex model ----
+
+
+exp.appr.fit.sex.litter.fdiet.mdiet <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+                                            data = mice_f1_slct,
+                                            fixed  = a + b + k ~ LitterSize,
+                                            random = a ~ 1 | AnimalId,
+                                            start = c(22.41907, 2.87427, 0.07869, 
+                                                      0.13,  0.06,   0.08),
+                                            na.action = na.exclude,
+                                            control = nlmeControl(maxIter = 50, msVerbose = FALSE))
+
+
+table(mice_f1_slct$LitterSize, mice_f1_slct$AnimalSex)
+table(mice_f1_slct$FatherDiet, mice_f1_slct$LitterSize, mice_f1_slct$AnimalSex)
+table(mice_f1_slct$MotherDiet, mice_f1_slct$LitterSize, mice_f1_slct$AnimalSex)
+
+
+?table()
+
+
 
 # _3.) Get sex model as in RQ1 of `015_r_use_saemix.R` ----
 

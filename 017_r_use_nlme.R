@@ -40,16 +40,33 @@ library("nlstools")  # model diagnosis
 
 # Setup data and model ----
 
+# Setup data  ----
+
 # _1.) Read in data ----
 
 mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
 mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
 
-# _2.) Add litter size to f1 ----
+# _2.) Add and corrcet litter sizes  ----
+
+# __a) Add litter sizes ----
 
 mice_f1_slct <- left_join(mice_f1_slct, {mice_f0_slct %>% dplyr::select(AnimalId, MatingWith, LitterSize) %>% distinct}, by = c("MotherId" = "AnimalId", "FatherId" = "MatingWith"))
 
-mice_f1_slct$LitterSize
+# __b) Indicate descriptive status of variable ----
+
+mice_f1_slct %<>% rename(LitterSizeDescription =  LitterSize)
+
+# __c) Isolate pup counts for each sex ----
+
+mice_f1_slct %<>% mutate(LitterSizeMale = as.double(sub("\\..*", "", LitterSizeDescription)))
+mice_f1_slct %<>% mutate(LitterSizeFemale = as.double(sub(".*\\.", "", LitterSizeDescription)))
+
+# __d) Redefine litter size  ----
+
+# to match with previous model formulae
+
+mice_f1_slct %<>% mutate(LitterSize = LitterSizeMale +  LitterSizeFemale)
 
 # _3.) Check data ----
 
@@ -59,7 +76,7 @@ plot_data_check_a <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, groups = An
 plot_data_check_a
 
 ggsave("017_r_use_nlme__data_check.pdf", plot = ggarrange(plot_data_check_a), path = here("../manuscript/display_items"),
-  scale = 1, width = 9, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
+       scale = 1, width = 9, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
 
 # __b) Body fat ----
 
@@ -532,18 +549,18 @@ mice_f1_slct.female <- mice_f1_slct %>% filter(AnimalSex == "f")
 
 # __a) Males ----
 
-exp.appr.fit.litter.diet.male <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
-                                      data = mice_f1_slct.male,
-                                      fixed  = a + b + k ~ LitterSize + FatherDiet + MotherDiet,
-                                      random = a  ~ 1 | AnimalId,
-                                      na.action = na.exclude,
-                                      start = c(25.30,  1.31,  0.04,
-                                                0.17,  0.09,  0.04,
-                                                0.01,  0.08,  0.02,
-                                                0.01,  0.08,  0.02),
-                                      control = nlmeControl(msMaxIter = 50, msVerbose = FALSE))
-
-summary(exp.appr.fit.litter.diet.male) # mother diet borderline significant for a - lowers it
+# exp.appr.fit.litter.diet.male <- nlme(BodyWeightG ~ a * (1 - b * exp( -k * MeasurementDay)),
+#                                       data = mice_f1_slct.male,
+#                                       fixed  = a + b + k ~ LitterSize + FatherDiet + MotherDiet,
+#                                       random = a  ~ 1 | AnimalId,
+#                                       na.action = na.exclude,
+#                                       start = c(25.30,  1.31,  0.04,
+#                                                 0.17,  0.09,  0.04,
+#                                                 0.01,  0.08,  0.02,
+#                                                 0.01,  0.08,  0.02),
+#                                       control = nlmeControl(msMaxIter = 50, msVerbose = FALSE))
+# 
+# summary(exp.appr.fit.litter.diet.male) # mother diet borderline significant for a - lowers it
 
 # __b) Females ----
 
@@ -649,11 +666,11 @@ summary(exp.appr.fit.null.female)
 
 AIC(exp.appr.fit.null.male)        # 564.3531
 AIC(exp.appr.fit.diet.male)        # 563.9041 - better then null - best !
-AIC(exp.appr.fit.litter.diet.male) # 568.8875 - worse then previous !
+# AIC(exp.appr.fit.litter.diet.male) # 568.8875 - worse then previous !
 
-anova(exp.appr.fit.null.male, exp.appr.fit.diet.male)         # adding diet is borderline significant over null model
-anova(exp.appr.fit.null.male, exp.appr.fit.litter.diet.male)  # no significant differences when adding litter to null
-anova(exp.appr.fit.diet.male, exp.appr.fit.litter.diet.male)  # litter not significantly different from diet alone
+# anova(exp.appr.fit.null.male, exp.appr.fit.diet.male)         # adding diet is borderline significant over null model
+# anova(exp.appr.fit.null.male, exp.appr.fit.litter.diet.male)  # no significant differences when adding litter to null
+# anova(exp.appr.fit.diet.male, exp.appr.fit.litter.diet.male)  # litter not significantly different from diet alone
 
 AIC(exp.appr.fit.null.female) # 285.689
 AIC(exp.appr.fit.diet.female) # 288.3013 - worse !

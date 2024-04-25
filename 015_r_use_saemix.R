@@ -59,12 +59,29 @@ get_p_from_seamix_lrt = function(sfit1, sfit2){
 
 # _1.) Read in data ----
 
-mice_f0_slct <- readRDS( file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
-mice_f1_slct <- readRDS( file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
+mice_f0_slct <- readRDS(file = here("rds_storage", "mice_f0_slct_with_obesity.rds"))
+mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct_with_obesity.rds"))
 
-# _2.) Add litter size to f1 ----
+# _2.) Add and correct litter sizes  ----
+
+# __a) Add litter sizes ----
 
 mice_f1_slct <- left_join(mice_f1_slct, {mice_f0_slct %>% dplyr::select(AnimalId, MatingWith, LitterSize) %>% distinct}, by = c("MotherId" = "AnimalId", "FatherId" = "MatingWith"))
+
+# __b) Indicate descriptive status of variable ----
+
+mice_f1_slct %<>% rename(LitterSizeDescription =  LitterSize)
+
+# __c) Isolate pup counts for each sex ----
+
+mice_f1_slct %<>% mutate(LitterSizeMale = as.double(sub("\\..*", "", LitterSizeDescription)))
+mice_f1_slct %<>% mutate(LitterSizeFemale = as.double(sub(".*\\.", "", LitterSizeDescription)))
+
+# __d) Redefine litter size  ----
+
+# to match with previous model formulae
+
+mice_f1_slct %<>% mutate(LitterSize = LitterSizeMale +  LitterSizeFemale)
 
 # _3.) Check data ----
 
@@ -335,9 +352,7 @@ DecayFIT.RQ2
 # omega2.k -0.176    0.952    1.000  
 
 # second model is better in log-likelihood ratio test - see Likelihood Ratio Tests
-teststatRQ12 <- -2 * (as.numeric(logLik(DecayFIT.RQ1)) - as.numeric(logLik(DecayFIT.RQ2)))
-p.val <- pchisq(teststatRQ12, df = 3, lower.tail = FALSE)
-p.val
+get_p_from_seamix_lrt(DecayFIT.RQ1, DecayFIT.RQ2) # adding sex significantly imporves model
 
 # _6.) Answer RQ2 ----
 
@@ -377,18 +392,16 @@ npde.DecayFIT.RQ3 <- npdeSaemix(DecayFIT.RQ3) # skewness and kurtosis of normali
 
 # _5.) Compare models ----
 
-DecayFIT.RQ2
-DecayFIT.RQ3 # <- BIC AIC slightly better then in sex alone
+DecayFIT.RQ2 # sex-only model: AIC= 870.4367 and AIC= 868.782 
+DecayFIT.RQ3 # sex-litter-size model: AIC= 866.3005 and AIC= 862.1534 - better
 
-teststatRQ12 <- -2 * (as.numeric(logLik(DecayFIT.RQ2)) - as.numeric(logLik(DecayFIT.RQ3)))
-p.val <- pchisq(teststatRQ12, df = 3, lower.tail = FALSE)
-p.val #  (significant when adding litter size to sex)
+get_p_from_seamix_lrt(DecayFIT.RQ2, DecayFIT.RQ3) # adding litter to sex imporves model markedly
 
 # _6.) Answer RQ3 ----
 
 # _a) In text ----
 
-# Only sex, not litter size influence the body weight significantly. 
+# Adding litter to sex imporves model markedly 
 # (Litter is borderline insignificant, perhaps influences k parameter)
 
 # _b) In plot ----
@@ -456,30 +469,45 @@ DecayModel.RQ4 <- saemixModel(model = decay.model,
 
 DecayFIT.RQ4 <- saemix(DecayModel.RQ4, ModelData.RQ4, saemix.options)
 
+# Data
+# Dataset mice_f1_slct 
+# Longitudinal data: BodyWeightG ~ MeasurementDay | AnimalId 
+# 
+# Model:
+#   Exponential approach 
+#   3 parameters: A B k 
+#   error model: constant 
+#   covariate model:
+#             [,1] [,2] [,3]
+# AnimalSex     1    1    1
+# LitterSize    1    1    1
+# FatherDiet    1    1    1
+# MotherDiet    1    1    1
+
 # _4.) Inspect model ----
 
-DecayFIT.RQ4
-# Fixed effects CV(%) is mostly bad
+summary(DecayFIT.RQ4) #  AIC = 855.1701, AIC = 855.6157 
 
-# Parameter          Estimate   SE    CV(%)  p-value 
-# A                  21.55263 0.9979    4.63 -       
-# beta_AnimalSex(A)   0.17613 0.0161    9.13 0.00e+00 *
-# beta_LitterSize(A)  0.02362 0.0099   41.89 1.70e-02 * 0.0170
-# beta_FatherDiet(A) -0.05120 0.0191   37.33 7.39e-03 * 0.00739
-# beta_MotherDiet(A) -0.00151 0.0180 1197.06 9.33e-01 
-# B                   3.24019 0.8274   25.54 -       
-# beta_AnimalSex(B)   0.10238 0.0692   67.62 1.39e-01
-# beta_LitterSize(B) -0.22072 0.0509   23.04 1.42e-05 * 0.0000142
-# beta_FatherDiet(B)  0.13391 0.0790   59.03 9.03e-02 
-# beta_MotherDiet(B) -0.29198 0.0794   27.20 2.36e-04 * 0.000236
-# k                   0.09233 0.0200   21.69 -       
-# beta_AnimalSex(k)   0.04126 0.0718  173.94 5.65e-01 
-# beta_LitterSize(k) -0.21285 0.0448   21.07 2.07e-06 *
-# beta_FatherDiet(k)  0.14874 0.0893   60.05 9.59e-02
-# beta_MotherDiet(k) -0.20287 0.0852   42.00 1.73e-02 * 
-# a.1                 0.77995 0.0402    5.15 -     
-
-# _5.) Plot model ----
+#   Parameter Estimate     SE  CV(%) p-value
+# 1                   A   26.746 1.4247   5.33       -
+# 2   beta_AnimalSex(A)    0.181 0.0159   8.80   0.000
+# 3  beta_LitterSize(A)   -0.017 0.0078  46.89   0.033
+# 4  beta_FatherDiet(A)   -0.031 0.0204  65.54   0.127
+# 5  beta_MotherDiet(A)   -0.035 0.0161  45.92   0.029 * 
+# 6                   B    1.944 0.6240  32.09       -
+# 7   beta_AnimalSex(B)    0.013 0.0951 749.43   0.894
+# 8  beta_LitterSize(B)   -0.073 0.0431  59.22   0.091
+# 9  beta_FatherDiet(B)    0.166 0.1005  60.55   0.099
+# 10 beta_MotherDiet(B)    0.011 0.0909 855.42   0.907
+# 11                  k    0.058 0.0154  26.51       -
+# 12  beta_AnimalSex(k)   -0.043 0.0806 186.14   0.591
+# 13 beta_LitterSize(k)   -0.074 0.0375  50.86   0.049
+# 14 beta_FatherDiet(k)    0.219 0.0949  43.32   0.021
+# 15 beta_MotherDiet(k)    0.082 0.0788  96.35   0.299
+# 16                a.1    0.727 0.0394   5.42       -
+  
+  
+  # _5.) Plot model ----
 
 plot(DecayFIT.RQ4, plot.type="observations.vs.predictions" )
 plot(DecayFIT.RQ4, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
@@ -488,18 +516,18 @@ npde.DecayFIT.RQ4 <- npdeSaemix(DecayFIT.RQ4) # skewness and kurtosis of normali
 
 # _6.) Compare models ----
 
-DecayFIT.RQ3
-DecayFIT.RQ4 # <- BIC AIC with diets worse then sex and litter size alone
+DecayFIT.RQ2 #  AIC= 870.4367 and AIC= 868.782  - reference - for sex-only model
+DecayFIT.RQ3 #  AIC= 866.3005 and AIC= 862.1534 - improved  - for sex and litter model
+DecayFIT.RQ4 #  AIC= 855.1701 and AIC= 855.6157 - improved  - for sex, litter, and diet model
 
-teststatRQ34 <- -2 * (as.numeric(logLik(DecayFIT.RQ3)) - as.numeric(logLik(DecayFIT.RQ4)))
-p.val <- pchisq(teststatRQ34, df = 3, lower.tail = FALSE)
-p.val # model with diets is not distinctly different from when not adding diets
+get_p_from_seamix_lrt(DecayFIT.RQ2, DecayFIT.RQ3) # improved significantly - 0.0055129
+get_p_from_seamix_lrt(DecayFIT.RQ3, DecayFIT.RQ4) # improved significantly - 0.0003406611
+
 
 # _7.) Answer RQ4 ----
 
-# Adding diet to the model with sex and litter size does not improve it, but worsen it.
-# Adding diet to the model with sex and litter does not make it significantly different
-# from the respective null-model. The model is likely over fitted.
+# Most complex model is best, including sex, litter, and both diets model
+
 
 # RQ5 - relevant for DEG are only males -  Part 1: What are the effects of diet within each sex individually dependent on litter sizes? ----
 

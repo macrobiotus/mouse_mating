@@ -866,14 +866,28 @@
      * [x] check model diagnostics - done right?
   * after meeting with CF-STATCON and NKB
     * [x] create `018_r_use_nlme.R`
-    * [ ] correct litter size variable
-    * [ ] save number of male and female pups 
-    * [ ] model weight gain
-      * [ ] linearize predict by log-transform
-      * [ ] start with complex model - sex, diet, litter size
-      * [ ] decrease complexity
+    * [x] correct litter size variable
+    * [x] save number of male and female pups 
+    * ~~[ ] model weight gain~~
+      * ~~[ ] linearize predict by log-transform~~
+      * ~~[ ] start with complex model - sex, diet, litter size~~
+      * ~~[ ] decrease complexity~~
     * [ ] model pup number by diet
-            
+  * in `017_r_use_nlme.R`
+    * added data with correctly defined litter sizes - doesn't work as good anymore
+  * in `015_r_use_saemix.R`
+    * added data with correctly defined litter sizes - **works well now**
+
+
+
+
+    * [ ] in  `015_r_use_saemix.R`
+      * [ ] run through entire script 
+      * [ ] plot and note notes results
+      * [ ] estimate Nora's question - model pup number by diet
+      * [ ] possibly retire other scripts
+      * [ ] sort this document
+      
     * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
     
 ## Todo queue (last updated 24-04-2024)
