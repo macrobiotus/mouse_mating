@@ -501,64 +501,39 @@ dev.print(svg, paste0(here("../manuscript/display_items"), "/", "015_r_use_saemi
 dev.print(pdf, paste0(here("../manuscript/display_items"), "/", "015_r_use_saemix__model_rq4.pdf"))
 
 
+# # RQ5: Can the complex model be improved by backward selection? ----
+# 
+# # _1.) Define model object ----
+# 
+# DecayModel.RQ5 <- backward.procedure(DecayFIT.RQ4, trace = TRUE)
+# 
+# # _2.) Fit model ----
+# 
+# DecayFIT.RQ5 <- saemix(DecayModel.RQ5, ModelData.RQ1, saemix.options)
+# 
+# # _3.) Plot model ----
+# 
+# plot(DecayFIT.RQ5, plot.type="observations.vs.predictions" )
+# plot(DecayFIT.RQ5, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE) # poor fit
+# plot(DecayFIT.RQ5, plot.type="parameters.vs.covariates", ask = TRUE)
+# DecayFIT.RQ5 <- npdeSaemix(DecayFIT.RQ5) # poor fit
+# 
+# # _4.) Compare models ----
+# 
+# compare.saemix(DecayFIT.RQ1, DecayFIT.RQ2, DecayFIT.RQ3, DecayFIT.RQ4, DecayFIT.RQ5)  # Last model is worst....
+# get_p_from_seamix_lrt(DecayFIT.RQ5, DecayFIT.RQ4)         # ...and significantly so
+# 
+# # _5.) Check estimates ----
+# 
+# summary(DecayFIT.RQ5)
+# 
+# # _6.) Answer RQ5 ----
+# 
+# # Backward selection did not find a better-fitting model
+
 # **continue here with testing interactions ** ----
 
 
-
-# RQ5: Can the complex model be improved by backward selection? ----
-
-# _1.) Define model object ----
-
-DecayModel.RQ5 <- backward.procedure(DecayFIT.RQ4, trace = TRUE)
-
-# _2.) Fit model ----
-
-DecayFIT.RQ5 <- saemix(DecayModel.RQ5, ModelData.RQ1, saemix.options)
-
-# _3.) Plot model ----
-
-plot(DecayFIT.RQ5, plot.type="observations.vs.predictions" )
-plot(DecayFIT.RQ5, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE) # poor fit
-plot(DecayFIT.RQ5, plot.type="parameters.vs.covariates", ask = TRUE)
-DecayFIT.RQ5 <- npdeSaemix(DecayFIT.RQ5) # poor fit
-
-# _4.) Compare models ----
-
-compare.saemix(DecayFIT.RQ1, DecayFIT.RQ2, DecayFIT.RQ3, DecayFIT.RQ4, DecayFIT.RQ5)  # Last model is worst....
-get_p_from_seamix_lrt(DecayFIT.RQ5, DecayFIT.RQ4)         # ...and significantly so
-
-# _5.) Check estimates ----
-
-summary(DecayFIT.RQ5)
-
-# _6.) Answer RQ5 ----
-
-# Backward selection did not find a better-fitting model
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# *** below - check for factor intercations ****
 
 # RQ5 - relevant for DEG are only males -  Part 1: What are the effects of diet within each sex individually dependent on litter sizes? ----
 
