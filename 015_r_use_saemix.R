@@ -385,7 +385,7 @@ summary(DecayFIT.RQ4) #  AIC = 855.1701, AIC = 855.6157
 # 11                  k    0.058 0.0154  26.51       -
 # 12  beta_AnimalSex(k)   -0.043 0.0806 186.14   0.591
 # 13 beta_LitterSize(k)   -0.074 0.0375  50.86   0.049 *
-# 14 beta_FatherDiet(k)    0.219 0.0949  43.32   0.021 * - but check coeffcient plot (red dashed lines) - wonky estimate
+# 14 beta_FatherDiet(k)    0.219 0.0949  43.32   0.021 * - but check coefficient plot (red dashed lines) - wonky estimate
 # 15 beta_MotherDiet(k)    0.082 0.0788  96.35   0.299
 # 16                a.1    0.727 0.0394   5.42       -
   
