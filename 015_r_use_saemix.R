@@ -81,7 +81,7 @@ mice_f1_slct %<>% mutate(LitterSizeFemale = as.double(sub(".*\\.", "", LitterSiz
 
 # to match with previous model formulae
 
-mice_f1_slct %<>% mutate(LitterSize = LitterSizeMale +  LitterSizeFemale)
+mice_f1_slct %<>% mutate(LitterSize = LitterSizeMale + LitterSizeFemale)
 
 # _3.) Check data ----
 
@@ -404,85 +404,101 @@ summary(DecayFIT.RQ4)
 # reference class for covariate FatherDiet :  CD 
 # reference class for covariate MotherDiet :  CD
 
-# __b) Male mice growth ----
+# __b) Create canvas ----
+
+plot(x = 1,                 
+     xlab = "days [d]", 
+     ylab = "weight [g]",
+     xlim = c(min(mice_f1_slct$MeasurementDay) , max(mice_f1_slct$MeasurementDay)), 
+     ylim = c(min(mice_f1_slct$BodyWeightG) + 5 , max(mice_f1_slct$BodyWeightG) + 5),
+     # main = "Significant model coefficients' offsets from reference values",
+     type = "n")
+
+# __c) Show raw data ----
+
+# shows raw data - beyond this all are at reference level - not necessarily among the data
+# points(x = mice_f1_slct$MeasurementDay, y = mice_f1_slct$BodyWeightG, col = "lightgrey", pch = 16)
+
+# __d) Male mice growth ----
 
 a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.181)
 b = coefficients(DecayFIT.RQ4)$fixed[2]
 k = coefficients(DecayFIT.RQ4)$fixed[3]
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "black")
+      col = "black", add = TRUE)
 
-# __c) Female mice growth ----
+# __e) Female mice growth ----
 
-a = coefficients(DecayFIT.RQ3)$fixed[1]
-b = coefficients(DecayFIT.RQ3)$fixed[2]
-k = coefficients(DecayFIT.RQ3)$fixed[3]
+a = coefficients(DecayFIT.RQ4)$fixed[1]
+b = coefficients(DecayFIT.RQ4)$fixed[2]
+k = coefficients(DecayFIT.RQ4)$fixed[3]
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "black", add = TRUE)
+      col = "black", add = TRUE)
 
-
-# __d) Male mice growth - increased litter size by one----
+# __f) Male mice growth - increased litter size by one----
 
 a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.181) * (1 - 0.017)
 b = coefficients(DecayFIT.RQ4)$fixed[2] 
 k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 - 0.074)
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "blue", add = TRUE)
+      col = "blue", add = TRUE)
 
-# __e) Female mice growth - increased litter size by one ----
+# __g) Female mice growth - increased litter size by one ----
 
-a = coefficients(DecayFIT.RQ3)$fixed[1] * (1 + -0.017)
-b = coefficients(DecayFIT.RQ3)$fixed[2]
-k = coefficients(DecayFIT.RQ3)$fixed[3] * (1 - 0.074)
+a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 -0.017)
+b = coefficients(DecayFIT.RQ4)$fixed[2]
+k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 - 0.074)
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "blue", add = TRUE)
+      col = "blue", add = TRUE)
 
-# **continue here with plotting ** ----
+# __h) Male mice growth - mother diet ----
 
-# __f) Male mice growth - mother diet ----
-
-a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.181)
+a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.181) * (1 - 0.035)
 b = coefficients(DecayFIT.RQ4)$fixed[2]
 k = coefficients(DecayFIT.RQ4)$fixed[3]
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "darkorange")
+      col = "darkorange", add = TRUE)
 
-# __g) Female mice growth  - mother diet ----
+# __i) Female mice growth - mother diet ----
 
-a = coefficients(DecayFIT.RQ3)$fixed[1]
-b = coefficients(DecayFIT.RQ3)$fixed[2]
-k = coefficients(DecayFIT.RQ3)$fixed[3]
-
-curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "darkorange", add = TRUE)
-
-
-# __h) Male mice growth - father diet ----
-
-a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.181)
+a = coefficients(DecayFIT.RQ4)$fixed[1]  * (1  -0.035)
 b = coefficients(DecayFIT.RQ4)$fixed[2]
 k = coefficients(DecayFIT.RQ4)$fixed[3]
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "red")
+      col = "darkorange", add = TRUE)
 
-# __i) Female mice growth  - mother diet ----
+# __j) Male mice growth - father diet ----
 
-a = coefficients(DecayFIT.RQ3)$fixed[1]
-b = coefficients(DecayFIT.RQ3)$fixed[2]
-k = coefficients(DecayFIT.RQ3)$fixed[3]
+a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.181)
+b = coefficients(DecayFIT.RQ4)$fixed[2]
+k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 + 0.219)
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "red", add = TRUE)
+      col = "red", add = TRUE)
+
+# __k) Female mice growth  - father diet ----
+
+a = coefficients(DecayFIT.RQ4)$fixed[1]
+b = coefficients(DecayFIT.RQ4)$fixed[2]
+k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 + 0.219)
+
+curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
+      col = "red", add = TRUE)
 
 # adjust and export  / "all effects are additive"
-legend(65, 20.5, legend=c("male", "male - larger litter", "female", "female - larger litter"),
-       col=c("black", "black", "red", "red"), lty = c(1,2,1,2), cex=0.8)
+legend(51, 24, legend=c("sons and daughters, parents at control diet, \nno siblings", "one more sibling in litter", "mother on treatment diet", "father on treatment diet"),
+       col=c("black", "blue", "darkorange", "red"), lty = c(1,1,1,1), cex=0.8)
+
+# __l) Plot graphic ----
+
+dev.print(svg, paste0(here("../manuscript/display_items"), "/", "015_r_use_saemix__model_rq4.svg"))
+dev.print(pdf, paste0(here("../manuscript/display_items"), "/", "015_r_use_saemix__model_rq4.pdf"))
 
 
 # **continue here with testing interactions ** ----

@@ -901,12 +901,10 @@
    * [x] plot and notes results
    * [ ] check for interactions
    * [ ] estimate Nora's question - model pup number by diet
- * [x] possibly deletw other scripts (`017`, `018`) - see yesterday
+ * [x] possibly delete other scripts (`017`, `018`) - see yesterday
  * [ ] sort this document
       
   * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
-    
-
 
 
 ## Todo queue (last updated 24-04-2024)
