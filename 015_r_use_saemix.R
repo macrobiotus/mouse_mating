@@ -283,7 +283,7 @@ npde.DecayFIT.RQ1 <- npdeSaemix(DecayFIT.RQ1) # best - normality of residual wit
 
 # The approach model is best for modeling body weights, and fits well to the data.
 
-# RQ2: Does Sex have an association with the total weight gain? ----
+# RQ2: Across all animals does sex have an association with the total weight gain? ----
 
 # _1.) Define data with sex covariate ----
 
@@ -356,9 +356,9 @@ get_p_from_seamix_lrt(DecayFIT.RQ1, DecayFIT.RQ2) # adding sex significantly imp
 
 # _6.) Answer RQ2 ----
 
-# Sex has an influence on the body weight, the upper assymptote is higher for males.
+# Across all animals does sex has an influence on the body weight, the upper assymptote is higher for males.
 
-# RQ3: Do Sex and litter size have an association with the total weight gain? ----
+# RQ3: Across all animals does sex and litter size have an association with the total weight gain? ----
 
 # _1.) Define data with sex and litter size covariates ----
 
@@ -395,58 +395,17 @@ npde.DecayFIT.RQ3 <- npdeSaemix(DecayFIT.RQ3) # skewness and kurtosis of normali
 DecayFIT.RQ2 # sex-only model: AIC= 870.4367 and AIC= 868.782 
 DecayFIT.RQ3 # sex-litter-size model: AIC= 866.3005 and AIC= 862.1534 - better
 
-get_p_from_seamix_lrt(DecayFIT.RQ2, DecayFIT.RQ3) # adding litter to sex imporves model markedly
+get_p_from_seamix_lrt(DecayFIT.RQ2, DecayFIT.RQ3) # adding litter to sex improves model markedly
 
 # _6.) Answer RQ3 ----
 
-# _a) In text ----
-
-# Adding litter to sex imporves model markedly 
-# (Litter is borderline insignificant, perhaps influences k parameter)
-
-# _b) In plot ----
-
-coefficients(DecayFIT.RQ3)$fixed
-
-# male mice growth
-a = coefficients(DecayFIT.RQ3)$fixed[1] * 1.19165
-b = coefficients(DecayFIT.RQ3)$fixed[2]
-k = coefficients(DecayFIT.RQ3)$fixed[3]
-
-curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "black")
-
-# female mice growth
-a = coefficients(DecayFIT.RQ3)$fixed[1]
-b = coefficients(DecayFIT.RQ3)$fixed[2]
-k = coefficients(DecayFIT.RQ3)$fixed[3]
-
-curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-  xlab = "days [d]", ylab = "weight [g]", col = "red", add = TRUE)
-
-# male mice growth - increased litter size
-a = coefficients(DecayFIT.RQ3)$fixed[1] * 1.19165
-b = coefficients(DecayFIT.RQ3)$fixed[2]
-k = coefficients(DecayFIT.RQ3)$fixed[3] * (1-0.09171)
-
-curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "black", add = TRUE, lty = "dashed")
-
-# female mice growth  - increased litter size
-a = coefficients(DecayFIT.RQ3)$fixed[1]
-b = coefficients(DecayFIT.RQ3)$fixed[2]
-k = coefficients(DecayFIT.RQ3)$fixed[3] * (1-0.09171)
-
-curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "red", add = TRUE, lty = "dashed")
-
-legend(65, 20.5, legend=c("male", "male - larger litter", "female", "female - larger litter"),
-       col=c("black", "black", "red", "red"), lty = c(1,2,1,2), cex=0.8)
+# Across all animals does adding litter to sex imporves the model markedly 
 
 
-# RQ4: What are the effects of diet within each sex and, and dependent on litter sizes? ----
 
-# _1.) Define data with sex covariate ----
+# RQ4: Across all animals what are the effects of parental diets sex and litter sizes? ----
+
+# _1.) Define data with all covariates ----
 
 ModelData.RQ4 <- saemixData(
   name.data = mice_f1_slct, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
@@ -509,10 +468,10 @@ summary(DecayFIT.RQ4) #  AIC = 855.1701, AIC = 855.6157
   
   # _5.) Plot model ----
 
-plot(DecayFIT.RQ4, plot.type="observations.vs.predictions" )
+plot(DecayFIT.RQ4, plot.type = "observations.vs.predictions" )
 plot(DecayFIT.RQ4, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-plot(DecayFIT.RQ4, plot.type="parameters.vs.covariates", ask=TRUE)
-npde.DecayFIT.RQ4 <- npdeSaemix(DecayFIT.RQ4) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
+plot(DecayFIT.RQ4, plot.type = "parameters.vs.covariates", ask = TRUE) # <- use this in paper
+npde.DecayFIT.RQ4 <- npdeSaemix(DecayFIT.RQ4) # skewness and kurtosis of normalized prediction discrepancies lower then in log model
 
 # _6.) Compare models ----
 
@@ -523,11 +482,31 @@ DecayFIT.RQ4 #  AIC= 855.1701 and AIC= 855.6157 - improved  - for sex, litter, a
 get_p_from_seamix_lrt(DecayFIT.RQ2, DecayFIT.RQ3) # improved significantly - 0.0055129
 get_p_from_seamix_lrt(DecayFIT.RQ3, DecayFIT.RQ4) # improved significantly - 0.0003406611
 
-
 # _7.) Answer RQ4 ----
 
 # Most complex model is best, including sex, litter, and both diets model
 
+# _8.) Plot RQ4 ----
+
+mice_f1_slct_pred <- mice_f1_slct %>% select(MeasurementDay, AnimalId, AnimalSex,  MotherDiet, FatherDiet, LitterSize, BodyWeightG)
+
+
+mice_f1_slct_pred <- bind_cols(mice_f1_slct_pred, BWipred = {predict(DecayFIT.RQ4, newdata = mice_f1_slct_pred, type = "ipred", se.fit = TRUE)})
+mice_f1_slct_pred <- bind_cols(mice_f1_slct_pred, BWypred = {predict(DecayFIT.RQ4, newdata = mice_f1_slct_pred, type = "ypred", se.fit = TRUE)})
+mice_f1_slct_pred <- bind_cols(mice_f1_slct_pred, BWppred = {predict(DecayFIT.RQ4, newdata = mice_f1_slct_pred, type = "ppred",  se.fit = TRUE)})
+mice_f1_slct_pred <- bind_cols(mice_f1_slct_pred, BWicpred = {predict(DecayFIT.RQ4, newdata = mice_f1_slct_pred, type = "icpred", se.fit = TRUE)})
+
+
+ggplot(data = mice_f1_slct_pred, aes(x = MeasurementDay, y = BodyWeightG, group = AnimalSex)) +
+  geom_point(colour = "darkgrey") +
+  geom_function(fun = dnorm, colour = "red") +
+  facet_wrap(~ AnimalSex, scales = "fixed") + 
+  theme_bw()
+
+
+
+
+# *** below - check for factor intercations ****
 
 # RQ5 - relevant for DEG are only males -  Part 1: What are the effects of diet within each sex individually dependent on litter sizes? ----
 
