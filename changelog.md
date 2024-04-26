@@ -894,17 +894,21 @@
     * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/scratch_code_main_analysis.R`
 
  ## 26-04-2024 - work day 81 - working on first revision
+ 
+   * attempted to plot SE in model plot, but too complicated, **stashed changes**
+   * restored script deleted yesterday to `/Users/paul/Documents/HM_MouseMating/analysis/scripts_unused`
 
- **todo today!**
+ **todo next!**
  * [ ] in  `015_r_use_saemix.R`
    * [x] run through entire script 
    * [x] plot and notes results
-   * [ ] check for interactions
    * [ ] estimate Nora's question - model pup number by diet
- * [x] possibly delete other scripts (`017`, `018`) - see yesterday
- * [ ] sort this document
+   * [ ] plot SE estimates
+   * [ ] check for interactions
+ * [ ] write up modelling methots
+ * [ ] sort this document, write above to below
       
-  * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
+ * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
 
 
 ## Todo queue (last updated 24-04-2024)
