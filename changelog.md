@@ -893,25 +893,14 @@
     * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/main_analysis.RData`
     * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/scratch_code_main_analysis.R`
 
- ## 26-04-2024 - work day 81 - working on first revision
- 
+## 26-04-2024 - work day 81 - working on first revision
+
+ * in `015_r_use_saemix.R`
    * attempted to plot SE in model plot, but too complicated, **stashed changes**
    * restored script deleted yesterday to `/Users/paul/Documents/HM_MouseMating/analysis/scripts_unused`
+   * finished modelling - no effect on mice weight by diet, litter size and sex are sufficient
 
- **todo next!**
- * [ ] in  `015_r_use_saemix.R`
-   * [x] run through entire script 
-   * [x] plot and notes results
-   * [ ] estimate Nora's question - model pup number by diet
-   * [ ] plot SE estimates
-   * [ ] check for interactions
- * [ ] write up modelling methots
- * [ ] sort this document, write above to below
-      
- * **check articles:** met with NKB, next meeting planned, suggests parental HFD will lower offsprings body weight -  
-
-
-## Todo queue (last updated 24-04-2024)
+## Todo queue (last updated 27-04-2024)
  
 ### **revision work** - after first submission
  
@@ -935,25 +924,27 @@
        * [x] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
        * ~~[ ] both parents obese - offspring sex neglected - male  - female~~
        * ~~[ ] one parent obese - offspring sex neglected - male - female~~
-     * [x] in `015_r_use_saemix.R` - also testing males and females separately for perental diet interaction on weight gain
-       * [x] in males: Mother HFD has an effect, as plotted
+     * [x] in `015_r_use_saemix.R`
+       * ~~[x] in males: Mother HFD has an effect, as plotted
        * [x] in females: Mother HFD has an effect, and litter size has an effect, as plotted
        * [x] in females and females: effect of litter size and diet cannot be disentangled
        * [x] improve plots and export
-       * ~~[ ] check diet interaction~~ impossible using saemix and nlme - too few data
-       * [x] check usage of body fat - only one measurement point availabel
+       * [ ] check diet interaction impossible using saemix and nlme - too few data
+       * [x] check usage of body fat - only one measurement point available ~~
        * [ ] **for relevant results and model comparisons see RQ6**
-     * [x] in `017_r_use_nlme.R` - also testing males and females separately for perental diet interaction on weight gain
+       * [x] possibly further implement usage of function `get_p_from_seamix_lrt()`~~
+       * [x] **finished modelling - no effect on mice weight by diet, litter size and sex are sufficient**
+       * [ ] estimate Nora's question - model pup number by diet
+     * ~~[x] in `017_r_use_nlme.R` - not used anymore 
+       * [x] also testing males and females separately for perental diet interaction on weight gain
        * [x] repeated all analyses as in `015_r_use_saemix.R`
        * [x] sorted script
        * [x] possibly apply further diagnostics as per `https://medium.com/@marc.jacobs012/non-linear-mixed-model-in-r-a6fc054c3f82`
-       * [ ] **for relevant results and model comparisons see RQ5, 6, 7, 8**
-       * [ ] possibly further implement usage of function `get_p_from_seamix_lrt()`
-     * [ ] script `50_r_array_analysis.r`
-       * [ ] adjust new version as per results in `015_r_use_saemix.R` and `r_use_nlme.R`
-         * [ ] for DEG discovery only males are relavent as there are only males in the RNA seq data
-         * [ ] in `015_r_use_saemix.R` - **null model best for males** - **litter size is best for females** - see **focus on RQ5,6,7 and 8**
-         * [ ] in `017_r_use_nlme.R` - **diet is borderline best for males** - **diet is worse for females, litter size can't be estimated-  **see RQ6** 
+       * [ ] **for relevant results and model comparisons see RQ5, 6, 7, 8**~~
+    * [ ] script `50_r_array_analysis.r`
+       * [ ] adjust new version as per results in `015_r_use_saemix.R`
+       * [ ] for DEG discovery only males are relavent as there are only males in the RNA seq data
+       * [ ] **check if there are sufficient samples to test anything, possibly an additive diet effect correct for litter size**
        * [ ] relabel variables `obese` to (succesful) `HFD` in code
        * [ ] relabel variables `obese` to (succesful) `HFD` in figures
        * [ ] DEG analysis: check wether axis correct axis is being looked at in PCA

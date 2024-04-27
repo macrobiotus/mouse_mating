@@ -206,11 +206,11 @@ LogisticModel.RQ1 <- saemixModel(model = logistic.model,
 # __c) Exponential approach  ----
 
 DecayModel.RQ1 <- saemixModel(model = decay.model,
-                              description= "Exponential decay", 
-                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
+                              description= "exponential approach", 
+                              psi0 = matrix( c(28,2,0.05, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
                               transform.par = c(1,1,1), 
                               fixed.estim = c(1,1,1),
-                              covariance.model= matrix(c(1,0,0,0,1,0,0,0,1), ncol=3, byrow = TRUE),
+                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
                               omega.init = matrix(c(1,0,0,0,1,0,0,0,1),ncol=3, byrow=TRUE), 
                               error.model="constant")
 
@@ -264,15 +264,15 @@ get_p_from_seamix_lrt(LogisticFIT.RQ1, DecayFIT.RQ1)            # and significan
 # _1.) Define model object ----
 
 DecayModel.RQ2 <- saemixModel(model = decay.model,
-                              description= "Exponential decay", 
-                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
+                              description= "exponential approach", 
+                              psi0 = matrix( c(28,2,0.05, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
                               transform.par = c(1,1,1), 
                               fixed.estim = c(1,1,1),
                               covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
                               covariate.model = matrix(c(1,1,1), ncol=3, byrow=TRUE),
                               omega.init = matrix(c(1,0,0,0,1,0,0,0,1),ncol=3, byrow=TRUE), 
                               error.model="constant")
-
+  
 # _2.) Fit model ----
 
 DecayFIT.RQ2 <- saemix(DecayModel.RQ2, ModelData.RQ1, saemix.options)
@@ -303,11 +303,11 @@ summary(DecayFIT.RQ2)
 
 DecayModel.RQ3 <- saemixModel(model = decay.model,
                               description= "exponential approach", 
-                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
+                              psi0 = matrix( c(28,2,0.05, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
                               transform.par = c(1,1,1), 
                               fixed.estim = c(1,1,1),
                               covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
-                              covariate.model = matrix(c(1,1,1, 1, 1,1 ), ncol=3, byrow=TRUE),
+                              covariate.model = matrix(c(1,1,1, 1, 1,1), ncol=3, byrow=TRUE),
                               omega.init = matrix(c(1,0,0,0,1,0,0,0,1),ncol=3, byrow=TRUE), 
                               error.model="constant")
 
@@ -340,13 +340,13 @@ summary(DecayFIT.RQ3)
 # _1.) Define model object ----
 
 DecayModel.RQ4 <- saemixModel(model = decay.model,
-                              description= "Exponential approach", 
-                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
+                              description= "exponential approach", 
+                              psi0 = matrix( c(28,2,0.05, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
                               transform.par = c(1,1,1), 
                               fixed.estim = c(1,1,1),
                               covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
                               covariate.model = matrix(c(1,1,1, 1,1,1, 1,1,1, 1,1,1), ncol=3, byrow=TRUE),
-                              omega.init = matrix(c(1,0,0,0, 1,0,0,0,1),ncol=3, byrow=TRUE), 
+                              omega.init = matrix(c(1,0,0,0,1,0,0,0,1),ncol=3, byrow=TRUE), 
                               error.model="constant")
 
 # _2.) Fit model ----
@@ -362,38 +362,42 @@ npde.DecayFIT.RQ4 <- npdeSaemix(DecayFIT.RQ4) # skewness and kurtosis of normali
 
 # _4.) Compare models ----
 
-compare.saemix(DecayFIT.RQ1, DecayFIT.RQ2, DecayFIT.RQ3, DecayFIT.RQ4) # last one is best, the most complex one
-               
-get_p_from_seamix_lrt(DecayFIT.RQ2, DecayFIT.RQ3) # ... it improved significantly - 0.0055129
-get_p_from_seamix_lrt(DecayFIT.RQ3, DecayFIT.RQ4) # ... it improved significantly - 0.0003406611
+compare.saemix(DecayFIT.RQ1, DecayFIT.RQ2, DecayFIT.RQ3, DecayFIT.RQ4) # third one is best, the second to last complex
+
+get_p_from_seamix_lrt(DecayFIT.RQ1, DecayFIT.RQ2) # adding sex to null is sign. better BIC.cov
+get_p_from_seamix_lrt(DecayFIT.RQ2, DecayFIT.RQ3) # adding litter to sex is sign. better BIC.cov
+get_p_from_seamix_lrt(DecayFIT.RQ4, DecayFIT.RQ3) # adding diet does not improve fit
 
 # _5.) Show coefficients ----
 
-summary(DecayFIT.RQ4) #  AIC = 855.1701, AIC = 855.6157 
+summary(DecayFIT.RQ4)
 
-#   Parameter Estimate     SE  CV(%) p-value
-# 1                   A   26.746 1.4247   5.33       -
-# 2   beta_AnimalSex(A)    0.181 0.0159   8.80   0.000
-# 3  beta_LitterSize(A)   -0.017 0.0078  46.89   0.033 *
-# 4  beta_FatherDiet(A)   -0.031 0.0204  65.54   0.127
-# 5  beta_MotherDiet(A)   -0.035 0.0161  45.92   0.029 * 
-# 6                   B    1.944 0.6240  32.09       -
-# 7   beta_AnimalSex(B)    0.013 0.0951 749.43   0.894
-# 8  beta_LitterSize(B)   -0.073 0.0431  59.22   0.091
-# 9  beta_FatherDiet(B)    0.166 0.1005  60.55   0.099
-# 10 beta_MotherDiet(B)    0.011 0.0909 855.42   0.907
-# 11                  k    0.058 0.0154  26.51       -
-# 12  beta_AnimalSex(k)   -0.043 0.0806 186.14   0.591
-# 13 beta_LitterSize(k)   -0.074 0.0375  50.86   0.049 *
-# 14 beta_FatherDiet(k)    0.219 0.0949  43.32   0.021 * - but check coefficient plot (red dashed lines) - wonky estimate
-# 15 beta_MotherDiet(k)    0.082 0.0788  96.35   0.299
-# 16                a.1    0.727 0.0394   5.42       -
-  
+# ----------------------------------------------------
+#   -----------------  Fixed effects  ------------------
+#   ----------------------------------------------------
+#               Parameter Estimate     SE  CV(%) p-value
+#   1                   A   26.520 1.4402   5.43       -
+#   2   beta_AnimalSex(A)    0.171 0.0156   9.15 0.00000 *
+#   3  beta_LitterSize(A)   -0.012 0.0084  71.80 0.16371
+#   4  beta_FatherDiet(A)   -0.055 0.0224  40.70 0.01400 *
+#   5  beta_MotherDiet(A)   -0.046 0.0164  35.79 0.00521 *
+#   6                   B    1.786 0.5525  30.93       -
+#   7   beta_AnimalSex(B)    0.105 0.0846  80.99 0.21693
+#   8  beta_LitterSize(B)   -0.085 0.0408  48.24 0.03819 *
+#   9  beta_FatherDiet(B)    0.326 0.0925  28.40 0.00043 *
+#  10  beta_MotherDiet(B)    0.071 0.0862 121.46 0.41034 
+#  11                   k    0.057 0.0152  26.65       -
+#  12   beta_AnimalSex(k)    0.044 0.0749 169.22 0.55456
+#  13  beta_LitterSize(k)   -0.097 0.0389  40.05 0.01252 *
+#  14  beta_FatherDiet(k)    0.386 0.0998  25.82 0.00011 *
+#  15  beta_MotherDiet(k)    0.154 0.0772  50.08 0.04586 *
+#  16                 a.1    0.753 0.0399   5.29       -
+
 # _7.) Answer RQ4 ----
 
-# Most complex model is best, including sex, litter, and both diets model, mother diet depresses a by 3.5%.
+# The litter only model is the best fit to the data, diet doesn't add anything.
 
-# _8) Plot complex and best model ----
+# _8) Plot complex last model model ----
 
 # __a) Show values for plotting ----
 
@@ -401,16 +405,16 @@ coefficients(DecayFIT.RQ4)$fixed
 summary(DecayFIT.RQ4)
 
 # reference class for covariate AnimalSex :  f 
-# reference class for covariate FatherDiet :  CD 
-# reference class for covariate MotherDiet :  CD
+# reference class for covariate FatherDiet : CD 
+# reference class for covariate MotherDiet : CD
 
 # __b) Create canvas ----
 
 plot(x = 1,                 
      xlab = "days [d]", 
      ylab = "weight [g]",
-     xlim = c(min(mice_f1_slct$MeasurementDay) , max(mice_f1_slct$MeasurementDay)), 
-     ylim = c(min(mice_f1_slct$BodyWeightG) + 5 , max(mice_f1_slct$BodyWeightG) + 5),
+     xlim = c(0 , max(mice_f1_slct$MeasurementDay) + 5 ), 
+     ylim = c(0 , max(mice_f1_slct$BodyWeightG) + 5),
      # main = "Significant model coefficients' offsets from reference values",
      type = "n")
 
@@ -421,7 +425,7 @@ plot(x = 1,
 
 # __d) Male mice growth ----
 
-a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.181)
+a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.171)
 b = coefficients(DecayFIT.RQ4)$fixed[2]
 k = coefficients(DecayFIT.RQ4)$fixed[3]
 
@@ -439,60 +443,60 @@ curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = m
 
 # __f) Male mice growth - increased litter size by one----
 
-a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.181) * (1 - 0.017)
-b = coefficients(DecayFIT.RQ4)$fixed[2] 
-k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 - 0.074)
+a = coefficients(DecayFIT.RQ4)$fixed[1]               * (1 + 0.171)
+b = coefficients(DecayFIT.RQ4)$fixed[2] * (1 - 0.085)
+k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 - 0.097)
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
       col = "blue", add = TRUE)
 
 # __g) Female mice growth - increased litter size by one ----
 
-a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 -0.017)
-b = coefficients(DecayFIT.RQ4)$fixed[2]
-k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 - 0.074)
+a = coefficients(DecayFIT.RQ4)$fixed[1] 
+b = coefficients(DecayFIT.RQ4)$fixed[2] * (1 - 0.085)
+k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 - 0.097)
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
       col = "blue", add = TRUE)
 
 # __h) Male mice growth - mother diet ----
 
-a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.181) * (1 - 0.035)
+a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 - 0.046) * (1 + 0.171)
 b = coefficients(DecayFIT.RQ4)$fixed[2]
-k = coefficients(DecayFIT.RQ4)$fixed[3]
+k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 + 0.154)
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
       col = "darkorange", add = TRUE)
 
 # __i) Female mice growth - mother diet ----
 
-a = coefficients(DecayFIT.RQ4)$fixed[1]  * (1  -0.035)
+a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 - 0.046)
 b = coefficients(DecayFIT.RQ4)$fixed[2]
-k = coefficients(DecayFIT.RQ4)$fixed[3]
+k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 + 0.154)
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
       col = "darkorange", add = TRUE)
 
 # __j) Male mice growth - father diet ----
 
-a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 + 0.181)
-b = coefficients(DecayFIT.RQ4)$fixed[2]
-k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 + 0.219)
+a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 - 0.055) *  (1 + 0.171)
+b = coefficients(DecayFIT.RQ4)$fixed[2] * (1 + 0.326)
+k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 + 0.386)
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
       col = "red", add = TRUE)
 
 # __k) Female mice growth  - father diet ----
 
-a = coefficients(DecayFIT.RQ4)$fixed[1]
-b = coefficients(DecayFIT.RQ4)$fixed[2]
-k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 + 0.219)
+a = coefficients(DecayFIT.RQ4)$fixed[1] * (1 - 0.055)
+b = coefficients(DecayFIT.RQ4)$fixed[2] * (1 + 0.326)
+k = coefficients(DecayFIT.RQ4)$fixed[3] * (1 + 0.386)
 
 curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
       col = "red", add = TRUE)
 
 # adjust and export  / "all effects are additive"
-legend(51, 24, legend=c("sons and daughters, parents at control diet, \nno siblings", "one more sibling in litter", "mother on treatment diet", "father on treatment diet"),
+legend(33, 17, legend=c("sons and daughters, parents at control diet, \nno siblings", "one more sibling in litter", "mother on treatment diet", "father on treatment diet"),
        col=c("black", "blue", "darkorange", "red"), lty = c(1,1,1,1), cex=0.8)
 
 # __l) Plot graphic ----
@@ -500,9 +504,8 @@ legend(51, 24, legend=c("sons and daughters, parents at control diet, \nno sibli
 dev.print(svg, paste0(here("../manuscript/display_items"), "/", "015_r_use_saemix__model_rq4.svg"))
 dev.print(pdf, paste0(here("../manuscript/display_items"), "/", "015_r_use_saemix__model_rq4.pdf"))
 
+# RQ5: Can the complex model be improved by backward selection? ----
 
-# # RQ5: Can the complex model be improved by backward selection? ----
-# 
 # # _1.) Define model object ----
 # 
 # DecayModel.RQ5 <- backward.procedure(DecayFIT.RQ4, trace = TRUE)
@@ -522,8 +525,8 @@ dev.print(pdf, paste0(here("../manuscript/display_items"), "/", "015_r_use_saemi
 # 
 # compare.saemix(DecayFIT.RQ1, DecayFIT.RQ2, DecayFIT.RQ3, DecayFIT.RQ4, DecayFIT.RQ5)  # Last model is worst....
 # get_p_from_seamix_lrt(DecayFIT.RQ5, DecayFIT.RQ4)         # ...and significantly so
-# 
-# # _5.) Check estimates ----
+ 
+ # _5.) Check estimates ----
 # 
 # summary(DecayFIT.RQ5)
 # 
@@ -531,388 +534,67 @@ dev.print(pdf, paste0(here("../manuscript/display_items"), "/", "015_r_use_saemi
 # 
 # # Backward selection did not find a better-fitting model
 
-# **continue here with testing interactions ** ----
+# RQ6: Get estimates for males only, for DEG discovery comparison ---- 
 
-
-
-# RQ5 - relevant for DEG are only males -  Part 1: What are the effects of diet within each sex individually dependent on litter sizes? ----
-
-# _1.) Split data by sexes ----
-
-# To avoid overparametrisations.
-
-ModelData.RQ5.male <- saemixData(
-  name.data = {mice_f1_slct %>% filter(AnimalSex == "m")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
-  name.covariates = c("LitterSize", "FatherDiet", "MotherDiet")
-  )
-
-ModelData.RQ5.female <- saemixData(
-  name.data = {mice_f1_slct %>% filter(AnimalSex == "f")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
-  name.covariates = c("LitterSize", "FatherDiet", "MotherDiet")
-  )
-
-# _2.) Define model object ----
-
-DecayModel.RQ5 <- saemixModel(model = decay.model,
-                              description= "Exponential approach", 
-                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
-                              transform.par = c(1,1,1), 
-                              fixed.estim = c(1,1,1),
-                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
-                              covariate.model = matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow=TRUE),
-                              omega.init = matrix(c(1,0,0,0, 1,0,0,0,1),ncol=3, byrow=TRUE), 
-                              error.model="constant")
-
-# _3.) Fit models ----
-
-DecayFIT.RQ5.male <- saemix(DecayModel.RQ5, ModelData.RQ5.male, saemix.options)
-summary(DecayFIT.RQ5.male)
-
-# Fixed effects
-# Parameter          Estimate    SE    CV(%)  p-value
-# A                  28.566939 2.5112    8.79 -      
-# beta_LitterSize(A)  0.000838 0.0184 2199.03 0.9637 
-# beta_FatherDiet(A) -0.035472 0.0285   80.24 0.2127 
-# beta_MotherDiet(A) -0.053695 0.0285   53.04 0.0594 *
-# B                   1.906307 0.7931   41.60 -      
-# beta_LitterSize(B) -0.090955 0.0844   92.83 0.2814 
-# beta_FatherDiet(B)  0.012596 0.1280 1016.57 0.9216 
-# beta_MotherDiet(B)  0.059983 0.1354  225.69 0.6577 
-# k                   0.045201 0.0160   35.44 -      
-# beta_LitterSize(k) -0.059031 0.0739  125.14 0.4242 
-# beta_FatherDiet(k)  0.060994 0.1139  186.66 0.5921 
-# beta_MotherDiet(k)  0.173567 0.1191   68.64 0.1451 
-# a.1                 0.834962 0.0589    7.05 - 
-
-DecayFIT.RQ5.female <- saemix(DecayModel.RQ5, ModelData.RQ5.female, saemix.options)
-summary(DecayFIT.RQ5.female)
-
-# Fixed effects
-# Parameter          Estimate   SE    CV(%) p-value
-# A                  22.41907 1.2216   5.45 -      
-# beta_LitterSize(A)  0.00652 0.0116 178.40 0.57510
-# beta_FatherDiet(A) -0.02591 0.0204  78.61 0.20333
-# beta_MotherDiet(A) -0.00363 0.0194 535.06 0.85174
-# B                   2.87427 0.9309  32.39 -      
-# beta_LitterSize(B) -0.13740 0.0688  50.09 0.04590
-# beta_FatherDiet(B) -0.03240 0.1159 357.75 0.77984
-# beta_MotherDiet(B) -0.29874 0.1095  36.65 0.00637 * but large variability across subjects
-# k                   0.07869 0.0207  26.27 -      
-# beta_LitterSize(k) -0.11206 0.0558  49.81 0.04469
-# beta_FatherDiet(k) -0.04751 0.1003 211.08 0.63567
-# beta_MotherDiet(k) -0.21824 0.0945  43.28 0.02086 * but large variability across subjects
-# a.1                 0.52514 0.0433   8.25 -      
-
-# _4.) Plot model fits ----
-
-# all looking good
-plot(DecayFIT.RQ5.female, plot.type="observations.vs.predictions" )
-plot(DecayFIT.RQ5.male, plot.type="observations.vs.predictions" )
-
-plot(DecayFIT.RQ5.female, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-plot(DecayFIT.RQ5.male, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-
-plot(DecayFIT.RQ5.female, plot.type="parameters.vs.covariates", ask=TRUE)
-plot(DecayFIT.RQ5.male, plot.type="parameters.vs.covariates", ask=TRUE)
-
-npde.DecayFIT.RQ5 <- npdeSaemix(DecayFIT.RQ5.female) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
-npde.DecayFIT.RQ5 <- npdeSaemix(DecayFIT.RQ5.male) # skewness and kurtosis of normalised prediction discrepancies lower then in log model
-
-# _5.) Plot model predictions ----
-
-# __a) females ----
-
-# female mice, both parents on low caloric diet 
-a = coefficients(DecayFIT.RQ5.female)$fixed[1]
-b = coefficients(DecayFIT.RQ5.female)$fixed[2]
-k = coefficients(DecayFIT.RQ5.female)$fixed[3]
-
-curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "black", lty = "solid")
-
-# female mice with increasing litter size, both parents on low caloric diet 
-a = coefficients(DecayFIT.RQ5.female)$fixed[1]
-b = coefficients(DecayFIT.RQ5.female)$fixed[2] * (1-0.13740) 
-k = coefficients(DecayFIT.RQ5.female)$fixed[3] * (1-0.11206)
-
-curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "red", lty = "solid", add = TRUE)
-
-# female mice, mother on HCD 
-a = coefficients(DecayFIT.RQ5.female)$fixed[1]
-b = coefficients(DecayFIT.RQ5.female)$fixed[2] * (1-0.29874)
-k = coefficients(DecayFIT.RQ5.female)$fixed[3] * (1-0.21824)
-
-curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "black", lty = "dashed", add = TRUE)
-
-# female mice with increasing litter size, mother on HCD
-a = coefficients(DecayFIT.RQ5.female)$fixed[1]
-b = coefficients(DecayFIT.RQ5.female)$fixed[2] * (1-0.13740) * (1-0.29874)
-k = coefficients(DecayFIT.RQ5.female)$fixed[3] * (1-0.11206) * (1-0.21824)
-
-curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "red", lty = "dashed", add = TRUE)
-
-legend(42, 18, legend=c("female", "female, larger litter", "female, mother on HCD", "female, larger litter, mother on HCD"),
-       col=c("black", "red", "black", "red"), lty = c(1,1,2,2), cex=0.8)
-
-# __b) males ----
-
-# male mice, both parents on low caloric diet 
-a = coefficients(DecayFIT.RQ5.male)$fixed[1]
-b = coefficients(DecayFIT.RQ5.male)$fixed[2]
-k = coefficients(DecayFIT.RQ5.male)$fixed[3]
-
-curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "black", lty = "solid")
-
-# male mice, mother on HCD 
-a = coefficients(DecayFIT.RQ5.male)$fixed[1] * (1-0.053695)
-b = coefficients(DecayFIT.RQ5.male)$fixed[2]
-k = coefficients(DecayFIT.RQ5.male)$fixed[3]
-
-curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "black", lty = "dashed", add = TRUE)
-
-legend(42, 18, legend=c("male", "male, mother on HCD"),
-       col=c("black", "black"), lty = c(1,2), cex=0.8)
-
-# _6.) Compare models ----
-
-# see below in RQ8
-
-# RQ6 - relevant for DEG are only males - Part 2: Disentangle Litter Size and Diet effect on Body weight ----
-
-# Same model as in RQ5 but without diets, but only with litter size
+# _1.) Split data by sexes, in DEG only males are relevant  ----
 
 ModelData.RQ6.male <- saemixData(
   name.data = {mice_f1_slct %>% filter(AnimalSex == "m")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
-  name.covariates = c("LitterSize")
-)
-
-ModelData.RQ6.female <- saemixData(
-  name.data = {mice_f1_slct %>% filter(AnimalSex == "f")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
-  name.covariates = c("LitterSize")
-)
-
-# _2.) Define model object ----
-
-DecayModel.RQ6 <- saemixModel(model = decay.model,
-                              description= "Exponential approach", 
-                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
-                              transform.par = c(1,1,1), 
-                              fixed.estim = c(1,1,1),
-                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
-                              covariate.model = matrix(c(1,1,1), ncol=3, byrow=TRUE),
-                              omega.init = matrix(c(1,0,0,0, 1,0,0,0,1),ncol=3, byrow=TRUE), 
-                              error.model="constant")
-
-# _3.) Fit models ----
-
-DecayFIT.RQ6.male <- saemix(DecayModel.RQ6, ModelData.RQ6.male, saemix.options)
-summary(DecayFIT.RQ6.male)
-
-# Litter size not significant
-
-DecayFIT.RQ6.female <- saemix(DecayModel.RQ6, ModelData.RQ6.female, saemix.options)
-summary(DecayFIT.RQ6.female)
-
-# Litter size significant for b and k
-
-# _4.) Plot model fits ----
-
-# all looking good
-plot(DecayFIT.RQ6.female, plot.type="observations.vs.predictions" )
-plot(DecayFIT.RQ6.male, plot.type="observations.vs.predictions" )
-
-plot(DecayFIT.RQ6.female, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-plot(DecayFIT.RQ6.male, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-
-plot(DecayFIT.RQ6.female, plot.type="parameters.vs.covariates", ask=TRUE)
-plot(DecayFIT.RQ6.male, plot.type="parameters.vs.covariates", ask=TRUE)
-
-npde.DecayFIT.RQ6 <- npdeSaemix(DecayFIT.RQ6.female) # residuals not normal - skewed
-npde.DecayFIT.RQ6 <- npdeSaemix(DecayFIT.RQ6.male)   # residuals less sked then among females but still skewed
-
-# _5.) Plot model predictions ----
-
-# __a) females ----
-
-# female mice, both parents on low caloric diet 
-a = coefficients(DecayFIT.RQ6.female)$fixed[1]
-b = coefficients(DecayFIT.RQ6.female)$fixed[2]
-k = coefficients(DecayFIT.RQ6.female)$fixed[3]
-
-curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "black", lty = "solid")
-
-# female mice with increasing litter size, both parents on low caloric diet 
-a = coefficients(DecayFIT.RQ6.female)$fixed[1]
-b = coefficients(DecayFIT.RQ6.female)$fixed[2] * (1-0.14491) 
-k = coefficients(DecayFIT.RQ6.female)$fixed[3] * (1-0.13252)
-
-curve(a * (1 - b * exp(-k * x)), from = min(mice_f1_slct$MeasurementDay), to = max(mice_f1_slct$MeasurementDay),
-      xlab = "days [d]", ylab = "weight [g]", col = "red", lty = "solid", add = TRUE)
-
-# _6.) Compare models ----
-
-DecayFIT.RQ5.female
-DecayFIT.RQ6.female # <- simpler model is better 
-
-teststatRQ56.female <- -2 * (as.numeric(logLik(DecayFIT.RQ5.female)) - as.numeric(logLik(DecayFIT.RQ6.female)))
-p.val <- pchisq(teststatRQ56.female, df = 3, lower.tail = FALSE)
-p.val # model with diets is not distinctly different from when not adding diets
-
-DecayFIT.RQ5.male
-DecayFIT.RQ6.male # <- simpler model is better 
-
-teststatRQ56.male <- -2 * (as.numeric(logLik(DecayFIT.RQ5.male)) - as.numeric(logLik(DecayFIT.RQ6.male)))
-p.val <- pchisq(teststatRQ56.male, df = 3, lower.tail = FALSE)
-p.val # model with diets is not distinctly different from when not adding diets
-
-# RQ7 - relevant for DEG are only males -  Part 3: - Disentangle Litter Size and Diet effect on Body weight ----
-
-# Same model as in RQ5 but only diets, not with litter size
-
-ModelData.RQ7.male <- saemixData(
-  name.data = {mice_f1_slct %>% filter(AnimalSex == "m")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
-  name.covariates = c("FatherDiet", "MotherDiet")
-)
-
-ModelData.RQ7.female <- saemixData(
-  name.data = {mice_f1_slct %>% filter(AnimalSex == "f")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay",
-  name.covariates = c("FatherDiet", "MotherDiet")
-)
-
-# _2.) Define model object ----
-
-DecayModel.RQ7 <- saemixModel(model = decay.model,
-                              description= "Exponential approach", 
-                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
-                              transform.par = c(1,1,1), 
-                              fixed.estim = c(1,1,1),
-                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
-                              covariate.model = matrix(c(1,1,1, 1,1,1), ncol=3, byrow=TRUE),
-                              omega.init = matrix(c(1,0,0,0, 1,0,0,0,1),ncol=3, byrow=TRUE), 
-                              error.model="constant")
-
-# _3.) Fit models ----
-
-DecayFIT.RQ7.male <- saemix(DecayModel.RQ7, ModelData.RQ7.male, saemix.options)
-summary(DecayFIT.RQ7.male)
-
-# Mother's diet significant on all parameters, father's on some 
-
-DecayFIT.RQ7.female <- saemix(DecayModel.RQ7, ModelData.RQ7.female, saemix.options)
-summary(DecayFIT.RQ7.female)
-
-# Litter size significant for b and k
-
-# Mother's diet significant b only
-
-# _4.) Plot model fits ----
-
-# all looking good
-plot(DecayFIT.RQ7.female, plot.type="observations.vs.predictions" )
-plot(DecayFIT.RQ7.male, plot.type="observations.vs.predictions" )
-
-plot(DecayFIT.RQ7.female, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-plot(DecayFIT.RQ7.male, plot.type = "both.fit",  ilist = 1:9, smooth = TRUE)
-
-plot(DecayFIT.RQ7.female, plot.type="parameters.vs.covariates", ask=TRUE)
-plot(DecayFIT.RQ7.male, plot.type="parameters.vs.covariates", ask=TRUE)
-
-npde.DecayFIT.RQ7 <- npdeSaemix(DecayFIT.RQ7.female) # residuals not normal - skewed
-npde.DecayFIT.RQ7 <- npdeSaemix(DecayFIT.RQ7.male)   # residuals less sked then among females but still skewed
-
-# _5.) Compare models ----
-
-# __a) IC's ----
-
-DecayFIT.RQ5.female # litter size and diets - same as below
-DecayFIT.RQ6.female # litter size - same as above
-DecayFIT.RQ7.female # diet only - worst
-
-DecayFIT.RQ5.male # litter size and diets - worst 
-DecayFIT.RQ6.male # litter size only - best
-DecayFIT.RQ7.male # diet only - second best
-
-# __b) LRTs ----
-
-# females - litter size only vs diet only
-teststatRQ67.female <- -2 * (as.numeric(logLik(DecayFIT.RQ6.female)) - as.numeric(logLik(DecayFIT.RQ7.female)))
-p.val <- pchisq(teststatRQ67.female, df = 3, lower.tail = FALSE)
-p.val # model with diets is not distinctly different from model with litter sizes for females
-
-# males - litter size only vs diet only
-teststatRQ67.male <- -2 * (as.numeric(logLik(DecayFIT.RQ6.male)) - as.numeric(logLik(DecayFIT.RQ7.male)))
-p.val <- pchisq(teststatRQ67.male, df = 3, lower.tail = FALSE)
-p.val # model with diets is not distinctly different from model with litter sizes for females
-
-# females - diet vs diet and litter size
-get_p_from_seamix_lrt(DecayFIT.RQ7.female, DecayFIT.RQ5.female) # sign differnce when adding litter
-                                                                # model better with litter size
-# males - diet vs diet and litter size
-teststatRQ57.male <- -2 * (as.numeric(logLik(DecayFIT.RQ5.male)) - as.numeric(logLik(DecayFIT.RQ7.male)))
-p.val <- pchisq(teststatRQ57.male, df = 3, lower.tail = FALSE)
-p.val # no differnces
-
-
-# RQ8 - relevant for DEG are only males -  Part 4: Get matching null models for RQ5 thru RQ7  ----
-
-# Same model as in RQ5 thru RQ7 but no covariates
-
-ModelData.RQ8.male.null <- saemixData(
-  name.data = {mice_f1_slct %>% filter(AnimalSex == "m")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay"
-  )
-
-ModelData.RQ8.female.null <- saemixData(
-  name.data = {mice_f1_slct %>% filter(AnimalSex == "f")}, header = TRUE, name.group = c("AnimalId"), name.predictors = c("MeasurementDay"), name.response = c("BodyWeightG"), name.X = "MeasurementDay"
+  name.covariates = c("LitterSize", "FatherDiet", "MotherDiet")
   )
 
 # _2.) Define model object ----
 
-DecayModel.RQ8.null <- saemixModel(model = decay.model,
-                              description= "Exponential approach", 
-                              psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
-                              transform.par = c(1,1,1), 
-                              fixed.estim = c(1,1,1),
-                              covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
-                              omega.init = matrix(c(1,0,0,0, 1,0,0,0,1),ncol=3, byrow=TRUE), 
-                              error.model="constant")
+# __a) Intercept only
 
+DecayModel.RQ6.null <- saemixModel(model = decay.model,
+                                   description= "Exponential approach", 
+                                   psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
+                                   transform.par = c(1,1,1), 
+                                   fixed.estim = c(1,1,1),
+                                   covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
+                                   # covariate.model = matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow=TRUE),
+                                   omega.init = matrix(c(1,0,0,0, 1,0,0,0,1),ncol=3, byrow=TRUE), 
+                                   error.model="constant")
+
+# __b) Litter size
+
+DecayModel.RQ6.litter <- saemixModel(model = decay.model,
+                                   description= "Exponential approach", 
+                                   psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
+                                   transform.par = c(1,1,1), 
+                                   fixed.estim = c(1,1,1),
+                                   covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
+                                   covariate.model = matrix(c(1,1,1), ncol=3, byrow=TRUE),
+                                   omega.init = matrix(c(1,0,0,0, 1,0,0,0,1), ncol=3, byrow=TRUE), 
+                                   error.model="constant")
+
+# __c) Litter size and diets
+
+DecayModel.RQ6.litter.diet <- saemixModel(model = decay.model,
+                                   description= "Exponential approach", 
+                                   psi0 = matrix( c(700,0.9,0.02, 0,0,0), ncol=3, byrow = TRUE, dimnames = list(NULL, c("A","B","k"))),
+                                   transform.par = c(1,1,1), 
+                                   fixed.estim = c(1,1,1),
+                                   covariance.model= matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow = TRUE),
+                                   covariate.model = matrix(c(1,1,1, 1,1,1, 1,1,1), ncol=3, byrow=TRUE),
+                                   omega.init = matrix(c(1,0,0,0, 1,0,0,0,1),ncol=3, byrow=TRUE), 
+                                   error.model="constant")
 # _3.) Fit models ----
 
-DecayFIT.RQ8.male.null <- saemix(DecayModel.RQ8.null, ModelData.RQ8.male.null, saemix.options)
-summary(DecayFIT.RQ8.male.null) # AIC = 562.4538, AIC = 561.7869
+DecayFIT.RQ6.null <- saemix(DecayModel.RQ6.null, ModelData.RQ6.male, saemix.options)
 
-DecayFIT.RQ8.female.null <- saemix(DecayModel.RQ8.null, ModelData.RQ8.female.null, saemix.options)
-summary(DecayFIT.RQ8.female.null) # AIC = 287.3807, AIC = 287.5092
+DecayFIT.RQ6.litter <- saemix(DecayModel.RQ6.litter, ModelData.RQ6.male, saemix.options)
 
-# _4.) Compare models ----
+DecayFIT.RQ6.litter.diet <- saemix(DecayModel.RQ6.litter.diet, ModelData.RQ6.male, saemix.options)
 
-# __a) IC's ----
+# _4.) Evaluate and rank models ----
 
-DecayFIT.RQ5.female # litter size and diets - same as below - AIC 286.7304, 287.3118 - better then null
-DecayFIT.RQ6.female # litter size - same as above - AIC 286.5673, 284.9584 - better then null
-DecayFIT.RQ7.female # diet only - worst - AIC - 289.3388, 289.3458 - worse then null
+compare.saemix(DecayFIT.RQ6.null, DecayFIT.RQ6.litter, DecayFIT.RQ6.litter.diet)  # Second model appears most informaive ...
 
-DecayFIT.RQ5.male # litter size and diets - worst - AIC= 568.6449, AIC= 569.5282 - worse then null
-DecayFIT.RQ6.male # litter size only - best - AIC= 563.8716, AIC= 563.9557 - worse then null
-DecayFIT.RQ7.male # diet only - second best - AIC= 565.2276, AIC= 564.3591 - worse then null
+get_p_from_seamix_lrt(DecayFIT.RQ6.null, DecayFIT.RQ6.litter) # ... litter more informative then 0
 
-# __b) LRTs ----
-
-get_p_from_seamix_lrt(DecayFIT.RQ8.male.null, DecayFIT.RQ6.male) # no sign difference - with litter size
-get_p_from_seamix_lrt(DecayFIT.RQ8.male.null, DecayFIT.RQ7.male) # sign difference - with diet - gets worse
-get_p_from_seamix_lrt(DecayFIT.RQ8.male.null, DecayFIT.RQ5.male) # sign difference - with both parameters - gets worse
-get_p_from_seamix_lrt(DecayFIT.RQ7.male, DecayFIT.RQ5.male)      # no sign differences - with or without litter with diets
-
-get_p_from_seamix_lrt(DecayFIT.RQ8.female.null, DecayFIT.RQ6.female) # sign difference - when only litter - gets better
-get_p_from_seamix_lrt(DecayFIT.RQ8.female.null, DecayFIT.RQ7.female) # sign difference - when only diet - gets worse
-get_p_from_seamix_lrt(DecayFIT.RQ8.female.null, DecayFIT.RQ5.female) # sign difference - when both litter and diet - gets better
-get_p_from_seamix_lrt(DecayFIT.RQ6.female, DecayFIT.RQ5.female)      # sign differences - litter only is better
+get_p_from_seamix_lrt(DecayFIT.RQ6.litter, DecayFIT.RQ6.litter.diet) # ... adding diet doesn't improve model
 
 # Snapshot environment ----
 
