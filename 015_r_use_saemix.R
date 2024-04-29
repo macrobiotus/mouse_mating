@@ -33,6 +33,7 @@ gc()
 
 library("here")    # handle path names
 library("dplyr")   # handle data more easily
+library("magrittr")
 
 library("lattice") # create trellis graphs
 library("ggpubr")  # save trellis graphs

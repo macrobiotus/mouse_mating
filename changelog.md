@@ -899,6 +899,15 @@
    * attempted to plot SE in model plot, but too complicated, **stashed changes**
    * restored script deleted yesterday to `/Users/paul/Documents/HM_MouseMating/analysis/scripts_unused`
    * finished modelling - no effect on mice weight by diet, litter size and sex are sufficient
+   * drafted mail on 27-04-2024 - too few data to say anything
+   
+## 29-04-2024 - work day 81
+
+ * in `015_r_use_saemix.R`
+   * updated package loading and lockfile  
+
+
+   **check which contrast can be tested with available RNAseq data and update email**
 
 ## Todo queue (last updated 27-04-2024)
  
