@@ -31,9 +31,9 @@ gc()
 # Nonlinear Mixed-Effects Growth Models: A Tutorial Using 'saemix' in R
 # Methodology, 2021, Vol. 17(4), 250–270, https://doi.org/10.5964/meth.7061
 
-library("here")    # handle path names
-library("dplyr")   # handle data more easily
-library("magrittr")
+library("here")       # handle path names
+library("dplyr")      # handle data more easily
+library("magrittr")   # pipes
 
 library("lattice") # create trellis graphs
 library("ggpubr")  # save trellis graphs
@@ -43,6 +43,10 @@ library("GGally")  # pair plot
 
 library("saemix")  # model non-linear mixed-effect dependencies
 library("npde")    # model non-linear mixed-effect dependencies
+
+library("writexl") # write excel sheets
+
+
 
 # _3.) Functions ----
 
@@ -104,11 +108,24 @@ ggsave("015_r_use_saemix__data_check.pdf", plot = ggarrange(plot_data_check), pa
 
 # __d) Check correlation ----
 
-splom({mice_f1_slct %>% dplyr::select(LitterSize, FatherDiet,  MotherDiet, AnimalSex,  BodyWeightG)}, main = "F1 mice")
+# splom({mice_f1_slct %>% dplyr::select(LitterSize, FatherDiet,  MotherDiet, AnimalSex,  BodyWeightG)}, main = "F1 mice")
+# 
+# ggpairs({mice_f1_slct %>% dplyr::select(LitterSize, FatherDiet,  MotherDiet, AnimalSex,  BodyWeightG)}, 
+#         title = "F1 mice", 
+#         axisLabels = "show") 
 
-ggpairs({mice_f1_slct %>% dplyr::select(LitterSize, FatherDiet,  MotherDiet, AnimalSex,  BodyWeightG)}, 
-        title = "F1 mice", 
-        axisLabels = "show") 
+# __e) Summarize f1 data for manuscript (see 3-May-2024)
+
+vars <- c("AnimalId", "LitterSize", "FatherDiet",  "MotherDiet", "AnimalSex",  "BodyWeightG")
+
+mice_f1_slct %>% group_by(MeasurementDay) %>% count(AnimalSex)
+
+mice_f1_slct %>% dplyr::select(all_of(vars)) %>% group_by(AnimalSex) %>% split(.$AnimalSex) %>% purrr::map(summary)
+
+mice_f1_slct %>% dplyr::select(all_of(vars)) %>% write_xlsx(path = here("../manuscript/240321_submission_2_preparation/SOM_table_1_f1_mice_weights.xlsx"), col_names = TRUE, format_headers = TRUE)
+
+  
+
 
 # RQ1 Which function is best suited to model weight gain (in a null model)? Gompertz, logistic, or exponential approach curve? ----
 
@@ -373,9 +390,6 @@ get_p_from_seamix_lrt(DecayFIT.RQ4, DecayFIT.RQ3) # adding diet does not improve
 
 summary(DecayFIT.RQ4)
 
-# ----------------------------------------------------
-#   -----------------  Fixed effects  ------------------
-#   ----------------------------------------------------
 #               Parameter Estimate     SE  CV(%) p-value
 #   1                   A   26.520 1.4402   5.43       -
 #   2   beta_AnimalSex(A)    0.171 0.0156   9.15 0.00000 *

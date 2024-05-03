@@ -901,13 +901,25 @@
    * finished modelling - no effect on mice weight by diet, litter size and sex are sufficient
    * drafted mail on 27-04-2024 - too few data to say anything
    
-## 29-04-2024 - work day 81
+## 29-04-2024 - work day 82
 
  * in `015_r_use_saemix.R`
    * updated package loading and lockfile  
 
+## 02-05-2024 - work day 83
 
-   **check which contrast can be tested with available RNAseq data and update email**
+ * started continuing on revisions
+ * started writing up methods in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240502_main_text_fragments.docx`
+
+## 03-05-2024 - work day 84
+
+ * continued writing up new methods in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240502_main_text_fragments.docx`
+ * in `015_r_use_saemix.R` - re-ran entire script for writing, added table export in upper section
+ 
+
+
+
+ **check which contrast can be tested with available RNAseq data and update email**
 
 ## Todo queue (last updated 27-04-2024)
  
