@@ -1,6 +1,6 @@
 #' ---
 #' title: "Mice Mating Study"
-#' subtitle: "Defining obesity in mice"
+#' subtitle: "Defining obesity in mice, superseded by modelling with {saemix}."
 #' author: "Paul Czechowski `paul.czechowski@helmholtz-munich.de`"
 #' date: "`r Sys.Date()`"
 #' output:

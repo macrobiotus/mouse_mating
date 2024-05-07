@@ -1,6 +1,6 @@
 #' ---
 #' title: "Mice Mating Study"
-#' subtitle: "Modelling for Hypothesis testing - using {saemix}"
+#' subtitle: "Modelling for hypothesis testing,  using {saemix}, superseding approach based on derivatives"
 #' author: "Paul Czechowski `paul.czechowski@helmholtz-munich.de`"
 #' date: "`r Sys.Date()`"
 #' output:
@@ -75,7 +75,7 @@ mice_f1_slct <- left_join(mice_f1_slct, {mice_f0_slct %>% dplyr::select(AnimalId
 
 # __b) Indicate descriptive status of variable ----
 
-mice_f1_slct %<>% rename(LitterSizeDescription =  LitterSize)
+mice_f1_slct %<>% dplyr::rename(LitterSizeDescription =  LitterSize)
 
 # __c) Isolate pup counts for each sex ----
 
@@ -118,15 +118,13 @@ ggsave("015_r_use_saemix__data_check.pdf", plot = ggarrange(plot_data_check), pa
 
 vars <- c("AnimalId", "LitterSize", "FatherDiet",  "MotherDiet", "AnimalSex",  "BodyWeightG")
 
-mice_f1_slct %>% group_by(MeasurementDay) %>% count(AnimalSex)
+mice_f1_slct %>% group_by(MeasurementDay) %>% dplyr::count(AnimalSex)
 
 mice_f1_slct %>% dplyr::select(all_of(vars)) %>% group_by(AnimalSex) %>% split(.$AnimalSex) %>% purrr::map(summary)
 
 mice_f1_slct %>% dplyr::select(all_of(vars)) %>% write_xlsx(path = here("../manuscript/240321_submission_2_preparation/SOM_table_1_f1_mice_weights.xlsx"), col_names = TRUE, format_headers = TRUE)
 
   
-
-
 # RQ1 Which function is best suited to model weight gain (in a null model)? Gompertz, logistic, or exponential approach curve? ----
 
 # _1.) Define possibly applicable model functions ----
@@ -611,7 +609,10 @@ get_p_from_seamix_lrt(DecayFIT.RQ6.null, DecayFIT.RQ6.litter) # ... litter more 
 
 get_p_from_seamix_lrt(DecayFIT.RQ6.litter, DecayFIT.RQ6.litter.diet) # ... adding diet doesn't improve model
 
-# Snapshot environment ----
+# Snapshot files and environment ----
+
+saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_from_saemix.rds"))
+saveRDS(mice_f1_slct, file = here("rds_storage", "mice_f1_slct_from_saemix.rds"))
 
 sessionInfo()
 save.image(file = here("scripts", "015_r_use_saemix.Rdata"))

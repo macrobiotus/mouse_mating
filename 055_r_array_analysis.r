@@ -1,6 +1,6 @@
 #' ---
 #' title: "Mice Mating Study"
-#' subtitle: "Re-analysis of array data for first revision"
+#' subtitle: "Re-analysis of array data for first revision."
 #' author: "Paul Czechowski `paul.czechowski@helmholtz-munich.de`"
 #' date: "`r Sys.Date()`"
 #' output:
@@ -81,16 +81,16 @@ adjust_array_data = function(expression_set, model_variables) {
   colnames(expression_set) <- colnames(expression_set) %>%
     str_replace_all("bAT",    "BRAT") %>%
     str_replace_all("ingWAT", "SCAT") %>%
-    str_replace_all("liver",  "LIAT") %>%
-    str_replace_all("eWAT",   "EVAT")
+    str_replace_all("liver",  "LIVT") %>%
+    str_replace_all("eWAT",   "EWAT")
   
   # adjust "Tissue" column values  in expression data
   pData(expression_set) %<>% mutate(
     Tissue = case_when(
       Tissue == "bAT"    ~ "BRAT",
       Tissue == "ingWAT" ~ "SCAT",
-      Tissue == "liver"  ~ "LIAT",
-      Tissue == "eWAT"   ~ "EVAT"
+      Tissue == "liver"  ~ "LIVT",
+      Tissue == "eWAT"   ~ "EWAT"
     )
   )
   
@@ -113,8 +113,8 @@ get_pca_plot = function(expr_data_pca, expr_data_raw, variable, legend_title, pl
   # correct legend labels (inset 9-Oct-2023)
   if(variable == "Tissue"){
   correct_lables <- case_when(pData(expr_data_raw)[[variable]] == "BRAT" ~ "BAT",
-            pData(expr_data_raw)[[variable]] == "EVAT" ~ "EVAT",
-            pData(expr_data_raw)[[variable]] == "LIAT" ~ "L",
+            pData(expr_data_raw)[[variable]] == "EWAT" ~ "EWAT",
+            pData(expr_data_raw)[[variable]] == "LIVT" ~ "L",
             pData(expr_data_raw)[[variable]] == "SCAT" ~ "SCAT",
             TRUE ~ pData(expr_data_raw)[[variable]])
   } else if (variable != "Tissue") {
@@ -182,24 +182,24 @@ get_dge_for_individal_tissues =  function(ExpSet){
   message("Building initial model.")   
   
   design_tissue_types <- model.matrix(~ ExpSet[["Tissue"]] - 1)
-  colnames(design_tissue_types) <-c("BRAT", "EVAT", "LIAT", "SCAT") 
+  colnames(design_tissue_types) <-c("BRAT", "EWAT", "LIVT", "SCAT") 
   fit_tissue_types <- lmFit(ExpSet, design_tissue_types)
   
   # Setting contrasts - likley not all will give results 
   contrast_names <- c(
-    "BRAT vs EVAT & LIAT & SCAT",
-    "EVAT vs BRAT & LIAT & SCAT",
-    "LIAT vs EVAT & BRAT & SCAT",
-    "SCAT vs EVAT & BRAT & LIAT")
+    "BRAT vs EWAT & LIVT & SCAT",
+    "EWAT vs BRAT & LIVT & SCAT",
+    "LIVT vs EWAT & BRAT & SCAT",
+    "SCAT vs EWAT & BRAT & LIVT")
   
   message("\nDefining contrasts: \"", paste0(contrast_names, collapse = "\", \""), "\".") 
   
   contrast_list <- vector(mode = "list", length = length(contrast_names))
   
-  contrast_list[[1]]  <- makeContrasts("BRAT vs EVAT & LIAT & SCAT" =  BRAT - (EVAT + LIAT + SCAT)/3, levels = design_tissue_types)
-  contrast_list[[2]]  <- makeContrasts("EVAT vs BRAT & LIAT & SCAT" =  EVAT - (BRAT + LIAT + SCAT)/3, levels = design_tissue_types)
-  contrast_list[[3]]  <- makeContrasts("LIAT vs EVAT & BRAT & SCAT" =  LIAT - (EVAT + BRAT + SCAT)/3, levels = design_tissue_types)
-  contrast_list[[4]]  <- makeContrasts("SCAT vs EVAT & BRAT & LIAT" =  SCAT - (EVAT + BRAT + LIAT)/3, levels = design_tissue_types)
+  contrast_list[[1]]  <- makeContrasts("BRAT vs EWAT & LIVT & SCAT" =  BRAT - (EWAT + LIVT + SCAT)/3, levels = design_tissue_types)
+  contrast_list[[2]]  <- makeContrasts("EWAT vs BRAT & LIVT & SCAT" =  EWAT - (BRAT + LIVT + SCAT)/3, levels = design_tissue_types)
+  contrast_list[[3]]  <- makeContrasts("LIVT vs EWAT & BRAT & SCAT" =  LIVT - (EWAT + BRAT + SCAT)/3, levels = design_tissue_types)
+  contrast_list[[4]]  <- makeContrasts("SCAT vs EWAT & BRAT & LIVT" =  SCAT - (EWAT + BRAT + LIVT)/3, levels = design_tissue_types)
   
   message("\nApplying contrasts.") 
   
@@ -243,7 +243,7 @@ get_dge_for_offspring_obesity = function(ExpSet){
   
 }
 
-# Convenience function to test parents' obesity status in all tissue samples but LIAT
+# Convenience function to test parents' obesity status in all tissue samples but LIVT
 get_dge_for_parent_obesity = function(ExpSet){
   
   message("Convenience function to test parents' obesity status in all tissue samples - analysis of factor \"ObeseParents\" is hard-coded.")
@@ -322,10 +322,10 @@ get_dge_for_parent_obesity = function(ExpSet){
   return(contrast_model_list_tp)
 }
 
-# Convenience function to test parents' obesity status in LIAT samples
+# Convenience function to test parents' obesity status in LIVT samples
 get_some_dge_for_parent_obesity = function(ExpSet){
   
-  message("Reduced contrast set for LIAT analysis") 
+  message("Reduced contrast set for LIVT analysis") 
   message("Convenience function to test parents' obesity status in all tissue samples - analysis of factor \"ObeseParents\" is hard-coded.")
   
   # Building initial models
@@ -733,43 +733,70 @@ eWAT_normData   <- annotateEset(eWAT_normData, pd.clariom.s.mouse, type = "probe
 
 # __c.) Copy, store, and discard data ----
 
-# copy to stick to manuscript naming conventions - corrected as per AH 25.05.2023
+# copy to stick to manuscript naming conventions - corrected as per AH 25.05.2023, again on 07.05.2024
 BRAT <- bAT_normData; rm(bAT_normData)        # brown adipose tissue
 SCAT <- ingWAT_normData; rm(ingWAT_normData)  # subcutaneous adipose tissue 
-LIAT <- Liv_normData; rm(Liv_normData)        # liver adipose tissue
-EVAT <- eWAT_normData; rm(eWAT_normData)      # visceral adipose tissue
+LIVT <- Liv_normData; rm(Liv_normData)        # liver adipose tissue
+EWAT <- eWAT_normData; rm(eWAT_normData)      # visceral adipose tissue
 
 saveRDS(BRAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_bat.rds"))
 saveRDS(SCAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_ewat.rds"))
-saveRDS(LIAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_liv.rds" ))
-saveRDS(EVAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_ingwat.rds"))
+saveRDS(LIVT, file = here("rds_storage", "050_r_array_analysis__normalized_data_liv.rds" ))
+saveRDS(EWAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_ingwat.rds"))
 
 #' ## Loading metadata from modelling (obesity variables)
 
 # _3.) Loading metadata from modelling (obesity variables) ----
 
+# __a) Data from modelling prior to first revision ----
+
 mice_f1_modeled_data_with_rna_seq_data <- readRDS(file = here("rds_storage", "040_r_h3__mice_f1_modeled_data_with_rna_seq_data.rds"))
+
+# __b) Data from modelling for first submission, from {seamix} ----
+
+mice_f0_slct_from_saemix <- readRDS(file = here("rds_storage", "mice_f0_slct_from_saemix.rds"))
+mice_f1_slct_from_saemix <- readRDS(file = here("rds_storage", "mice_f1_slct_from_saemix.rds"))
 
 #' ## Adjust variable names and inspect data
 
+# **Continue here after 7-May-2024** ----
+
 # _4.) Adjust variable names and inspect data ----
+
+# __a) Re-code experiment metadata to new nomenclature --- 
+
+stop("Recode mice_f1_modeled_data_with_rna_seq_data")
+
+# __b) Merge in litter sized from {saemix}-derived metadata
+
+stop("Expand  mice_f1_modeled_data_with_rna_seq_data with litter sizes from mice_f0_slct_from_saemix.")
+stop("Expand  mice_f1_modeled_data_with_rna_seq_data with litter sizes from mice_f1_slct_from_saemix")
+
+# __c) Get summary of sample sizes and treatments --- 
+
+stop("Possible export the follwoing table for manuscript")
+mice_f1_modeled_data_with_rna_seq_data %>% arrange(DietGroup)
+
+# __d) Adjust array data ---
+  
+stop("Function adjust_array_data needs revision")
 
 FLAT <- adjust_array_data(FLAT, mice_f1_modeled_data_with_rna_seq_data)
 BRAT <- adjust_array_data(BRAT, mice_f1_modeled_data_with_rna_seq_data)
 SCAT <- adjust_array_data(SCAT, mice_f1_modeled_data_with_rna_seq_data)
-LIAT <- adjust_array_data(LIAT, mice_f1_modeled_data_with_rna_seq_data)
-EVAT <- adjust_array_data(EVAT, mice_f1_modeled_data_with_rna_seq_data)
+LIVT <- adjust_array_data(LIVT, mice_f1_modeled_data_with_rna_seq_data)
+EWAT <- adjust_array_data(EWAT, mice_f1_modeled_data_with_rna_seq_data)
 
 # _5.) Save adjusted data ----
 
 saveRDS(BRAT, file = here("rds_storage", "050_r_array_analysis__BRAT.rds"))
 saveRDS(SCAT, file = here("rds_storage", "050_r_array_analysis__SCAT.rds"))
-saveRDS(LIAT, file = here("rds_storage", "050_r_array_analysis__LIAT.rds"))
-saveRDS(EVAT, file = here("rds_storage", "050_r_array_analysis__EVAT.rds"))
+saveRDS(LIVT, file = here("rds_storage", "050_r_array_analysis__LIAT.rds"))
+saveRDS(EWAT, file = here("rds_storage", "050_r_array_analysis__EVAT.rds"))
 
-# check, if you like, using `pData(BRAT)` and `exprs(BRAT)` - check available metadata - LIAT does not have a lot
+# check, if you like, using `pData(BRAT)` and `exprs(BRAT)` - check available metadata - LIVT does not have a lot
 
-lapply(c(FLAT, BRAT, SCAT, LIAT, EVAT), pData)  
+lapply(c(FLAT, BRAT, SCAT, LIVT, EWAT), pData)  
 
 #' ## Loading AHs dietary DGE analysis results
 
@@ -829,8 +856,8 @@ saveRDS(DGEL_diet, file = here("rds_storage", "050_r_array_analysis__dge_lists_b
 PCA_FLAT <- get_principal_components(FLAT)
 PCA_BRAT <- get_principal_components(BRAT)
 PCA_SCAT <- get_principal_components(SCAT)
-PCA_LIAT <- get_principal_components(LIAT)
-PCA_EVAT <- get_principal_components(EVAT)
+PCA_LIAT <- get_principal_components(LIVT)
+PCA_EVAT <- get_principal_components(EWAT)
 
 #' ## Get PC loadings for plots
 
@@ -928,18 +955,18 @@ ggsave(plot = plot_pca_scat, path = here("../manuscript/display_items"),
        filename = "050_r_array_analysis__plot_pca_scat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-#' ## Plot EVAT PCs in 2D for several variables types
+#' ## Plot EWAT PCs in 2D for several variables types
 
-# _4.) Plot EVAT PCs in 2D for several variables types  ----
+# _4.) Plot EWAT PCs in 2D for several variables types  ----
 
 # "Overall expression differences between analysed tissues among f1 offspring"
-plot_pca_evat_a <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "Tissue", legend_title = "Tissue", plot_title =  "a", percent_var = EVAT_PV)
+plot_pca_evat_a <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EWAT , variable = "Tissue", legend_title = "Tissue", plot_title =  "a", percent_var = EVAT_PV)
 
 # Overall expression differences and obesity status among f1 offspring
-plot_pca_evat_b <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "ObesityLgcl", legend_title = "F1 Obesity", plot_title =  "b", percent_var = EVAT_PV)
+plot_pca_evat_b <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EWAT , variable = "ObesityLgcl", legend_title = "F1 Obesity", plot_title =  "b", percent_var = EVAT_PV)
 
 # Overall expression differences and obesity parental obesity status among f0
-plot_pca_evat_c <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "c", percent_var = EVAT_PV)
+plot_pca_evat_c <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EWAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "c", percent_var = EVAT_PV)
 
 # ___ Combine and save plots ----
 
@@ -952,18 +979,18 @@ ggsave(plot = plot_pca_evat, path = here("../manuscript/display_items"),
        filename = "050_r_array_analysis__plot_pca_evat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-#' ## Plot LIAT PCs in 2D for several variables types
+#' ## Plot LIVT PCs in 2D for several variables types
 
-# _5.) Plot LIAT PCs in 2D for several variables types  ----
+# _5.) Plot LIVT PCs in 2D for several variables types  ----
 
 # "Overall expression differences between analysed tissues among f1 offspring"
-plot_pca_liat_a <- get_pca_plot(expr_data_pca = PCA_LIAT, expr_data_raw = LIAT , variable = "Tissue", legend_title = "Tissue", plot_title =  "a", percent_var = LIAT_PV)
+plot_pca_liat_a <- get_pca_plot(expr_data_pca = PCA_LIAT, expr_data_raw = LIVT , variable = "Tissue", legend_title = "Tissue", plot_title =  "a", percent_var = LIAT_PV)
 
 # Overall expression differences and obesity status among f1 offspring
-plot_pca_liat_b <- get_pca_plot(expr_data_pca = PCA_LIAT, expr_data_raw = LIAT , variable = "ObesityLgcl", legend_title = "F1 Obesity", plot_title =  "b", percent_var = LIAT_PV)
+plot_pca_liat_b <- get_pca_plot(expr_data_pca = PCA_LIAT, expr_data_raw = LIVT , variable = "ObesityLgcl", legend_title = "F1 Obesity", plot_title =  "b", percent_var = LIAT_PV)
 
 # Overall expression differences and obesity parental obesity status among f0
-plot_pca_liat_c <- get_pca_plot(expr_data_pca = PCA_LIAT, expr_data_raw = LIAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "c", percent_var = LIAT_PV)
+plot_pca_liat_c <- get_pca_plot(expr_data_pca = PCA_LIAT, expr_data_raw = LIVT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "c", percent_var = LIAT_PV)
 
 # ___ Combine and save plots ----
 
@@ -979,8 +1006,8 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
 # _6.) Plot individual tissue PCs in 2D for parental obesity only (for talks etc) ----
 
 plot_pca_brat_one <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "BAT: interscapular brown AT ", percent_var = BRAT_PV)
-plot_pca_evat_two <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "EVAT: epigonal visceral AT", percent_var = EVAT_PV)
-plot_pca_livr_thr <- get_pca_plot(expr_data_pca = PCA_LIAT, expr_data_raw = LIAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "L: liver T", percent_var = LIAT_PV)
+plot_pca_evat_two <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EWAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "EWAT: epigonal visceral AT", percent_var = EVAT_PV)
+plot_pca_livr_thr <- get_pca_plot(expr_data_pca = PCA_LIAT, expr_data_raw = LIVT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "L: liver T", percent_var = LIAT_PV)
 plot_pca_scat_for <- get_pca_plot(expr_data_pca = PCA_SCAT, expr_data_raw = SCAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "SCAT: inguinal subcutaneous AT", percent_var = SCAT_PV)
 
 plot_pca_summ <- ggarrange(plot_pca_brat_one,
@@ -1020,8 +1047,8 @@ PCs_SCAT <- get_isolated_pcs(PCA_SCAT)
 
 FLAT_md <- get_model_data(FLAT, PCs_FLAT)
 BRAT_md <- get_model_data(BRAT, PCs_BRAT)
-EVAT_md <- get_model_data(EVAT, PCs_EVAT)
-LIAT_md <- get_model_data(LIAT, PCs_LIAT)
+EVAT_md <- get_model_data(EWAT, PCs_EVAT)
+LIAT_md <- get_model_data(LIVT, PCs_LIAT)
 SCAT_md <- get_model_data(SCAT, PCs_SCAT)
 
 #' # Getting numerical summaries of above PCAs
@@ -1144,9 +1171,9 @@ summary(lm(PC1 ~ ObeseParents, data = SCAT_md %>% mutate(ObeseParents = relevel(
 
 # sink()
 
-#' ## Analyse LIAT's first PC 
+#' ## Analyse LIVT's first PC 
 
-# _4.) Analyse LIAT's first PC ---- 
+# _4.) Analyse LIVT's first PC ---- 
 
 # opening connection to text with full path for Rmarkdown
 # sink(file = paste0(here("plots/050_r_array_analysis__text_pca_LIAT.txt")))
@@ -1184,9 +1211,9 @@ summary(lm(PC1 ~ ObeseParents, data = LIAT_md %>% mutate(ObeseParents = relevel(
 
 # sink()
 
-#' ## Analyse EVAT's first PC
+#' ## Analyse EWAT's first PC
 
-# _5.) Analyse EVAT's first PC ----
+# _5.) Analyse EWAT's first PC ----
 
 # opening connection to text with full path for Rmarkdown
 # sink(file = paste0(here("plots/050_r_array_analysis__text_pca_EVAT.txt")))
@@ -1239,7 +1266,7 @@ summary(lm(PC1 ~ ObeseParents, data = EVAT_md %>% mutate(ObeseParents = relevel(
 # __a) Check input data formats ----
 
 # see available expression data 
-FLAT; BRAT; SCAT; LIAT; EVAT
+FLAT; BRAT; SCAT; LIVT; EWAT
 
 # check full data set density
 pData(FLAT) # metadata - use `ObesityLgcl` and possibly `ObeseParents`
@@ -1306,7 +1333,7 @@ FLAT_DT.m1 <- melt(FLAT_DT,  id.vars = c("Sample", "Animal", "Tissue", "AnimalSe
 
 # __d) Inspect expression data raw intensities' density  ----
 
-# To check if distributions are different - hopefully they are a bit - yes perhaps in EVAT when Mother and Father are not Obese
+# To check if distributions are different - hopefully they are a bit - yes perhaps in EWAT when Mother and Father are not Obese
 
 # ggplot(FLAT_DT.m1) +
 #   # geom_density(aes(Intensity), stat = "bin", bins = 200) +
@@ -1354,9 +1381,9 @@ FLAT_Tissue_TopTableList <- get_dge_for_individal_tissues(FLAT)
 
 # get_dge_for_offspring_obesity(FLAT)
 # get_dge_for_offspring_obesity(BRAT)
-# get_dge_for_offspring_obesity(LIAT)
+# get_dge_for_offspring_obesity(LIVT)
 # get_dge_for_offspring_obesity(SCAT)
-# get_dge_for_offspring_obesity(EVAT)
+# get_dge_for_offspring_obesity(EWAT)
 
 #' ### Test for DGE among offspring based on parental obesity
 
@@ -1367,10 +1394,10 @@ FLAT_Tissue_TopTableList <- get_dge_for_individal_tissues(FLAT)
 #  Compare to PCA results, including coefficients - Expression is variable based on tissue, and within each tissue based on parental obesity
 
 FLAT_TopTableList <- get_dge_for_parent_obesity(FLAT) # analysis off all tissues together doesn't really make doesn't really make sense
-EVAT_TopTableList <- get_dge_for_parent_obesity(EVAT) # likely not needed - see manuscript results 05.07.2023
+EVAT_TopTableList <- get_dge_for_parent_obesity(EWAT) # likely not needed - see manuscript results 05.07.2023
 SCAT_TopTableList <- get_dge_for_parent_obesity(SCAT) # likely not needed - see manuscript results 05.07.2023
 BRAT_TopTableList <- get_dge_for_parent_obesity(BRAT) 
-LIAT_TopTableList <- get_some_dge_for_parent_obesity(LIAT) 
+LIAT_TopTableList <- get_some_dge_for_parent_obesity(LIVT) 
 
 #' ###  Choose DGE results for further analyses
 
@@ -1382,7 +1409,7 @@ LIAT_TopTableList <- get_some_dge_for_parent_obesity(LIAT)
 
 names(FLAT_Tissue_TopTableList)
           
-# ___ FLAT, BRAT, SCAT, LIAT, EVAT - not keeping any contrasts defined by offspring' obesity  ----
+# ___ FLAT, BRAT, SCAT, LIVT, EWAT - not keeping any contrasts defined by offspring' obesity  ----
 
 #  see PCA results: 
 #  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_EVAT.txt" # likely not needed - see manuscript results 05.07.2023
@@ -1392,7 +1419,7 @@ names(FLAT_Tissue_TopTableList)
 
 #  see DGE results - above
 
-# ___ EVAT - keeping some contrasts defined by parents' obesity  ----
+# ___ EWAT - keeping some contrasts defined by parents' obesity  ----
 
 # no contrasts ar needed  
 # - see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_EVAT.txt"
@@ -1416,7 +1443,7 @@ names(BRAT_TopTableList[c(2)]) # select slots corresponding to contrasts readout
 
 BRAT__Select_TopTableList <- BRAT_TopTableList[c(2)] # selecting individual and compound contrasts
 
-# ___ LIAT - keeping some contrasts defined by parents' obesity  ----
+# ___ LIVT - keeping some contrasts defined by parents' obesity  ----
 
 # some contrast are needed: 
 # - see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_LIAT.txt"
@@ -1436,11 +1463,11 @@ LIAT__Select_TopTableList <- LIAT_TopTableList[c(2)]
 names(FLAT_Tissue_TopTableList) <- paste0("FLAT - ", names(FLAT_Tissue_TopTableList))
 
 # - these results are undefined, as PCA didn't show structure and no DEGs were define (see 5.-Jul.2023)
-#   names(EVAT__Select_TopTableList) <- paste0("EVAT - ", names(EVAT__Select_TopTableList))
+#   names(EVAT__Select_TopTableList) <- paste0("EWAT - ", names(EVAT__Select_TopTableList))
 #   names(SCAT__Select_TopTableList) <- paste0("SCAT - ", names(SCAT__Select_TopTableList))
 
 names(BRAT__Select_TopTableList) <- paste0("BRAT - ", names(BRAT__Select_TopTableList))
-names(LIAT__Select_TopTableList) <- paste0("LIAT - ", names(LIAT__Select_TopTableList))
+names(LIAT__Select_TopTableList) <- paste0("LIVT - ", names(LIAT__Select_TopTableList))
 
 FULL_TopTableList <- c(
   # FLAT_Tissue_TopTableList,
@@ -1471,15 +1498,15 @@ FULL_TopTableList[[1]][ which(  log2(FULL_TopTableList[[1]]$logFC) > 1 ) , ]
 
 # __g)  Get, assort, arrange, and save Vulcano plots  ----
 
-FULL_VolcanoPlots <- mapply(get_one_volcanoplot, TopTableListItem = FULL_TopTableList, TopTableListItemName = gsub("LIAT", "L", gsub("BRAT", "BAT", names(FULL_TopTableList),  fixed = TRUE), fixed = TRUE), SIMPLIFY = FALSE)
+FULL_VolcanoPlots <- mapply(get_one_volcanoplot, TopTableListItem = FULL_TopTableList, TopTableListItemName = gsub("LIVT", "L", gsub("BRAT", "BAT", names(FULL_TopTableList),  fixed = TRUE), fixed = TRUE), SIMPLIFY = FALSE)
 
 # the following three sets are undefined or serve no purpose (see 5-Jul-2023)
 #  FLAT_VolcanoPlots <- FULL_VolcanoPlots[grep("FLAT", names(FULL_VolcanoPlots))]
 #  SCAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^SCAT", names(FULL_VolcanoPlots))]
-#  EVAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^EVAT", names(FULL_VolcanoPlots))]
+#  EVAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^EWAT", names(FULL_VolcanoPlots))]
 
 BRAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^BRAT", names(FULL_VolcanoPlots))]
-LIAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^LIAT", names(FULL_VolcanoPlots))]
+LIAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^LIVT", names(FULL_VolcanoPlots))]
 
 # the following three sets are undefined or serve no purpose (see 5-Jul-2023)
 #  FLAT_VolcanoPlotsComposite <- ggarrange(plotlist = FLAT_VolcanoPlots, ncol = 2, nrow = 2, labels = "auto")
@@ -1558,21 +1585,21 @@ colnames(foo_mat) <- paste0(colnames(foo_mat), " | " ,
 colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))], "*")
 
 # renaming tissues
-colnames(foo_mat) <- gsub("LIAT", "L", gsub("BRAT", "BAT", colnames(foo_mat),  fixed = TRUE), fixed = TRUE)
+colnames(foo_mat) <- gsub("LIVT", "L", gsub("BRAT", "BAT", colnames(foo_mat),  fixed = TRUE), fixed = TRUE)
 
 # print heat map to script and file
 pheatmap(foo_mat, scale = "row")
 pheatmap(foo_mat, scale = "row", filename =  paste0(here("../manuscript/display_items"),"/","050_r_array_analysis__plot_heatmap_brat.pdf"))
 
-# ___ LIAT ----
+# ___ LIVT ----
 
 # get expression data as matrix with probe ids, subset for speed 
-foo <- as_tibble(exprs(LIAT), rownames = c("PROBEID")) %>% filter(PROBEID %in%  LIAT__Select_TopTableList[[1]][["PROBEID"]])
+foo <- as_tibble(exprs(LIVT), rownames = c("PROBEID")) %>% filter(PROBEID %in%  LIAT__Select_TopTableList[[1]][["PROBEID"]])
 foo_mat <- base::as.matrix(foo %>% dplyr::select(-PROBEID))
 rownames(foo_mat) <- (foo %>% pull(PROBEID))
 
 # isolate the DEG top table
-bar <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]]
+bar <- LIAT__Select_TopTableList[["LIVT - MotherFatherObese vs MotherFatherNotObese"]]
 
 # join DEG top table and expression data to a new tibble  
 foobar <- left_join(bar, foo)
@@ -1586,7 +1613,7 @@ foo_mat <- base::as.matrix (foobar %>% dplyr::select(contains("_LIAT")))
 rownames(foo_mat) <- foobar[["SYMBOL"]]
 
 # to add more sample annotations to heat map matrix colnames - isolating this data here
-mdata_tibble <- tibble(pData(LIAT)) %>% mutate(SAMPLE = paste0(Animal,"_",Tissue))
+mdata_tibble <- tibble(pData(LIVT)) %>% mutate(SAMPLE = paste0(Animal,"_",Tissue))
 
 # checking possibilty to extend matrix column names
 which(colnames(foo_mat) %in% mdata_tibble$SAMPLE)
@@ -1601,7 +1628,7 @@ colnames(foo_mat) <- paste0(colnames(foo_mat), " | " ,
 colnames(foo_mat)[grep(pattern = "MotherFatherObese|MotherFatherNotObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|MotherFatherNotObese", colnames(foo_mat))], "*")
 
 # renaming tissues
-colnames(foo_mat) <- gsub("LIAT", "L", gsub("BRAT", "BAT", colnames(foo_mat),  fixed = TRUE), fixed = TRUE)
+colnames(foo_mat) <- gsub("LIVT", "L", gsub("BRAT", "BAT", colnames(foo_mat),  fixed = TRUE), fixed = TRUE)
 
 # print heat map to script and file
 pheatmap(foo_mat, scale = "row")
@@ -1615,9 +1642,9 @@ BRAT_TTL_sign <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherO
 BRAT_TTL_uprg <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(logFC > 1)
 BRAT_TTL_down <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(logFC < -1)
 
-LIAT_TTL_sign <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(adj.P.Val < 0.05 )
-LIAT_TTL_uprg <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC > 1)
-LIAT_TTL_down <- LIAT__Select_TopTableList[["LIAT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC < -1)
+LIAT_TTL_sign <- LIAT__Select_TopTableList[["LIVT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(adj.P.Val < 0.05 )
+LIAT_TTL_uprg <- LIAT__Select_TopTableList[["LIVT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC > 1)
+LIAT_TTL_down <- LIAT__Select_TopTableList[["LIVT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC < -1)
 
 openxlsx::write.xlsx(BRAT_TTL_sign, paste0(here("tables"), "/050_r_array_analysis_", "BAT_DEGs_sign", ".xlsx"), asTable = TRUE, overwrite = TRUE)
 openxlsx::write.xlsx(BRAT_TTL_down, paste0(here("tables"), "/050_r_array_analysis_", "BAT_DEGs_down", ".xlsx"), asTable = TRUE, overwrite = TRUE)
@@ -1654,7 +1681,7 @@ FULL_TopTableListAppended <- lapply(FULL_TopTableList, get_entrez_ids)
 
 # Adjust names
 names(FULL_TopTableListAppended) <- gsub("BRAT", "BAT", names(FULL_TopTableListAppended), fixed = TRUE )
-names(FULL_TopTableListAppended) <- gsub("LIAT", "L", names(FULL_TopTableListAppended), fixed = TRUE )
+names(FULL_TopTableListAppended) <- gsub("LIVT", "L", names(FULL_TopTableListAppended), fixed = TRUE )
 
 #' ### Get plots of KEEG pathways
 
@@ -1697,8 +1724,8 @@ ggsave(plot = ggarrange(plotlist =  FULL_GoPlots, ncol = 2, labels = "auto"), fi
 # Experimental: DGE-analysis using GAMs - Investigate overall tissue specific expression differences based on obesity variables ----
 
 # from inspection 
-# - check EVAT of MotherFatherNotObese across all genes
-# - check LIAT and MotherFatherObese across all genes
+# - check EWAT of MotherFatherNotObese across all genes
+# - check LIVT and MotherFatherObese across all genes
 # - also check Obesity Lgl
 
 # _1.) Set up parallel computing ----

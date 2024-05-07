@@ -916,13 +916,23 @@
  * continued writing up new methods in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240502_main_text_fragments.docx`
  * in `015_r_use_saemix.R` - re-ran entire script for writing, added table export in upper section
 
-## 07-05-2024 - work day 85
+## 06-05-2024 - work day 85
 
  * starting on transcriptome re-analysis
    * copied from `050_r_array_analysis`
    * copied to `055_r_array_analysis.r`
 
+## 07-05-2024 - work day 86
+
+ * working in `055_r_array_analysis.r`
+   * in line 755 needs data from previous modelling scripts
+ * restoring and re-running previous modelling scripts to script folder
+   * namely `020_r_h1.r`, `030_r_h2.r`, and `040_r_h3.r`
+   * for consistency of input files re-ran all scripts up to `055_r_array_analysis` (without `050_r_array_analysis`)
+ * informed co-authors about small sample sizes in `/Users/paul/Documents/HM_MouseMating/communication/240507_on_sample_sizes.pdf`
+  
  **check which contrast can be tested with available RNAseq data and update email**
+ **possibly use Group encoding for testing contrasts** 
 
 ## Todo queue (last updated 27-04-2024)
  
