@@ -915,9 +915,12 @@
 
  * continued writing up new methods in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240502_main_text_fragments.docx`
  * in `015_r_use_saemix.R` - re-ran entire script for writing, added table export in upper section
- 
 
+## 07-05-2024 - work day 85
 
+ * starting on transcriptome re-analysis
+   * copied from `050_r_array_analysis`
+   * copied to `055_r_array_analysis.r`
 
  **check which contrast can be tested with available RNAseq data and update email**
 
