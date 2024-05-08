@@ -46,6 +46,7 @@ library(tidyr)
 
 library(data.table)
 library(ggpubr)
+library(writexl) # write excel sheets
 
 library(factoextra)
 
@@ -759,23 +760,44 @@ mice_f1_slct_from_saemix <- readRDS(file = here("rds_storage", "mice_f1_slct_fro
 
 #' ## Adjust variable names and inspect data
 
-# **Continue here after 7-May-2024** ----
-
 # _4.) Adjust variable names and inspect data ----
 
-# __a) Re-code experiment metadata to new nomenclature --- 
+# __a) Re-code experiment metadata to new nomenclature, merge in litter sizes from {saemix}-derived metadata.  --- 
 
-stop("Recode mice_f1_modeled_data_with_rna_seq_data")
-
-# __b) Merge in litter sized from {saemix}-derived metadata
-
-stop("Expand  mice_f1_modeled_data_with_rna_seq_data with litter sizes from mice_f0_slct_from_saemix.")
-stop("Expand  mice_f1_modeled_data_with_rna_seq_data with litter sizes from mice_f1_slct_from_saemix")
+mice_f1_modeled_data_with_rna_seq_data %<>% # re-code parental diet variable - slash will be buggy
+  dplyr::mutate(ParentalDietMoFa = case_when( 
+    ParentalDietMoFa == "chow / chow" ~ "LCD LCD",
+    ParentalDietMoFa == "chow / HFD"  ~ "LCD HCD", 
+    ParentalDietMoFa == "HFD / chow"  ~ "HCD LCD", 
+    ParentalDietMoFa == "HFD / HFD"   ~ "HCD HCD",
+    .default = as.factor(ParentalDietMoFa)
+  )) %>% mutate(ParentalDietMoFa = as.factor(ParentalDietMoFa)) %>%  # re-code maternal diet variable 
+  dplyr::mutate(MotherDiet = case_when( 
+    MotherDiet == "HFD" ~ "HCD",
+    MotherDiet == "CD" ~ "LCD",
+    .default = as.factor(MotherDiet)
+  )) %>% mutate(MotherDiet = as.factor(MotherDiet)) %>% # re-code paternal diet variable 
+  dplyr::mutate(FatherDiet = case_when( 
+    FatherDiet == "HFD" ~ "HCD",
+    FatherDiet == "CD" ~ "LCD",
+    .default = as.factor(FatherDiet)
+  )) %>%  mutate(FatherDiet = as.factor(FatherDiet)) %>%  # re-code old analysis variable - to avoid unforeseen crashes 
+  dplyr::mutate(ObeseParents = case_when( 
+    ParentalDietMoFa == "LCD LCD" ~ "MotherFatherNotObese"      ,
+    ParentalDietMoFa == "LCD HCD" ~ "FatherObese", 
+    ParentalDietMoFa == "HCD LCD" ~ "MotherObese", 
+    ParentalDietMoFa == "HCD HCD" ~ "MotherFatherObese",
+    .default = as.factor(ParentalDietMoFa)
+  )) %>% mutate(ObeseParents = as.factor(ObeseParents)) %>% 
+  relocate(ParentalDietMoFa, .after = ObeseParents) %>% 
+  dplyr::select(-Sex) %>% left_join( 
+    {mice_f1_slct_from_saemix %>% dplyr::select(AnimalId, LitterSize) %>% distinct() }, by = "AnimalId"
+  ) %>% arrange(DietGroup, AnimalId)
 
 # __c) Get summary of sample sizes and treatments --- 
 
-stop("Possible export the follwoing table for manuscript")
-mice_f1_modeled_data_with_rna_seq_data %>% arrange(DietGroup)
+write_xlsx(mice_f1_modeled_data_with_rna_seq_data, 
+           path =  here("../manuscript/display_items", "055_r_array_analysis_mice_f1_slct__mice_f1_modeled_data_with_rna_seq_data.xlsx")) 
 
 # __d) Adjust array data ---
   

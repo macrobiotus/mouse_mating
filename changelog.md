@@ -930,7 +930,14 @@
    * namely `020_r_h1.r`, `030_r_h2.r`, and `040_r_h3.r`
    * for consistency of input files re-ran all scripts up to `055_r_array_analysis` (without `050_r_array_analysis`)
  * informed co-authors about small sample sizes in `/Users/paul/Documents/HM_MouseMating/communication/240507_on_sample_sizes.pdf`
-  
+
+
+## 08-05-2024 - work day 86 - revising manuscript and array analysis
+
+ * working in `055_r_array_analysis.r`
+   * finished formatting metadata
+   * commit prior to changing boxplot of `010_r_define_obesity.r`
+ 
  **check which contrast can be tested with available RNAseq data and update email**
  **possibly use Group encoding for testing contrasts** 
 
