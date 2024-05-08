@@ -114,7 +114,7 @@ mice_f1_slct <- readRDS(file = here("rds_storage", "mice_f1_slct.rds"))
 
 mice_ref_weights <- read_excel(path = here("raw_data", "240410_reference_weights.xlsx"))
 mice_ref_weights %<>% clean_names(case = "upper_camel")
-mice_ref_weights %<>% rename(AnimalSex = Sex)
+mice_ref_weights %<>% dplyr::rename(AnimalSex = Sex)
 
 # _2.) Inspect data ----
 
@@ -696,6 +696,9 @@ mice_f0_slct_mb %>%
 #   mutate(FatherDiet = paste0("Mother ", FatherDiet)) %>%
 #   convert(chr(MotherDiet, FatherDiet))
 
+# recode Dietary variables for plotting
+mice_f0_slct_mb %<>% mutate(Diet = recode(Diet, "HFD" = "HCD", "CD" = "LCD"))
+
 # __d) Plot weight delta ----
 
 f0_mice_weights_sex_deltas <- ggplot(data = mice_f0_slct_mb, aes(x = AnimalSex, y = BodyWeightGainDeltaG)) +
@@ -744,6 +747,8 @@ mice_f1_slct_mb %>%
 
 # encode sex into the factor variable to label ggplot 2 facets without much work
 mice_f1_slct_mb %<>% 
+  mutate(MotherDiet = recode(MotherDiet, "HFD" = "HCD", "CD" = "LCD")) %>% 
+  mutate(FatherDiet = recode(FatherDiet, "HFD" = "HCD", "CD" = "LCD")) %>% 
   convert(chr(MotherDiet, FatherDiet)) %>%
   mutate(MotherDiet = paste0("Father ", MotherDiet)) %>%
   mutate(FatherDiet = paste0("Mother ", FatherDiet)) %>%

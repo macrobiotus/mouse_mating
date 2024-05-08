@@ -791,7 +791,7 @@ mice_f1_modeled_data_with_rna_seq_data %<>% # re-code parental diet variable - s
   )) %>% mutate(ObeseParents = as.factor(ObeseParents)) %>% 
   relocate(ParentalDietMoFa, .after = ObeseParents) %>% 
   dplyr::select(-Sex) %>% left_join( 
-    {mice_f1_slct_from_saemix %>% dplyr::select(AnimalId, LitterSize) %>% distinct() }, by = "AnimalId"
+    {mice_f1_slct_from_saemix %>% dplyr::select(AnimalId, LitterSize) %>% distinct()}, by = "AnimalId"
   ) %>% arrange(DietGroup, AnimalId)
 
 # __c) Get summary of sample sizes and treatments --- 

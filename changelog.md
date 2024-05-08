@@ -936,7 +936,9 @@
 
  * working in `055_r_array_analysis.r`
    * finished formatting metadata
-   * commit prior to changing boxplot of `010_r_define_obesity.r`
+   * commit prior to changing boxplot of `010_r_define_obesity.r`, Fig 2 in main text.
+ * in `010_r_define_obesity.r`
+   * changed boxplot and updated in main manuscript file
  
  **check which contrast can be tested with available RNAseq data and update email**
  **possibly use Group encoding for testing contrasts** 
