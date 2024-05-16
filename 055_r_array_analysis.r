@@ -133,7 +133,7 @@ get_pca_plot = function(expr_data_pca, expr_data_raw, variable, legend_title, pl
     label = "none",
     habillage = factor(correct_lables),
     pointsize = 2,
-    palette = c("firebrick3", "purple", "steelblue3", "gold3"),
+    palette = c("firebrick3", "purple", "steelblue3", "gold3", "forestgreen"),
     legend.title = legend_title,
     invisible = "quali",
     addEllipses = FALSE,
@@ -145,7 +145,7 @@ get_pca_plot = function(expr_data_pca, expr_data_raw, variable, legend_title, pl
       y = paste0("PC2: ", percent_var[2], "% variance")
     ) +
     theme_bw() +
-    scale_shape_manual(values = c(19, 19, 19, 19))
+    scale_shape_manual(values = c(19, 19, 19, 19, 19))
   
   return(pca_plot)
   
@@ -745,10 +745,10 @@ IWAT <- ingWAT_normData; rm(ingWAT_normData)  # subcutaneous adipose tissue
 LIVT <- Liv_normData; rm(Liv_normData)        # liver adipose tissue
 EVAT <- eWAT_normData; rm(eWAT_normData)      # visceral adipose tissue
 
-saveRDS(BRAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_bat.rds"))
-saveRDS(IWAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_ewat.rds"))
-saveRDS(LIVT, file = here("rds_storage", "050_r_array_analysis__normalized_data_liv.rds" ))
-saveRDS(EVAT, file = here("rds_storage", "050_r_array_analysis__normalized_data_ingwat.rds"))
+saveRDS(BRAT, file = here("rds_storage", "055_r_array_analysis__normalized_data_bat.rds"))
+saveRDS(IWAT, file = here("rds_storage", "055_r_array_analysis__normalized_data_ewat.rds"))
+saveRDS(LIVT, file = here("rds_storage", "055_r_array_analysis__normalized_data_liv.rds" ))
+saveRDS(EVAT, file = here("rds_storage", "055_r_array_analysis__normalized_data_ingwat.rds"))
 
 #' ## Loading metadata from modelling (obesity variables)
 
@@ -806,8 +806,6 @@ write_xlsx(mice_f1_modeled_data_with_rna_seq_data,
 
 # __d) Adjust array data ---
   
-stop("Function adjust_array_data needs revision in adjust_array_data_2, prior to renaming the latter")
-
 FLAT <- adjust_array_data(FLAT, mice_f1_modeled_data_with_rna_seq_data)
 BRAT <- adjust_array_data(BRAT, mice_f1_modeled_data_with_rna_seq_data)
 IWAT <- adjust_array_data(IWAT, mice_f1_modeled_data_with_rna_seq_data)
@@ -816,12 +814,12 @@ EVAT <- adjust_array_data(EVAT, mice_f1_modeled_data_with_rna_seq_data)
 
 # _5.) Save adjusted data ----
 
-saveRDS(BRAT, file = here("rds_storage", "050_r_array_analysis__BRAT.rds"))
-saveRDS(IWAT, file = here("rds_storage", "050_r_array_analysis__SCAT.rds"))
-saveRDS(LIVT, file = here("rds_storage", "050_r_array_analysis__LIAT.rds"))
-saveRDS(EVAT, file = here("rds_storage", "050_r_array_analysis__EVAT.rds"))
+saveRDS(BRAT, file = here("rds_storage", "055_r_array_analysis__BRAT.rds"))
+saveRDS(IWAT, file = here("rds_storage", "055_r_array_analysis__IWAT.rds"))
+saveRDS(LIVT, file = here("rds_storage", "055_r_array_analysis__LIVT.rds"))
+saveRDS(EVAT, file = here("rds_storage", "055_r_array_analysis__EVAT.rds"))
 
-# check, if you like, using `pData(BRAT)` and `exprs(BRAT)` - check available metadata - LIVT does not have a lot
+# check data, if needed, using `pData(BRAT)` and `exprs(BRAT)` - check available metadata - LIVT does not have a lot
 
 lapply(c(FLAT, BRAT, IWAT, LIVT, EVAT), pData)  
 
@@ -847,9 +845,9 @@ DGEL_diet <- list(bAT_CD_HFD_VS_CD_CD, bAT_HFD_CD_VS_CD_CD, bAT_HFD_CD_VS_CD_HFD
 
 names(DGEL_diet) <-  c("BRAT_CD_HFD_VS_CD_CD", "BRAT_HFD_CD_VS_CD_CD", "BRAT_HFD_CD_VS_CD_HFD", "BRAT_HFD_HFD_VS_CD_CD", "BRAT_HFD_HFD_VS_CD_HFD",     
  "BRAT_HFD_HFD_VS_HFD_CD", "EVAT_CD_HFD_VS_CD_CD", "EVAT_HFD_CD_VS_CD_CD", "EVAT_HFD_CD_VS_CD_HFD", "EVAT_HFD_HFD_VS_CD_CD",  
- "EVAT_HFD_HFD_VS_CD_HFD", "EVAT_HFD_HFD_VS_HFD_CD", "SCAT_CD_HFD_VS_CD_CD", "SCAT_HFD_CD_VS_CD_CD", "SCAT_HFD_CD_VS_CD_HFD", 
- "SCAT_HFD_HFD_VS_CD_CD", "SCAT_HFD_HFD_VS_CD_HFD", "SCAT_HFD_HFD_VS_HFD_CD", "LIAT_CD_HFD_VS_CD_CD", "LIAT_HFD_CD_VS_CD_CD", 
- "LIAT_HFD_CD_VS_CD_HFD", "LIAT_HFD_HFD_VS_CD_CD", "LIAT_HFD_HFD_VS_CD_HFD", "LIAT_HFD_HFD_VS_HFD_CD")
+ "EVAT_HFD_HFD_VS_CD_HFD", "EVAT_HFD_HFD_VS_HFD_CD", "IWAT_CD_HFD_VS_CD_CD", "IWAT_HFD_CD_VS_CD_CD", "IWAT_HFD_CD_VS_CD_HFD", 
+ "IWAT_HFD_HFD_VS_CD_CD", "IWAT_HFD_HFD_VS_CD_HFD", "IWAT_HFD_HFD_VS_HFD_CD", "LIVT_CD_HFD_VS_CD_CD", "LIVT_HFD_CD_VS_CD_CD", 
+ "LIVT_HFD_CD_VS_CD_HFD", "LIVT_HFD_HFD_VS_CD_CD", "LIVT_HFD_HFD_VS_CD_HFD", "LIVT_HFD_HFD_VS_HFD_CD")
 
 # __c) **CONTINUE HERE IF RE-IMPLEMNETATION OF DGE FAILS ** Define list with obesity variables 
 
@@ -870,7 +868,7 @@ rm(bAT_CD_HFD_VS_CD_CD, bAT_HFD_CD_VS_CD_CD, bAT_HFD_CD_VS_CD_HFD, bAT_HFD_HFD_V
    ingWAT_HFD_HFD_VS_CD_CD, ingWAT_HFD_HFD_VS_CD_HFD, ingWAT_HFD_HFD_VS_HFD_CD, Liv_CD_HFD_VS_CD_CD, Liv_HFD_CD_VS_CD_CD,
    Liv_HFD_CD_VS_CD_HFD, Liv_HFD_HFD_VS_CD_CD, Liv_HFD_HFD_VS_CD_HFD, Liv_HFD_HFD_VS_HFD_CD)
 
-saveRDS(DGEL_diet, file = here("rds_storage", "050_r_array_analysis__dge_lists_by_diet.rds"))
+saveRDS(DGEL_diet, file = here("rds_storage", "055_r_array_analysis__dge_lists_by_diet.rds"))
 
 #' # Calculate Principal components
 
@@ -882,8 +880,8 @@ saveRDS(DGEL_diet, file = here("rds_storage", "050_r_array_analysis__dge_lists_b
 
 PCA_FLAT <- get_principal_components(FLAT)
 PCA_BRAT <- get_principal_components(BRAT)
-PCA_SCAT <- get_principal_components(IWAT)
-PCA_LIAT <- get_principal_components(LIVT)
+PCA_IWAT <- get_principal_components(IWAT)
+PCA_LIVT <- get_principal_components(LIVT)
 PCA_EVAT <- get_principal_components(EVAT)
 
 #' ## Get PC loadings for plots
@@ -892,8 +890,8 @@ PCA_EVAT <- get_principal_components(EVAT)
 
 FLAT_PV <- get_percent_variation(PCA_FLAT)
 BRAT_PV <- get_percent_variation(PCA_BRAT)
-SCAT_PV <- get_percent_variation(PCA_SCAT)
-LIAT_PV <- get_percent_variation(PCA_LIAT)
+IWAT_PV <- get_percent_variation(PCA_IWAT)
+LIVT_PV <- get_percent_variation(PCA_LIVT)
 EVAT_PV <- get_percent_variation(PCA_EVAT)
 
 # #' Plot Principal Component Analyses
@@ -905,32 +903,34 @@ EVAT_PV <- get_percent_variation(PCA_EVAT)
 # _1.) Plot FLAT PCs in 2D for several variables types  ----
 
 # "Overall expression differences between analysed tissues among f1 offspring"
-plot_pca_flat_a <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "Tissue", legend_title = "Tissue", plot_title =  "a", percent_var = FLAT_PV)
+plot_pca_flat_a <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "Tissue", legend_title = "F1 Tissue", plot_title =  "a", percent_var = FLAT_PV)
 
 # Overall expression differences and obesity status among f1 offspring
-plot_pca_flat_b <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "ObesityLgcl", legend_title = "F1 Obesity", plot_title =  "b", percent_var = FLAT_PV)
+plot_pca_flat_b <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n (mother / father)", plot_title =  "b", percent_var = FLAT_PV)
 
 # Overall expression differences and obesity parental obesity status among f0
-plot_pca_flat_c <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "c", percent_var = FLAT_PV)
+plot_pca_flat_c <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "c", percent_var = FLAT_PV)
 
 # ___ Combine and save plots ----
 
-# fcator lebelling needs to chnage - check above
+# factor labelling needs to change - check above
 plot_pca_flat <- ggarrange(plot_pca_flat_a, plot_pca_flat_b, plot_pca_flat_c, nrow = 1, ncol = 3)
 
 ggsave(plot = plot_pca_flat, path = here("plots"), 
-       filename = "050_r_array_analysis__plot_pca_flat.pdf",  
+       filename = "055_r_array_analysis__plot_pca_flat.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 ggsave(plot = plot_pca_flat, path = here("../manuscript/display_items"), 
-       filename = "050_r_array_analysis__plot_pca_flat_unassigned.pdf",  
+       filename = "055_r_array_analysis__plot_pca_flat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+
+stop("Continue below, all code below is unadjusted.")
 
 # ___ Plot PCs in 3D (only for tissue types so far)  ----
 
 # dataGG <- data.frame(PC1 = PCA_FLAT$x[,1], PC2 = PCA_FLAT$x[,2],PC3 = PCA_FLAT$x[,3])
 # 
 # plot_pca_sptial <- plot_ly(dataGG, x = ~PC1, y = ~PC2, z = ~PC3) %>%
-#   add_markers(color = ~pData(FLAT)$Tissue,colors = c("firebrick3","purple","steelblue3","gold3"),
+#   add_markers(color = ~pData(FLAT)$Tissue,colors = c("firebrick3","purple","steelblue3","gold3", "forestgreen"),
 #               symbol = ~pData(FLAT)$Tissue, symbols = c(19,19,19,19))
 # 
 # saveWidget(plot_pca_sptial, file = paste0(here("plots"),"/", "050_r_array_analysis__plot_pca_flat.html"), selfcontained = T, libdir = "lib")
@@ -963,13 +963,13 @@ ggsave(plot = plot_pca_brat, path = here("../manuscript/display_items"),
 # _3.) Plot IWAT PCs in 2D for several variables types  ----
 
 # "Overall expression differences between analysed tissues among f1 offspring"
-plot_pca_scat_a <- get_pca_plot(expr_data_pca = PCA_SCAT, expr_data_raw = IWAT , variable = "Tissue", legend_title = "Tissue", plot_title =  "a", percent_var = SCAT_PV)
+plot_pca_scat_a <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT , variable = "Tissue", legend_title = "Tissue", plot_title =  "a", percent_var = SCAT_PV)
 
 # Overall expression differences and obesity status among f1 offspring
-plot_pca_scat_b <- get_pca_plot(expr_data_pca = PCA_SCAT, expr_data_raw = IWAT , variable = "ObesityLgcl", legend_title = "F1 Obesity", plot_title =  "b", percent_var = SCAT_PV)
+plot_pca_scat_b <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT , variable = "ObesityLgcl", legend_title = "F1 Obesity", plot_title =  "b", percent_var = SCAT_PV)
 
 # Overall expression differences and obesity parental obesity status among f0
-plot_pca_scat_c <- get_pca_plot(expr_data_pca = PCA_SCAT, expr_data_raw = IWAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "c", percent_var = SCAT_PV)
+plot_pca_scat_c <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "c", percent_var = SCAT_PV)
 
 # ___ Combine and save plots ----
 
@@ -1011,13 +1011,13 @@ ggsave(plot = plot_pca_evat, path = here("../manuscript/display_items"),
 # _5.) Plot LIVT PCs in 2D for several variables types  ----
 
 # "Overall expression differences between analysed tissues among f1 offspring"
-plot_pca_liat_a <- get_pca_plot(expr_data_pca = PCA_LIAT, expr_data_raw = LIVT , variable = "Tissue", legend_title = "Tissue", plot_title =  "a", percent_var = LIAT_PV)
+plot_pca_liat_a <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT , variable = "Tissue", legend_title = "Tissue", plot_title =  "a", percent_var = LIAT_PV)
 
 # Overall expression differences and obesity status among f1 offspring
-plot_pca_liat_b <- get_pca_plot(expr_data_pca = PCA_LIAT, expr_data_raw = LIVT , variable = "ObesityLgcl", legend_title = "F1 Obesity", plot_title =  "b", percent_var = LIAT_PV)
+plot_pca_liat_b <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT , variable = "ObesityLgcl", legend_title = "F1 Obesity", plot_title =  "b", percent_var = LIAT_PV)
 
 # Overall expression differences and obesity parental obesity status among f0
-plot_pca_liat_c <- get_pca_plot(expr_data_pca = PCA_LIAT, expr_data_raw = LIVT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "c", percent_var = LIAT_PV)
+plot_pca_liat_c <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "c", percent_var = LIAT_PV)
 
 # ___ Combine and save plots ----
 
@@ -1034,8 +1034,8 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
 
 plot_pca_brat_one <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "BAT: interscapular brown AT ", percent_var = BRAT_PV)
 plot_pca_evat_two <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "EVAT: epigonal visceral AT", percent_var = EVAT_PV)
-plot_pca_livr_thr <- get_pca_plot(expr_data_pca = PCA_LIAT, expr_data_raw = LIVT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "L: liver T", percent_var = LIAT_PV)
-plot_pca_scat_for <- get_pca_plot(expr_data_pca = PCA_SCAT, expr_data_raw = IWAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "IWAT: inguinal subcutaneous AT", percent_var = SCAT_PV)
+plot_pca_livr_thr <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "L: liver T", percent_var = LIAT_PV)
+plot_pca_scat_for <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT , variable = "ObeseParents", legend_title = "F0 Obesity", plot_title =  "IWAT: inguinal subcutaneous AT", percent_var = SCAT_PV)
 
 plot_pca_summ <- ggarrange(plot_pca_brat_one,
                            plot_pca_evat_two,
@@ -1065,8 +1065,8 @@ ggsave(plot = plot_pca_summ, path = here("plots"),
 PCs_FLAT <- get_isolated_pcs(PCA_FLAT)
 PCs_BRAT <- get_isolated_pcs(PCA_BRAT)
 PCs_EVAT <- get_isolated_pcs(PCA_EVAT)
-PCs_LIAT <- get_isolated_pcs(PCA_LIAT)
-PCs_SCAT <- get_isolated_pcs(PCA_SCAT)
+PCs_LIAT <- get_isolated_pcs(PCA_LIVT)
+PCs_SCAT <- get_isolated_pcs(PCA_IWAT)
 
 #' ## Get data frames to model variation of first PC against chosen factors
 

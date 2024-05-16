@@ -945,6 +945,9 @@
 ## 16-05-2024 - work day 87 - revising manuscript and array analysis
 
  * updating main text with modelling results
+ * working in `055_r_array_analysis.r`
+   * got PCA results
+   * integrated first PCA plot into manuscript
 
  **check which contrast can be tested with available RNAseq data and update email**
  **possibly use Group encoding for testing contrasts** 
