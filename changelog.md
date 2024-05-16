@@ -939,7 +939,13 @@
    * commit prior to changing boxplot of `010_r_define_obesity.r`, Fig 2 in main text.
  * in `010_r_define_obesity.r`
    * changed boxplot and updated in main manuscript file
- 
+ * continuing in `055_r_array_analysis.r`
+   * adjusted function code - scaffold is there already
+
+## 16-05-2024 - work day 87 - revising manuscript and array analysis
+
+ * updating main text with modelling results
+
  **check which contrast can be tested with available RNAseq data and update email**
  **possibly use Group encoding for testing contrasts** 
 
