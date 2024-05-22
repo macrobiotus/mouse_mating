@@ -1101,6 +1101,7 @@ model_intercept <- lm(PC1 ~  1, data = FLAT_md)
 #' ### Testing effect of "Tissue"
 
 # __b) Testing effect of "Tissue"  ----
+# plot(PC1 ~  Tissue, data = FLAT_md)
 model_tissue <- lm(PC1 ~  Tissue, data = FLAT_md)
 summary(model_tissue) # all tissues distinct
 plot(model_tissue)
@@ -1108,7 +1109,8 @@ anova(model_intercept, model_tissue) # ***Tissue highly significant structuring 
 
 #' ### Testing effect of parental diets
 
-# __c) Testing effect of "ObesityLgcl" ----
+# __c) Testing effect of "ParentalDietMoFa" ----
+plot(PC1 ~  ParentalDietMoFa, data = FLAT_md)
 model_obesity_off <- lm(PC1 ~  ParentalDietMoFa, data = FLAT_md)
 summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # dietary combinations obesity not explain PC1 variation 
@@ -1120,13 +1122,11 @@ anova(model_intercept, model_obesity_off) # dietary combinations obesity not exp
 model_obesity_par <- lm(PC1 ~ LitterSize, data = FLAT_md)
 plot(PC1 ~ LitterSize, data = FLAT_md)
 summary(model_obesity_par) # no signal
-plot(model_obesity_par)
 anova(model_intercept, model_obesity_par) # litter size  not significantly structuring PC1 variation, but bad fit  
 
 # sink()
 
 #' ## Analyse BRAT's first PC
-
 
 # _2.) Analyse BRAT's first PC ----  
 
@@ -1153,9 +1153,23 @@ anova(model_intercept, model_obesity_off) # Offspring's obesity not significant 
 # LCD HCD / LCD LCD not significantly different from each other
 # effect is significant
 
+# __c) Testing effect of "MotherDiet" ----
+
+plot(PC1 ~  MotherDiet, data = BRAT_md)
+model_obesity_off <- lm(PC1 ~  MotherDiet, data = BRAT_md)
+summary(model_obesity_off) # fair fit
+anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
+
+# __d) Testing effect of "FatherDiet" ----
+
+plot(PC1 ~  FatherDiet, data = BRAT_md)
+model_obesity_off <- lm(PC1 ~  FatherDiet, data = BRAT_md)
+summary(model_obesity_off) # fair fit
+anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
+
 #' ### Testing effect of "LitterSize"
 
-# __c) Testing effect of "LitterSize" ----
+# __e) Testing effect of "LitterSize" ----
 
 plot(PC1 ~  LitterSize, data = BRAT_md)
 model_obesity_par <- lm(PC1 ~ LitterSize, data = BRAT_md)
@@ -1166,7 +1180,7 @@ anova(model_intercept, model_obesity_par)
 
 #' ### Testing all reference levels of "ParentalDietMoFa"
 
-# __d) Testing all reference levels of "ParentalDietMoFa" ----
+# __f) Testing all reference levels of "ParentalDietMoFa" ----
 
 # not needed - just check the plot
 summary(lm(PC1 ~ ParentalDietMoFa, data = BRAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 1))))
@@ -1174,6 +1188,8 @@ summary(lm(PC1 ~ ParentalDietMoFa, data = BRAT_md %>% mutate(ParentalDietMoFa = 
 summary(lm(PC1 ~ ParentalDietMoFa, data = BRAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 3))))
 summary(lm(PC1 ~ ParentalDietMoFa, data = BRAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 4))))
 plot(PC1 ~  ParentalDietMoFa, data = BRAT_md)
+
+stop("update results below")
 
 # sink()
 
@@ -1220,8 +1236,6 @@ summary(lm(PC1 ~ ParentalDietMoFa, data = SCAT_md %>% mutate(ParentalDietMoFa = 
 summary(lm(PC1 ~ ParentalDietMoFa, data = SCAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 3))))
 summary(lm(PC1 ~ ParentalDietMoFa, data = SCAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 4))))
 
-stop("All code below is unadjusted")
-
 # sink()
 
 #' ## Analyse LIVT's first PC 
@@ -1238,29 +1252,32 @@ stop("All code below is unadjusted")
 
 model_intercept <- lm(PC1 ~  1, data = LIAT_md)
 
-#' ### Testing effect of "ObesityLgcl"
+#' ### Testing effect of "ParentalDietMoFa"
 
-# __b) Testing effect of "ObesityLgcl" ----
+# __b) Testing effect of "ParentalDietMoFa" ----
 
-model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = LIAT_md)
-summary(model_obesity_off) # no signal
-anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
+plot(PC1 ~  ParentalDietMoFa, data = LIAT_md) # HCD HCD vs HCD LCD and LCD HCD and LCD LCD
+model_obesity_off <- lm(PC1 ~  ParentalDietMoFa, data = LIAT_md)
+summary(model_obesity_off) # all quite different from each other - see contrasts swithcih below to see which ones
+anova(model_intercept, model_obesity_off) # ParentalDietMoFa significant structuring PC1 
 
-#' ### Testing effect of "ObeseParents"
+#' ### Testing effect of "LitterSize"
 
-# __c) Testing effect of "ObeseParents" ----
+# __c) Testing effect of "LitterSize" ----
 
-model_obesity_par <- lm(PC1 ~ ObeseParents, data = LIAT_md)
-anova(model_intercept, model_obesity_par) # ***Parent's obesity significant structuring PC1, check in DGE***
+plot(PC1 ~ LitterSize, data = LIAT_md) # possibly signal but few data points
+model_obesity_par <- lm(PC1 ~ LitterSize, data = LIAT_md)
+summary(model_obesity_par) # bad fit
+anova(model_intercept, model_obesity_par) # Litter size not significant
 
-#' ### Testing all reference levels of "ObeseParents"
+#' ### Testing all reference levels of "ParentalDietMoFa"
 
-# __d) Testing all reference levels of "ObeseParents" ----
+# __d) Testing all reference levels of "ParentalDietMoFa" ----
 
-summary(lm(PC1 ~ ObeseParents, data = LIAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 1))))
-summary(lm(PC1 ~ ObeseParents, data = LIAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 2))))
-summary(lm(PC1 ~ ObeseParents, data = LIAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 3))))
-summary(lm(PC1 ~ ObeseParents, data = LIAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 4))))
+summary(lm(PC1 ~ ParentalDietMoFa, data = LIAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 1))))
+summary(lm(PC1 ~ ParentalDietMoFa, data = LIAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 2))))
+summary(lm(PC1 ~ ParentalDietMoFa, data = LIAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 3))))
+summary(lm(PC1 ~ ParentalDietMoFa, data = LIAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 4))))
 
 # sink()
 
@@ -1278,29 +1295,32 @@ summary(lm(PC1 ~ ObeseParents, data = LIAT_md %>% mutate(ObeseParents = relevel(
 
 model_intercept <- lm(PC1 ~  1, data = EVAT_md)
 
-#' ### Testing effect of "ObesityLgcl"
+#' ### Testing effect of "ParentalDietMoFa"
 
-# __b) Testing effect of "ObesityLgcl" ----
+# __b) Testing effect of "ParentalDietMoFa" ----
 
-model_obesity_off <- lm(PC1 ~  ObesityLgcl, data = EVAT_md)
+plot(PC1 ~  ParentalDietMoFa, data = EVAT_md) # LCD LCD different the all others
+model_obesity_off <- lm(PC1 ~  ParentalDietMoFa, data = EVAT_md)
 summary(model_obesity_off) # no signal
-anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
+anova(model_intercept, model_obesity_off) # significant effect
 
 #' ### Testing effect of "ObeseParents"
 
-# __c) Testing effect of "ObeseParents" ----
+# __c) Testing effect of "LitterSize" ----
 
-model_obesity_par <- lm(PC1 ~ ObeseParents, data = EVAT_md)
-anova(model_intercept, model_obesity_par) # ***Parent's obesity significant structuring PC1, check in DGE***
+plot(PC1 ~  LitterSize, data = EVAT_md) # LCD LCD different the all others
+model_obesity_par <- lm(PC1 ~ LitterSize, data = EVAT_md)
+summary(model_obesity_par)
+anova(model_intercept, model_obesity_par) # litter size not significant
 
 #' ### Testing all reference levels of "ObeseParents"
 
 # __d) Testing all reference levels of "ObeseParents" ----
-
-summary(lm(PC1 ~ ObeseParents, data = EVAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 1))))
-summary(lm(PC1 ~ ObeseParents, data = EVAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 2))))
-summary(lm(PC1 ~ ObeseParents, data = EVAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 3))))
-summary(lm(PC1 ~ ObeseParents, data = EVAT_md %>% mutate(ObeseParents = relevel(ObeseParents, 4))))
+plot(PC1 ~  ParentalDietMoFa, data = EVAT_md) # LCD LCD different the all others
+summary(lm(PC1 ~ ParentalDietMoFa, data = EVAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 1))))
+summary(lm(PC1 ~ ParentalDietMoFa, data = EVAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 2))))
+summary(lm(PC1 ~ ParentalDietMoFa, data = EVAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 3))))
+summary(lm(PC1 ~ ParentalDietMoFa, data = EVAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 4))))
 
 # sink()
 
