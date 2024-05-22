@@ -1250,8 +1250,6 @@ summary(lm(PC1 ~ ParentalDietMoFa, data = SCAT_md %>% mutate(ParentalDietMoFa = 
 
 # sink()
 
-stop("update results below")
-
 #' ## Analyse LIVT's first PC 
 
 # _4.) Analyse LIVT's first PC ---- 
@@ -1275,9 +1273,23 @@ model_obesity_off <- lm(PC1 ~  ParentalDietMoFa, data = LIAT_md)
 summary(model_obesity_off) # all quite different from each other - see contrasts swithcih below to see which ones
 anova(model_intercept, model_obesity_off) # ParentalDietMoFa significant structuring PC1 
 
+# __c) Testing effect of "MotherDiet" ----
+
+plot(PC1 ~  MotherDiet, data = LIAT_md) # HCD HCD vs HCD LCD and LCD HCD and LCD LCD
+model_obesity_off <- lm(PC1 ~  MotherDiet, data = LIAT_md)
+summary(model_obesity_off) # all quite different from each other - see contrasts swithcih below to see which ones
+anova(model_intercept, model_obesity_off) # ParentalDietMoFa significant structuring PC1 
+
+# __d) Testing effect of "FatherDiet" ----
+
+plot(PC1 ~  FatherDiet, data = LIAT_md) # HCD HCD vs HCD LCD and LCD HCD and LCD LCD
+model_obesity_off <- lm(PC1 ~  FatherDiet, data = LIAT_md)
+summary(model_obesity_off) # all quite different from each other - see contrasts swithcih below to see which ones
+anova(model_intercept, model_obesity_off) # FatherDiet significant structuring PC1 
+
 #' ### Testing effect of "LitterSize"
 
-# __c) Testing effect of "LitterSize" ----
+# __e) Testing effect of "LitterSize" ----
 
 plot(PC1 ~ LitterSize, data = LIAT_md) # possibly signal but few data points
 model_obesity_par <- lm(PC1 ~ LitterSize, data = LIAT_md)
@@ -1286,7 +1298,7 @@ anova(model_intercept, model_obesity_par) # Litter size not significant
 
 #' ### Testing all reference levels of "ParentalDietMoFa"
 
-# __d) Testing all reference levels of "ParentalDietMoFa" ----
+# __f) Testing all reference levels of "ParentalDietMoFa" ----
 
 summary(lm(PC1 ~ ParentalDietMoFa, data = LIAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 1))))
 summary(lm(PC1 ~ ParentalDietMoFa, data = LIAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 2))))
@@ -1294,6 +1306,9 @@ summary(lm(PC1 ~ ParentalDietMoFa, data = LIAT_md %>% mutate(ParentalDietMoFa = 
 summary(lm(PC1 ~ ParentalDietMoFa, data = LIAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 4))))
 
 # sink()
+
+stop("update results below")
+
 
 #' ## Analyse EVAT's first PC
 
