@@ -962,14 +962,16 @@
  * working in `055_r_array_analysis.r`
    * implemented PCA plots and updated manuscript further
    * updated text 
+   * got to line 1509
   
- * next steps - befor DEG
-   * [ ] carefully correct and interpret existing PCA results
+ * next steps
+   * [x] carefully correct and interpret existing PCA results
    * [ ] correlate litter size with diet (test in `015_r_use_saemix.R`)
    * [ ] write up results in main text 
-     * [ ] no signal among litter size among any tissues
-     * [ ] signal among parental diet between these and those dietary treatments
-     * [ ] **hopefully** no correlation between litter size and diet - otherwise justify non-consideration by small sample size 
+     * [x] no signal among litter size among any tissues
+     * [x] signal among parental diet between these and those dietary treatments
+     * [ ] **hopefully** no correlation between litter size and diet - otherwise justify non-consideration by small sample size
+     * [ ] reimplement contrast checking
      
    * 
    * id correlation exists mention effect - possibly correct expression data

@@ -1237,9 +1237,9 @@ model_obesity_par <- lm(PC1 ~ LitterSize, data = SCAT_md)
 summary(model_obesity_par)
 anova(model_obesity_par, model_intercept) # Litter size doesn't add much 
 
-#' ### Testing all reference levels of "ObeseParents"
+#' ### Testing all reference levels of "ParentalDietMoFa"
 
-# __e) Testing all reference levels of "ObeseParents" ----
+# __e) Testing all reference levels of "ParentalDietMoFa" ----
 
 # also check plot again
 plot(PC1 ~  ParentalDietMoFa, data = SCAT_md) # some structure along PC1
@@ -1307,9 +1307,6 @@ summary(lm(PC1 ~ ParentalDietMoFa, data = LIAT_md %>% mutate(ParentalDietMoFa = 
 
 # sink()
 
-stop("update results below")
-
-
 #' ## Analyse EVAT's first PC
 
 # _5.) Analyse EVAT's first PC ----
@@ -1333,18 +1330,32 @@ model_obesity_off <- lm(PC1 ~  ParentalDietMoFa, data = EVAT_md)
 summary(model_obesity_off) # no signal
 anova(model_intercept, model_obesity_off) # significant effect
 
-#' ### Testing effect of "ObeseParents"
+# __c) Testing effect of "FatherDiet" ----
 
-# __c) Testing effect of "LitterSize" ----
+plot(PC1 ~  FatherDiet, data = EVAT_md) # LCD LCD different the all others
+model_obesity_off <- lm(PC1 ~  FatherDiet, data = EVAT_md)
+summary(model_obesity_off) # no signal
+anova(model_intercept, model_obesity_off) # significant effect
+
+# __d) Testing effect of "MotherDiet" ----
+
+plot(PC1 ~  MotherDiet, data = EVAT_md) # LCD LCD different the all others
+model_obesity_off <- lm(PC1 ~  MotherDiet, data = EVAT_md)
+summary(model_obesity_off) # no signal
+anova(model_intercept, model_obesity_off) # significant effect
+
+#' ### Testing effect of "LitterSize"
+
+# __e) Testing effect of "LitterSize" ----
 
 plot(PC1 ~  LitterSize, data = EVAT_md) # LCD LCD different the all others
 model_obesity_par <- lm(PC1 ~ LitterSize, data = EVAT_md)
 summary(model_obesity_par)
 anova(model_intercept, model_obesity_par) # litter size not significant
 
-#' ### Testing all reference levels of "ObeseParents"
+#' ### Testing all reference levels of "ParentalDietMoFa"
 
-# __d) Testing all reference levels of "ObeseParents" ----
+# __d) Testing all reference levels of "ParentalDietMoFa" ----
 plot(PC1 ~  ParentalDietMoFa, data = EVAT_md) # LCD LCD different the all others
 summary(lm(PC1 ~ ParentalDietMoFa, data = EVAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 1))))
 summary(lm(PC1 ~ ParentalDietMoFa, data = EVAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 2))))
@@ -1354,8 +1365,6 @@ summary(lm(PC1 ~ ParentalDietMoFa, data = EVAT_md %>% mutate(ParentalDietMoFa = 
 # sink()
 
 #' # Re-implement analysis of array intensities
-
-stop("Update results section in manuscript.")
 
 # Re-implement analysis of array intensities ----
 
@@ -1468,6 +1477,7 @@ FLAT_DT.m1 <- melt(FLAT_DT,  id.vars = c("Sample", "Animal", "Tissue", "AnimalSe
 # see also here for LFC shrinkage and genral procedure https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/08_practical_DE.pdf
 # see here why shrinking LFCs is considered unenecssary by the limma authors - https://support.bioconductor.org/p/100804/
 
+
 #' ###  Test for DGE for each tissue against all others, using FLAT
 
 # __a) Test for DGE for each tissue against all others, using FLAT ----
@@ -1478,10 +1488,13 @@ FLAT_Tissue_TopTableList <- get_dge_for_individal_tissues(FLAT)
 
 #' ### Test for DGE among obese and non-obese offspring
 
+
+
 # __b)  Test for DGE among obese and non-obese offspring ----
 
 # No PCA signal (see above) nor DGE detected across all tissues or in any tissue based on offsprings' obesity status
 # No further work necessary - but report!
+warning("get_dge_for_offspring_obesity() has not been adjusted for 1st revisions because it is likely unenecssary.")
 
 # get_dge_for_offspring_obesity(FLAT)
 # get_dge_for_offspring_obesity(BRAT)
@@ -1492,6 +1505,9 @@ FLAT_Tissue_TopTableList <- get_dge_for_individal_tissues(FLAT)
 #' ### Test for DGE among offspring based on parental obesity
 
 # __c)  Test for DGE among offspring based on parental obesity ----
+
+stop("Update code based on methods in main text, on or after 22.05.2024, then update results")
+stop("LFC needs tp be set to 2 for most contarsts, see main text.")
 
 # Defining and applying contrasts: One of "MotherFatherNotObese", "FatherObese", "MotherFatherObese", or "MotherObese" 
 #  against all remaining three levels.
