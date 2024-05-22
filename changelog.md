@@ -949,15 +949,22 @@
    * got PCA results
    * integrated first PCA plot into manuscript
 
-## 16-05-2024 - work day 88 - revising manuscript and array analysis
+## 17-05-2024 - work day 88 - revising manuscript and array analysis
 
  * working in `055_r_array_analysis.r`
    * implemented PCA plots and updated manuscript
    * for interpretation and analysis suitability of PCA, expressions dat *may* need to be adjusted for litter size 
    * send out brain storming request to AH and TH - see `241705_mouse_mating_brain_storming.pdf`
+     * no reply
+
+## 22-05-2024 - work day 89 - revising manuscript and array analysis
+
+ * working in `055_r_array_analysis.r`
+   * implemented PCA plots and updated manuscript further
+   * updated text 
   
  * next steps - befor DEG
-   * carefully correct and interpret existing PCA results
+   * carefully correct and interpret existing PCA results - write up results in maintext
    * possibly correlate litter size with diet - then correct PCA results
    * id correlation exists mention effect - possibly correct expression data
 
