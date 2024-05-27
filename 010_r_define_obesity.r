@@ -162,6 +162,8 @@ mice_f0_ref_xyplot <- xyplot(BodyWeightGLow + BodyWeightG + BodyWeightGHigh ~ Me
                              ylab = "body weight [g] ± 1 sd"
                                )
 
+mice_f0_ref_xyplot
+
 # __b) Reference weights with upper and lower bounds against experiment data - to hard with lattice, using ggplot2 ----
  
 mice_f0_slct_ref <- ggplot() + 
@@ -178,7 +180,10 @@ mice_f0_slct_ref <- ggplot() +
   theme_bw() +
   ggtitle("F0 mice weights against reference \n mean weights (C57BL/6NTac)") 
 
+mice_f0_slct_ref
+
 mice_f1_slct_ref <- ggplot() + 
+
   
   # weight measurement of f1  generation
   geom_line(data = mice_f1_slct, mapping = aes( x = MeasurementDay, y = BodyWeightG, colour = AnimalSex, group = AnimalId)) + 
@@ -462,9 +467,9 @@ mice_f0_slct[["WeightGain"]] <- as.factor(mice_f0_slct[["WeightGain"]])
 
 # For second submission including dietary variable to check whether weight gain is congruent with diet, in third line
 
-mice_f0_slct %>% dplyr::select(AnimalId) %>% distinct # next command below should have 12 animals
-mice_f0_slct %>% dplyr::select(AnimalId, WeightGain) %>% distinct # 12 animals are marked as expected
-mice_f0_slct %>% dplyr::select(AnimalId, WeightGain, Diet) %>% distinct # 12 animals are marked as expected - F0 8992 had WD but no gain
+mice_f0_slct %>% dplyr::select(AnimalId) %>% distinct # next command below should have 8 animals
+mice_f0_slct %>% dplyr::select(AnimalId, WeightGain) %>% distinct # 8 animals are marked as expected
+mice_f0_slct %>% dplyr::select(AnimalId, WeightGain, Diet) %>% distinct # 8 animals are marked as expected - F0 8992 had WD but no gain
 
 # __c ) Export table with successful marking ----
 
@@ -502,7 +507,7 @@ mice_f1_slct %>% dplyr::select(AnimalId, WeightGain) %>% distinct %>%
 # __a) Mark F0 with any WD and hi weight gain as classified obese and all others are not obese! ----
 
 mice_f0_slct %<>% mutate(Obesity = case_when(
-  (Diet == "HFD" & WeightGain == "hi") ~ "Obese",
+  (Diet == "WD" & WeightGain == "hi") ~ "Obese",
   (Diet == "CD" & WeightGain == "lo") ~ "NotObese", 
   TRUE ~ "NotObese"))
 mice_f0_slct[["Obesity"]] <- as.factor(mice_f0_slct[["Obesity"]])
@@ -564,7 +569,7 @@ F0_ObeseMothers <- mice_f0_slct %>% filter(Obesity == "Obese" & AnimalSex == "f"
 # **** No weight data appears to be available for fathers - using WD as a proxy variable for obesity ****
 mice_f0_slct %>% filter(Obesity == "Obese" & AnimalSex == "m") %>% pull("AnimalId")  %>% unique
 
-F0_ObeseFathers <- mice_f0_slct %>% filter(PartnerDiet == "HFD" ) %>% pull("MatingWith")  %>% unique
+F0_ObeseFathers <- mice_f0_slct %>% filter(PartnerDiet == "WD" ) %>% pull("MatingWith")  %>% unique
 
 # __b) Adding F0 mothers' obesity status to F1 ----
 
@@ -666,16 +671,16 @@ mice_f0_slct_mb  <- mice_f0_slct
 # __b) Get weight delta ----
 
 # getting time points for delta - min and max wont work as some mice don't ahve data at max weeks
-mice_f0_slct_mb %>% hablar::convert(num(Week)) %>% group_by(AnimalId) %>% dplyr::slice(c(which.min(Week), which.max(Week))) %>% arrange 
+mice_f0_slct_mb %<>% mutate(Week = as.numeric(as.character(Week))) %>% group_by(AnimalId) %>% dplyr::slice(c(which.min(Week), which.max(Week))) %>% arrange 
 
 # show available weeks:
-mice_f0_slct_mb %>% convert(num(Week)) %>% pull(Week) %>% unique
+mice_f0_slct_mb %>% pull(Week) %>% unique
 
 # getting time points for delta - min week and week 14
-mice_f0_slct_mb %<>% hablar::convert(num(Week)) %>% group_by(AnimalId) %>% dplyr::slice(c(which.min(Week), which(Week == 14)))
+mice_f0_slct_mb %<>% group_by(AnimalId) %>% dplyr::slice(c(which.min(Week), which(Week == 14)))
 
 # calculate weight gain by subtracting weight at week 14 from weight at week 4 - add this to caption
-mice_f0_slct_mb %>% dplyr::group_by(AnimalId) %>% dplyr::mutate(BodyWeightGainDeltaG = BodyWeightG - first(BodyWeightG)) %>% relocate(BodyWeightGainDeltaG, .after = BodyWeightG)
+mice_f0_slct_mb %<>% dplyr::group_by(AnimalId) %>% dplyr::mutate(BodyWeightGainDeltaG = BodyWeightG - first(BodyWeightG)) %>% relocate(BodyWeightGainDeltaG, .after = BodyWeightG)
 
 # keep only rows with the relevant weight gain delta - the second column of each group
 mice_f0_slct_mb %<>% group_by(AnimalId) %>% dplyr::slice(min(n(), 2))
@@ -722,13 +727,13 @@ mice_f1_slct_mb  <- mice_f1_slct
 # __b) Get weight delta ----
 
 # getting time points for delta - min and max wont work as some mice don't ahve data at max weeks
-mice_f1_slct_mb %>% convert(num(Week)) %>% group_by(AnimalId) %>% slice(c(which.min(Week), which.max(Week))) %>% arrange 
+mice_f1_slct_mb %<>%  mutate(Week = as.numeric(as.character(Week))) %>% group_by(AnimalId) %>% slice(c(which.min(Week), which.max(Week))) %>% arrange 
 
 # show available weeks:
-mice_f1_slct_mb %>% convert(num(Week)) %>% pull(Week) %>% unique
+mice_f1_slct_mb %>% pull(Week) %>% unique
 
 # getting time points for delta - min week and week 14
-mice_f1_slct_mb %<>% convert(num(Week)) %>% group_by(AnimalId) %>% slice(c(which.min(Week), which(Week == 14)))
+mice_f1_slct_mb %<>% group_by(AnimalId) %>% slice(c(which.min(Week), which(Week == 14)))
 
 # calculate weight gain by subtracting weight at week 14 from weight at week 4 - add this to caption
 mice_f1_slct_mb %<>% group_by(AnimalId) %>% mutate(BodyWeightGainDeltaG = BodyWeightG - first(BodyWeightG)) %>% relocate(BodyWeightGainDeltaG, .after = BodyWeightG)

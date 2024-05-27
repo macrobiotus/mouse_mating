@@ -970,6 +970,7 @@
  * commit prior to starting to re-encoding diets
  * re-encoded diets in 
    * `000_r_format_data.r`
+   * `010_r_define_obesity.r`
   
  * next steps
    * [x] note diets in main text and adjust introduction and methods - check throughout
