@@ -967,9 +967,12 @@
 ## 27-05-2024 - work day 90 - revising manuscript and array analysis
 
  * updated todo - met with AJ for mouse mating discussion
+ * commit prior to starting to re-encoding diets
+ * re-encoded diets in 
+   * `000_r_format_data.r`
   
  * next steps
-   * [ ] note diets in main text and adjust introduction and methods - check throughout
+   * [x] note diets in main text and adjust introduction and methods - check throughout
    * [ ] in display items rename to **"western diet"** for **HCD** and **"control diet"** for **LCD**
      * in `010_r_define_obesity.r` - barplot
      * in `055_r_array_analysis.r` - barplot

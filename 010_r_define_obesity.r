@@ -464,7 +464,7 @@ mice_f0_slct[["WeightGain"]] <- as.factor(mice_f0_slct[["WeightGain"]])
 
 mice_f0_slct %>% dplyr::select(AnimalId) %>% distinct # next command below should have 12 animals
 mice_f0_slct %>% dplyr::select(AnimalId, WeightGain) %>% distinct # 12 animals are marked as expected
-mice_f0_slct %>% dplyr::select(AnimalId, WeightGain, Diet) %>% distinct # 12 animals are marked as expected - F0 8992 had HFD but no gain
+mice_f0_slct %>% dplyr::select(AnimalId, WeightGain, Diet) %>% distinct # 12 animals are marked as expected - F0 8992 had WD but no gain
 
 # __c ) Export table with successful marking ----
 
@@ -497,9 +497,9 @@ mice_f1_slct %>% dplyr::select(AnimalId, WeightGain) %>% distinct %>%
   as_gt() %>%
   gt::gtsave(filename = paste0(here("../manuscript/display_items/"), "010_r_define_obesity__mice_f1_slct__weight_gain.docx")) 
 
-# _6.) Important for second submission: Define obese F0 mice ----
+# _6.) Not important for second submission: Define obese F0 mice ----
 
-# __a) Mark F0 with any HFD and hi weight gain as classified obese and all others are not obese! ----
+# __a) Mark F0 with any WD and hi weight gain as classified obese and all others are not obese! ----
 
 mice_f0_slct %<>% mutate(Obesity = case_when(
   (Diet == "HFD" & WeightGain == "hi") ~ "Obese",
@@ -511,7 +511,7 @@ mice_f0_slct[["Obesity"]] <- as.factor(mice_f0_slct[["Obesity"]])
 
 mice_f0_slct %>% dplyr::select(AnimalId) %>% distinct # next command below should have 8 animals
 
-# One F0 mouse with HFD did not get obese per our definition - 8992
+# One F0 mouse with WD did not get obese per our definition - 8992
 
 mice_f0_slct %>% dplyr::select(AnimalId, Diet, WeightGain, Obesity) %>% distinct %>% arrange(AnimalId) 
 
@@ -557,11 +557,11 @@ mice_f1_slct %>% dplyr::select(AnimalId, MotherDiet, FatherDiet,  WeightGain, Ob
 
 # __a) Check F0 Obesity status ----
 
-# ***Weight data is available for mothers - using HFD AND weight gain as proxy variables for obesity ***
+# ***Weight data is available for mothers - using WD AND weight gain as proxy variables for obesity ***
 
 F0_ObeseMothers <- mice_f0_slct %>% filter(Obesity == "Obese" & AnimalSex == "f") %>% pull("AnimalId")  %>% unique
 
-# **** No weight data appears to be available for fathers - using HFD as a proxy variable for obesity ****
+# **** No weight data appears to be available for fathers - using WD as a proxy variable for obesity ****
 mice_f0_slct %>% filter(Obesity == "Obese" & AnimalSex == "m") %>% pull("AnimalId")  %>% unique
 
 F0_ObeseFathers <- mice_f0_slct %>% filter(PartnerDiet == "HFD" ) %>% pull("MatingWith")  %>% unique
@@ -675,7 +675,7 @@ mice_f0_slct_mb %>% convert(num(Week)) %>% pull(Week) %>% unique
 mice_f0_slct_mb %<>% hablar::convert(num(Week)) %>% group_by(AnimalId) %>% dplyr::slice(c(which.min(Week), which(Week == 14)))
 
 # calculate weight gain by subtracting weight at week 14 from weight at week 4 - add this to caption
-mice_f0_slct_mb %<>% group_by(AnimalId) %>% mutate(BodyWeightGainDeltaG = BodyWeightG - first(BodyWeightG)) %>% relocate(BodyWeightGainDeltaG, .after = BodyWeightG)
+mice_f0_slct_mb %>% dplyr::group_by(AnimalId) %>% dplyr::mutate(BodyWeightGainDeltaG = BodyWeightG - first(BodyWeightG)) %>% relocate(BodyWeightGainDeltaG, .after = BodyWeightG)
 
 # keep only rows with the relevant weight gain delta - the second column of each group
 mice_f0_slct_mb %<>% group_by(AnimalId) %>% dplyr::slice(min(n(), 2))
@@ -697,7 +697,7 @@ mice_f0_slct_mb %>%
 #   convert(chr(MotherDiet, FatherDiet))
 
 # recode Dietary variables for plotting
-mice_f0_slct_mb %<>% mutate(Diet = recode(Diet, "HFD" = "HCD", "CD" = "LCD"))
+mice_f0_slct_mb %<>% mutate(Diet = recode(Diet, "HFD" = "WD", "CD" = "CD"))
 
 # __d) Plot weight delta ----
 
@@ -747,8 +747,8 @@ mice_f1_slct_mb %>%
 
 # encode sex into the factor variable to label ggplot 2 facets without much work
 mice_f1_slct_mb %<>% 
-  mutate(MotherDiet = recode(MotherDiet, "HFD" = "HCD", "CD" = "LCD")) %>% 
-  mutate(FatherDiet = recode(FatherDiet, "HFD" = "HCD", "CD" = "LCD")) %>% 
+  mutate(MotherDiet = recode(MotherDiet, "HFD" = "WD", "CD" = "CD")) %>% 
+  mutate(FatherDiet = recode(FatherDiet, "HFD" = "WD", "CD" = "CD")) %>% 
   convert(chr(MotherDiet, FatherDiet)) %>%
   mutate(MotherDiet = paste0("Father ", MotherDiet)) %>%
   mutate(FatherDiet = paste0("Mother ", FatherDiet)) %>%
@@ -803,7 +803,7 @@ mice_f1_slct %>%
   as_gt() %>%
   gt::gtsave(filename = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/010_r_define_obesity__mice_f1_slct__summary.docx") 
 
-# How many HFD mothers were not obese?
+# How many WD mothers were not obese?
 mice_f0_slct %>% dplyr::select(AnimalId, Obesity) %>% distinct 
 mice_f0_slct %>% dplyr::select(AnimalId, Obesity) %>% distinct %>% tbl_summary(., missing = "no")
 

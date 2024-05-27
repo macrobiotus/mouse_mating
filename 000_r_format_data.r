@@ -131,9 +131,22 @@ mice_f1 %<>% mutate("MeasurementDay" = readr::parse_number(as.character(Week)) *
 glimpse(mice_f0)
 glimpse(mice_f1)
 
+# _4.) Rencoding dietary variables for second submission (first revision) ----
+
+# Inserted 27.05.2024 - r
+
+warning("Re-enecoded dietary variables here on 26.05.2024")
+
+mice_f0 %<>% mutate(Diet = recode(Diet, "HFD" = "WD", "CD" = "CD"))
+mice_f0 %<>% mutate(PartnerDiet = recode(PartnerDiet, "HFD" = "WD", "CD" = "CD"))
+mice_f0 %<>% mutate(Group = recode(Group, "HFD" = "WD", "CD" = "CD"))
+
+mice_f1 %<>% mutate(MotherDiet = recode(MotherDiet, "HFD" = "WD", "CD" = "CD"))
+mice_f1 %<>% mutate(FatherDiet = recode(FatherDiet, "HFD" = "WD", "CD" = "CD"))
+
 #' ## Check which animals have been used for clinical assessments and save original state
 
-# _4.) Check which animals have been used for clinical assessments and save original state ----
+# _5.) Check which animals have been used for clinical assessments and save original state ----
 
 # f0 generation - check 
 glimpse(mice_f0)
@@ -156,7 +169,7 @@ saveRDS(mice_f1, file = here("rds_storage", "mice_f1.rds"))
 
 #' ## Deal with "Mixed" parental diets by removing them
 
-# _5.) Remove "Mixed" parental diets and save altered state  ----
+# _6.) Remove "Mixed" parental diets and save altered state  ----
 
 #' ### Show f0 animals that received mixed diets
 
@@ -223,7 +236,7 @@ saveRDS(mice_f1, file = here("rds_storage", "mice_f1_cleaned.rds"))
 
 #' ## Check which animals have been used for RNA sequencing
 
-# _6.) Check which animals have been used for RNA sequencing ----
+# _7.) Check which animals have been used for RNA sequencing ----
 
 mice_f1_rna_seq <- readxl::read_excel("/Users/paul/Documents/HM_MouseMating/communication/190916 Probenliste Clariom S.xlsx")
 mice_f1_rna_seq %>% print(n = Inf) # inspect
@@ -236,7 +249,7 @@ mice_f1_rna_seq_no_tissues <- mice_f1_rna_seq %>% dplyr::select(-c(Sample, Tissu
 
 #' ## Output a table that show which animals had been used for RNA sequencing
 
-# _7.) Output a table that show which animals had been used for RNA sequencing  ----
+# _8.) Tabularize which animals have been used for RNA sequencing  ----
 
 mice_f1_modeled_data_with_rna_seq_data <- left_join(mice_f1_animal_ids, mice_f1_rna_seq_no_tissues, by = c("AnimalId" = "Animal"))
 mice_f1_modeled_data_with_rna_seq_data %<>% dplyr::select(-c("Sex", "ParentalDietMoFa"))
@@ -249,7 +262,7 @@ mice_f1_modeled_data_with_rna_seq_data %>% print(n = Inf)
 
 #' ## Select all variables that could be relevant for modelling
 
-# _8.) Select all variables that could be relevant for modelling ----
+# _9.) Select all variables that could be relevant for modelling ----
 
 mice_f0_slct <- mice_f0 # 
 mice_f1_slct <- mice_f1 # %>%  dplyr::select(animal_id, animal_sex, body_weight_g, mother_diet, father_diet, week, mother_id, father_id) 
