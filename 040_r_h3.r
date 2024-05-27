@@ -27,6 +27,7 @@
 
 rm(list=ls())
 gc()
+stop("This code is outdated and likely not needed anymore. Before running name diets in code to match data - see chnaglog file on 27.05.2024")
 
 # _2.) Packages ----
 

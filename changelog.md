@@ -971,24 +971,30 @@
  * re-encoded diets in 
    * `000_r_format_data.r`
    * `010_r_define_obesity.r`
+ * added stops to now superflous scripts
+   * `020_r_h1.r`
+   * `030_r_h2.r`
+   * `040_r_h3.r`
+
+
   
  * next steps
    * [x] note diets in main text and adjust introduction and methods - check throughout
-   * [ ] in display items rename to **"western diet"** for **HCD** and **"control diet"** for **LCD**
-     * in `010_r_define_obesity.r` - barplot
-     * in `055_r_array_analysis.r` - barplot
-     
-   * [x] carefully correct and interpret existing PCA results
-   * [ ] fork and get clustering approach
-   * [ ] correlate litter size with diet (test in `015_r_use_saemix.R`)
+   * [ ] in `055_r_array_analysis.r` 
+     * [ ] in all display items use **"WD"** for **HCD** and **"CD"** for **LCD**
+     * [x] carefully correct and interpret existing PCA results
+     * [ ] fork and get clustering approach
+     * [ ] define DEG contrats by cluster analysis
+   * [ ] in `015_r_use_saemix.R`
+     * [ ] correlate litter size with diet (test in `015_r_use_saemix.R`)
    * [ ] write up results in main text 
-     * [x] no signal among litter size among any tissues
-     * [x] signal among parental diet between these and those dietary treatments
+     * [ ] refresh results with PCA anlsysi sucessor and tested contrats
+     * ~~[x] no signal among litter size among any tissues~~
+     * ~~[x] signal among parental diet between these and those dietary treatments~~a
      * [ ] **hopefully** no correlation between litter size and diet - otherwise justify non-consideration by small sample size
      * [ ] reimplement contrast checking - use all contrasts after discussion with NKB
-     
  
- **check which contrast can be tested with available RNAseq data and update email**
+ * [x] check which contrast can be tested with available RNAseq data and update email
  **possibly use Group encoding for testing contrasts**
 
 ## Todo queue (last updated 27-04-2024)
