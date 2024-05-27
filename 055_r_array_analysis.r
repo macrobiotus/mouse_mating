@@ -1047,7 +1047,13 @@ ggsave(plot = plot_pca_summ, path = here("plots"),
        filename = "055_r_array_analysis__plot_pca_summ.pdf",  
        width = 500, height = 275, units = "mm", dpi = 300,  limitsize = TRUE, scale = 0.75)
 
-stop("Continue here with new analysis.")
+warning("Code construction in progress - implemnet new clustering approach here.")
+
+
+
+stop("Unadjusted old analysis code below - possible remove PCA code.")
+
+
 #' # Prepare getting numerical summaries of above PCAs
 
 # Prepare getting numerical summaries of above PCAs ----
@@ -1084,8 +1090,6 @@ SCAT_md <- get_model_data(IWAT, PCs_SCAT)
 #' # Getting numerical summaries of above PCAs
 
 # Getting numerical summaries of above PCAs ----
-
-stop("Fork here to  imoplemnet clustering.")
 
 #' ## Analyse FLAT's first PC
 
