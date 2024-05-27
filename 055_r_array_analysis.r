@@ -74,7 +74,7 @@ library(FactoMineR)
 # _3.) Functions ----
 
 # function updates metadata accompanying expression data - last updated 16-May-2024
-adjust_array_data = function(expression_set, model_variables) {
+get_adjusted_array_data = function(expression_set, model_variables) {
   
   require(dplyr)
   require(Biobase)
@@ -106,6 +106,13 @@ adjust_array_data = function(expression_set, model_variables) {
   )),
   (model_variables),
   by = c("Animal" = "AnimalId"))
+  
+  # convert from Expression Set to Summarized Experiment object
+  warning("Converting from Expression Set object to Summarized Experiment object")
+  rownames(pData(expression_set)) <- paste0(pData(expression_set)[["Animal"]] ,"_",  pData(expression_set)[["Tissue"]])
+  colnames(assayData(expression_set)$exprs)
+  stopifnot(identical(rownames(pData(expression_set)), colnames(assayData(expression_set)$exprs)))
+  expression_set <- as(expression_set, "SummarizedExperiment")
   
   return(expression_set)
   
@@ -805,12 +812,13 @@ write_xlsx(mice_f1_modeled_data_with_rna_seq_data,
            path =  here("../manuscript/display_items", "055_r_array_analysis_mice_f1_slct__mice_f1_modeled_data_with_rna_seq_data.xlsx")) 
 
 # __d) Adjust array data ---
-  
-FLAT <- adjust_array_data(FLAT, mice_f1_modeled_data_with_rna_seq_data)
-BRAT <- adjust_array_data(BRAT, mice_f1_modeled_data_with_rna_seq_data)
-IWAT <- adjust_array_data(IWAT, mice_f1_modeled_data_with_rna_seq_data)
-LIVT <- adjust_array_data(LIVT, mice_f1_modeled_data_with_rna_seq_data)
-EVAT <- adjust_array_data(EVAT, mice_f1_modeled_data_with_rna_seq_data)
+
+
+FLAT <- get_adjusted_array_data(FLAT, mice_f1_modeled_data_with_rna_seq_data)
+BRAT <- get_adjusted_array_data(BRAT, mice_f1_modeled_data_with_rna_seq_data)
+IWAT <- get_adjusted_array_data(IWAT, mice_f1_modeled_data_with_rna_seq_data)
+LIVT <- get_adjusted_array_data(LIVT, mice_f1_modeled_data_with_rna_seq_data)
+EVAT <- get_adjusted_array_data(EVAT, mice_f1_modeled_data_with_rna_seq_data)
 
 # _5.) Save adjusted data ----
 
@@ -821,7 +829,7 @@ saveRDS(EVAT, file = here("rds_storage", "055_r_array_analysis__EVAT.rds"))
 
 # check data, if needed, using `pData(BRAT)` and `exprs(BRAT)` - check available metadata - LIVT does not have a lot
 
-lapply(c(FLAT, BRAT, IWAT, LIVT, EVAT), pData)  
+lapply(list(FLAT, BRAT, IWAT, LIVT, EVAT), function(x) colData(x))  
 
 #' ## Loading AHs dietary DGE analysis results
 
@@ -869,6 +877,61 @@ rm(bAT_CD_HFD_VS_CD_CD, bAT_HFD_CD_VS_CD_CD, bAT_HFD_CD_VS_CD_HFD, bAT_HFD_HFD_V
    Liv_HFD_CD_VS_CD_HFD, Liv_HFD_HFD_VS_CD_CD, Liv_HFD_HFD_VS_CD_HFD, Liv_HFD_HFD_VS_HFD_CD)
 
 saveRDS(DGEL_diet, file = here("rds_storage", "055_r_array_analysis__dge_lists_by_diet.rds"))
+
+
+warning("Code construction in progress - implemnet new clustering approach here.")
+
+# use these data
+
+BRAT
+IWAT
+LIVT
+EVAT
+
+
+# Using Orthagonal partial least-square regression ----
+
+# https://www.bioconductor.org/packages/devel/bioc/vignettes/ropls/inst/doc/ropls-vignette.html
+
+
+# Orthogonal Partial Least-Squares (OPLS) algorithm to model separately the
+# variations of the predictors correlated and orthogonal to the response.
+# OPLS has a similar predictive capacity compared to PLS and improves the
+# interpretation of the predictive components and of the systematic variation
+# (Pinto, Trygg, and Gottfries 2012). In particular, OPLS modeling of single
+# responses only requires one predictive component. [Refereces saved to Zotero]
+
+
+
+library("ropls")
+
+# "We perform a PCA on the dataMatrix matrix (samples as rows, variables as columns" - transposition nevesary
+t(assayData(BRAT)$exprs[1:3, 1:3])
+
+# isolate expression data
+exp_brat <- t(assayData(BRAT)$exprs)
+
+# get a matching factor variable
+tret_brat <- pData(BRAT)[, "ParentalDietMoFa"]
+
+# PCA
+
+# get a PCA 
+opls_pca_brat <- opls(exp_brat)
+par(mfrow=c(1,1))
+
+# plot the PCA
+plot(opls_brat, parAsColFcVn = tret_brat, typeVc = "x-score")
+
+# get OPLS
+opls_pls_brat <- opls(exp_brat, tret_brat)
+
+
+
+
+
+stop("Unadjusted old analysis code below - possible remove PCA code.")
+
 
 #' # Calculate Principal components
 
@@ -1046,13 +1109,6 @@ plot_pca_summ <- ggarrange(plot_pca_brat_one,
 ggsave(plot = plot_pca_summ, path = here("plots"), 
        filename = "055_r_array_analysis__plot_pca_summ.pdf",  
        width = 500, height = 275, units = "mm", dpi = 300,  limitsize = TRUE, scale = 0.75)
-
-warning("Code construction in progress - implemnet new clustering approach here.")
-
-
-
-stop("Unadjusted old analysis code below - possible remove PCA code.")
-
 
 #' # Prepare getting numerical summaries of above PCAs
 
