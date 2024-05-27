@@ -879,20 +879,13 @@ rm(bAT_CD_HFD_VS_CD_CD, bAT_HFD_CD_VS_CD_CD, bAT_HFD_CD_VS_CD_HFD, bAT_HFD_HFD_V
 saveRDS(DGEL_diet, file = here("rds_storage", "055_r_array_analysis__dge_lists_by_diet.rds"))
 
 
-warning("Code construction in progress - implemnet new clustering approach here.")
+stop("Code construction in progress - implemnet new clustering approach here.")
 
-# use these data
-
-BRAT
-IWAT
-LIVT
-EVAT
 
 
 # Using Orthagonal partial least-square regression ----
 
 # https://www.bioconductor.org/packages/devel/bioc/vignettes/ropls/inst/doc/ropls-vignette.html
-
 
 # Orthogonal Partial Least-Squares (OPLS) algorithm to model separately the
 # variations of the predictors correlated and orthogonal to the response.
@@ -902,29 +895,101 @@ EVAT
 # responses only requires one predictive component. [Refereces saved to Zotero]
 
 
+library("ropls") # PCA, PLS(-DA) and OPLS(-DA) for multivariate analysis and feature selection of omics data
+                 # can work directly with SE objects
 
-library("ropls")
+# 1.) Use these data ----
 
-# "We perform a PCA on the dataMatrix matrix (samples as rows, variables as columns" - transposition nevesary
-t(assayData(BRAT)$exprs[1:3, 1:3])
+FLAT
+BRAT
+IWAT
+LIVT
+EVAT
 
-# isolate expression data
-exp_brat <- t(assayData(BRAT)$exprs)
 
-# get a matching factor variable
-tret_brat <- pData(BRAT)[, "ParentalDietMoFa"]
+# 2.) Calculate PCAs ----
 
-# PCA
+# For reference - micmicks PCA analyses implemneted below 
 
-# get a PCA 
-opls_pca_brat <- opls(exp_brat)
-par(mfrow=c(1,1))
+get_opls_pcas = function(se_object, se_factor){
+  
+  require("ropls")
+  
+  # isolate SE object
+  # se_object <- FLAT
+  
+  # isolate expression data
+  se_assay <- t(assays(se_object)$exprs)
+  
+  # isolate desirable treatment
+  se_factor <- colData(se_object)[, se_factor]
+  
+  # get a pols PCA obeject
+  opls_pca <- opls(se_assay)
+  print(opls_pca)
+  
+  # plot pca
+  plot(opls_pca, typeVc = "x-score", parAsColFcVn = se_factor)
+
+}
+
+# FLAT 
+get_opls_pcas(FLAT, se_factor = "Tissue") 
+get_opls_pcas(FLAT, se_factor = "ParentalDietMoFa") 
+get_opls_pcas(FLAT, se_factor = "LitterSize") 
+
+get_opls_pcas(BRAT, se_factor = "Tissue") 
+get_opls_pcas(BRAT, se_factor = "ParentalDietMoFa") 
+get_opls_pcas(BRAT, se_factor = "LitterSize") 
+
+get_opls_pcas(IWAT, se_factor = "Tissue") 
+get_opls_pcas(IWAT, se_factor = "ParentalDietMoFa") 
+get_opls_pcas(IWAT, se_factor = "LitterSize") 
+
+get_opls_pcas(LIVT, se_factor = "Tissue") 
+get_opls_pcas(LIVT, se_factor = "ParentalDietMoFa") 
+get_opls_pcas(LIVT, se_factor = "LitterSize")
+
+get_opls_pcas(EVAT, se_factor = "Tissue") 
+get_opls_pcas(EVAT, se_factor = "ParentalDietMoFa") 
+get_opls_pcas(EVAT, se_factor = "LitterSize")
+
+
+
+
+
+
 
 # plot the PCA
 plot(opls_brat, parAsColFcVn = tret_brat, typeVc = "x-score")
 
 # get OPLS
 opls_pls_brat <- opls(exp_brat, tret_brat)
+
+
+
+
+
+
+
+
+
+# calculate PCAs
+FLAT <- opls(FLAT)
+
+# extract PCA
+FLAT.ls <- getOpls(FLAT)
+
+
+BRAT <- opls(BRAT, "ParentalDietMoFa", permI = 100)
+IWAT <- opls(IWAT, "ParentalDietMoFa", permI = 100)
+LIVT <- opls(LIVT, "ParentalDietMoFa", permI = 100)
+EVAT <- opls(EVAT, "ParentalDietMoFa", permI = 100)
+
+# The predictive performance of the full model is assessed by the cumulative Q2Y metric
+# The higher the Q2Y, the better - the p-value is equal to the proportion of Q2Yperm above Q2Y
+
+
 
 
 
