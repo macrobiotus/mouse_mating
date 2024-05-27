@@ -1413,7 +1413,7 @@ setkey(FLAT_DT, Sample)
 # pivot data table to long - can't be done for tibble due to memory constraints
 # - see https://cran.r-project.org/web/packages/data.table/vignettes/datatable-reshape.html
 
-FLAT_DT.m1 <- melt(FLAT_DT,  id.vars = c("Sample", "Animal", "Tissue", "AnimalSex", "ObesityLgcl", "ObeseParents", "MotherDiet", "FatherDiet", "Sex", "ParentalDietMoFa", "DietGroup"), 
+FLAT_DT.m1 <- melt(FLAT_DT,  id.vars = c("Sample", "Animal", "Tissue", "AnimalSex", "ObesityLgcl", "ObeseParents", "MotherDiet", "FatherDiet", "AnimalSex", "ParentalDietMoFa", "DietGroup"), 
   variable.name = "ArrayTarget", value.name = "Intensity")
 
 #' ### Inspect expression data raw intensities distribution
@@ -1487,8 +1487,6 @@ FLAT_DT.m1 <- melt(FLAT_DT,  id.vars = c("Sample", "Animal", "Tissue", "AnimalSe
 FLAT_Tissue_TopTableList <- get_dge_for_individal_tissues(FLAT)
 
 #' ### Test for DGE among obese and non-obese offspring
-
-
 
 # __b)  Test for DGE among obese and non-obese offspring ----
 
