@@ -771,27 +771,27 @@ mice_f1_slct_from_saemix <- readRDS(file = here("rds_storage", "mice_f1_slct_fro
 
 mice_f1_modeled_data_with_rna_seq_data %<>% # re-code parental diet variable - slash will be buggy
   dplyr::mutate(ParentalDietMoFa = case_when( 
-    ParentalDietMoFa == "chow / chow" ~ "LCD LCD",
-    ParentalDietMoFa == "chow / HFD"  ~ "LCD HCD", 
-    ParentalDietMoFa == "HFD / chow"  ~ "HCD LCD", 
-    ParentalDietMoFa == "HFD / HFD"   ~ "HCD HCD",
+    ParentalDietMoFa == "chow / chow" ~ "CD CD",
+    ParentalDietMoFa == "chow / HFD"  ~ "CD WD", 
+    ParentalDietMoFa == "HFD / chow"  ~ "WD CD", 
+    ParentalDietMoFa == "HFD / HFD"   ~ "WD WD",
     .default = as.factor(ParentalDietMoFa)
   )) %>% mutate(ParentalDietMoFa = as.factor(ParentalDietMoFa)) %>%  # re-code maternal diet variable 
   dplyr::mutate(MotherDiet = case_when( 
-    MotherDiet == "HFD" ~ "HCD",
-    MotherDiet == "CD" ~ "LCD",
+    MotherDiet == "HFD" ~ "WD",
+    MotherDiet == "CD" ~ "CD",
     .default = as.factor(MotherDiet)
   )) %>% mutate(MotherDiet = as.factor(MotherDiet)) %>% # re-code paternal diet variable 
   dplyr::mutate(FatherDiet = case_when( 
-    FatherDiet == "HFD" ~ "HCD",
-    FatherDiet == "CD" ~ "LCD",
+    FatherDiet == "HFD" ~ "WD",
+    FatherDiet == "CD" ~ "CD",
     .default = as.factor(FatherDiet)
   )) %>%  mutate(FatherDiet = as.factor(FatherDiet)) %>%  # re-code old analysis variable - to avoid unforeseen crashes 
   dplyr::mutate(ObeseParents = case_when( 
-    ParentalDietMoFa == "LCD LCD" ~ "MotherFatherNotObese"      ,
-    ParentalDietMoFa == "LCD HCD" ~ "FatherObese", 
-    ParentalDietMoFa == "HCD LCD" ~ "MotherObese", 
-    ParentalDietMoFa == "HCD HCD" ~ "MotherFatherObese",
+    ParentalDietMoFa == "CD CD" ~ "MotherFatherNotObese"      ,
+    ParentalDietMoFa == "CD WD" ~ "FatherObese", 
+    ParentalDietMoFa == "WD CD" ~ "MotherObese", 
+    ParentalDietMoFa == "WD WD" ~ "MotherFatherObese",
     .default = as.factor(ParentalDietMoFa)
   )) %>% mutate(ObeseParents = as.factor(ObeseParents)) %>% 
   relocate(ParentalDietMoFa, .after = ObeseParents) %>% 
@@ -876,7 +876,7 @@ saveRDS(DGEL_diet, file = here("rds_storage", "055_r_array_analysis__dge_lists_b
 
 #' ## Get PCs for all subsequent analyses
 
-warning("For interpretation and analysis suitability of PCA, expressions data should likely be be adjusted for litter size.")
+warning("For interpretation and analysis suitability of PCA, expressions data may need to be adjusted for litter size. Not doing this due to samll sample size, and beacuse it's unclear why this should be done.")
 
 # _1.) Get PCs for all subsequent analyses ----
 
@@ -1047,7 +1047,7 @@ ggsave(plot = plot_pca_summ, path = here("plots"),
        filename = "055_r_array_analysis__plot_pca_summ.pdf",  
        width = 500, height = 275, units = "mm", dpi = 300,  limitsize = TRUE, scale = 0.75)
 
-
+stop("Continue here with new analysis.")
 #' # Prepare getting numerical summaries of above PCAs
 
 # Prepare getting numerical summaries of above PCAs ----
@@ -1084,6 +1084,8 @@ SCAT_md <- get_model_data(IWAT, PCs_SCAT)
 #' # Getting numerical summaries of above PCAs
 
 # Getting numerical summaries of above PCAs ----
+
+stop("Fork here to  imoplemnet clustering.")
 
 #' ## Analyse FLAT's first PC
 

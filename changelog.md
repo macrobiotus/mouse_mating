@@ -975,8 +975,8 @@
    * `020_r_h1.r`
    * `030_r_h2.r`
    * `040_r_h3.r`
-
-
+ * in `055_r_array_analysis.r`
+   * updated PCA results and exported to current manuscript version
   
  * next steps
    * [x] note diets in main text and adjust introduction and methods - check throughout
