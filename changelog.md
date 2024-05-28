@@ -979,7 +979,16 @@
    * updated PCA results and exported to current manuscript version
  * forked repository
    * converting ExpressionSet to Summarized Experiment Object for PLS package
-   * starting to implement PLS
+   * starting to implement PLS - continue or use K-Means clustering?
+
+## 28-05-2024 - work day 91 - revising manuscript and array analysis
+
+ * next steps - in PCA section
+   * implement ~~sample plot, variable plot,~~ k-means clustering and plot, 
+   * export of text allocation 
+   * clean out code
+   * re-write functions
+   * close section
   
  * next steps
    * [x] note diets in main text and adjust introduction and methods - check throughout
@@ -987,6 +996,7 @@
      * [ ] in all display items use **"WD"** for **HCD** and **"CD"** for **LCD**
      * [x] carefully correct and interpret existing PCA results
      * [ ] fork and get clustering approach
+     * [ ] implement OPLS regression where possible
      * [ ] define DEG contrats by cluster analysis
    * [ ] in `015_r_use_saemix.R`
      * [ ] correlate litter size with diet (test in `015_r_use_saemix.R`)

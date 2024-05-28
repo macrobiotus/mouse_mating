@@ -19,18 +19,13 @@
 #'     code_folding: show
 #' ---
 
-#' # Prepare environment
-
 # Prepare environment ---- 
 
-#' ## Collect garbage
 
 # _1.) Collect garbage ----
 
 rm(list=ls())
 gc()
-
-#' ##  Packages
 
 # _2.) Packages ----
 
@@ -69,11 +64,23 @@ library(RColorBrewer)
 library(KernSmooth)
 library(FactoMineR)
 
-#' ##  Functions
+# for cleaning, mostly unused
 
-# _3.) Functions ----
+suppressMessages(require(tidyverse))
+suppressMessages(require(Seurat))
+suppressMessages(require(cowplot))
+suppressMessages(require(scater))
+suppressMessages(require(scran))
+suppressMessages(require(igraph))
 
-# function updates metadata accompanying expression data - last updated 16-May-2024
+
+# _3.) Encode plotting colours  ----
+
+hmcol <- rev(colorRampPalette(RColorBrewer::brewer.pal(n=11, name="RdBu"))(50))
+
+# _4.) Functions ----
+
+# Updates metadata accompanying expression data (last updated 27-May-2024)
 get_adjusted_array_data = function(expression_set, model_variables) {
   
   require(dplyr)
@@ -115,6 +122,79 @@ get_adjusted_array_data = function(expression_set, model_variables) {
   expression_set <- as(expression_set, "SummarizedExperiment")
   
   return(expression_set)
+  
+}
+
+# Some basic data checks in section "Clean out expression data" (last updated 28-May-2024)
+plot_mean_expression_and_variance = function(se_object, plot_label){
+  
+  # Calculate gene mean across cell
+  gene_mean <- rowMeans(assays(se_object)$exprs) 
+  
+  # Calculate gene variances
+  gene_var  <- rowVars(assays(se_object)$exprs)  
+  
+  # get plotting data frame
+  gene_stat_df <- tibble(gene_mean,gene_var)
+  
+  #ggplot plot
+  plot <- ggplot(data = gene_stat_df, aes(x = log(gene_mean), y = log(gene_var))) + 
+    geom_point(size=0.5) +
+    theme_minimal() +
+    xlab("log expression means") +
+    ylab("log expression variances")
+  
+  return(plot)
+}
+
+# Some basic data checks in section "Clean out expression data" (last updated 28-May-2024)
+plot_rare_genes = function(se_object, treshhold = 0.5){
+  
+  # for function testing only
+  # se_object <- BRAT
+  
+  # Calculate gene mean across cell
+  gene_mean <- rowMeans(assays(se_object)$exprs) 
+  
+  abundant_genes <- gene_mean >= treshhold # Remove Low abundance genes
+  
+  message(paste("Among", length(gene_mean), "genes", length(abundant_genes) , "are above a treshhold of", treshhold, "."))
+  
+  # plot low abundance gene filtering - histogram
+  hist(log10(gene_mean), breaks= 100 , main="", col="grey80",
+       xlab = expression(Log[10] ~ "average count"))
+  # plot low abundance gene filtering - red line
+  abline( v = log10(treshhold), col="red", lwd = 2, lty = 2)
+  
+}
+
+# Get principal components of expression data (modified 28-May-2024 to use SummarizedExperiment)
+get_principal_components = function(SummarizedExperiment){
+  
+  # Building initial models
+  message(paste0("\nGetting PCs of data set \"", deparse(substitute(SummarizedExperiment))), "\".")
+  
+  return( prcomp( t( assays(SummarizedExperiment)$exprs), scale = TRUE, center = TRUE))
+  
+}
+
+# Get percentage of variation of the principal components for plotting. (modified 28-May-2024 to use SummarizedExperiment)
+get_percent_variation = function(prcomp_outout) {
+  
+  # Building initial models
+  message(paste0("\nGetting percent variation of PC set \"", deparse(substitute(prcomp_outout))), "\".")
+  
+  return(round(100 * prcomp_outout$sdev^2 / sum(prcomp_outout$sdev^2), 1) )
+  
+}
+
+# Isolate first five principal components
+get_isolated_pcs = function(pca_ob){
+  
+  # Show which data is being processed
+  message(paste0("\nGetting first 5 PCs of data set \"", deparse(substitute(pca_ob))), "\".")
+  
+  return(data.frame("PC1" = pca_ob[["x"]][ , "PC1"], "PC2" = pca_ob[["x"]][ , "PC2"],  "PC3" = pca_ob[["x"]][ , "PC3"], "PC4" = pca_ob[["x"]][ , "PC4"], "PC5" = pca_ob[["x"]][ , "PC5"]))
   
 }
 
@@ -391,36 +471,6 @@ get_some_dge_for_parent_obesity = function(ExpSet){
   return(contrast_model_list_tp)
 }
 
-# Get principal components of expression data
-get_principal_components = function(ExpSet){
-  
-  # Building initial models
-  message(paste0("\nGetting PCs of data set \"", deparse(substitute(ExpSet))), "\".")
-  
-  return( prcomp( t( exprs(ExpSet)), scale = TRUE, center = TRUE))
-  
-}
-
-# Get percentage of variation of the PCs, for plotting
-get_percent_variation = function(PcExpSet) {
-  
-  # Building initial models
-  message(paste0("\nGetting percent variation of PC set \"", deparse(substitute(PcExpSet))), "\".")
-  
-  return(round(100*PcExpSet$sdev^2 / sum(PcExpSet$sdev^2), 1) )
-  
-}
-
-# Isolate First 5 Principal Components
-get_isolated_pcs = function(pca_ob){
-  
-  # Show which data is being processed
-  message(paste0("\nGetting first 5 PCs of data set \"", deparse(substitute(pca_ob))), "\".")
-  
-  return(data.frame("PC1" = pca_ob[["x"]][ , "PC1"], "PC2" = pca_ob[["x"]][ , "PC2"],  "PC3" = pca_ob[["x"]][ , "PC3"], "PC4" = pca_ob[["x"]][ , "PC4"], "PC5" = pca_ob[["x"]][ , "PC5"]))
-  
-}
-
 # Get data frames to model variation of first PC against chosen factors
 get_model_data = function(ExprSet, PCsSet) {
   
@@ -681,60 +731,39 @@ save_go_plots <- function(ggplot_list_item, ggplot_list_item_name){
   
 }
 
-#' ##  Color code for plotting
 
-# _4.) Encode plotting colours  ----
-
-hmcol <- rev(colorRampPalette(RColorBrewer::brewer.pal(n=11, name="RdBu"))(50))
-
-#' # Load and shape data
-
-# Load and shape data ----
-
-#' ## Full data of all 4 tissues
+# Load, fomat, and shape data ----
 
 # _1.) Full data of all 4 tissues ----
 
-#' ### Loading normalized data
-
-# __a.) Loading normalized data ----
+#  __a) Loading normalized data ----
 
 # Data are Clariom S mouse arrays
 # I removed strong outliers: A285_liver clustert zu bAT, A339_liver weit weg vom Rest
 
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/allTissues_normData.RData") # only if you are interested to look into the normalized data
 
-#' ### Annotate data
-
-# __b.) Annotate data ----
+# __b) Annotate data ----
 
 normData  <- annotateEset(normData, pd.clariom.s.mouse, type = "probeset")
 
-#' ### Copy, store, and discard data
-
-# __c.) Copy, store, and discard data ----
+# __c) Copy, store, and discard data ----
 
 # copy to stick to manuscript naming conventions
 FLAT <- normData; rm(normData)
 
 saveRDS(FLAT, file = here("rds_storage", "050_r_array_analysis__normalized_data.rds"))
 
-#' ## Data normalized individually for each tissue
-
 # _2.) Data normalized individually for each tissue ----
 
 # Ich habe die normalisierung für jedes Gewebe getrennt für die DGE Analysen gemacht, 
 # da dies genauer ist (Gewebe zu weit auseinander in PCA)
 
-#' ### Loading normalized data
-
-# __a.) Loading normalized data ----
+# __a) Loading normalized data ----
 
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/normData4DGE.RData") #für jedes Gewebe die normalisierten Daten
 
-#' ### Annotate data
-
-# __b.) Annotate data ----
+# __b) Annotate data ----
 
 bAT_normData    <- annotateEset(bAT_normData, pd.clariom.s.mouse, type = "probeset")
 ingWAT_normData <- annotateEset(ingWAT_normData, pd.clariom.s.mouse, type = "probeset")
@@ -742,9 +771,7 @@ Liv_normData    <- annotateEset(Liv_normData, pd.clariom.s.mouse, type = "probes
 bAT_normData    <- annotateEset(bAT_normData, pd.clariom.s.mouse, type = "probeset")
 eWAT_normData   <- annotateEset(eWAT_normData, pd.clariom.s.mouse, type = "probeset")
 
-#' ### Copy, store, and discard data
-
-# __c.) Copy, store, and discard data ----
+# __c) Copy, store, and discard data ----
 
 # copy to stick to manuscript naming conventions - corrected as per AH 25.05.2023, again on 07.05.2024
 BRAT <- bAT_normData; rm(bAT_normData)        # brown adipose tissue
@@ -757,8 +784,6 @@ saveRDS(IWAT, file = here("rds_storage", "055_r_array_analysis__normalized_data_
 saveRDS(LIVT, file = here("rds_storage", "055_r_array_analysis__normalized_data_liv.rds" ))
 saveRDS(EVAT, file = here("rds_storage", "055_r_array_analysis__normalized_data_ingwat.rds"))
 
-#' ## Loading metadata from modelling (obesity variables)
-
 # _3.) Loading metadata from modelling (obesity variables) ----
 
 # __a) Data from modelling prior to first revision ----
@@ -769,8 +794,6 @@ mice_f1_modeled_data_with_rna_seq_data <- readRDS(file = here("rds_storage", "04
 
 mice_f0_slct_from_saemix <- readRDS(file = here("rds_storage", "mice_f0_slct_from_saemix.rds"))
 mice_f1_slct_from_saemix <- readRDS(file = here("rds_storage", "mice_f1_slct_from_saemix.rds"))
-
-#' ## Adjust variable names and inspect data
 
 # _4.) Adjust variable names and inspect data ----
 
@@ -813,7 +836,6 @@ write_xlsx(mice_f1_modeled_data_with_rna_seq_data,
 
 # __d) Adjust array data ---
 
-
 FLAT <- get_adjusted_array_data(FLAT, mice_f1_modeled_data_with_rna_seq_data)
 BRAT <- get_adjusted_array_data(BRAT, mice_f1_modeled_data_with_rna_seq_data)
 IWAT <- get_adjusted_array_data(IWAT, mice_f1_modeled_data_with_rna_seq_data)
@@ -831,19 +853,13 @@ saveRDS(EVAT, file = here("rds_storage", "055_r_array_analysis__EVAT.rds"))
 
 lapply(list(FLAT, BRAT, IWAT, LIVT, EVAT), function(x) colData(x))  
 
-#' ## Loading AHs dietary DGE analysis results
+# _6.) Loading AHs dietary DGE analysis results
 
-# _6.) Loading AHs dietary DGE analysis results ----
-
-#' ### Load data
-
-# __a) Load data ----
+# __a) Load data 
 
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/DGELists.RData") #lädt alle DGE Tabellen
 
-#' ### Define list with dietary variables ----
-
-# __b) Define list with dietary variables ----
+# __b) Define list with dietary variables
 
 DGEL_diet <- list(bAT_CD_HFD_VS_CD_CD, bAT_HFD_CD_VS_CD_CD, bAT_HFD_CD_VS_CD_HFD, bAT_HFD_HFD_VS_CD_CD, bAT_HFD_HFD_VS_CD_HFD,    
  bAT_HFD_HFD_VS_HFD_CD, eWAT_CD_HFD_VS_CD_CD, eWAT_HFD_CD_VS_CD_CD, eWAT_HFD_CD_VS_CD_HFD, eWAT_HFD_HFD_VS_CD_CD, 
@@ -857,7 +873,7 @@ names(DGEL_diet) <-  c("BRAT_CD_HFD_VS_CD_CD", "BRAT_HFD_CD_VS_CD_CD", "BRAT_HFD
  "IWAT_HFD_HFD_VS_CD_CD", "IWAT_HFD_HFD_VS_CD_HFD", "IWAT_HFD_HFD_VS_HFD_CD", "LIVT_CD_HFD_VS_CD_CD", "LIVT_HFD_CD_VS_CD_CD", 
  "LIVT_HFD_CD_VS_CD_HFD", "LIVT_HFD_HFD_VS_CD_CD", "LIVT_HFD_HFD_VS_CD_HFD", "LIVT_HFD_HFD_VS_HFD_CD")
 
-# __c) **CONTINUE HERE IF RE-IMPLEMNETATION OF DGE FAILS ** Define list with obesity variables 
+# __c) CONTINUE HERE IF RE-IMPLEMNETATION OF DGE FAILS: Define list with obesity variables 
 
 DGEL_obes <- DGEL_diet
 
@@ -866,9 +882,7 @@ DGEL_obes <- DGEL_diet
 
 # names(DGEL_obes) <-  c( "foo", "bar")
 
-#' ### Clean environment and save data
-
-# __d) Clean environment and save data ---- 
+# __d) Clean environment and save data 
 
 rm(bAT_CD_HFD_VS_CD_CD, bAT_HFD_CD_VS_CD_CD, bAT_HFD_CD_VS_CD_HFD, bAT_HFD_HFD_VS_CD_CD, bAT_HFD_HFD_VS_CD_HFD,    
    bAT_HFD_HFD_VS_HFD_CD, eWAT_CD_HFD_VS_CD_CD, eWAT_HFD_CD_VS_CD_CD, eWAT_HFD_CD_VS_CD_HFD, eWAT_HFD_HFD_VS_CD_CD, 
@@ -878,124 +892,280 @@ rm(bAT_CD_HFD_VS_CD_CD, bAT_HFD_CD_VS_CD_CD, bAT_HFD_CD_VS_CD_HFD, bAT_HFD_HFD_V
 
 saveRDS(DGEL_diet, file = here("rds_storage", "055_r_array_analysis__dge_lists_by_diet.rds"))
 
+# >>> Code construction in progress - implementing new analysis flow here. ----
+
+warning("Code construction in progress.")
+
+# Clean out expression data ----
+
+# as described here https://nbisweden.github.io/excelerate-scRNAseq/session-clustering/Clustering.html
+
+
+# _1.) Check data (abbreviate) ----
+
+FLAT;BRAT;IWAT;LIVT;EVAT
+
+table(colData(FLAT)$ParentalDietMoFa)
+table(colData(BRAT)$ParentalDietMoFa)
+table(colData(IWAT)$ParentalDietMoFa)
+table(colData(LIVT)$ParentalDietMoFa)
+table(colData(EVAT)$ParentalDietMoFa)
+
+# _2.) Feature selection ----
+
+# __a) Check and plot average expression and variance ----
+
+# export plots in this section if needed
+plot_mean_expression_and_variance(FLAT)
+plot_mean_expression_and_variance(BRAT)
+plot_mean_expression_and_variance(IWAT)
+plot_mean_expression_and_variance(EVAT)
+
+# __b) Plot rare genes ----
+
+plot_rare_genes(FLAT)
+plot_rare_genes(BRAT)
+plot_rare_genes(IWAT)
+plot_rare_genes(LIVT)
+plot_rare_genes(EVAT)
+
+# __c) Remove rare genes (not needed) ----
+
+# omitted - code on web page
+
+# __d) Remove genes only detected in few samples (not needed) ----
+
+# omitted - code from web page
+# se_object <- BRAT
+# samples_per_gene <- nexprs(se_object, assay.type = "exprs",  byrow = TRUE) 
+# samples_per_gene_subest <- samples_per_gene >= 3
+# se_object <- se_object[samples_per_gene_subest,]
+# dim(se_object)
+
+# __e) Isolating highly variable genes (not needed) ----
+
+# omitted - code from web page
+# se_object <- EVAT
+# dec <- modelGeneVar(se_object, assay.type = "exprs" )
+# dec$HVG <- (dec$FDR < 0.00001)
+# plot(dec$mean, dec$total, pch = 16, cex = 0.6, xlab="Mean log-expression", ylab="Variance of log-expression")
+# o <- order(dec$mean)
+# lines(dec$mean[o], dec$tech[o], col="dodgerblue", lwd=2)
+# points(dec$mean[dec$HVG], dec$total[dec$HVG], col="red", pch=16)
+
 
 stop("Code construction in progress - implemnet new clustering approach here.")
 
+# Principal Component Analysis ----
+
+# as described here https://tavareshugo.github.io/data-carpentry-rnaseq/03_rnaseq_pca.html
+# see file:///Users/paul/Documents/HM_miscellaneous/231116_cf-statcon_mv_statistics/Exercises/Part_1/Exercise_3.html#Supplementary_individuals_and_weights
+
+# Old code
+# _1.) Get PCs for all subsequent analyses ----
+
+PCA_FLAT <- get_principal_components(FLAT)
+PCA_BRAT <- get_principal_components(BRAT)
+PCA_IWAT <- get_principal_components(IWAT)
+PCA_LIVT <- get_principal_components(LIVT)
+PCA_EVAT <- get_principal_components(EVAT)
+
+# old code
+# _2.) Get PC loading for plots ----
+
+PV_FLAT <- get_percent_variation(PCA_FLAT)
+PV_BRAT <- get_percent_variation(PCA_BRAT)
+PV_IWAT <- get_percent_variation(PCA_IWAT)
+PV_LIVT <- get_percent_variation(PCA_LIVT)
+PV_EVAT <- get_percent_variation(PCA_EVAT)
 
 
-# Using Orthagonal partial least-square regression ----
-
-# https://www.bioconductor.org/packages/devel/bioc/vignettes/ropls/inst/doc/ropls-vignette.html
-
-# Orthogonal Partial Least-Squares (OPLS) algorithm to model separately the
-# variations of the predictors correlated and orthogonal to the response.
-# OPLS has a similar predictive capacity compared to PLS and improves the
-# interpretation of the predictive components and of the systematic variation
-# (Pinto, Trygg, and Gottfries 2012). In particular, OPLS modeling of single
-# responses only requires one predictive component. [Refereces saved to Zotero]
+# after - https://tavareshugo.github.io/data-carpentry-rnaseq/03_rnaseq_pca.html
+# get ten top most genes on PCA as well
 
 
-library("ropls") # PCA, PLS(-DA) and OPLS(-DA) for multivariate analysis and feature selection of omics data
-                 # can work directly with SE objects
+# 1.) set input data
+summarized_experiment  <- IWAT
 
-# 1.) Use these data ----
-
-FLAT
-BRAT
-IWAT
-LIVT
-EVAT
+# 2.) get PCA results 
+pca_matrix <- t(assays(summarized_experiment)$exprs)
+pca_result <-  prcomp(pca_matrix , scale = TRUE, center = TRUE)
 
 
-# 2.) Calculate PCAs ----
+# 3.) show scores
+fviz_pca_ind(pca_result, geom = "point", 
+             habillage = colData(summarized_experiment)[[matadata_column]],
+             addEllipses = TRUE,
+             axes = 1:2)
 
-# For reference - micmicks PCA analyses implemneted below 
+# 4.) Exploring correlation between genes and PCA
 
-get_opls_pcas = function(se_object, se_factor){
+# isolate pc loadings
+pc_rotation <- pca_result$rotation %>%  as_tibble(rownames = "PROBEID")
+
+# add gene names
+pc_rotation <- left_join(pc_rotation, {rowData(summarized_experiment) %>% as_tibble %>% dplyr::select(PROBEID, SYMBOL)} ) %>% relocate(SYMBOL, .after = PROBEID)  # %>% mutate(across(where(is.character), toupper))
+
+# get top genes
+top_genes <- pc_rotation %>% 
+  # select only the PCs we are interested in
+  dplyr::select(PROBEID, SYMBOL, PC1, PC2) %>%
+  # convert to a "long" format
+  pivot_longer(matches("PC"), names_to = "PC", values_to = "loading") %>% 
+  # for each PC
+  group_by(PC) %>% 
+  # arrange by descending order of loading
+  arrange(desc(abs(loading))) %>% 
+  # take the 10 top rows
+  dplyr::slice_head(n = 5)  
   
-  require("ropls")
-  
-  # isolate SE object
-  # se_object <- FLAT
-  
-  # isolate expression data
-  se_assay <- t(assays(se_object)$exprs)
-  
-  # isolate desirable treatment
-  se_factor <- colData(se_object)[, se_factor]
-  
-  # get a pols PCA obeject
-  opls_pca <- opls(se_assay)
-  print(opls_pca)
-  
-  # plot pca
-  plot(opls_pca, typeVc = "x-score", parAsColFcVn = se_factor)
+  # adjust below to enable plotting - also export probe symbol legend
 
-}
+  # pull the gene column as a vector
+  pull(PROBEID) %>% 
+  # ensure only unique genes are retained
+  unique()
 
-# FLAT 
-get_opls_pcas(FLAT, se_factor = "Tissue") 
-get_opls_pcas(FLAT, se_factor = "ParentalDietMoFa") 
-get_opls_pcas(FLAT, se_factor = "LitterSize") 
+top_genes
 
-get_opls_pcas(BRAT, se_factor = "Tissue") 
-get_opls_pcas(BRAT, se_factor = "ParentalDietMoFa") 
-get_opls_pcas(BRAT, se_factor = "LitterSize") 
+# get a subset tiblle matching original class(pca_result$rotation)
+pc_rotation_top <- pc_rotation %>% 
+  filter(PROBEID %in% top_genes)
 
-get_opls_pcas(IWAT, se_factor = "Tissue") 
-get_opls_pcas(IWAT, se_factor = "ParentalDietMoFa") 
-get_opls_pcas(IWAT, se_factor = "LitterSize") 
 
-get_opls_pcas(LIVT, se_factor = "Tissue") 
-get_opls_pcas(LIVT, se_factor = "ParentalDietMoFa") 
-get_opls_pcas(LIVT, se_factor = "LitterSize")
+# add cluster detecetion
 
-get_opls_pcas(EVAT, se_factor = "Tissue") 
-get_opls_pcas(EVAT, se_factor = "ParentalDietMoFa") 
-get_opls_pcas(EVAT, se_factor = "LitterSize")
+
+# show genes
+fviz_pca_var(pca_result, select.var =  list(name = pc_rotation_top$PROBEID), col.var = "cos2", repel = TRUE )
+
+fviz_pca_var(pca_result, select.var =  list(cos2 = 0.5), col.var = "cos2", repel = TRUE)
 
 
 
+pca_result$rotation
+pca_result$center
+pca_result$scale
 
 
 
+pc_eigenvalues <- pca_result$sdev^2
 
-# plot the PCA
-plot(opls_brat, parAsColFcVn = tret_brat, typeVc = "x-score")
+pc_eigenvalues <- tibble(PC = factor(1:length(pc_eigenvalues)), 
+                         variance = pc_eigenvalues) %>% 
+  # add a new column with the percent variance
+  mutate(pct = variance/sum(variance)*100) %>% 
+  # add another column with the cumulative variance explained
+  mutate(pct_cum = cumsum(pct))
 
-# get OPLS
-opls_pls_brat <- opls(exp_brat, tret_brat)
+# print the result
+pc_eigenvalues
 
-
-
-
-
-
-
-
-
-# calculate PCAs
-FLAT <- opls(FLAT)
-
-# extract PCA
-FLAT.ls <- getOpls(FLAT)
+pc_eigenvalues %>% 
+  ggplot(aes(x = PC)) +
+  geom_col(aes(y = pct)) +
+  geom_line(aes(y = pct_cum, group = 1)) + 
+  geom_point(aes(y = pct_cum)) +
+  labs(x = "Principal component", y = "Fraction variance explained") +
+  theme_minimal()
 
 
-BRAT <- opls(BRAT, "ParentalDietMoFa", permI = 100)
-IWAT <- opls(IWAT, "ParentalDietMoFa", permI = 100)
-LIVT <- opls(LIVT, "ParentalDietMoFa", permI = 100)
-EVAT <- opls(EVAT, "ParentalDietMoFa", permI = 100)
+pc_scores <- pca_result$x
 
-# The predictive performance of the full model is assessed by the cumulative Q2Y metric
-# The higher the Q2Y, the better - the p-value is equal to the proportion of Q2Yperm above Q2Y
+pc_scores <- pc_scores %>% 
+  # convert to a tibble retaining the sample names as a new column
+  as_tibble(rownames = "sample")
+
+# print the result
+pc_scores
+
+
+pc_scores %>% 
+  # create the plot
+  ggplot(aes(x = PC1, y = PC2)) +
+  geom_point()
 
 
 
 
+# basic plot
+pca_results <- PCA_IWAT
+matadata_column <- "ParentalDietMoFa"
+pca_matrix
+
+
+# Convert matrix to tibble - add colnames to a new column called "gene"
+as_tibble(pca_matrix, rownames = "sample")
 
 
 
-stop("Unadjusted old analysis code below - possible remove PCA code.")
+
+
+
+
+
+# show genes
+fviz_pca_ind(pca_results, geom = "point", 
+             habillage = colData(summarized_experiment)[[matadata_column]],
+             addEllipses = TRUE,
+             axes = 1:2)
+
+fviz_pca_var(pca_results, geom = "point")
+
+
+fviz_pca_var(pca_results, col.var = "cos2",
+            axes = 1:2, select.var = list(cos2 = 0.5),
+            repel = TRUE)
+
+# plot - adjust this function
+plot_pca_flat_a <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "Tissue", legend_title = "F1 Tissue", plot_title =  "a", percent_var = FLAT_PV)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# Find contrast using K-Means clustering ----
+
+# see file:///Users/paul/Documents/HM_miscellaneous/231116_cf-statcon_mv_statistics/Exercises/Part_2/Exercise_4.html#(K)-means_clustering
+# also see MacMini history 28.05.2024 around 14:00
+
+# Find Deferentially expressed genes ----
+
+# KEGG and GO Analysis ----
+
+# Save Environment ----
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+stop("Unadjusted old analysis code below - possibly integrate into code above. ")
+# >>> Unadjusted old analysis code below - possibly integrate into code above. ----
 
 
 #' # Calculate Principal components
