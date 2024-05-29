@@ -986,22 +986,41 @@
  * next steps - in PCA section
    * implement ~~sample plot, variable plot,~~ k-means clustering and plot, 
    * export of text allocation 
-   * clean out code
+   * clean out code - comment what is done
    * re-write functions
    * close section
+
+## 29-05-2024 - work day 91 - revising manuscript and array analysis
+
+  * in `055_r_array_analysis.r`
+    * implemented preprocessing visualisation and possible filtering options
+    * implemented new PCA visualisation which will substitute the old one
+    * implemented PCA-based gene visualisation
+       * which is uninformative because only house-keeping genes are at the top
+    * implemented k-means clustering with optimal cluster number to reduce contrasts to test
+      * which is uninformative because groups don't resolve well and pre-processing of data may be unsuitable for this approach
+
+  * met with AJ and NKB
+    * committed these chanages
+    * defined next steps
   
  * next steps
+
    * [x] note diets in main text and adjust introduction and methods - check throughout
    * [ ] in `055_r_array_analysis.r` 
-     * [ ] in all display items use **"WD"** for **HCD** and **"CD"** for **LCD**
-     * [x] carefully correct and interpret existing PCA results
-     * [ ] fork and get clustering approach
-     * [ ] implement OPLS regression where possible
-     * [ ] define DEG contrats by cluster analysis
+     * [x] in all display items use **"WD"** for **HCD** and **"CD"** for **LCD**
+     * [x] ~~carefully correct and interpret existing PCA results~~ no needed anymore 
+     * [x] ~~fork and get clustering approach~~ **done, commited, and overwritten in third branch**
+     * [x] ~~implement OPLS regression where possible~~ **impossible**
+     * [x] ~~define DEG contrats by cluster analysis~~ **doesn't work**
+    * [ ] get new PCR visualisations across all tiisues
+    * [ ] discard analysis of PCA
+    * [ ] to reduce contrasts test `CD CD` against `CD WD`, `WD CD`, `WD WD`
+   
    * [ ] in `015_r_use_saemix.R`
      * [ ] correlate litter size with diet (test in `015_r_use_saemix.R`)
    * [ ] write up results in main text 
-     * [ ] refresh results with PCA anlsysi sucessor and tested contrats
+     * [ ] refresh results with PCA analysis sucessor and tested contrasts
      * ~~[x] no signal among litter size among any tissues~~
      * ~~[x] signal among parental diet between these and those dietary treatments~~a
      * [ ] **hopefully** no correlation between litter size and diet - otherwise justify non-consideration by small sample size

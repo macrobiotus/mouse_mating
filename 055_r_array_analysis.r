@@ -962,7 +962,7 @@ stop("Code construction in progress - implemnet new clustering approach here.")
 # see file:///Users/paul/Documents/HM_miscellaneous/231116_cf-statcon_mv_statistics/Exercises/Part_1/Exercise_3.html#Supplementary_individuals_and_weights
 
 # Old code
-# _1.) Get PCs for all subsequent analyses ----
+# _1.) Get PCs for all subsequent analyses 
 
 PCA_FLAT <- get_principal_components(FLAT)
 PCA_BRAT <- get_principal_components(BRAT)
@@ -971,7 +971,7 @@ PCA_LIVT <- get_principal_components(LIVT)
 PCA_EVAT <- get_principal_components(EVAT)
 
 # old code
-# _2.) Get PC loading for plots ----
+# _2.) Get PC loading for plots
 
 PV_FLAT <- get_percent_variation(PCA_FLAT)
 PV_BRAT <- get_percent_variation(PCA_BRAT)
@@ -984,27 +984,38 @@ PV_EVAT <- get_percent_variation(PCA_EVAT)
 # get ten top most genes on PCA as well
 
 
-# 1.) set input data
+# _1.) set input data ---- 
 summarized_experiment  <- IWAT
 
-# 2.) get PCA results 
+# _2.) get PCA results  ---- 
 pca_matrix <- t(assays(summarized_experiment)$exprs)
 pca_result <-  prcomp(pca_matrix , scale = TRUE, center = TRUE)
 
+# _3.) isolate probe ids and symbols  ---- 
 
-# 3.) show scores
-fviz_pca_ind(pca_result, geom = "point", 
+# Needed at two instances below:
+probe_id_and_symbols <- {rowData(summarized_experiment) %>% as_tibble %>% dplyr::select(PROBEID, SYMBOL) %>% relocate(SYMBOL, .after = PROBEID)}
+probe_id_and_symbols$SYMBOL <- toupper(probe_id_and_symbols$SYMBOL)
+
+
+
+# _4.) plot samples ----
+plot_pca_ind <- fviz_pca_ind(pca_result, geom = "point", 
              habillage = colData(summarized_experiment)[[matadata_column]],
              addEllipses = TRUE,
-             axes = 1:2)
+             axes = 1:2) +  theme_bw()
 
-# 4.) Exploring correlation between genes and PCA
+plot_pca_ind
+
+# _5.) Exploring correlation between genes and PCA  ---- 
+
+# __a) get top genes ----
 
 # isolate pc loadings
 pc_rotation <- pca_result$rotation %>%  as_tibble(rownames = "PROBEID")
 
 # add gene names
-pc_rotation <- left_join(pc_rotation, {rowData(summarized_experiment) %>% as_tibble %>% dplyr::select(PROBEID, SYMBOL)} ) %>% relocate(SYMBOL, .after = PROBEID)  # %>% mutate(across(where(is.character), toupper))
+pc_rotation <- left_join(pc_rotation, probe_id_and_symbols ) %>% relocate(SYMBOL, .after = PROBEID)  # %>% mutate(across(where(is.character), toupper))
 
 # get top genes
 top_genes <- pc_rotation %>% 
@@ -1017,29 +1028,66 @@ top_genes <- pc_rotation %>%
   # arrange by descending order of loading
   arrange(desc(abs(loading))) %>% 
   # take the 10 top rows
-  dplyr::slice_head(n = 5)  
-  
-  # adjust below to enable plotting - also export probe symbol legend
-
-  # pull the gene column as a vector
-  pull(PROBEID) %>% 
+  dplyr::slice_head(n = 5)  %>% 
   # ensure only unique genes are retained
   unique()
 
+  
+  # adjust below to enable plotting - also export probe symbol legend
+
+  # # pull the gene column as a vector
+  # pull(PROBEID) %>% 
+  
 top_genes
 
 # get a subset tiblle matching original class(pca_result$rotation)
 pc_rotation_top <- pc_rotation %>% 
-  filter(PROBEID %in% top_genes)
+  filter(PROBEID %in% top_genes$PROBEID)
 
 
-# add cluster detecetion
-
+# __b) plot top genes ----
 
 # show genes
-fviz_pca_var(pca_result, select.var =  list(name = pc_rotation_top$PROBEID), col.var = "cos2", repel = TRUE )
+plot_pca_var <- fviz_pca_var(pca_result, select.var =  list(name = pc_rotation_top$PROBEID), col.var = "cos2", repel = TRUE) + theme_bw()
 
-fviz_pca_var(pca_result, select.var =  list(cos2 = 0.5), col.var = "cos2", repel = TRUE)
+# open plot for manual editing
+plot_pca_var <- ggplot_build(plot_pca_var)
+
+# overwrite probid  in PCA plot lables with gene names
+plot_pca_var$data[[1]]$label <- probe_id_and_symbols[which(probe_id_and_symbols$PROBEID %in% plot_pca_var$data[[1]]$label), ]$SYMBOL
+
+# close plot after manual editing for plotting 
+plot_pca_var_gtable <- ggplot_gtable(plot_pca_var)
+
+# 8.) K means clustering ---- 
+
+pca_result_kmeans_df <- as.data.frame(-pca_result$x)  # [ , 1:2]    
+
+fviz_nbclust(pca_result_kmeans_df, kmeans, method = 'silhouette')
+
+# library("NbClust")
+# NbClust(data = pca_result_kmeans_df, method = "kmeans", index = "silhouette")
+
+plot_pca_var_cluster <- fviz_cluster(kmeans(pca_result_kmeans_df, centers = 3, nstart = 50), show.clust.cent = FALSE, data = pca_result_kmeans_df) + theme_bw()
+
+# open plot for manual editing
+plot_pca_var_cluster <- ggplot_build(plot_pca_var_cluster)
+
+# edit plot
+plot_pca_var_cluster$data[[3]]$label <- colData(summarized_experiment)[ which(rownames(colData(summarized_experiment)) %in% plot_pca_var_cluster$data[[3]]$label), ]$ParentalDietMoFa
+
+# close plot after manual editing for plotting 
+plot_pca_var_cluster_gtable <- ggplot_gtable(plot_pca_var_cluster)
+
+
+plot_grid(plot_pca_var_cluster_gtable)
+
+# 7.) Get compound plot ---- 
+
+compound_plot <- plot_grid(plot_pca_ind, plot_pca_var_gtable, plot_pca_var_cluster_gtable,  labels = "AUTO", nrow = 1)
+
+
+
 
 
 
