@@ -1009,7 +1009,12 @@
     * discarded old PCA and PCA analysis code and all useless functions
     * commit - "purged old code"
     * implemented q-mode PCA as per Camargo (2022)(`10.7717/peerj.12967`)
-  * updated manuscript with q-mode PCA
+    * screened for obesity genes
+  
+  * manuscript work 
+    * updated manuscript with q-mode PCA
+ 
+  * updated to do
     
   
  * next steps
@@ -1023,9 +1028,15 @@
      * [x] ~~define DEG contrats by cluster analysis~~ **doesn't work**
      * [x] get new PCR visualisations across all tissues
        *  [x] update manuscript in all sections accordingly
-    * [x] discard analysis of PCA 
-    * [ ] to reduce contrasts test `CD CD` against `CD WD`, `WD CD`, `WD WD`
-   
+    * [x] discard analysis of PCA
+    * [ ] in DEG test all contrasts against all others
+    * [ ] in DEG lists keep significant (LFC 2) and obesity genes -  as per `10.3390/ijms231911005` using: Leptin (LEP), the leptin receptor (LEPR), proopiomelanocortin (POMC), prohormone convertase 1 (PCSK1), the melanocortin 4 receptor (MC4R), single-minded homolog 1 (SIM1), brain-derived neurotrophic factor (BDNF), and the neurotrophic tyrosine kinase receptor type 2 gene (NTRK2)
+    * [ ] keep DEGs lists only for contrasts in which obesity related genes occur
+    * [ ] for above DEG list do full volcano plot
+    * [ ] for above DEG list KEGG and GO
+    * [ ] for above plot heat-map with obesity genes, indicate which one are significant, and top 5 others 
+    
+  
    * ~~[ ] in `015_r_use_saemix.R`~~
      * ~~[ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
    * [ ] write up results in main text 
