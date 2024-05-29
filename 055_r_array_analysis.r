@@ -188,6 +188,16 @@ get_percent_variation = function(prcomp_outout) {
   
 }
 
+# Get q-mode principal components of expression data (modified 28-May-2024 to use SummarizedExperiment)
+get_q_mode_principal_components  = function(SummarizedExperiment){
+  
+  # Building initial models
+  message(paste0("\nGetting PCs of data set \"", deparse(substitute(SummarizedExperiment))), "\".")
+  
+  return( prcomp(( assays(SummarizedExperiment)$exprs), scale = FALSE, center = TRUE))
+  
+}
+
 # Get PCA plots
 get_pca_plot = function(expr_data_pca, expr_data_raw, variable, legend_title, plot_title, percent_var) {
   
@@ -216,8 +226,44 @@ get_pca_plot = function(expr_data_pca, expr_data_raw, variable, legend_title, pl
   
 }
 
+# Get q-mode PCA plots
+get_q_mode_pca_plot = function(expr_data_pca, expr_data_raw, variable, plot_title, percent_var) {
+  
+  require("factoextra")
+  require("ggplot2")
+  
+  # stop("remove function buiulding code")
+  # expr_data_pca = qPCA_BRAT
+  # expr_data_raw = BRAT
+  # variable = "ParentalDietMoFa"
+  # plot_title =  "a"
+  # percent_var = "qPV_BRAT"
+  # 
+  # build plot as 
+  pca_plot <- fviz_pca_var(expr_data_pca, col.var = "cos2", repel = TRUE, title = plot_title) + 
+    theme_bw() + labs(
+      x = paste0("PC1: ", percent_var[1], "% variance"),
+      y = paste0("PC2: ", percent_var[2], "% variance")
+    )
+  
+  # edit axis labels
+  
+  
+  # - open plot for manual editing
+  pca_plot_built <- ggplot_build(pca_plot)
+  
+  # - edit plot
+  pca_plot_built$data[[1]]$label <- colData(expr_data_raw)[ which( rownames(colData(expr_data_raw)) %in% pca_plot_built$data[[1]]$label), ][[variable]]
+  
+  # - close plot after manual editing for plotting 
+  pca_plot_edited <- plot_grid(ggplot_gtable(pca_plot_built))
+  
+  
+  return(pca_plot_edited)
+  
+}
 
-# All functions below ar unrevised ----
+# All functions below are unrevised ----
 
 # Convenience function to define DGE among offspring tissue types
 get_dge_for_individal_tissues =  function(ExpSet){
@@ -853,10 +899,6 @@ rm(bAT_CD_HFD_VS_CD_CD, bAT_HFD_CD_VS_CD_CD, bAT_HFD_CD_VS_CD_HFD, bAT_HFD_HFD_V
 
 saveRDS(DGEL_diet, file = here("rds_storage", "055_r_array_analysis__dge_lists_by_diet.rds"))
 
-# >>> Code construction in progress - implementing new analysis flow here. ----
-
-warning("Code construction in progress.")
-
 # Clean out expression data ----
 
 # as described here https://nbisweden.github.io/excelerate-scRNAseq/session-clustering/Clustering.html
@@ -874,7 +916,7 @@ table(colData(EVAT)$ParentalDietMoFa)
 
 # _2.) Feature selection ----
 
-# __a) Check and plot average expression and variance ----
+# __a) Plot average expression and variance ----
 
 # export plots in this section if needed
 plot_mean_expression_and_variance(FLAT)
@@ -890,11 +932,11 @@ plot_rare_genes(IWAT)
 plot_rare_genes(LIVT)
 plot_rare_genes(EVAT)
 
-# __c) Remove rare genes (not needed) ----
+# __c) Remove rare genes (not needed)
 
 # omitted - code on web page
 
-# __d) Remove genes only detected in few samples (not needed) ----
+# __d) Remove genes only detected in few samples (not needed)
 
 # omitted - code from web page
 # se_object <- BRAT
@@ -903,7 +945,7 @@ plot_rare_genes(EVAT)
 # se_object <- se_object[samples_per_gene_subest,]
 # dim(se_object)
 
-# __e) Isolating highly variable genes (not needed) ----
+# __e) Isolating highly variable genes (not needed)
 
 # omitted - code from web page
 # se_object <- EVAT
@@ -914,15 +956,14 @@ plot_rare_genes(EVAT)
 # lines(dec$mean[o], dec$tech[o], col="dodgerblue", lwd=2)
 # points(dec$mean[dec$HVG], dec$total[dec$HVG], col="red", pch=16)
 
-
-stop("Code construction in progress - implemnet new analysis approach here.")
-
 # Principal Component Analysis ----
 
 # as described here https://tavareshugo.github.io/data-carpentry-rnaseq/03_rnaseq_pca.html
 # see file:///Users/paul/Documents/HM_miscellaneous/231116_cf-statcon_mv_statistics/Exercises/Part_1/Exercise_3.html#Supplementary_individuals_and_weights
 
-# _1.) Get PCs   ----
+# _1.) Get PCs ----
+
+# __a) R-mode ----
 
 PCA_FLAT <- get_principal_components(FLAT)
 PCA_BRAT <- get_principal_components(BRAT)
@@ -930,7 +971,22 @@ PCA_IWAT <- get_principal_components(IWAT)
 PCA_LIVT <- get_principal_components(LIVT)
 PCA_EVAT <- get_principal_components(EVAT)
 
+# __b) Q-mode ----
+
+# As per Camargo, Arley. 2022. "PCAtest: Testing the Statistical Significance of
+# Principal Component Analysis in R." PeerJ 10 (February):e12967.
+# https://doi.org/10.7717/peerj.12967. Get q-mode PCAs if explained variation on
+# the PC1 and PC2 is low
+
+qPCA_FLAT <- get_q_mode_principal_components(FLAT)
+qPCA_BRAT <- get_q_mode_principal_components(BRAT)
+qPCA_IWAT <- get_q_mode_principal_components(IWAT)
+qPCA_LIVT <- get_q_mode_principal_components(LIVT)
+qPCA_EVAT <- get_q_mode_principal_components(EVAT)
+
 # _2.) Get PC loads ----
+
+# __a) R-mode ----
 
 PV_FLAT <- get_percent_variation(PCA_FLAT)
 PV_BRAT <- get_percent_variation(PCA_BRAT)
@@ -938,9 +994,17 @@ PV_IWAT <- get_percent_variation(PCA_IWAT)
 PV_LIVT <- get_percent_variation(PCA_LIVT)
 PV_EVAT <- get_percent_variation(PCA_EVAT)
 
+# __b) Q-mode ----
+
+qPV_FLAT <- get_percent_variation(qPCA_FLAT)
+qPV_BRAT <- get_percent_variation(qPCA_BRAT)
+qPV_IWAT <- get_percent_variation(qPCA_IWAT)
+qPV_LIVT <- get_percent_variation(qPCA_LIVT)
+qPV_EVAT <- get_percent_variation(qPCA_EVAT)
+
 # _3.) Plot Principal Component Analyses ----
 
-# __a.) Plot FLAT PCs in 2D for several variables types  ----
+# __a.) Plot FLAT PCs (R mode - enough variation)----
 
 # "Overall expression differences between analysed tissues among f1 offspring"
 plot_pca_flat_a <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "Tissue", legend_title = "F1 Tissue", plot_title =  "a", percent_var = PV_FLAT)
@@ -963,13 +1027,19 @@ ggsave(plot = plot_pca_flat, path = here("../manuscript/display_items"),
        filename = "055_r_array_analysis__plot_pca_flat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# __b.) Plot BRAT PCs in 2D for several variables types  ----
+# __b.) Plot BRAT PCs  ----
 
 # Overall expression differences and obesity status among f1 offspring
-plot_pca_brat_a <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "a", percent_var = PV_BRAT)
+
+# plot_pca_brat_a <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "a", percent_var = PV_BRAT)
+# see `file:///Users/paul/Documents/HM_miscellaneous/231116_cf-statcon_mv_statistics/Exercises/Part_1/Exercise_3.html#Principle_Component_Analysis` for interpretation
+
+plot_pca_brat_a <- get_q_mode_pca_plot(expr_data_pca = qPCA_BRAT, expr_data_raw = BRAT, variable = "ParentalDietMoFa", plot_title =  "a", percent_var = qPV_FLAT)
 
 # Overall expression differences and obesity parental obesity status among f0
-plot_pca_brat_b <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT, variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "b", percent_var = PV_BRAT)
+
+# plot_pca_brat_b <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT, variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "b", percent_var = PV_BRAT)
+plot_pca_brat_b <- get_q_mode_pca_plot(expr_data_pca = qPCA_BRAT, expr_data_raw = BRAT, variable = "LitterSize", plot_title =  "b", percent_var = qPV_FLAT)
 
 # Combine and save plots
 plot_pca_brat <- ggarrange(plot_pca_brat_a, plot_pca_brat_b, nrow = 1, ncol = 2)
@@ -981,13 +1051,17 @@ ggsave(plot = plot_pca_brat, path = here("../manuscript/display_items"),
        filename = "055_r_array_analysis__plot_pca_brat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# __c.) Plot IWAT PCs in 2D for several variables types ----
+# __c.) Plot IWAT PCs----
 
 # Overall expression differences and obesity status among f1 offspring
-plot_pca_scat_a <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT , variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "a", percent_var = PV_IWAT)
+
+# plot_pca_scat_a <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT , variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "a", percent_var = PV_IWAT)
+plot_pca_scat_a <- get_q_mode_pca_plot(expr_data_pca = qPCA_IWAT, expr_data_raw = IWAT, variable = "ParentalDietMoFa", plot_title =  "a", percent_var = qPV_IWAT)
 
 # Overall expression differences and obesity parental obesity status among f0
-plot_pca_scat_b <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT , variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "b", percent_var = PV_IWAT)
+
+# plot_pca_scat_b <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT , variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "b", percent_var = PV_IWAT)
+plot_pca_scat_b <- get_q_mode_pca_plot(expr_data_pca = qPCA_IWAT, expr_data_raw = IWAT, variable = "LitterSize", plot_title =  "b", percent_var = qPV_IWAT)
 
 # Combine and save plots
 
@@ -1000,13 +1074,17 @@ ggsave(plot = plot_pca_scat, path = here("../manuscript/display_items"),
        filename = "055_r_array_analysis__plot_pca_scat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# __d.) Plot EVAT PCs in 2D for several variables types  ----
+# __d.) Plot EVAT PCs ----
 
 # Overall expression differences and obesity status among f1 offspring
-plot_pca_evat_a <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "a", percent_var = PV_EVAT)
+
+# plot_pca_evat_a <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "a", percent_var = PV_EVAT)
+plot_pca_evat_a <- get_q_mode_pca_plot(expr_data_pca = qPCA_EVAT, expr_data_raw = EVAT , variable = "ParentalDietMoFa", percent_var = qPV_EVAT, plot_title =  "a")
 
 # Overall expression differences and obesity parental obesity status among f0
-plot_pca_evat_b <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "b", percent_var = PV_EVAT)
+
+# plot_pca_evat_b <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "b", percent_var = PV_EVAT)
+plot_pca_evat_b <- get_q_mode_pca_plot(expr_data_pca = qPCA_EVAT, expr_data_raw = EVAT , variable = "LitterSize", percent_var = qPV_EVAT, plot_title =  "b")
 
 # Combine and save plots
 plot_pca_evat <- ggarrange(plot_pca_evat_a, plot_pca_evat_b, nrow = 1, ncol = 2)
@@ -1018,13 +1096,17 @@ ggsave(plot = plot_pca_evat, path = here("../manuscript/display_items"),
        filename = "055_r_array_analysis__plot_pca_evat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# __e.) Plot LIVT PCs in 2D for several variables types  ----
+# __e.) Plot LIVT PCs ----
 
 # Overall expression differences and obesity status among f1 offspring
-plot_pca_liat_a <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "a", percent_var = PV_LIVT)
+
+# plot_pca_liat_a <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "a", percent_var = PV_LIVT)
+plot_pca_liat_a <- get_q_mode_pca_plot(expr_data_pca = qPCA_LIVT, expr_data_raw = LIVT, variable = "ParentalDietMoFa", plot_title =  "a", percent_var = qPV_LIVT)
 
 # Overall expression differences and obesity parental obesity status among f0
-plot_pca_liat_b <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT, variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "b", percent_var = PV_LIVT)
+
+# plot_pca_liat_b <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT, variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "b", percent_var = PV_LIVT)
+plot_pca_liat_b <- get_q_mode_pca_plot(expr_data_pca = qPCA_LIVT, expr_data_raw = LIVT, variable = "LitterSize", plot_title =  "a", percent_var = qPV_LIVT)
 
 # Combine and save plots
 
@@ -1037,7 +1119,7 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
        filename = "055_r_array_analysis__plot_pca_liat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# __f.) Plot individual tissue PCs in 2D for parental obesity only (for talks etc) ----
+# __f.) Plot for talks (in R mode) ----
 
 plot_pca_brat_one <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "BAT: interscapular brown AT ", percent_var = PV_BRAT)
 plot_pca_evat_two <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "EVAT: epigonal visceral AT", percent_var = PV_EVAT)
@@ -1052,6 +1134,13 @@ ggsave(plot = plot_pca_summ, path = here("plots"),
        filename = "055_r_array_analysis__plot_pca_summ.pdf",  
        width = 500, height = 275, units = "mm", dpi = 300,  limitsize = TRUE, scale = 0.75)
 
+# >>> Code construction in progress - implementing new analysis flow here. ----
+
+warning("Code construction in progress.")
+
+# Screen known obesity genes ----
+
+# As per 10.3390/ijms231911005 using 
 
 # Find Deferentially expressed genes ----
 
@@ -1061,13 +1150,9 @@ ggsave(plot = plot_pca_summ, path = here("plots"),
 
 
 
-
-
-
-
-
-
 stop("Unadjusted old analysis code below - possibly integrate into code above. ")
+
+
 # >>> Unadjusted old analysis code below - possibly integrate into code above. ----
 
 

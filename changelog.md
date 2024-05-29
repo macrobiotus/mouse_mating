@@ -1008,6 +1008,8 @@
     * get new PCR visualisations across all tissues
     * discarded old PCA and PCA analysis code and all useless functions
     * commit - "purged old code"
+    * implemented q-mode PCA as per Camargo (2022)(`10.7717/peerj.12967`)
+  * updated manuscript with q-mode PCA
     
   
  * next steps
@@ -1020,18 +1022,20 @@
      * [x] ~~implement OPLS regression where possible~~ **impossible**
      * [x] ~~define DEG contrats by cluster analysis~~ **doesn't work**
      * [x] get new PCR visualisations across all tissues
-       *  [ ] update manuscript in all sections accordingly
-    * [ ] discard analysis of PCA 
+       *  [x] update manuscript in all sections accordingly
+    * [x] discard analysis of PCA 
     * [ ] to reduce contrasts test `CD CD` against `CD WD`, `WD CD`, `WD WD`
    
-   * [ ] in `015_r_use_saemix.R`
-     * [ ] correlate litter size with diet (test in `015_r_use_saemix.R`)
+   * ~~[ ] in `015_r_use_saemix.R`~~
+     * ~~[ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
    * [ ] write up results in main text 
-     * [ ] refresh results with PCA analysis sucessor and tested contrasts
+     * [x] refresh results with PCA analysis sucessor and tested contrasts
+     * [ ] refresh results with DEG analysis results
+     
      * ~~[x] no signal among litter size among any tissues~~
      * ~~[x] signal among parental diet between these and those dietary treatments~~a
-     * [ ] **hopefully** no correlation between litter size and diet - otherwise justify non-consideration by small sample size
-     * [ ] reimplement contrast checking - use all contrasts after discussion with NKB
+     * ~~[ ] **hopefully** no correlation between litter size and diet - otherwise justify non-consideration by small sample size~~
+     * [ ] reimplement contrast checking - ~~use all contrasts after discussion with NKB~~
  
  * [x] check which contrast can be tested with available RNAseq data and update email
  **possibly use Group encoding for testing contrasts**
