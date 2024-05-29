@@ -1004,6 +1004,12 @@
     * committed these chanages
     * defined next steps
   
+  * in `055_r_array_analysis.r`
+    * get new PCR visualisations across all tissues
+    * discarded old PCA and PCA analysis code and all useless functions
+    * commit - "purged old code"
+    
+  
  * next steps
 
    * [x] note diets in main text and adjust introduction and methods - check throughout
@@ -1013,8 +1019,9 @@
      * [x] ~~fork and get clustering approach~~ **done, commited, and overwritten in third branch**
      * [x] ~~implement OPLS regression where possible~~ **impossible**
      * [x] ~~define DEG contrats by cluster analysis~~ **doesn't work**
-    * [ ] get new PCR visualisations across all tiisues
-    * [ ] discard analysis of PCA
+     * [x] get new PCR visualisations across all tissues
+       *  [ ] update manuscript in all sections accordingly
+    * [ ] discard analysis of PCA 
     * [ ] to reduce contrasts test `CD CD` against `CD WD`, `WD CD`, `WD WD`
    
    * [ ] in `015_r_use_saemix.R`

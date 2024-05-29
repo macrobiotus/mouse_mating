@@ -188,42 +188,20 @@ get_percent_variation = function(prcomp_outout) {
   
 }
 
-# Isolate first five principal components
-get_isolated_pcs = function(pca_ob){
-  
-  # Show which data is being processed
-  message(paste0("\nGetting first 5 PCs of data set \"", deparse(substitute(pca_ob))), "\".")
-  
-  return(data.frame("PC1" = pca_ob[["x"]][ , "PC1"], "PC2" = pca_ob[["x"]][ , "PC2"],  "PC3" = pca_ob[["x"]][ , "PC3"], "PC4" = pca_ob[["x"]][ , "PC4"], "PC5" = pca_ob[["x"]][ , "PC5"]))
-  
-}
-
-# get PCA plots
+# Get PCA plots
 get_pca_plot = function(expr_data_pca, expr_data_raw, variable, legend_title, plot_title, percent_var) {
+  
   require("factoextra")
   require("ggplot2")
-  
-  # correct legend labels (inset 9-Oct-2023)
-  if(variable == "Tissue"){
-  correct_lables <- case_when(pData(expr_data_raw)[[variable]] == "BRAT" ~ "BAT",
-            pData(expr_data_raw)[[variable]] == "EVAT" ~ "EVAT",
-            pData(expr_data_raw)[[variable]] == "LIVT" ~ "L",
-            pData(expr_data_raw)[[variable]] == "IWAT" ~ "IWAT",
-            TRUE ~ pData(expr_data_raw)[[variable]])
-  } else if (variable != "Tissue") {
-    correct_lables <- pData(expr_data_raw)[[variable]]
-    
-  }
   
   pca_plot <- fviz_pca_ind(
     expr_data_pca,
     label = "none",
-    habillage = factor(correct_lables),
+    habillage = colData(expr_data_raw)[[variable]],
     pointsize = 2,
-    palette = c("firebrick3", "purple", "steelblue3", "gold3", "forestgreen"),
     legend.title = legend_title,
     invisible = "quali",
-    addEllipses = FALSE,
+    addEllipses = TRUE,
     ellipse.level=0.95,
     title = plot_title
   ) +
@@ -238,25 +216,8 @@ get_pca_plot = function(expr_data_pca, expr_data_raw, variable, legend_title, pl
   
 }
 
-# Getting model predictions with mgcv
-get_model_prdictions_with_mgcv = function(model_fit, model_data, ...){
-  
-  
-  # get predictions from merTools
-  model_preditcions <- predict.gam(object = model_fit, newdata = model_data,
-                                   se.fit = TRUE, terms = NULL,
-                                   exclude=NULL,
-                                   na.action = na.omit, unconditional = TRUE,
-  )
-  # diagnostic
-  message("Dim. of model pred.= ", dim(model_preditcions)[1], " ", dim(model_preditcions)[2])
-  message("Dim. of input data = ", dim(model_data)[1], " ", dim(model_data)[2] )
-  
-  # merge measured and predicted values for plotting
-  model_data_with_predictions <- cbind(model_data, model_preditcions)
-  
-  return(model_data_with_predictions)
-}
+
+# All functions below ar unrevised ----
 
 # Convenience function to define DGE among offspring tissue types
 get_dge_for_individal_tissues =  function(ExpSet){
@@ -954,15 +915,14 @@ plot_rare_genes(EVAT)
 # points(dec$mean[dec$HVG], dec$total[dec$HVG], col="red", pch=16)
 
 
-stop("Code construction in progress - implemnet new clustering approach here.")
+stop("Code construction in progress - implemnet new analysis approach here.")
 
 # Principal Component Analysis ----
 
 # as described here https://tavareshugo.github.io/data-carpentry-rnaseq/03_rnaseq_pca.html
 # see file:///Users/paul/Documents/HM_miscellaneous/231116_cf-statcon_mv_statistics/Exercises/Part_1/Exercise_3.html#Supplementary_individuals_and_weights
 
-# Old code
-# _1.) Get PCs for all subsequent analyses 
+# _1.) Get PCs   ----
 
 PCA_FLAT <- get_principal_components(FLAT)
 PCA_BRAT <- get_principal_components(BRAT)
@@ -970,8 +930,7 @@ PCA_IWAT <- get_principal_components(IWAT)
 PCA_LIVT <- get_principal_components(LIVT)
 PCA_EVAT <- get_principal_components(EVAT)
 
-# old code
-# _2.) Get PC loading for plots
+# _2.) Get PC loads ----
 
 PV_FLAT <- get_percent_variation(PCA_FLAT)
 PV_BRAT <- get_percent_variation(PCA_BRAT)
@@ -979,218 +938,120 @@ PV_IWAT <- get_percent_variation(PCA_IWAT)
 PV_LIVT <- get_percent_variation(PCA_LIVT)
 PV_EVAT <- get_percent_variation(PCA_EVAT)
 
+# _3.) Plot Principal Component Analyses ----
 
-# after - https://tavareshugo.github.io/data-carpentry-rnaseq/03_rnaseq_pca.html
-# get ten top most genes on PCA as well
+# __a.) Plot FLAT PCs in 2D for several variables types  ----
 
+# "Overall expression differences between analysed tissues among f1 offspring"
+plot_pca_flat_a <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "Tissue", legend_title = "F1 Tissue", plot_title =  "a", percent_var = PV_FLAT)
 
-# _1.) set input data ---- 
-summarized_experiment  <- IWAT
+# Overall expression differences and obesity status among f1 offspring
+plot_pca_flat_b <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "b", percent_var = PV_FLAT)
 
-# _2.) get PCA results  ---- 
-pca_matrix <- t(assays(summarized_experiment)$exprs)
-pca_result <-  prcomp(pca_matrix , scale = TRUE, center = TRUE)
+# Overall expression differences and obesity parental obesity status among f0
+plot_pca_flat_c <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "c", percent_var = PV_FLAT)
 
-# _3.) isolate probe ids and symbols  ---- 
+# Combine and save plots
 
-# Needed at two instances below:
-probe_id_and_symbols <- {rowData(summarized_experiment) %>% as_tibble %>% dplyr::select(PROBEID, SYMBOL) %>% relocate(SYMBOL, .after = PROBEID)}
-probe_id_and_symbols$SYMBOL <- toupper(probe_id_and_symbols$SYMBOL)
+# factor labeling needs to change - check above
+plot_pca_flat <- ggarrange(plot_pca_flat_a, plot_pca_flat_b, plot_pca_flat_c, nrow = 1, ncol = 3)
 
+ggsave(plot = plot_pca_flat, path = here("plots"), 
+       filename = "055_r_array_analysis__plot_pca_flat.pdf",  
+       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+ggsave(plot = plot_pca_flat, path = here("../manuscript/display_items"), 
+       filename = "055_r_array_analysis__plot_pca_flat_unassigned.pdf",  
+       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
+# __b.) Plot BRAT PCs in 2D for several variables types  ----
 
-# _4.) plot samples ----
-plot_pca_ind <- fviz_pca_ind(pca_result, geom = "point", 
-             habillage = colData(summarized_experiment)[[matadata_column]],
-             addEllipses = TRUE,
-             axes = 1:2) +  theme_bw()
+# Overall expression differences and obesity status among f1 offspring
+plot_pca_brat_a <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "a", percent_var = PV_BRAT)
 
-plot_pca_ind
+# Overall expression differences and obesity parental obesity status among f0
+plot_pca_brat_b <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT, variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "b", percent_var = PV_BRAT)
 
-# _5.) Exploring correlation between genes and PCA  ---- 
+# Combine and save plots
+plot_pca_brat <- ggarrange(plot_pca_brat_a, plot_pca_brat_b, nrow = 1, ncol = 2)
 
-# __a) get top genes ----
+ggsave(plot = plot_pca_brat, path = here("plots"), 
+       filename = "055_r_array_analysis__plot_pca_brat.pdf",  
+       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+ggsave(plot = plot_pca_brat, path = here("../manuscript/display_items"), 
+       filename = "055_r_array_analysis__plot_pca_brat_unassigned.pdf",  
+       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# isolate pc loadings
-pc_rotation <- pca_result$rotation %>%  as_tibble(rownames = "PROBEID")
+# __c.) Plot IWAT PCs in 2D for several variables types ----
 
-# add gene names
-pc_rotation <- left_join(pc_rotation, probe_id_and_symbols ) %>% relocate(SYMBOL, .after = PROBEID)  # %>% mutate(across(where(is.character), toupper))
+# Overall expression differences and obesity status among f1 offspring
+plot_pca_scat_a <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT , variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "a", percent_var = PV_IWAT)
 
-# get top genes
-top_genes <- pc_rotation %>% 
-  # select only the PCs we are interested in
-  dplyr::select(PROBEID, SYMBOL, PC1, PC2) %>%
-  # convert to a "long" format
-  pivot_longer(matches("PC"), names_to = "PC", values_to = "loading") %>% 
-  # for each PC
-  group_by(PC) %>% 
-  # arrange by descending order of loading
-  arrange(desc(abs(loading))) %>% 
-  # take the 10 top rows
-  dplyr::slice_head(n = 5)  %>% 
-  # ensure only unique genes are retained
-  unique()
+# Overall expression differences and obesity parental obesity status among f0
+plot_pca_scat_b <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT , variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "b", percent_var = PV_IWAT)
 
-  
-  # adjust below to enable plotting - also export probe symbol legend
+# Combine and save plots
 
-  # # pull the gene column as a vector
-  # pull(PROBEID) %>% 
-  
-top_genes
+plot_pca_scat <- ggarrange(plot_pca_scat_a, plot_pca_scat_b, nrow = 1, ncol = 2)
 
-# get a subset tiblle matching original class(pca_result$rotation)
-pc_rotation_top <- pc_rotation %>% 
-  filter(PROBEID %in% top_genes$PROBEID)
+ggsave(plot = plot_pca_scat, path = here("plots"), 
+       filename = "055_r_array_analysis__plot_pca_scat.pdf",  
+       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+ggsave(plot = plot_pca_scat, path = here("../manuscript/display_items"), 
+       filename = "055_r_array_analysis__plot_pca_scat_unassigned.pdf",  
+       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
+# __d.) Plot EVAT PCs in 2D for several variables types  ----
 
-# __b) plot top genes ----
+# Overall expression differences and obesity status among f1 offspring
+plot_pca_evat_a <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "a", percent_var = PV_EVAT)
 
-# show genes
-plot_pca_var <- fviz_pca_var(pca_result, select.var =  list(name = pc_rotation_top$PROBEID), col.var = "cos2", repel = TRUE) + theme_bw()
+# Overall expression differences and obesity parental obesity status among f0
+plot_pca_evat_b <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "b", percent_var = PV_EVAT)
 
-# open plot for manual editing
-plot_pca_var <- ggplot_build(plot_pca_var)
+# Combine and save plots
+plot_pca_evat <- ggarrange(plot_pca_evat_a, plot_pca_evat_b, nrow = 1, ncol = 2)
 
-# overwrite probid  in PCA plot lables with gene names
-plot_pca_var$data[[1]]$label <- probe_id_and_symbols[which(probe_id_and_symbols$PROBEID %in% plot_pca_var$data[[1]]$label), ]$SYMBOL
+ggsave(plot = plot_pca_evat, path = here("plots"), 
+       filename = "055_r_array_analysis__plot_pca_evat.pdf",  
+       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+ggsave(plot = plot_pca_evat, path = here("../manuscript/display_items"), 
+       filename = "055_r_array_analysis__plot_pca_evat_unassigned.pdf",  
+       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# close plot after manual editing for plotting 
-plot_pca_var_gtable <- ggplot_gtable(plot_pca_var)
+# __e.) Plot LIVT PCs in 2D for several variables types  ----
 
-# 8.) K means clustering ---- 
+# Overall expression differences and obesity status among f1 offspring
+plot_pca_liat_a <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "a", percent_var = PV_LIVT)
 
-pca_result_kmeans_df <- as.data.frame(-pca_result$x)  # [ , 1:2]    
+# Overall expression differences and obesity parental obesity status among f0
+plot_pca_liat_b <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT, variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "b", percent_var = PV_LIVT)
 
-fviz_nbclust(pca_result_kmeans_df, kmeans, method = 'silhouette')
+# Combine and save plots
 
-# library("NbClust")
-# NbClust(data = pca_result_kmeans_df, method = "kmeans", index = "silhouette")
+plot_pca_liat <- ggarrange(plot_pca_liat_a, plot_pca_liat_b, nrow = 1, ncol = 2)
 
-plot_pca_var_cluster <- fviz_cluster(kmeans(pca_result_kmeans_df, centers = 3, nstart = 50), show.clust.cent = FALSE, data = pca_result_kmeans_df) + theme_bw()
+ggsave(plot = plot_pca_liat, path = here("plots"), 
+       filename = "055_r_array_analysis__plot_pca_liat.pdf",  
+       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"), 
+       filename = "055_r_array_analysis__plot_pca_liat_unassigned.pdf",  
+       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# open plot for manual editing
-plot_pca_var_cluster <- ggplot_build(plot_pca_var_cluster)
+# __f.) Plot individual tissue PCs in 2D for parental obesity only (for talks etc) ----
 
-# edit plot
-plot_pca_var_cluster$data[[3]]$label <- colData(summarized_experiment)[ which(rownames(colData(summarized_experiment)) %in% plot_pca_var_cluster$data[[3]]$label), ]$ParentalDietMoFa
+plot_pca_brat_one <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "BAT: interscapular brown AT ", percent_var = PV_BRAT)
+plot_pca_evat_two <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "EVAT: epigonal visceral AT", percent_var = PV_EVAT)
+plot_pca_livr_thr <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "L: liver T", percent_var = PV_LIVT)
+plot_pca_scat_for <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "IWAT: inguinal subcutaneous AT", percent_var = PV_IWAT)
+
+plot_pca_summ <- ggarrange(plot_pca_brat_one,
+                           plot_pca_evat_two,
+                           plot_pca_livr_thr,
+                           plot_pca_scat_for, nrow = 2, ncol = 2)
+ggsave(plot = plot_pca_summ, path = here("plots"), 
+       filename = "055_r_array_analysis__plot_pca_summ.pdf",  
+       width = 500, height = 275, units = "mm", dpi = 300,  limitsize = TRUE, scale = 0.75)
 
-# close plot after manual editing for plotting 
-plot_pca_var_cluster_gtable <- ggplot_gtable(plot_pca_var_cluster)
-
-
-plot_grid(plot_pca_var_cluster_gtable)
-
-# 7.) Get compound plot ---- 
-
-compound_plot <- plot_grid(plot_pca_ind, plot_pca_var_gtable, plot_pca_var_cluster_gtable,  labels = "AUTO", nrow = 1)
-
-
-
-
-
-
-pca_result$rotation
-pca_result$center
-pca_result$scale
-
-
-
-pc_eigenvalues <- pca_result$sdev^2
-
-pc_eigenvalues <- tibble(PC = factor(1:length(pc_eigenvalues)), 
-                         variance = pc_eigenvalues) %>% 
-  # add a new column with the percent variance
-  mutate(pct = variance/sum(variance)*100) %>% 
-  # add another column with the cumulative variance explained
-  mutate(pct_cum = cumsum(pct))
-
-# print the result
-pc_eigenvalues
-
-pc_eigenvalues %>% 
-  ggplot(aes(x = PC)) +
-  geom_col(aes(y = pct)) +
-  geom_line(aes(y = pct_cum, group = 1)) + 
-  geom_point(aes(y = pct_cum)) +
-  labs(x = "Principal component", y = "Fraction variance explained") +
-  theme_minimal()
-
-
-pc_scores <- pca_result$x
-
-pc_scores <- pc_scores %>% 
-  # convert to a tibble retaining the sample names as a new column
-  as_tibble(rownames = "sample")
-
-# print the result
-pc_scores
-
-
-pc_scores %>% 
-  # create the plot
-  ggplot(aes(x = PC1, y = PC2)) +
-  geom_point()
-
-
-
-
-# basic plot
-pca_results <- PCA_IWAT
-matadata_column <- "ParentalDietMoFa"
-pca_matrix
-
-
-# Convert matrix to tibble - add colnames to a new column called "gene"
-as_tibble(pca_matrix, rownames = "sample")
-
-
-
-
-
-
-
-
-# show genes
-fviz_pca_ind(pca_results, geom = "point", 
-             habillage = colData(summarized_experiment)[[matadata_column]],
-             addEllipses = TRUE,
-             axes = 1:2)
-
-fviz_pca_var(pca_results, geom = "point")
-
-
-fviz_pca_var(pca_results, col.var = "cos2",
-            axes = 1:2, select.var = list(cos2 = 0.5),
-            repel = TRUE)
-
-# plot - adjust this function
-plot_pca_flat_a <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "Tissue", legend_title = "F1 Tissue", plot_title =  "a", percent_var = FLAT_PV)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-# Find contrast using K-Means clustering ----
-
-# see file:///Users/paul/Documents/HM_miscellaneous/231116_cf-statcon_mv_statistics/Exercises/Part_2/Exercise_4.html#(K)-means_clustering
-# also see MacMini history 28.05.2024 around 14:00
 
 # Find Deferentially expressed genes ----
 
@@ -1206,510 +1067,12 @@ plot_pca_flat_a <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT ,
 
 
 
-
-
-
-
-
-
 stop("Unadjusted old analysis code below - possibly integrate into code above. ")
 # >>> Unadjusted old analysis code below - possibly integrate into code above. ----
 
 
-#' # Calculate Principal components
 
-# Calculate Principal components ----
 
-#' ## Get PCs for all subsequent analyses
-
-warning("For interpretation and analysis suitability of PCA, expressions data may need to be adjusted for litter size. Not doing this due to samll sample size, and beacuse it's unclear why this should be done.")
-
-# _1.) Get PCs for all subsequent analyses ----
-
-PCA_FLAT <- get_principal_components(FLAT)
-PCA_BRAT <- get_principal_components(BRAT)
-PCA_IWAT <- get_principal_components(IWAT)
-PCA_LIVT <- get_principal_components(LIVT)
-PCA_EVAT <- get_principal_components(EVAT)
-
-#' ## Get PC loadings for plots
-
-# _2.) Get PC loadings for plots ----
-
-FLAT_PV <- get_percent_variation(PCA_FLAT)
-BRAT_PV <- get_percent_variation(PCA_BRAT)
-IWAT_PV <- get_percent_variation(PCA_IWAT)
-LIVT_PV <- get_percent_variation(PCA_LIVT)
-EVAT_PV <- get_percent_variation(PCA_EVAT)
-
-# #' Plot Principal Component Analyses
-
-# Plot Principal Component Analyses ----
-
-#' ## Plot FLAT PCs in 2D for several variables types
-
-# _1.) Plot FLAT PCs in 2D for several variables types  ----
-
-# "Overall expression differences between analysed tissues among f1 offspring"
-plot_pca_flat_a <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "Tissue", legend_title = "F1 Tissue", plot_title =  "a", percent_var = FLAT_PV)
-
-# Overall expression differences and obesity status among f1 offspring
-plot_pca_flat_b <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "b", percent_var = FLAT_PV)
-
-# Overall expression differences and obesity parental obesity status among f0
-plot_pca_flat_c <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "c", percent_var = FLAT_PV)
-
-# ___ Combine and save plots ----
-
-# factor labeling needs to change - check above
-plot_pca_flat <- ggarrange(plot_pca_flat_a, plot_pca_flat_b, plot_pca_flat_c, nrow = 1, ncol = 3)
-
-ggsave(plot = plot_pca_flat, path = here("plots"), 
-       filename = "055_r_array_analysis__plot_pca_flat.pdf",  
-       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
-ggsave(plot = plot_pca_flat, path = here("../manuscript/display_items"), 
-       filename = "055_r_array_analysis__plot_pca_flat_unassigned.pdf",  
-       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
-
-# ___ Plot PCs in 3D (only for tissue types so far)  ----
-
-# stop("Code isn't updated for second revision.")
-# 
-# dataGG <- data.frame(PC1 = PCA_FLAT$x[,1], PC2 = PCA_FLAT$x[,2],PC3 = PCA_FLAT$x[,3])
-# 
-# plot_pca_sptial <- plot_ly(dataGG, x = ~PC1, y = ~PC2, z = ~PC3) %>%
-#   add_markers(color = ~pData(FLAT)$Tissue,colors = c("firebrick3","purple","steelblue3","gold3", "forestgreen"),
-#               symbol = ~pData(FLAT)$Tissue, symbols = c(19,19,19,19))
-# 
-# saveWidget(plot_pca_sptial, file = paste0(here("plots"),"/", "050_r_array_analysis__plot_pca_flat.html"), selfcontained = T, libdir = "lib")
-
-#' ## Plot BRAT PCs in 2D for several variables types
-
-# _2.) Plot BRAT PCs in 2D for several variables types  ----
-
-# "Overall expression differences between analysed tissues among f1 offspring"
-plot_pca_brat_a <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT, variable = "Tissue", legend_title = "Tissue", plot_title =  "a", percent_var = BRAT_PV)
-
-# Overall expression differences and obesity status among f1 offspring
-plot_pca_brat_b <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "b", percent_var = BRAT_PV)
-
-# Overall expression differences and obesity parental obesity status among f0
-plot_pca_brat_c <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT, variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "c", percent_var = BRAT_PV)
-
-# ___ Combine and save plots ----
-plot_pca_brat <- ggarrange(plot_pca_brat_a, plot_pca_brat_b, plot_pca_brat_c, nrow = 1, ncol = 3)
-
-ggsave(plot = plot_pca_brat, path = here("plots"), 
-       filename = "055_r_array_analysis__plot_pca_brat.pdf",  
-       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
-ggsave(plot = plot_pca_brat, path = here("../manuscript/display_items"), 
-       filename = "055_r_array_analysis__plot_pca_brat_unassigned.pdf",  
-       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
-
-#' ## Plot IWAT PCs in 2D for several variables types
-
-# _3.) Plot IWAT PCs in 2D for several variables types  ----
-
-# "Overall expression differences between analysed tissues among f1 offspring"
-plot_pca_scat_a <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT , variable = "Tissue", legend_title = "Tissue", plot_title =  "a", percent_var = IWAT_PV)
-
-# Overall expression differences and obesity status among f1 offspring
-plot_pca_scat_b <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT , variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "b", percent_var = IWAT_PV)
-
-# Overall expression differences and obesity parental obesity status among f0
-plot_pca_scat_c <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT , variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "c", percent_var = IWAT_PV)
-
-# ___ Combine and save plots ----
-
-plot_pca_scat <- ggarrange(plot_pca_scat_a, plot_pca_scat_b, plot_pca_scat_c, nrow = 1, ncol = 3)
-
-ggsave(plot = plot_pca_scat, path = here("plots"), 
-       filename = "055_r_array_analysis__plot_pca_scat.pdf",  
-       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
-ggsave(plot = plot_pca_scat, path = here("../manuscript/display_items"), 
-       filename = "055_r_array_analysis__plot_pca_scat_unassigned.pdf",  
-       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
-
-#' ## Plot EVAT PCs in 2D for several variables types
-
-# _4.) Plot EVAT PCs in 2D for several variables types  ----
-
-# "Overall expression differences between analysed tissues among f1 offspring"
-plot_pca_evat_a <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "Tissue", legend_title = "Tissue", plot_title =  "a", percent_var = EVAT_PV)
-
-# Overall expression differences and obesity status among f1 offspring
-plot_pca_evat_b <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "b", percent_var = EVAT_PV)
-
-# Overall expression differences and obesity parental obesity status among f0
-plot_pca_evat_c <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT , variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "c", percent_var = EVAT_PV)
-
-# ___ Combine and save plots ----
-
-plot_pca_evat <- ggarrange(plot_pca_evat_a, plot_pca_evat_b, plot_pca_evat_c, nrow = 1, ncol = 3)
-
-ggsave(plot = plot_pca_evat, path = here("plots"), 
-       filename = "055_r_array_analysis__plot_pca_evat.pdf",  
-       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
-ggsave(plot = plot_pca_evat, path = here("../manuscript/display_items"), 
-       filename = "055_r_array_analysis__plot_pca_evat_unassigned.pdf",  
-       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
-
-#' ## Plot LIVT PCs in 2D for several variables types
-
-# _5.) Plot LIVT PCs in 2D for several variables types  ----
-
-# "Overall expression differences between analysed tissues among f1 offspring"
-plot_pca_liat_a <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT, variable = "Tissue", legend_title = "Tissue", plot_title =  "a", percent_var = LIVT_PV)
-
-# Overall expression differences and obesity status among f1 offspring
-plot_pca_liat_b <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "b", percent_var = LIVT_PV)
-
-# Overall expression differences and obesity parental obesity status among f0
-plot_pca_liat_c <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT, variable = "LitterSize", legend_title = "F1 litter size", plot_title =  "c", percent_var = LIVT_PV)
-
-# ___ Combine and save plots ----
-
-plot_pca_liat <- ggarrange(plot_pca_liat_a, plot_pca_liat_b, plot_pca_liat_c, nrow = 1, ncol = 3)
-
-ggsave(plot = plot_pca_liat, path = here("plots"), 
-       filename = "055_r_array_analysis__plot_pca_liat.pdf",  
-       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
-ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"), 
-       filename = "055_r_array_analysis__plot_pca_liat_unassigned.pdf",  
-       width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
-
-# _6.) Plot individual tissue PCs in 2D for parental obesity only (for talks etc) ----
-
-plot_pca_brat_one <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "BAT: interscapular brown AT ", percent_var = BRAT_PV)
-plot_pca_evat_two <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "EVAT: epigonal visceral AT", percent_var = EVAT_PV)
-plot_pca_livr_thr <- get_pca_plot(expr_data_pca = PCA_LIVT, expr_data_raw = LIVT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "L: liver T", percent_var = LIVT_PV)
-plot_pca_scat_for <- get_pca_plot(expr_data_pca = PCA_IWAT, expr_data_raw = IWAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "IWAT: inguinal subcutaneous AT", percent_var = IWAT_PV)
-
-plot_pca_summ <- ggarrange(plot_pca_brat_one,
-                           plot_pca_evat_two,
-                           plot_pca_livr_thr,
-                           plot_pca_scat_for, nrow = 2, ncol = 2)
-ggsave(plot = plot_pca_summ, path = here("plots"), 
-       filename = "055_r_array_analysis__plot_pca_summ.pdf",  
-       width = 500, height = 275, units = "mm", dpi = 300,  limitsize = TRUE, scale = 0.75)
-
-#' # Prepare getting numerical summaries of above PCAs
-
-# Prepare getting numerical summaries of above PCAs ----
-
-# use the PCA graphics and results above to get numerical summaries of what can be sees
-# follow https://lauren-blake.github.io/Regulatory_Evol/analysis/gene_exp_corr.html
-# in section "Correlations"
-
-# use these results to inform DGE
-# see DGE section to see aht models will be tested - try to match those modles here
-# report those models used here and in DGE and write down the results
-# possibly adjust DGE models
-
-#' ## Isolate First 5 Principal Components
-
-# _1.) Isolate First 5 Principal Components ----
-
-PCs_FLAT <- get_isolated_pcs(PCA_FLAT)
-PCs_BRAT <- get_isolated_pcs(PCA_BRAT)
-PCs_EVAT <- get_isolated_pcs(PCA_EVAT)
-PCs_LIAT <- get_isolated_pcs(PCA_LIVT)
-PCs_SCAT <- get_isolated_pcs(PCA_IWAT)
-
-#' ## Get data frames to model variation of first PC against chosen factors
-
-# _2.) Get data frames to model variation of first PC against chosen factors ----
-
-FLAT_md <- get_model_data(FLAT, PCs_FLAT)
-BRAT_md <- get_model_data(BRAT, PCs_BRAT)
-EVAT_md <- get_model_data(EVAT, PCs_EVAT)
-LIAT_md <- get_model_data(LIVT, PCs_LIAT)
-SCAT_md <- get_model_data(IWAT, PCs_SCAT)
-
-#' # Getting numerical summaries of above PCAs
-
-# Getting numerical summaries of above PCAs ----
-
-#' ## Analyse FLAT's first PC
-
-# _1.) Analyse FLAT's first PC ---- 
-
-# opening connection to text with full path for Rmarkdown
-# sink(file = paste0(here("plots/050_r_array_analysis__text_pca_FLAT.txt")))
-# sink(file = "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_FLAT.txt")
-
-#' ### Getting 0-model
-
-# __a) Getting 0-model ----
-model_intercept <- lm(PC1 ~  1, data = FLAT_md)
-
-#' ### Testing effect of "Tissue"
-
-# __b) Testing effect of "Tissue"  ----
-# plot(PC1 ~  Tissue, data = FLAT_md)
-model_tissue <- lm(PC1 ~  Tissue, data = FLAT_md)
-summary(model_tissue) # all tissues distinct
-plot(model_tissue)
-anova(model_intercept, model_tissue) # ***Tissue highly significant structuring PC1*** 
-
-#' ### Testing effect of parental diets
-
-# __c) Testing effect of "ParentalDietMoFa" ----
-plot(PC1 ~  ParentalDietMoFa, data = FLAT_md)
-model_obesity_off <- lm(PC1 ~  ParentalDietMoFa, data = FLAT_md)
-summary(model_obesity_off) # no signal
-anova(model_intercept, model_obesity_off) # dietary combinations obesity not explain PC1 variation 
-
-#' ### Testing effect of litter size
-
-# __d) Testing effect of litter size ----
-
-model_obesity_par <- lm(PC1 ~ LitterSize, data = FLAT_md)
-plot(PC1 ~ LitterSize, data = FLAT_md)
-summary(model_obesity_par) # no signal
-anova(model_intercept, model_obesity_par) # litter size  not significantly structuring PC1 variation, but bad fit  
-
-# sink()
-
-#' ## Analyse BRAT's first PC
-
-# _2.) Analyse BRAT's first PC ----  
-
-# opening connection to text with full path for Rmarkdown
-# sink(file = paste0(here("plots/050_r_array_analysis__text_pca_BRAT.txt")))
-# sink(file = paste0(here("/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_BRAT.txt")))
-
-#' ### Getting 0-model
-
-# __a) Getting 0-model ----
-
-model_intercept <- lm(PC1 ~  1, data = BRAT_md)
-
-#' ### Testing effect of "ParentalDietMoFa"
-
-# __b) Testing effect of "ParentalDietMoFa" ----
-
-plot(PC1 ~  ParentalDietMoFa, data = BRAT_md)
-model_obesity_off <- lm(PC1 ~  ParentalDietMoFa, data = BRAT_md)
-summary(model_obesity_off) # fair fit
-anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
-# In BRAT
-# HCD HCD / HCD LCD / LCD HCD all significantly different from each other
-# LCD HCD / LCD LCD not significantly different from each other
-# effect is significant
-
-# __c) Testing effect of "MotherDiet" ----
-
-plot(PC1 ~  MotherDiet, data = BRAT_md)
-model_obesity_off <- lm(PC1 ~  MotherDiet, data = BRAT_md)
-summary(model_obesity_off) # fair fit
-anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
-
-# __d) Testing effect of "FatherDiet" ----
-
-plot(PC1 ~  FatherDiet, data = BRAT_md)
-model_obesity_off <- lm(PC1 ~  FatherDiet, data = BRAT_md)
-summary(model_obesity_off) # fair fit
-anova(model_intercept, model_obesity_off) # Offspring's obesity not significant structuring PC1 
-
-#' ### Testing effect of "LitterSize"
-
-# __e) Testing effect of "LitterSize" ----
-
-plot(PC1 ~  LitterSize, data = BRAT_md)
-model_obesity_par <- lm(PC1 ~ LitterSize, data = BRAT_md)
-summary(model_obesity_par) # por fit
-anova(model_intercept, model_obesity_par)
-# In BRAT
-# No signal based on litter size - bad model fit
-
-#' ### Testing all reference levels of "ParentalDietMoFa"
-
-# __f) Testing all reference levels of "ParentalDietMoFa" ----
-
-# not needed - just check the plot
-summary(lm(PC1 ~ ParentalDietMoFa, data = BRAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 1))))
-summary(lm(PC1 ~ ParentalDietMoFa, data = BRAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 2))))
-summary(lm(PC1 ~ ParentalDietMoFa, data = BRAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 3))))
-summary(lm(PC1 ~ ParentalDietMoFa, data = BRAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 4))))
-plot(PC1 ~  ParentalDietMoFa, data = BRAT_md)
-
-# sink()
-
-#' ## Analyse IWAT's first PC 
-
-# _3.) Analyse IWAT's (SCAT's) first PC ---- 
-
-# opening connection to text with full path for Rmarkdown
-# sink(file = paste0(here("plots/050_r_array_analysis__text_pca_SCAT.txt")))
-# sink(file = "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_SCAT.txt")
-
-#' ### Getting 0-model
-
-# __a) Getting 0-model ----
-
-model_intercept <- lm(PC1 ~  1, data = SCAT_md)
-
-#' ### Testing effect of "ParentalDietMoFa"
-
-# __b) Testing effect of "ParentalDietMoFa" ----
-
-plot(PC1 ~  ParentalDietMoFa, data = SCAT_md) # some structure along PC1
-model_obesity_off <- lm(PC1 ~  ParentalDietMoFa, data = SCAT_md)
-summary(model_obesity_off) # some signal - LCD LCD different from all others
-anova(model_intercept, model_obesity_off) # LCD signal is somwhat significant
-
-# __c) Testing effect of "ParentalDietMoFa" ----
-
-plot(PC1 ~  MotherDiet, data = SCAT_md) # some structure along PC1
-model_obesity_off <- lm(PC1 ~  MotherDiet, data = SCAT_md)
-summary(model_obesity_off) # some signal - LCD LCD different from all others
-anova(model_intercept, model_obesity_off) # LCD signal is somwhat significant
-
-# __d) Testing effect of "ParentalDietMoFa" ----
-
-plot(PC1 ~  FatherDiet, data = SCAT_md) # some structure along PC1
-model_obesity_off <- lm(PC1 ~  FatherDiet, data = SCAT_md)
-summary(model_obesity_off) # some signal - LCD LCD different from all others
-anova(model_intercept, model_obesity_off) # LCD signal is somwhat significant
-
-#' ### Testing effect of "LitterSize"
-
-# __d) Testing effect of "LitterSize" ----
-
-plot(PC1 ~ LitterSize, data = SCAT_md)
-model_obesity_par <- lm(PC1 ~ LitterSize, data = SCAT_md)
-summary(model_obesity_par)
-anova(model_obesity_par, model_intercept) # Litter size doesn't add much 
-
-#' ### Testing all reference levels of "ParentalDietMoFa"
-
-# __e) Testing all reference levels of "ParentalDietMoFa" ----
-
-# also check plot again
-plot(PC1 ~  ParentalDietMoFa, data = SCAT_md) # some structure along PC1
-summary(lm(PC1 ~ ParentalDietMoFa, data = SCAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 1))))
-summary(lm(PC1 ~ ParentalDietMoFa, data = SCAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 2))))
-summary(lm(PC1 ~ ParentalDietMoFa, data = SCAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 3))))
-summary(lm(PC1 ~ ParentalDietMoFa, data = SCAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 4))))
-
-# sink()
-
-#' ## Analyse LIVT's first PC 
-
-# _4.) Analyse LIVT's first PC ---- 
-
-# opening connection to text with full path for Rmarkdown
-# sink(file = paste0(here("plots/050_r_array_analysis__text_pca_LIAT.txt")))
-# sink(file = "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_LIAT.txt")
-
-#' ### Getting 0-model
-
-# __a) Getting 0-model ----
-
-model_intercept <- lm(PC1 ~  1, data = LIAT_md)
-
-#' ### Testing effect of "ParentalDietMoFa"
-
-# __b) Testing effect of "ParentalDietMoFa" ----
-
-plot(PC1 ~  ParentalDietMoFa, data = LIAT_md) # HCD HCD vs HCD LCD and LCD HCD and LCD LCD
-model_obesity_off <- lm(PC1 ~  ParentalDietMoFa, data = LIAT_md)
-summary(model_obesity_off) # all quite different from each other - see contrasts swithcih below to see which ones
-anova(model_intercept, model_obesity_off) # ParentalDietMoFa significant structuring PC1 
-
-# __c) Testing effect of "MotherDiet" ----
-
-plot(PC1 ~  MotherDiet, data = LIAT_md) # HCD HCD vs HCD LCD and LCD HCD and LCD LCD
-model_obesity_off <- lm(PC1 ~  MotherDiet, data = LIAT_md)
-summary(model_obesity_off) # all quite different from each other - see contrasts swithcih below to see which ones
-anova(model_intercept, model_obesity_off) # ParentalDietMoFa significant structuring PC1 
-
-# __d) Testing effect of "FatherDiet" ----
-
-plot(PC1 ~  FatherDiet, data = LIAT_md) # HCD HCD vs HCD LCD and LCD HCD and LCD LCD
-model_obesity_off <- lm(PC1 ~  FatherDiet, data = LIAT_md)
-summary(model_obesity_off) # all quite different from each other - see contrasts swithcih below to see which ones
-anova(model_intercept, model_obesity_off) # FatherDiet significant structuring PC1 
-
-#' ### Testing effect of "LitterSize"
-
-# __e) Testing effect of "LitterSize" ----
-
-plot(PC1 ~ LitterSize, data = LIAT_md) # possibly signal but few data points
-model_obesity_par <- lm(PC1 ~ LitterSize, data = LIAT_md)
-summary(model_obesity_par) # bad fit
-anova(model_intercept, model_obesity_par) # Litter size not significant
-
-#' ### Testing all reference levels of "ParentalDietMoFa"
-
-# __f) Testing all reference levels of "ParentalDietMoFa" ----
-
-summary(lm(PC1 ~ ParentalDietMoFa, data = LIAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 1))))
-summary(lm(PC1 ~ ParentalDietMoFa, data = LIAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 2))))
-summary(lm(PC1 ~ ParentalDietMoFa, data = LIAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 3))))
-summary(lm(PC1 ~ ParentalDietMoFa, data = LIAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 4))))
-
-# sink()
-
-#' ## Analyse EVAT's first PC
-
-# _5.) Analyse EVAT's first PC ----
-
-# opening connection to text with full path for Rmarkdown
-# sink(file = paste0(here("plots/050_r_array_analysis__text_pca_EVAT.txt")))
-# sink(file = "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_EVAT.txt")
-
-#' ### Getting 0-model
-
-# __a) Getting 0-model ----
-
-model_intercept <- lm(PC1 ~  1, data = EVAT_md)
-
-#' ### Testing effect of "ParentalDietMoFa"
-
-# __b) Testing effect of "ParentalDietMoFa" ----
-
-plot(PC1 ~  ParentalDietMoFa, data = EVAT_md) # LCD LCD different the all others
-model_obesity_off <- lm(PC1 ~  ParentalDietMoFa, data = EVAT_md)
-summary(model_obesity_off) # no signal
-anova(model_intercept, model_obesity_off) # significant effect
-
-# __c) Testing effect of "FatherDiet" ----
-
-plot(PC1 ~  FatherDiet, data = EVAT_md) # LCD LCD different the all others
-model_obesity_off <- lm(PC1 ~  FatherDiet, data = EVAT_md)
-summary(model_obesity_off) # no signal
-anova(model_intercept, model_obesity_off) # significant effect
-
-# __d) Testing effect of "MotherDiet" ----
-
-plot(PC1 ~  MotherDiet, data = EVAT_md) # LCD LCD different the all others
-model_obesity_off <- lm(PC1 ~  MotherDiet, data = EVAT_md)
-summary(model_obesity_off) # no signal
-anova(model_intercept, model_obesity_off) # significant effect
-
-#' ### Testing effect of "LitterSize"
-
-# __e) Testing effect of "LitterSize" ----
-
-plot(PC1 ~  LitterSize, data = EVAT_md) # LCD LCD different the all others
-model_obesity_par <- lm(PC1 ~ LitterSize, data = EVAT_md)
-summary(model_obesity_par)
-anova(model_intercept, model_obesity_par) # litter size not significant
-
-#' ### Testing all reference levels of "ParentalDietMoFa"
-
-# __d) Testing all reference levels of "ParentalDietMoFa" ----
-plot(PC1 ~  ParentalDietMoFa, data = EVAT_md) # LCD LCD different the all others
-summary(lm(PC1 ~ ParentalDietMoFa, data = EVAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 1))))
-summary(lm(PC1 ~ ParentalDietMoFa, data = EVAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 2))))
-summary(lm(PC1 ~ ParentalDietMoFa, data = EVAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 3))))
-summary(lm(PC1 ~ ParentalDietMoFa, data = EVAT_md %>% mutate(ParentalDietMoFa = relevel(ParentalDietMoFa, 4))))
-
-# sink()
-
-#' # Re-implement analysis of array intensities
 
 # Re-implement analysis of array intensities ----
 
