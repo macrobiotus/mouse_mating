@@ -1035,7 +1035,7 @@
      * [ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
    * [ ] script `55_r_array_analysis.r`
      * [ ] encode new analysis after PCA
-     * [ ] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues 
+     * [x] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues 
        * [ ] **check again which obesity - relavant genes  are worthy of inspection in fat**
      * [ ] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists). 
      * [ ] 3.) **Fig. 3**: Upset plot of intersections of full list - highlight obesity related genes
