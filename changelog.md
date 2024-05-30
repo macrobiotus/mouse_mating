@@ -1029,7 +1029,20 @@
    * finished DEG search function, committed
 
 ## Todo queue (last updated 30-05-2024)
- 
+
+ * **analysis work**
+   * [x] in `015_r_use_saemix.R`
+     * [ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
+   * [ ] script `55_r_array_analysis.r`
+     * [ ] encode new analysis after PCA
+     * [ ] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues 
+       * [ ] **check again which obesity - relavant genes  are worthy of inspection in fat**
+     * [ ] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists). 
+     * [ ] 3.) **Fig. 3**: Upset plot of intersections of full list - highlight obesity related genes
+     * [ ] 4.) **Supple Tables 6-12**: put these lists together per tissue and see which contrasts differentially express unique genes.
+     * [ ] 5.) **Fig. 4**: Upset plot of intersections of setdiffs list - highlight obesity related genes
+     * [ ] 6.) **Suppl. Tab 12-n** GSEA of settdifs with unique obesity genes
+     * [ ] Where the search as described in 3. is successful, look at the full list using Gene Set Enrichment analysis. 
  * **overall revision work**
    * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
    * [x] commit - branch repository - commit
@@ -1044,76 +1057,20 @@
    * [ ] consider NKBs comment on litter sizes - see communications folder 25-Mar-204
    * [ ] re-eavaluate all interpretation in the context of Western vs Western Control
    * [ ] and known obesity genes
- * **analysis work**
-   * ~~[ ] consider using the the reference data beyond the initial plots~~
-   * ~~[ ] starting point - fit Gompertz curves and compare significant changes in `alpha` parameter - see `https://www.ipb.pt/~vcadavez/websiteVC/tutorial/rcode/2019-04-28-gompertzmodel/`~~
-   * ~~[ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`~~
-   * ~~[ ] starting point - compare different growth models - see `https://cran.r-project.org/web/packages/biogrowth/vignettes/v04_model_comparison.html`~~
-   * [x] keep all current results in script `010_r_define obesity.r`
-   * [ ] from script `010_r_define obesity.r` integrate re-exported items
-   * [x] learn how to correlate variables with trajectories
-     * [x] look at `saemix` example
-     * [x] ~~correct GAM modeling of offspring obesity as in Gavin Simpsons rat hormone hgam example, Physalia course GAMs in R, day 4, 23.11.2023, possibly also pull GS repoitory from course and look at "chick example"~~
-     * [x] ~~possibly use GAM approach - see Winter and Wieling (2016), https://doi.org/10.1093/jole/lzv003~~
-   * [x] using SAEMIX instead: 
-   * [x] see what to do with the weight trajectories
-   * [x] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
-   * ~~[ ] both parents obese - offspring sex neglected - male  - female~~
-   * ~~[ ] one parent obese - offspring sex neglected - male - female~~
-   * [x] in `015_r_use_saemix.R`
-     * ~~[x] in males: Mother HFD has an effect, as plotted
-     * [x] in females: Mother HFD has an effect, and litter size has an effect, as plotted
-     * [x] in females and females: effect of litter size and diet cannot be disentangled
-     * [x] improve plots and export
-     * [ ] check diet interaction impossible using saemix and nlme - too few data
-     * [x] check usage of body fat - only one measurement point available ~~
-     * [ ] **for relevant results and model comparisons see RQ6**
-     * [x] possibly further implement usage of function `get_p_from_seamix_lrt()`~~
-     * [x] **finished modelling - no effect on mice weight by diet, litter size and sex are sufficient**
-     * [ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
-   * ~~[x] in `017_r_use_nlme.R` - not used anymore 
-     * [x] also testing males and females separately for perental diet interaction on weight gain
-     * [x] repeated all analyses as in `015_r_use_saemix.R`
-     * [x] sorted script
-     * [x] possibly apply further diagnostics as per `https://medium.com/@marc.jacobs012/non-linear-mixed-model-in-r-a6fc054c3f82`
-     * [ ] **for relevant results and model comparisons see RQ5, 6, 7, 8**~~
-   * [ ] script `55_r_array_analysis.r`
-     * [x] adjust new version as per results in `015_r_use_saemix.R`
-     * [x] for DEG discovery only males are relavent as there are only males in the RNA seq data
-     * [x] **check if there are sufficient samples to test anything, possibly an additive diet effect correct for litter size**
-     * [x] relabel variables `obese` to (succesful) `WD` in code
-     * [x] relabel variables `obese` to (succesful) `WD` in figures
-     * [x] in all display items use **"WD"** for **HCD** and **"CD"** for **LCD**
-     * [x] ~~carefully correct and interpret existing PCA results~~ no needed anymore 
-     * [x] ~~fork and get clustering approach~~ **done, commited, and overwritten in third branch**
-     * [x] ~~implement OPLS regression where possible~~ **impossible**
-     * [x] ~~define DEG contrats by cluster analysis~~ **doesn't work**
-     * [x] get new PCR visualisations across all tissues
-     * [x] update manuscript in all sections accordingly
-     * [x] discard analysis of PCA
-     * [ ] encode new analysis after PCA
-       * [ ] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues 
-         * **check again which obesity - relavant genes  are worthy of inspection in fat**
-       * [ ] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists). 
-       * [ ] 3.) **Fig. 3**: Upset plot of intersections of full list - highlight obesity related genes
-       * [ ] 4.) **Supple Tables 6-12**: put these lists together per tissue and see which contrasts differentially express unique genes.
-       * [ ] 5.) **Fig. 4**: Upset plot of intersections of setdiffs list - highlight obesity related genes
-       * [ ] 6.) **Suppl. Tab 12-n** GSEA of settdifs with unique obesity genes
-     * [ ] Where the search as described in 3. is successful, look at the full list using Gene Set Enrichment analysis. 
-  * [ ] manuscript work
-      * [ ] revise from start
-      * [ ] improve figure 1 - diet labelling
-      * [ ] move PCA analysis out of the way
-      * [ ] adjust manuscript for obesity genes
-      * [ ] adjust manuscript for 3 contrsts
-      * [ ] adjust methods and results descriptin 
-      * [ ] refresh results with PCA analysis sucessor and tested contrasts
-      * [ ] refresh results with DEG analysis results
-      * ~~[x] no signal among litter size among any tissues~~
-      * ~~[x] signal among parental diet between these and those dietary treatments~~a
-      * [ ] **hopefully** no correlation between litter size and diet - otherwise justify non-consideration by small sample size
-      * [ ] reimplement contrast description - use three contrasts - ~~use all contrasts after discussion with NKB~~
-      * [ ] consider the rebuttal document on or after 25.3.2025
-      * [ ] **check articles:** met with NKB who suggests parental HFD will lower offsprings body weight -  
-      * [ ] revise methods
-      * [ ] revise results
+ * **manuscript work**
+   * [ ] revise from start
+   * [ ] improve figure 1 - diet labelling
+   * [ ] move PCA analysis out of the way
+   * [ ] adjust manuscript for obesity genes
+   * [ ] adjust manuscript for 3 contrsts
+   * [ ] adjust methods and results descriptin 
+   * [ ] refresh results with PCA analysis sucessor and tested contrasts
+   * [ ] refresh results with DEG analysis results
+   * ~~[x] no signal among litter size among any tissues~~
+   * ~~[x] signal among parental diet between these and those dietary treatments~~a
+   * [ ] **hopefully** no correlation between litter size and diet - otherwise justify non-consideration by small sample size
+   * [ ] reimplement contrast description - use three contrasts - ~~use all contrasts after discussion with NKB~~
+   * [ ] consider the rebuttal document on or after 25.3.2025
+   * [ ] **check articles:** met with NKB who suggests parental HFD will lower offsprings body weight -  
+   * [ ] revise methods
+   * [ ] revise results

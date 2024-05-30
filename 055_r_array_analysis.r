@@ -1064,15 +1064,14 @@ names(SE_list_og)
 SE_list_degs <- lapply(SE_list, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 2))
 
 # __b) For genes of interest, related to obesity  ----
-
 SE_list_og_degs <- lapply(SE_list_og, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 2))
-
 
 # in IWAT LEPR is deferentially expressed when father is on western diet (CD CD - CD WD)
 # see DEGS: TC0400001039.mm.2 and see: rowData(SE_list_og[["IWAT"]])
 
+# __c) export as Excel table ----
 
-
+# [continue here]
 
 # Describe intersections of full DEG lists, including possible obesity related genes  ----
 
