@@ -1025,6 +1025,7 @@
    * finished section `Show obesity-related genes among tissues`
    * finished new DEG section, committed
    * erased superseded functions, committed
+   * purged experimental code, comitted
 
 ## Todo queue (last updated 30-05-2024)
  
