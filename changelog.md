@@ -1019,7 +1019,7 @@
     
 ## 30-05-2024 - work day 91 - revising manuscript and array analysis
 
- * updated to do thorough;y after much communication
+ * updated to do thoroughly after much communication
 
 ## Todo queue (last updated 30-05-2024)
  
@@ -1084,9 +1084,13 @@
      * [x] get new PCR visualisations across all tissues
      * [x] update manuscript in all sections accordingly
      * [x] discard analysis of PCA
-     * [ ] look for DEGs for 3 contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists). 
-     * [ ] put these lists together per tissue and see which contrasts differentially express unique genes.
-     * [ ] I then look for the obesity genes in these unique genes
+     * [ ] encode new analysis after PCA
+       * [ ] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues 
+       * [ ] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists). 
+       * [ ] 3.) **Fig. 3**: Upset plot of intersections of full list - highlight obesity related genes
+       * [ ] 4.) **Supple Tables 6-12**: put these lists together per tissue and see which contrasts differentially express unique genes.
+       * [ ] 5.) **Fig. 4**: Upset plot of intersections of setdiffs list - highlight obesity related genes
+       * [ ] 6.) **Suppl. Tab 12-n** GSEA of settdifs with unique obesity genes
      * [ ] Where the search as described in 3. is successful, look at the full list using Gene Set Enrichment analysis. 
   * [ ] manuscript work
       * [ ] revise from start

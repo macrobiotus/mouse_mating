@@ -73,6 +73,9 @@ suppressMessages(require(scater))
 suppressMessages(require(scran))
 suppressMessages(require(igraph))
 
+library(sechm) # heatmap 
+
+
 
 # _3.) Encode plotting colours  ----
 
@@ -120,6 +123,9 @@ get_adjusted_array_data = function(expression_set, model_variables) {
   colnames(assayData(expression_set)$exprs)
   stopifnot(identical(rownames(pData(expression_set)), colnames(assayData(expression_set)$exprs)))
   expression_set <- as(expression_set, "SummarizedExperiment")
+  
+  # Get uppercase symbols
+  rowData(expression_set)[["SYMBOL"]]  <- toupper(rowData(expression_set)[["SYMBOL"]])
   
   return(expression_set)
   
@@ -1138,50 +1144,81 @@ ggsave(plot = plot_pca_summ, path = here("plots"),
 
 warning("Code construction in progress.")
 
-# Screen known obesity genes ----
+# Show that obesity-related genes are in the four tissues ----
 
-# Could be used to warrent DEG search despite PCA signal, as per 10.3390/ijms231911005 using:
-# Leptin (LEP), the leptin receptor (LEPR), proopiomelanocortin (POMC), prohormone convertase 1 (PCSK1), the melanocortin 4 receptor (MC4R), single-minded homolog 1 (SIM1), brain-derived neurotrophic factor (BDNF), and the neurotrophic tyrosine kinase receptor type 2 gene (NTRK2) 
+# Will be  used to warrant DEG search, PCA analysis will move to supplement. AS
+# per 10.3390/ijms231911005 using: Leptin (LEP), the leptin receptor (LEPR),
+# proopiomelanocortin (POMC), prohormone convertase 1 (PCSK1), the melanocortin
+# 4 receptor (MC4R), single-minded homolog 1 (SIM1), brain-derived neurotrophic
+# factor (BDNF), and the neurotrophic tyrosine kinase receptor type 2 gene
+# (NTRK2)
 
 # 1.) Compile data ----
 
 SE_list <- list(BRAT, IWAT, LIVT, EVAT)
 names(SE_list) <- c("BRAT", "IWAT", "LIVT", "EVAT")
-obesity_genes <- c("LEP", "LEPR", "POMC", "PCSK1", "MC4R", "SIM1", "BDNF", "NTRK2")
+obesity_genes <- c("LEP", "LEPR", "POMC", "PCSK1", "MC4R", "SIM1", "BDNF", "NTRK2") # from 10.3390/ijms231911005
 
 # 2.) Filter data to obesity genes and check ----
 
-SE_list_og <- lapply(SE_list, function(seob) seob[   which( toupper(rowData(seob)[["SYMBOL"]]) %in% obesity_genes ) ] )
+SE_list_og <- lapply(SE_list, function(seob) seob[   which( rowData(seob)[["SYMBOL"]] %in% obesity_genes ) ] )
 lapply(SE_list_og,  function(seob) toupper(rowData(seob)[["SYMBOL"]]))
 
-library(sechm) 
+# 3.) Show obesity genes ----
 
 # https://github.com/plger/sechm
 # https://www.bioconductor.org/packages/release/bioc/vignettes/sechm/inst/doc/sechm.html
 
-sechm(
-  SE_list_og[[1]],
-  top_annotation = "ParentalDietMoFa",
-  features = rownames(SE_list_og[[1]]),
-  do.scale = TRUE,
-  gaps_at = "ParentalDietMoFa",
-  right_annotation = "SYMBOL",
-  mark = c("Bdnf", "Lepr", "Lep", "Sim1", "Pomc", "Ntrk2", "Pcsk1", "Mc4r"),
-  show_rownames = FALSE)
+get_one_heatmap = function(se_ob, gaps_at = "ParentalDietMoFa", mark = c("LEP", "LEPR", "POMC", "PCSK1", "MC4R", "SIM1", "BDNF", "NTRK2")){
+  
+  # for function building
+  se_ob <-  SE_list_og[[1]]
+  
+  # build_heatmap
+  sechm_heatmap <- sechm(
+    se_ob,
+    features = rownames(se_ob),
+    do.scale = TRUE,
+    gaps_at = gaps_at,
+    mark = mark,
+    show_rownames = TRUE)
+  # modify row lables
+  
+  rownames(foo@matrix)
+  
+  
+  
+  
+  
+}
 
-SE_list[[1]]
 
 
-# 2.) Filter data to only contain obesity genes ----
-
-SE_list[[1]][1:5,]
-
-rowRanges(SE_list[[1]]), 
 
 
-# Find Deferentially expressed genes ----
 
-# KEGG and GO Analysis ----
+
+# Get Fig. 2
+
+# Look for DEGs for all contrasts in each of the 4 tissues. ---- 
+
+# Get Suppl. Tables 1-6.  Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
+
+# Decsribe  besity related genes in intersections of full DEG lists ----
+
+# Get Fig. 3: Upset plot of intersections of full list for all contrasts
+
+# Subest DEG  lists to set differences among all contrasts in each of the 4 tissues. ----
+
+# Get Suppl. Tables 6-12.  Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
+
+# Decsribe  besity related genes in intersections of set different DEG lists ----
+
+#  Get Fig. 4: Upset plot of intersections of full list for all contrasts
+
+# GSEA of set differencess with unique obesity genes
+
+# Get Suppl. Tab 12-n 
 
 # Save Environment ----
 
