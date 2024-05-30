@@ -297,6 +297,57 @@ get_one_heatmap = function(se_ob, gaps_at = "ParentalDietMoFa", mark = c("LEP", 
   
 }
 
+# Calculate DEGs - factor is currently hardcoded.
+get_deg_lists = function(se_ob, peval = 0.05, logfc = 2.0){
+  
+  require("limma")
+  require("SummarizedExperiment")
+  
+  # initialize for function development
+  # stop("Remove function building code")
+  # se_ob <- SE_list[[1]]
+  # treat <- "ParentalDietMoFa"
+  # peval <- 0.05
+  # logfc <- 2.0
+  
+  treat = "ParentalDietMoFa"
+  
+  # Abort if wrong object is passed in and if treatment isn't available
+  stopifnot(class(se_ob) == "SummarizedExperiment")
+  stopifnot(!is.null(colData(se_ob)[[treat]]))
+  
+  # Diagnostic messages
+  message(paste0("\nUsing data set \"", deparse(substitute(se_ob))), "\".")
+  message(paste0("Analysis of factor \"", treat, "\" is hard-coded, to not soft-code contrast definition."))
+  
+  # Creating design matrix
+  model_matrix <- model.matrix(~ se_ob[[treat]] - 1)
+  colnames(model_matrix) <- make.names(levels(se_ob[[treat]]))
+  
+  # Fit linear model for each gene given a series of arrays
+  fit_limma <- lmFit(assay(se_ob), model_matrix)
+  
+  # Defining contrasts (not finished) 
+  contrast_list <- vector(mode = "list", length = 6)
+  names(contrast_list) <- c("CD CD - WD WD", "CD CD - CD WD", "CD CD - WD CD", "WD WD - CD CD", "WD WD - WD CD", "WD CD - CD WD")
+  contrast_list[[1]]  <- makeContrasts("CD CD - WD WD" =  CD.CD - WD.WD, levels = model_matrix)
+  contrast_list[[2]]  <- makeContrasts("CD CD - CD WD" =  CD.CD - CD.WD, levels = model_matrix)
+  contrast_list[[3]]  <- makeContrasts("CD CD - WD CD" =  CD.CD - WD.CD, levels = model_matrix)
+  contrast_list[[4]]  <- makeContrasts("WD WD - CD WD" =  WD.WD - CD.CD, levels = model_matrix)
+  contrast_list[[5]]  <- makeContrasts("WD WD - WD CD" =  WD.WD - WD.CD, levels = model_matrix)
+  contrast_list[[6]]  <- makeContrasts("WD CD - CD WD" =  WD.CD - CD.WD, levels = model_matrix)
+  
+  # Applying contrasts, and empirical Bayes moderation
+  fit_limma_contrast_list <- lapply(contrast_list, function (x) contrasts.fit(fit_limma, x))
+  fit_limma_contrast_list_ebayes <- lapply(fit_limma_contrast_list, function (x) eBayes(x))
+  fit_limma_contrast_list_ebayes_toptable <- lapply(fit_limma_contrast_list_ebayes, function (x) topTable(x, p.value = peval, lfc = logfc, number = Inf))
+  names(fit_limma_contrast_list_ebayes_toptable) <- names(contrast_list)
+  
+  message(paste0("Returning list of top tables with log fold-chnage ", logfc , " and adjusted p-value below ", peval , "."))
+  
+  return(fit_limma_contrast_list_ebayes_toptable)
+}
+
 # All functions below are unrevised ----
 
 # Get Volcano plots
@@ -987,7 +1038,7 @@ ggsave(plot = plot_heatmap_all_tissues_oebesity_genes, path = here("../manuscrip
 
 warning("Code construction in progress.")
 
-# Look for DEGs using contrasts among all  tissues. ---- 
+# Look for DEGs using contrasts among all  tissues ---- 
 
 # Get Suppl. Tables 1-6.  Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
 
@@ -1000,73 +1051,34 @@ names(SE_list)
 # __b) Use these obesity genes if needed
 
 obesity_genes 
-warning(c("Confirm that these genes are relvany for fat: ", paste(obesity_genes,  sep=" ", collapse=" ")))
+warning(c("Confirm that these genes are relvant for fat: ", paste(obesity_genes,  sep=" ", collapse=" ")))
 
 # __c) Use these objects which only contain obesity-relevant genes  
 
 SE_list_og
 names(SE_list_og) 
 
-# _2.) Outline next steps ----
+# _2.) Get differential expressed genes  ----
 
-get_deg_lists = function(se_ob, treat = "ParentalDietMoFa", peval = 0.05, logfc = 2.0){
-  
-  require("limma")
-  require("SummarizedExperiment")
-  
-  # initialize for function development
-  # stop("Remove function building code")
-  # se_ob <- SE_list[[1]]
-  # treat <- "ParentalDietMoFa"
-  # peval <- 0.05
-  # logfc <- 2.0
-  
-  # Abort if wrong object is passed in and if treatment isn't available
-  stopifnot(class(se_ob) == "SummarizedExperiment")
-  stopifnot(!is.null(colData(se_ob)[[treat]]))
-  
-  # Diagnostic messages
-  message(paste0("\nUsing data set \"", deparse(substitute(se_ob))), "\".")
-  message(paste0("Analysis of factor \"", treat, "\" is hard-coded."))
-  
-  # Creating design matrix
-  model_matrix <- model.matrix(~ se_ob[[treat]] - 1)
-  colnames(model_matrix) <- make.names(levels(se_ob[[treat]]))
-  
-  # Fit linear model for each gene given a series of arrays
-  fit_limma <- lmFit(assay(se_ob), model_matrix)
-  
-  # Defining contrasts (not finished) 
-  contrast_list <- vector(mode = "list", length = 6)
-  names(contrast_list) <- c("CD CD - WD WD", "CD CD - CD WD", "CD CD - WD CD", "WD WD - CD CD", "WD WD - WD CD", "WD CD - CD WD")
-  contrast_list[[1]]  <- makeContrasts("CD CD - WD WD" =  CD.CD - WD.WD, levels = model_matrix)
-  contrast_list[[2]]  <- makeContrasts("CD CD - CD WD" =  CD.CD - CD.WD, levels = model_matrix)
-  contrast_list[[3]]  <- makeContrasts("CD CD - WD CD" =  CD.CD - WD.CD, levels = model_matrix)
-  contrast_list[[4]]  <- makeContrasts("WD WD - CD CD" =  WD.WD - CD.CD, levels = model_matrix)
-  contrast_list[[5]]  <- makeContrasts("WD WD - WD CD" =  WD.WD - WD.CD, levels = model_matrix)
-  contrast_list[[6]]  <- makeContrasts("WD CD - CD WD" =  WD.CD - CD.WD, levels = model_matrix)
-  
-  # Applying contrasts, and empirical Bayes moderation
-  fit_limma_contrast_list <- lapply(contrast_list, function (x) contrasts.fit(fit_limma, x))
-  fit_limma_contrast_list_ebayes <- lapply(fit_limma_contrast_list, function (x) eBayes(x))
-  fit_limma_contrast_list_ebayes_toptable <- lapply(fit_limma_contrast_list_ebayes, function (x) topTable(x, p.value = peval, lfc = logfc, number = Inf))
-  names(fit_limma_contrast_list_ebayes_toptable) <- names(contrast_list)
-  
-  message(paste0("Returning list of top tables with log fold-chnage ", logfc , " and adjusted p-value below ", peval , "."))
-  
-  return(fit_limma_contrast_list_ebayes_toptable)
-  }
-  
+# __a) For all genes ----
+SE_list_degs <- lapply(SE_list, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 2))
 
-get_deg_lists(SE_list)
+# __b) For genes of interest, related to obesity  ----
+
+SE_list_og_degs <- lapply(SE_list_og, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 2))
+
+
+# in IWAT LEPR is deferentially expressed when father is on western diet (CD CD - CD WD)
+# see DEGS: TC0400001039.mm.2 and see: rowData(SE_list_og[["IWAT"]])
 
 
 
 
-
-# Decsribe  besity related genes in intersections of full DEG lists ----
+# Describe intersections of full DEG lists, including possible obesity related genes  ----
 
 # Get Fig. 3: Upset plot of intersections of full list for all contrasts
+
+# [continue here]
 
 # Subest DEG  lists to set differences among all contrasts in each of the 4 tissues. ----
 
