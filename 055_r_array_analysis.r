@@ -269,6 +269,34 @@ get_q_mode_pca_plot = function(expr_data_pca, expr_data_raw, variable, plot_titl
   
 }
 
+# Get a "complex heatmap" of a reasonably small summarized experiment object. 
+get_one_heatmap = function(se_ob, gaps_at = "ParentalDietMoFa", mark = c("LEP", "LEPR", "POMC", "PCSK1", "MC4R", "SIM1", "BDNF", "NTRK2")){
+  
+  # for function building
+  # se_ob <-  SE_list_og[[1]]
+  # gaps_at = "ParentalDietMoFa"
+  # mark = c("LEP", "LEPR", "POMC", "PCSK1", "MC4R", "SIM1", "BDNF", "NTRK2")
+  
+  # modify SE object 
+  # - setting rwonames which can be understood
+  warning("Overwriting gene names, do not use resulting obejcts outside function.") 
+  rownames(se_ob) <- rowData(se_ob)[["SYMBOL"]][which(rownames(rowData(se_ob)) %in% rownames(se_ob))] 
+  # - setting colour which can be understood
+  metadata(se_ob)$hmcols <- c("#0072B2","white","#D55E00")
+  
+  # build_heatmap
+  sechm_heatmap <- sechm(
+    se_ob,
+    features = rownames(se_ob),
+    do.scale = TRUE,
+    gaps_at = gaps_at,
+    # mark = mark,
+    show_rownames = TRUE)
+  
+  return(sechm_heatmap)
+  
+}
+
 # All functions below are unrevised ----
 
 # Convenience function to define DGE among offspring tissue types
@@ -749,18 +777,18 @@ save_go_plots <- function(ggplot_list_item, ggplot_list_item_name){
 
 # _1.) Full data of all 4 tissues ----
 
-#  __a) Loading normalized data ----
+#  __a) Loading normalized data
 
 # Data are Clariom S mouse arrays
 # I removed strong outliers: A285_liver clustert zu bAT, A339_liver weit weg vom Rest
 
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/allTissues_normData.RData") # only if you are interested to look into the normalized data
 
-# __b) Annotate data ----
+# __b) Annotate data
 
 normData  <- annotateEset(normData, pd.clariom.s.mouse, type = "probeset")
 
-# __c) Copy, store, and discard data ----
+# __c) Copy, store, and discard data
 
 # copy to stick to manuscript naming conventions
 FLAT <- normData; rm(normData)
@@ -772,11 +800,11 @@ saveRDS(FLAT, file = here("rds_storage", "050_r_array_analysis__normalized_data.
 # Ich habe die normalisierung für jedes Gewebe getrennt für die DGE Analysen gemacht, 
 # da dies genauer ist (Gewebe zu weit auseinander in PCA)
 
-# __a) Loading normalized data ----
+# __a) Loading normalized data
 
 base::load("/Users/paul/Documents/HM_MouseMating/analysis_ah/normData4DGE.RData") #für jedes Gewebe die normalisierten Daten
 
-# __b) Annotate data ----
+# __b) Annotate data
 
 bAT_normData    <- annotateEset(bAT_normData, pd.clariom.s.mouse, type = "probeset")
 ingWAT_normData <- annotateEset(ingWAT_normData, pd.clariom.s.mouse, type = "probeset")
@@ -784,7 +812,7 @@ Liv_normData    <- annotateEset(Liv_normData, pd.clariom.s.mouse, type = "probes
 bAT_normData    <- annotateEset(bAT_normData, pd.clariom.s.mouse, type = "probeset")
 eWAT_normData   <- annotateEset(eWAT_normData, pd.clariom.s.mouse, type = "probeset")
 
-# __c) Copy, store, and discard data ----
+# __c) Copy, store, and discard data
 
 # copy to stick to manuscript naming conventions - corrected as per AH 25.05.2023, again on 07.05.2024
 BRAT <- bAT_normData; rm(bAT_normData)        # brown adipose tissue
@@ -799,18 +827,18 @@ saveRDS(EVAT, file = here("rds_storage", "055_r_array_analysis__normalized_data_
 
 # _3.) Loading metadata from modelling (obesity variables) ----
 
-# __a) Data from modelling prior to first revision ----
+# __a) Data from modelling prior to first revision
 
 mice_f1_modeled_data_with_rna_seq_data <- readRDS(file = here("rds_storage", "040_r_h3__mice_f1_modeled_data_with_rna_seq_data.rds"))
 
-# __b) Data from modelling for first submission, from {seamix} ----
+# __b) Data from modelling for first submission, from {seamix}
 
 mice_f0_slct_from_saemix <- readRDS(file = here("rds_storage", "mice_f0_slct_from_saemix.rds"))
 mice_f1_slct_from_saemix <- readRDS(file = here("rds_storage", "mice_f1_slct_from_saemix.rds"))
 
 # _4.) Adjust variable names and inspect data ----
 
-# __a) Re-code experiment metadata to new nomenclature, merge in litter sizes from {saemix}-derived metadata.  --- 
+# __a) Re-code experiment metadata to new nomenclature, merge in litter sizes from {saemix}-derived metadata.
 
 mice_f1_modeled_data_with_rna_seq_data %<>% # re-code parental diet variable - slash will be buggy
   dplyr::mutate(ParentalDietMoFa = case_when( 
@@ -842,12 +870,12 @@ mice_f1_modeled_data_with_rna_seq_data %<>% # re-code parental diet variable - s
     {mice_f1_slct_from_saemix %>% dplyr::select(AnimalId, LitterSize) %>% distinct()}, by = "AnimalId"
   ) %>% arrange(DietGroup, AnimalId)
 
-# __c) Get summary of sample sizes and treatments --- 
+# __c) Get summary of sample sizes and treatments
 
 write_xlsx(mice_f1_modeled_data_with_rna_seq_data, 
            path =  here("../manuscript/display_items", "055_r_array_analysis_mice_f1_slct__mice_f1_modeled_data_with_rna_seq_data.xlsx")) 
 
-# __d) Adjust array data ---
+# __d) Adjust array data
 
 FLAT <- get_adjusted_array_data(FLAT, mice_f1_modeled_data_with_rna_seq_data)
 BRAT <- get_adjusted_array_data(BRAT, mice_f1_modeled_data_with_rna_seq_data)
@@ -922,7 +950,7 @@ table(colData(EVAT)$ParentalDietMoFa)
 
 # _2.) Feature selection ----
 
-# __a) Plot average expression and variance ----
+# __a) Plot average expression and variance
 
 # export plots in this section if needed
 plot_mean_expression_and_variance(FLAT)
@@ -930,7 +958,7 @@ plot_mean_expression_and_variance(BRAT)
 plot_mean_expression_and_variance(IWAT)
 plot_mean_expression_and_variance(EVAT)
 
-# __b) Plot rare genes ----
+# __b) Plot rare genes
 
 plot_rare_genes(FLAT)
 plot_rare_genes(BRAT)
@@ -969,7 +997,7 @@ plot_rare_genes(EVAT)
 
 # _1.) Get PCs ----
 
-# __a) R-mode ----
+# __a) R-mode
 
 PCA_FLAT <- get_principal_components(FLAT)
 PCA_BRAT <- get_principal_components(BRAT)
@@ -977,7 +1005,7 @@ PCA_IWAT <- get_principal_components(IWAT)
 PCA_LIVT <- get_principal_components(LIVT)
 PCA_EVAT <- get_principal_components(EVAT)
 
-# __b) Q-mode ----
+# __b) Q-mode
 
 # As per Camargo, Arley. 2022. "PCAtest: Testing the Statistical Significance of
 # Principal Component Analysis in R." PeerJ 10 (February):e12967.
@@ -992,7 +1020,7 @@ qPCA_EVAT <- get_q_mode_principal_components(EVAT)
 
 # _2.) Get PC loads ----
 
-# __a) R-mode ----
+# __a) R-mode
 
 PV_FLAT <- get_percent_variation(PCA_FLAT)
 PV_BRAT <- get_percent_variation(PCA_BRAT)
@@ -1000,7 +1028,7 @@ PV_IWAT <- get_percent_variation(PCA_IWAT)
 PV_LIVT <- get_percent_variation(PCA_LIVT)
 PV_EVAT <- get_percent_variation(PCA_EVAT)
 
-# __b) Q-mode ----
+# __b) Q-mode
 
 qPV_FLAT <- get_percent_variation(qPCA_FLAT)
 qPV_BRAT <- get_percent_variation(qPCA_BRAT)
@@ -1010,7 +1038,7 @@ qPV_EVAT <- get_percent_variation(qPCA_EVAT)
 
 # _3.) Plot Principal Component Analyses ----
 
-# __a.) Plot FLAT PCs (R mode - enough variation)----
+# __a.) Plot FLAT PCs (R mode - enough variation)
 
 # "Overall expression differences between analysed tissues among f1 offspring"
 plot_pca_flat_a <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "Tissue", legend_title = "F1 Tissue", plot_title =  "a", percent_var = PV_FLAT)
@@ -1033,7 +1061,7 @@ ggsave(plot = plot_pca_flat, path = here("../manuscript/display_items"),
        filename = "055_r_array_analysis__plot_pca_flat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# __b.) Plot BRAT PCs  ----
+# __b.) Plot BRAT PCs
 
 # Overall expression differences and obesity status among f1 offspring
 
@@ -1057,7 +1085,7 @@ ggsave(plot = plot_pca_brat, path = here("../manuscript/display_items"),
        filename = "055_r_array_analysis__plot_pca_brat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# __c.) Plot IWAT PCs----
+# __c.) Plot IWAT PCs
 
 # Overall expression differences and obesity status among f1 offspring
 
@@ -1080,7 +1108,7 @@ ggsave(plot = plot_pca_scat, path = here("../manuscript/display_items"),
        filename = "055_r_array_analysis__plot_pca_scat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# __d.) Plot EVAT PCs ----
+# __d.) Plot EVAT PCs
 
 # Overall expression differences and obesity status among f1 offspring
 
@@ -1102,7 +1130,7 @@ ggsave(plot = plot_pca_evat, path = here("../manuscript/display_items"),
        filename = "055_r_array_analysis__plot_pca_evat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# __e.) Plot LIVT PCs ----
+# __e.) Plot LIVT PCs
 
 # Overall expression differences and obesity status among f1 offspring
 
@@ -1125,7 +1153,7 @@ ggsave(plot = plot_pca_liat, path = here("../manuscript/display_items"),
        filename = "055_r_array_analysis__plot_pca_liat_unassigned.pdf",  
        width = 180, height = 65, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# __f.) Plot for talks (in R mode) ----
+# __f.) Plot for talks (in R mode)
 
 plot_pca_brat_one <- get_pca_plot(expr_data_pca = PCA_BRAT, expr_data_raw = BRAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "BAT: interscapular brown AT ", percent_var = PV_BRAT)
 plot_pca_evat_two <- get_pca_plot(expr_data_pca = PCA_EVAT, expr_data_raw = EVAT, variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "EVAT: epigonal visceral AT", percent_var = PV_EVAT)
@@ -1140,11 +1168,7 @@ ggsave(plot = plot_pca_summ, path = here("plots"),
        filename = "055_r_array_analysis__plot_pca_summ.pdf",  
        width = 500, height = 275, units = "mm", dpi = 300,  limitsize = TRUE, scale = 0.75)
 
-# >>> Code construction in progress - implementing new analysis flow here. ----
-
-warning("Code construction in progress.")
-
-# Show that obesity-related genes are in the four tissues ----
+# Show obesity-related genes among tissues ----
 
 # Will be  used to warrant DEG search, PCA analysis will move to supplement. AS
 # per 10.3390/ijms231911005 using: Leptin (LEP), the leptin receptor (LEPR),
@@ -1153,56 +1177,63 @@ warning("Code construction in progress.")
 # factor (BDNF), and the neurotrophic tyrosine kinase receptor type 2 gene
 # (NTRK2)
 
-# 1.) Compile data ----
+# _1.) Compile data ----
 
 SE_list <- list(BRAT, IWAT, LIVT, EVAT)
 names(SE_list) <- c("BRAT", "IWAT", "LIVT", "EVAT")
 obesity_genes <- c("LEP", "LEPR", "POMC", "PCSK1", "MC4R", "SIM1", "BDNF", "NTRK2") # from 10.3390/ijms231911005
 
-# 2.) Filter data to obesity genes and check ----
+# _2.) Filter data to obesity genes and check ----
 
 SE_list_og <- lapply(SE_list, function(seob) seob[   which( rowData(seob)[["SYMBOL"]] %in% obesity_genes ) ] )
 lapply(SE_list_og,  function(seob) toupper(rowData(seob)[["SYMBOL"]]))
 
-# 3.) Show obesity genes ----
+# _3.) Show obesity genes ----
 
 # https://github.com/plger/sechm
 # https://www.bioconductor.org/packages/release/bioc/vignettes/sechm/inst/doc/sechm.html
 
-get_one_heatmap = function(se_ob, gaps_at = "ParentalDietMoFa", mark = c("LEP", "LEPR", "POMC", "PCSK1", "MC4R", "SIM1", "BDNF", "NTRK2")){
-  
-  # for function building
-  se_ob <-  SE_list_og[[1]]
-  
-  # build_heatmap
-  sechm_heatmap <- sechm(
-    se_ob,
-    features = rownames(se_ob),
-    do.scale = TRUE,
-    gaps_at = gaps_at,
-    mark = mark,
-    show_rownames = TRUE)
-  # modify row lables
-  
-  rownames(foo@matrix)
-  
-  
-  
-  
-  
-}
+# get a compiund plot
+plot_heatmap_all_tissues_oebesity_genes <- ggarrange(
+  grid.grabExpr(draw(get_one_heatmap(SE_list_og[[1]]))),
+  grid.grabExpr(draw(get_one_heatmap(SE_list_og[[2]]))),
+  grid.grabExpr(draw(get_one_heatmap(SE_list_og[[3]]))),
+  grid.grabExpr(draw(get_one_heatmap(SE_list_og[[4]]))),
+  labels = list("a: BRAT", "b: IWAT", "c: LIVT", "d: EVAT"),
+  font.label = list(size = 14, face = "bold"),
+  ncol = 2, nrow = 2, hjust = "0", vjust = "0")
 
+# show plot
+plot_heatmap_all_tissues_oebesity_genes
 
+# save plot
+ggsave(plot = plot_heatmap_all_tissues_oebesity_genes, path = here("plots"), 
+       filename = "055_r_array_analysis__plot_expr_obesity_flat.pdf",  
+       width = 180, height = 85, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+ggsave(plot = plot_heatmap_all_tissues_oebesity_genes, path = here("../manuscript/display_items"), 
+       filename = "055_r_array_analysis__plot_expr_obesity_flat_unassigned.pdf",  
+       width = 180, height = 85, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
+# >>> Code construction in progress - implementing new analysis flow here. ----
 
+warning("Code construction in progress.")
 
-
-
-# Get Fig. 2
-
-# Look for DEGs for all contrasts in each of the 4 tissues. ---- 
+# Look for DEGs using contrasts among all  tissues. ---- 
 
 # Get Suppl. Tables 1-6.  Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # Decsribe  besity related genes in intersections of full DEG lists ----
 

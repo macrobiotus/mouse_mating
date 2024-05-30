@@ -1020,6 +1020,9 @@
 ## 30-05-2024 - work day 91 - revising manuscript and array analysis
 
  * updated to do thoroughly after much communication
+ * working in `055_r_array_analysis.r`
+   * commit prior to restart as outlined below and in script
+   * finished section `Show obesity-related genes among tissues`
 
 ## Todo queue (last updated 30-05-2024)
  
