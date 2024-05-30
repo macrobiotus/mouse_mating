@@ -299,7 +299,7 @@ get_one_heatmap = function(se_ob, gaps_at = "ParentalDietMoFa", mark = c("LEP", 
 
 # All functions below are unrevised ----
 
-# Convenience function to define DGE among offspring tissue types
+# _discard: Convenience function to define DGE among offspring tissue types ----
 get_dge_for_individal_tissues =  function(ExpSet){
   
   message("Convenience function to test DGE for each tissue compred to all other tissues, only makes sense for a data set with different tissue type. Analysis of factor \"Tissue\" is hard-coded.")
@@ -350,7 +350,7 @@ get_dge_for_individal_tissues =  function(ExpSet){
   return(contrast_model_list_tp)
 }
 
-# Convenience function to test offsprings' obesity status in all tissue samples
+# _discard: Convenience function to test offsprings' obesity status in all tissue samples ----
 get_dge_for_offspring_obesity = function(ExpSet){
   
   # message
@@ -377,7 +377,7 @@ get_dge_for_offspring_obesity = function(ExpSet){
   
 }
 
-# Convenience function to test parents' obesity status in all tissue samples but LIVT
+# _discard:  Convenience function to test parents' obesity status in all tissue samples but LIVT ----
 get_dge_for_parent_obesity = function(ExpSet){
   
   message("Convenience function to test parents' obesity status in all tissue samples - analysis of factor \"ObeseParents\" is hard-coded.")
@@ -456,7 +456,7 @@ get_dge_for_parent_obesity = function(ExpSet){
   return(contrast_model_list_tp)
 }
 
-# Convenience function to test parents' obesity status in LIVT samples
+# _discard: Convenience function to test parents' obesity status in LIVT samples ----
 get_some_dge_for_parent_obesity = function(ExpSet){
   
   message("Reduced contrast set for LIVT analysis") 
@@ -512,7 +512,7 @@ get_some_dge_for_parent_obesity = function(ExpSet){
   return(contrast_model_list_tp)
 }
 
-# Get data frames to model variation of first PC against chosen factors
+# _discard: Get data frames to model variation of first PC against chosen factors ----
 get_model_data = function(ExprSet, PCsSet) {
   
   # require
@@ -1170,18 +1170,21 @@ ggsave(plot = plot_pca_summ, path = here("plots"),
 
 # Show obesity-related genes among tissues ----
 
-# Will be  used to warrant DEG search, PCA analysis will move to supplement. AS
+# Will be  used to warrant DEG search, PCA analysis will move to supplement. As
 # per 10.3390/ijms231911005 using: Leptin (LEP), the leptin receptor (LEPR),
 # proopiomelanocortin (POMC), prohormone convertase 1 (PCSK1), the melanocortin
 # 4 receptor (MC4R), single-minded homolog 1 (SIM1), brain-derived neurotrophic
 # factor (BDNF), and the neurotrophic tyrosine kinase receptor type 2 gene
-# (NTRK2)
+# (NTRK2), NEED TO CONFIRM THAT THESE GENES ARE RELAVNT FOR FAT
 
 # _1.) Compile data ----
 
 SE_list <- list(BRAT, IWAT, LIVT, EVAT)
 names(SE_list) <- c("BRAT", "IWAT", "LIVT", "EVAT")
+# genes from Mahmoud, Ranim, Virginia Kimonis, and Merlin G. Butler. 2022. “Genetics of Obesity in Humans: A Clinical Review.” International Journal of Molecular Sciences 23 (19): 11005. https://doi.org/10.3390/ijms231911005.
 obesity_genes <- c("LEP", "LEPR", "POMC", "PCSK1", "MC4R", "SIM1", "BDNF", "NTRK2") # from 10.3390/ijms231911005
+
+warning(c("Confirm that these genes are relvany for fat: ", paste(obesity_genes,  sep=" ", collapse=" ")))
 
 # _2.) Filter data to obesity genes and check ----
 
@@ -1221,6 +1224,158 @@ warning("Code construction in progress.")
 # Look for DEGs using contrasts among all  tissues. ---- 
 
 # Get Suppl. Tables 1-6.  Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
+
+# _1.) Compile data ----
+
+# __a) Use these full objects 
+SE_list
+names(SE_list) 
+
+# __b) Use these obesity genes if needed
+
+obesity_genes 
+warning(c("Confirm that these genes are relvany for fat: ", paste(obesity_genes,  sep=" ", collapse=" ")))
+
+# __c) Use these objects which only contain obesity-relevant genes  
+
+SE_list_og
+names(SE_list_og) 
+
+# _2.) Outline next steps ----
+
+function(se_ob, treat = "ParentalDietMoFa", peval = 0.05, logfc = 2.0){
+  
+  require("limma")
+  require("SummarizedExperiment")
+  
+  # initialize for function development
+  stop("Remove function building code")
+  se_ob <- SE_list[[1]]
+  treat <- "ParentalDietMoFa"
+  peval <- 0.05
+  logfc <- 2.0
+  
+  # Abort if wrong object is passed in and if treatment isn't available
+  stopifnot(class(se_ob) == "SummarizedExperiment")
+  stopifnot(!is.null(colData(se_ob)[[treat]]))
+  
+  # Diagnostic messages
+  message(paste0("\nUsing data set \"", deparse(substitute(se_ob))), "\".")
+  message(paste0("Analysis of factor \"", treat, "\" is hard-coded."))
+  
+  # Creating design matrix
+  model_matrix <- model.matrix(~ se_ob[[treat]] - 1)
+  colnames(model_matrix) <- make.names(levels(se_ob[[treat]]))
+  
+  # Fit linear model for each gene given a series of arrays
+  fit_limma <- lmFit(assay(se_ob), model_matrix)
+  
+  # Defining contrasts (not finished) 
+  contrast_list <- vector(mode = "list", length = 6)
+  names(contrast_list) <- c("CD CD - WD WD", "CD CD - CD WD", "CD CD - WD CD", "WD WD - CD CD", "WD WD - WD CD", "WD CD - CD WD")
+  contrast_list[[1]]  <- makeContrasts("CD CD - WD WD" =  CD.CD - WD.WD, levels = model_matrix)
+  contrast_list[[2]]  <- makeContrasts("CD CD - CD WD" =  CD.CD - CD.WD, levels = model_matrix)
+  contrast_list[[3]]  <- makeContrasts("CD CD - WD CD" =  CD.CD - WD.CD, levels = model_matrix)
+  contrast_list[[4]]  <- makeContrasts("WD WD - CD CD" =  WD.WD - CD.CD, levels = model_matrix)
+  contrast_list[[5]]  <- makeContrasts("WD WD - WD CD" =  WD.WD - WD.CD, levels = model_matrix)
+  contrast_list[[6]]  <- makeContrasts("WD CD - CD WD" =  WD.CD - CD.WD, levels = model_matrix)
+  
+  # Applying contrasts, and empirical Bayes moderation
+  fit_limma_contrast_list <- lapply(contrast_list, function (x) contrasts.fit(fit_limma, x))
+  fit_limma_contrast_list_ebayes <- lapply(fit_limma_contrast_list, function (x) eBayes(x))
+  fit_limma_contrast_list_ebayes_toptable <- lapply(fit_limma_contrast_list_ebayes, function (x) topTable(x, p.value = peval, lfc = logfc, number = Inf))
+  names(fit_limma_contrast_list_ebayes_toptable) <- names(contrast_list)
+  
+  message(paste0("Returning list of top tables with log fold-chnage ", logfc , " and adjusted p-value below ", peval , "."))
+  
+  return(fit_limma_contrast_list_ebayes_toptable)
+  }
+  
+
+
+
+stop("Adjust function below")
+
+
+
+get_dge_for_parent_obesity = function(ExpSet){
+  
+  message("Convenience function to test parents' obesity status in all tissue samples - analysis of factor \"ObeseParents\" is hard-coded.")
+  
+  # Building initial models
+  message(paste0("\nUsing data set \"", deparse(substitute(ExpSet))), "\".")   
+  
+  message("\nConsider whether the sample size is appropriate for DGE, you should have at least six samples per group:")
+  
+  pData(ExpSet) %>% dplyr::select(ObeseParents) %>% table() %>% print()
+  
+  # Building initial models
+  message("Building initial model.")   
+  
+  design_parent_obese <- model.matrix(~ ExpSet[["ObeseParents"]] - 1)
+  colnames(design_parent_obese) <-c("MotherFatherNotObese", "FatherObese", "MotherFatherObese", "MotherObese") 
+  fit_parent_obese <- lmFit(ExpSet, design_parent_obese)
+  
+  # Setting contrasts - likely not all will give results 
+  
+  contrast_names <- c(
+    "MotherFatherObese vs MotherObese",
+    "MotherFatherObese vs FatherObese", 
+    "MotherFatherObese vs FatherObese & MotherObese",
+    "MotherFatherObese vs MotherFatherNotObese",
+    "MotherFatherObese vs MotherFatherNotObese & MotherObese",
+    "MotherFatherObese vs MotherFatherNotObese & FatherObese",
+    "MotherFatherObese vs MotherFatherNotObese & FatherObese & MotherObese",
+    "MotherFatherNotObese vs MotherObese", 
+    "MotherFatherNotObese vs FatherObese", 
+    "MotherFatherNotObese vs FatherObese & MotherObese", 
+    "MotherFatherNotObese vs MotherFatherObese & MotherObese", 
+    "MotherFatherNotObese vs MotherFatherObese & FatherObese", 
+    "MotherFatherNotObese vs MotherFatherObese & FatherObese & MotherObese",
+    "FatherObese vs MotherObese",
+    "MotherObese vs MotherFatherNotObese & FatherObese",
+    "FatherObese vs MotherFatherObese & MotherObese",
+    "FatherObese vs MotherFatherNotObese & MotherFatherObese", 
+    "MotherObese vs MotherFatherNotObese & MotherFatherObese")
+  
+  message("\nDefining contrasts: \"", paste0(contrast_names, collapse = "\", \""), "\".") 
+  
+  contrast_list <- vector(mode = "list", length = length(contrast_names))
+  
+  contrast_list[[1]]  <- makeContrasts("MotherFatherObese vs MotherObese" =  MotherFatherObese - MotherObese, levels = design_parent_obese)
+  contrast_list[[2]]  <- makeContrasts("MotherFatherObese vs FatherObese" =  MotherFatherObese - FatherObese, levels = design_parent_obese)
+  contrast_list[[3]]  <- makeContrasts("MotherFatherObese vs FatherObese & MotherObese" =  MotherFatherObese - (FatherObese + MotherObese)/2 , levels = design_parent_obese)
+  contrast_list[[4]]  <- makeContrasts("MotherFatherObese vs MotherFatherNotObese" =  MotherFatherObese - MotherFatherNotObese, levels = design_parent_obese)
+  contrast_list[[5]]  <- makeContrasts("MotherFatherObese vs MotherFatherNotObese & MotherObese" =  MotherFatherObese - (MotherFatherNotObese + MotherObese)/2, levels = design_parent_obese)
+  contrast_list[[6]]  <- makeContrasts("MotherFatherObese vs MotherFatherNotObese & FatherObese" =  MotherFatherObese - (MotherFatherNotObese + FatherObese)/2, levels = design_parent_obese)
+  contrast_list[[7]]  <- makeContrasts("MotherFatherObese vs MotherFatherNotObese & FatherObese & MotherObese" =  MotherFatherObese - (MotherFatherNotObese + FatherObese + MotherObese)/3, levels = design_parent_obese)
+  contrast_list[[8]]  <- makeContrasts("MotherFatherNotObese vs MotherObese" =  MotherFatherNotObese - MotherObese, levels = design_parent_obese)
+  contrast_list[[9]]  <- makeContrasts("MotherFatherNotObese vs FatherObese" =  MotherFatherNotObese - FatherObese, levels = design_parent_obese)
+  contrast_list[[10]] <- makeContrasts("MotherFatherNotObese vs FatherObese & MotherObese" = MotherFatherNotObese - (FatherObese + MotherObese)/2, levels = design_parent_obese)
+  contrast_list[[11]] <- makeContrasts("MotherFatherNotObese vs MotherFatherObese & MotherObese" = MotherFatherNotObese - (MotherFatherObese + MotherObese)/2, levels = design_parent_obese)
+  contrast_list[[12]] <- makeContrasts("MotherFatherNotObese vs MotherFatherObese & FatherObese" = MotherFatherNotObese - (MotherFatherObese + FatherObese)/2, levels = design_parent_obese)
+  contrast_list[[13]] <- makeContrasts("MotherFatherNotObese vs MotherFatherObese & FatherObese & MotherObese" = MotherFatherNotObese - (MotherFatherObese + FatherObese + MotherObese)/3, levels = design_parent_obese)
+  contrast_list[[14]] <- makeContrasts("FatherObese vs MotherObese" = FatherObese - MotherObese, levels = design_parent_obese)
+  contrast_list[[15]] <- makeContrasts("MotherObese vs MotherFatherNotObese & FatherObese" = MotherObese - (MotherFatherNotObese + FatherObese)/2, levels = design_parent_obese)
+  contrast_list[[16]] <- makeContrasts("FatherObese vs MotherFatherObese & MotherObese" = FatherObese - (MotherFatherObese + MotherObese)/2, levels = design_parent_obese)
+  contrast_list[[17]] <- makeContrasts("FatherObese vs MotherFatherNotObese & MotherFatherObese" = FatherObese - (MotherFatherNotObese + MotherFatherObese)/2, levels = design_parent_obese)
+  contrast_list[[18]] <- makeContrasts("MotherObese vs MotherFatherNotObese & MotherFatherObese" = MotherObese - (MotherFatherNotObese + MotherFatherObese)/2, levels = design_parent_obese)
+  
+  message("\nApplying contrasts.") 
+  
+  # Create list and fill it with contrats applied to the initial model
+  contrast_model_list <- vector(mode = "list", length = length(contrast_names))
+  contrast_model_list <- lapply(contrast_list, function (x) contrasts.fit(fit_parent_obese, x))
+  contrast_model_list_eb <- lapply(contrast_model_list, function (x) eBayes(x))
+  contrast_model_list_tp <- lapply(contrast_model_list_eb, function (x) topTable(x, p.value = 0.50, number = Inf))
+  
+  message("\nReturning results list - check list names for top table identification.") 
+  
+  # Setting names for identifying contrast among results
+  names(contrast_model_list_tp) <- contrast_names
+  return(contrast_model_list_tp)
+}
+
 
 
 
@@ -1262,110 +1417,6 @@ stop("Unadjusted old analysis code below - possibly integrate into code above. "
 
 
 
-
-
-# Re-implement analysis of array intensities ----
-
-#' ## Shape and check array intensity data
-
-# _1.) Shape and check array intensity data ----
-
-# see https://hbctraining.github.io/DGE_workshop/lessons/01_DGE_setup_and_overview.html
-
-#' ###  Check input data formats
-
-# __a) Check input data formats ----
-
-# see available expression data 
-FLAT; BRAT; IWAT; LIVT; EVAT
-
-# check full data set density
-pData(FLAT) # metadata - use `ObesityLgcl` and possibly `ObeseParents`
-pData(FLAT) %>% dplyr::select(ObesityLgcl, ObeseParents) %>% table()
-exprs(FLAT)
-
-# check one of four tissue data sets - brown adipose tissue 
-pData(BRAT) # metadata - use `ObesityLgcl` and possibly `ObeseParents`
-pData(BRAT) %>% dplyr::select(ObesityLgcl, ObeseParents) %>% table()
-exprs(BRAT)
-
-#' ### Covert expression set to data table for inspection
-
-# __b) Covert expression set to data table for inspection ----
-
-# see https://support.bioconductor.org/p/77432/
-# see GSCOre manual
-# https://www.bioconductor.org/packages/release/bioc/vignettes/GCSscore/inst/doc/GCSscore.pdf
-
-# see expression set 
-FLAT                   # ExpressionSet of all data
-m_ints  <- exprs(FLAT) # isolate matrix of intensities
-d_phen  <- pData(FLAT) # isolat data.frame of phenotypic information.
-
-# get a data table of the exprssion set data above
-#  - see https://stackoverflow.com/questions/52431288/r-data-table-how-to-go-from-tibble-to-data-table-to-tibble-back
-FLAT_DT <- tibble::rownames_to_column( cbind(d_phen, t(m_ints)), var = "Sample") %>% as_tibble()  
-setDT(FLAT_DT)
-setkey(FLAT_DT, Sample)
-
-# pivot data table to long - can't be done for tibble due to memory constraints
-# - see https://cran.r-project.org/web/packages/data.table/vignettes/datatable-reshape.html
-
-FLAT_DT.m1 <- melt(FLAT_DT,  id.vars = c("Sample", "Animal", "Tissue", "AnimalSex", "ObesityLgcl", "ObeseParents", "MotherDiet", "FatherDiet", "AnimalSex", "ParentalDietMoFa", "DietGroup"), 
-  variable.name = "ArrayTarget", value.name = "Intensity")
-
-#' ### Inspect expression data raw intensities distribution
-
-# __c) Inspect expression data raw intensities distribution (defunct)  ----
-
-# to check that equal amounts of data are available for comparison - they are not
-
-# *** plotting commented out until melting command above is adjusted ****
-
-# ggplot(FLAT_DT.m1) +
-#   # geom_density(aes(Intensity), stat = "bin", bins = 200) +
-#   geom_density(aes(Intensity, colour = ObesityLgcl), stat = "bin", bins = 200) +
-#   ylab("Number of measurments across all other variables") +
-#   xlab("Intensity") +
-#   ggtitle("Intensities' availibilty and distribution for offsprings obesity") +
-#   facet_wrap(.~Tissue) + 
-#   theme_bw()
-
-# ggplot(FLAT_DT.m1) +
-#   # geom_density(aes(Intensity), stat = "bin", bins = 200) +
-#   geom_density(aes(Intensity, colour = ObeseParents), stat = "bin", bins = 200) +
-#   ylab("Number of measurments across all other variables") +
-#   xlab("Intensity") +
-#   ggtitle("Intensities' availibilty and distribution for parents obesity") +
-#   facet_wrap(.~Tissue) + 
-#   theme_bw()
-
-#' ### Inspect expression data raw intensities' density
-
-# __d) Inspect expression data raw intensities' density  ----
-
-# To check if distributions are different - hopefully they are a bit - yes perhaps in EVAT when Mother and Father are not Obese
-
-# ggplot(FLAT_DT.m1) +
-#   # geom_density(aes(Intensity), stat = "bin", bins = 200) +
-#   geom_density(aes(Intensity, colour = ObesityLgcl), stat = "density") +
-#   ylab("Density of measurments across all other variables") +
-#   xlab("Intensity") +
-#   ggtitle("Intensities' density for offsprings obesity") +
-#   facet_wrap(.~Tissue) + 
-#   theme_bw()
-
-# ggplot(FLAT_DT.m1) +
-#   # geom_density(aes(Intensity), stat = "bin", bins = 200) +
-#   geom_density(aes(Intensity, colour = ObeseParents), stat = "density") +
-#   ylab("Denisty of measurments across all other variables") +
-#   xlab("Intensity") +
-#   ggtitle("Intensities' density for parents obesity") +
-#   facet_wrap(.~Tissue) + 
-#   theme_bw()
-
-#' ## DGE analysis using Limma
-
 # _2.) DGE analysis using Limma ----
 
 # see DESeq2 tutorial at https://colauttilab.github.io/RNA-Seq_Tutorial.html
@@ -1376,7 +1427,6 @@ FLAT_DT.m1 <- melt(FLAT_DT,  id.vars = c("Sample", "Animal", "Tissue", "AnimalSe
 # see here why shrinking LFCs is considered unenecssary by the limma authors - https://support.bioconductor.org/p/100804/
 
 
-#' ###  Test for DGE for each tissue against all others, using FLAT
 
 # __a) Test for DGE for each tissue against all others, using FLAT ----
 

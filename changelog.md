@@ -1001,7 +1001,7 @@
       * which is uninformative because groups don't resolve well and pre-processing of data may be unsuitable for this approach
 
   * met with AJ and NKB
-    * committed these chanages
+    * committed these changes
     * defined next steps
   
   * in `055_r_array_analysis.r`
@@ -1023,6 +1023,7 @@
  * working in `055_r_array_analysis.r`
    * commit prior to restart as outlined below and in script
    * finished section `Show obesity-related genes among tissues`
+   * finished new DEG section
 
 ## Todo queue (last updated 30-05-2024)
  
@@ -1089,6 +1090,7 @@
      * [x] discard analysis of PCA
      * [ ] encode new analysis after PCA
        * [ ] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues 
+         * **check again which obesity - relavant genes  are worthy of inspection in fat**
        * [ ] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists). 
        * [ ] 3.) **Fig. 3**: Upset plot of intersections of full list - highlight obesity related genes
        * [ ] 4.) **Supple Tables 6-12**: put these lists together per tissue and see which contrasts differentially express unique genes.
