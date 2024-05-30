@@ -1023,7 +1023,8 @@
  * working in `055_r_array_analysis.r`
    * commit prior to restart as outlined below and in script
    * finished section `Show obesity-related genes among tissues`
-   * finished new DEG section
+   * finished new DEG section, committed
+   * erased superseded functions, committed
 
 ## Todo queue (last updated 30-05-2024)
  
