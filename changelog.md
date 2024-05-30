@@ -1015,233 +1015,93 @@
     * updated manuscript with q-mode PCA
  
   * updated to do
+  * thought hard about what to do next, talked to many people
     
-  
- * next steps
+## 30-05-2024 - work day 91 - revising manuscript and array analysis
 
-   * [x] note diets in main text and adjust introduction and methods - check throughout
-   * [ ] in `055_r_array_analysis.r` 
+ * updated to do thorough;y after much communication
+
+## Todo queue (last updated 30-05-2024)
+ 
+ * **overall revision work**
+   * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
+   * [x] commit - branch repository - commit
+   * [x] adress as many comments as reasonable without re-running code
+   * [x] revise introduction - **now done up until modelling**
+   * [x] re-run analysis - see how "diets" could be used instead of "obesity" 
+   * [x] consider litter size 
+   * [x] started to comment in revision file
+   * [x] addressed in manuscript file
+   * [x] to correct body weight after weaning consider (Zhang et al. 2012)
+   * ~~[x] possibly report on the most profound effects of the aforementioned weight adjustments~~
+   * [ ] consider NKBs comment on litter sizes - see communications folder 25-Mar-204
+   * [ ] re-eavaluate all interpretation in the context of Western vs Western Control
+   * [ ] and known obesity genes
+ * **analysis work**
+   * ~~[ ] consider using the the reference data beyond the initial plots~~
+   * ~~[ ] starting point - fit Gompertz curves and compare significant changes in `alpha` parameter - see `https://www.ipb.pt/~vcadavez/websiteVC/tutorial/rcode/2019-04-28-gompertzmodel/`~~
+   * ~~[ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`~~
+   * ~~[ ] starting point - compare different growth models - see `https://cran.r-project.org/web/packages/biogrowth/vignettes/v04_model_comparison.html`~~
+   * [x] keep all current results in script `010_r_define obesity.r`
+   * [ ] from script `010_r_define obesity.r` integrate re-exported items
+   * [x] learn how to correlate variables with trajectories
+     * [x] look at `saemix` example
+     * [x] ~~correct GAM modeling of offspring obesity as in Gavin Simpsons rat hormone hgam example, Physalia course GAMs in R, day 4, 23.11.2023, possibly also pull GS repoitory from course and look at "chick example"~~
+     * [x] ~~possibly use GAM approach - see Winter and Wieling (2016), https://doi.org/10.1093/jole/lzv003~~
+   * [x] using SAEMIX instead: 
+   * [x] see what to do with the weight trajectories
+   * [x] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
+   * ~~[ ] both parents obese - offspring sex neglected - male  - female~~
+   * ~~[ ] one parent obese - offspring sex neglected - male - female~~
+   * [x] in `015_r_use_saemix.R`
+     * ~~[x] in males: Mother HFD has an effect, as plotted
+     * [x] in females: Mother HFD has an effect, and litter size has an effect, as plotted
+     * [x] in females and females: effect of litter size and diet cannot be disentangled
+     * [x] improve plots and export
+     * [ ] check diet interaction impossible using saemix and nlme - too few data
+     * [x] check usage of body fat - only one measurement point available ~~
+     * [ ] **for relevant results and model comparisons see RQ6**
+     * [x] possibly further implement usage of function `get_p_from_seamix_lrt()`~~
+     * [x] **finished modelling - no effect on mice weight by diet, litter size and sex are sufficient**
+     * [ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
+   * ~~[x] in `017_r_use_nlme.R` - not used anymore 
+     * [x] also testing males and females separately for perental diet interaction on weight gain
+     * [x] repeated all analyses as in `015_r_use_saemix.R`
+     * [x] sorted script
+     * [x] possibly apply further diagnostics as per `https://medium.com/@marc.jacobs012/non-linear-mixed-model-in-r-a6fc054c3f82`
+     * [ ] **for relevant results and model comparisons see RQ5, 6, 7, 8**~~
+   * [ ] script `55_r_array_analysis.r`
+     * [x] adjust new version as per results in `015_r_use_saemix.R`
+     * [x] for DEG discovery only males are relavent as there are only males in the RNA seq data
+     * [x] **check if there are sufficient samples to test anything, possibly an additive diet effect correct for litter size**
+     * [x] relabel variables `obese` to (succesful) `WD` in code
+     * [x] relabel variables `obese` to (succesful) `WD` in figures
      * [x] in all display items use **"WD"** for **HCD** and **"CD"** for **LCD**
      * [x] ~~carefully correct and interpret existing PCA results~~ no needed anymore 
      * [x] ~~fork and get clustering approach~~ **done, commited, and overwritten in third branch**
      * [x] ~~implement OPLS regression where possible~~ **impossible**
      * [x] ~~define DEG contrats by cluster analysis~~ **doesn't work**
      * [x] get new PCR visualisations across all tissues
-       *  [x] update manuscript in all sections accordingly
-    * [x] discard analysis of PCA
-    * [ ] in DEG test all contrasts against all others
-    * [ ] in DEG lists keep significant (LFC 2) and obesity genes -  as per `10.3390/ijms231911005` using: Leptin (LEP), the leptin receptor (LEPR), proopiomelanocortin (POMC), prohormone convertase 1 (PCSK1), the melanocortin 4 receptor (MC4R), single-minded homolog 1 (SIM1), brain-derived neurotrophic factor (BDNF), and the neurotrophic tyrosine kinase receptor type 2 gene (NTRK2)
-    * [ ] keep DEGs lists only for contrasts in which obesity related genes occur
-    * [ ] for above DEG list do full volcano plot
-    * [ ] for above DEG list KEGG and GO
-    * [ ] for above plot heat-map with obesity genes, indicate which one are significant, and top 5 others 
-    
-  
-   * ~~[ ] in `015_r_use_saemix.R`~~
-     * ~~[ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
-   * [ ] write up results in main text 
-     * [x] refresh results with PCA analysis sucessor and tested contrasts
-     * [ ] refresh results with DEG analysis results
-     
-     * ~~[x] no signal among litter size among any tissues~~
-     * ~~[x] signal among parental diet between these and those dietary treatments~~a
-     * ~~[ ] **hopefully** no correlation between litter size and diet - otherwise justify non-consideration by small sample size~~
-     * [ ] reimplement contrast checking - ~~use all contrasts after discussion with NKB~~
- 
- * [x] check which contrast can be tested with available RNAseq data and update email
- **possibly use Group encoding for testing contrasts**
-
-## Todo queue (last updated 27-04-2024)
- 
-### **revision work** - after first submission
- 
- * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
-   * [x] commit - branch repository - commit
-   * [x] adress as many comments as reasonable without re-running code
-   * [x] revise introduction - **now done up until modelling**
-   * [x] re-run analysis - see how "diets" could be used instead of "obesity" 
-     * ~~[ ] consider using the the reference data beyond the initial plots~~
-     * ~~[ ] starting point - fit Gompertz curves and compare significant changes in `alpha` parameter - see `https://www.ipb.pt/~vcadavez/websiteVC/tutorial/rcode/2019-04-28-gompertzmodel/`~~
-     * ~~[ ] starting point - use `nlme` - see `https://www.r-bloggers.com/2019/09/fitting-complex-mixed-models-with-nlme-example-3/`~~
-     * ~~[ ] starting point - compare different growth models - see `https://cran.r-project.org/web/packages/biogrowth/vignettes/v04_model_comparison.html`~~
-     * [x] keep all current results in script `010_r_define obesity.r`
-     * [ ] from script `010_r_define obesity.r` integrate re-exported items
-     * [x] learn how to correlate variables with trajectories
-       * [x] look at `saemix` example
-       * [x] ~~correct GAM modeling of offspring obesity as in Gavin Simpsons rat hormone hgam example, Physalia course GAMs in R, day 4, 23.11.2023, possibly also pull GS repoitory from course and look at "chick example"~~
-       * [x] ~~possibly use GAM approach - see Winter and Wieling (2016), https://doi.org/10.1093/jole/lzv003~~
-     * [x] using SAEMIX instead: 
-     * [x] see what to do with the weight trajectories
-       * [x] substitute `020_r_h1.r` `030_r_h2.r` `040_r_h2.r` with saemix code
-       * ~~[ ] both parents obese - offspring sex neglected - male  - female~~
-       * ~~[ ] one parent obese - offspring sex neglected - male - female~~
-     * [x] in `015_r_use_saemix.R`
-       * ~~[x] in males: Mother HFD has an effect, as plotted
-       * [x] in females: Mother HFD has an effect, and litter size has an effect, as plotted
-       * [x] in females and females: effect of litter size and diet cannot be disentangled
-       * [x] improve plots and export
-       * [ ] check diet interaction impossible using saemix and nlme - too few data
-       * [x] check usage of body fat - only one measurement point available ~~
-       * [ ] **for relevant results and model comparisons see RQ6**
-       * [x] possibly further implement usage of function `get_p_from_seamix_lrt()`~~
-       * [x] **finished modelling - no effect on mice weight by diet, litter size and sex are sufficient**
-       * [ ] estimate Nora's question - model pup number by diet
-     * ~~[x] in `017_r_use_nlme.R` - not used anymore 
-       * [x] also testing males and females separately for perental diet interaction on weight gain
-       * [x] repeated all analyses as in `015_r_use_saemix.R`
-       * [x] sorted script
-       * [x] possibly apply further diagnostics as per `https://medium.com/@marc.jacobs012/non-linear-mixed-model-in-r-a6fc054c3f82`
-       * [ ] **for relevant results and model comparisons see RQ5, 6, 7, 8**~~
-    * [ ] script `50_r_array_analysis.r`
-       * [ ] adjust new version as per results in `015_r_use_saemix.R`
-       * [ ] for DEG discovery only males are relavent as there are only males in the RNA seq data
-       * [ ] **check if there are sufficient samples to test anything, possibly an additive diet effect correct for litter size**
-       * [ ] relabel variables `obese` to (succesful) `HFD` in code
-       * [ ] relabel variables `obese` to (succesful) `HFD` in figures
-       * [ ] DEG analysis: check wether axis correct axis is being looked at in PCA
-       * [ ] DEG analysis: include suitable sample size estimation
-       * [ ] DEG analysis:  **only investigate effect of mothers obese among males as per nlme results**
-       * [ ] DEG analysis: check wether axis correct axis is being looked at in PCAverify DEGs with human or web data
-       * [ ] improve figure 1 - diet labelling
- * [ ] re-outline individual manuscript sections after analysis
-   * [ ] consider the rebuttal document on or after 25.3.2025
-   * [ ] revise introduction and discussion
-     * [ ] **check articles:** met with NKB who suggests parental HFD will lower offsprings body weight -  
-   * [ ] revise methods
-     * [ ] use `015_r_use_saemix.R`'s **RQ2** 
-     * [ ] as equivalent to `015_r_use_saemix.R`'s **RQ5**
-   * [ ] revise results
-   * [ ] copy other sections from outline document first
- * [x] consider litter size 
-   * [x] started to comment in revision file
-   * [x] addressed in manuscript file
-   * [x] to correct body weight after weaning consider (Zhang et al. 2012)
-   * ~~[x] possibly report on the most profound effects of the aforementioned weight adjustments~~
-   * [ ] consider NKBs comment on litter sizes - see communications folder 25-Mar-204
-  
-
-- note reference for GAM modeling, from Zotero
-- in script 50 
-  
-  
-### **revision work** - previously urgent
-
- * [ ] re-eavaluate all interpretation in the context of
-   * [ ] correct diets - Western vs Western Control
-   * [ ] correct interpretation of PCA
-   * [ ] use `dimdesc()`as in course notes and code examples Multivariate Statistics 1 23.11.2023 (**see example sheet (R) for anova on treatment in PCA** as [here](/Users/paul/Documents/HM_miscellaneous/231116_cf-statcon_mv_statistics/231123_day_3__exercises.R))
-
-### **revision work** - previously  additional notes
-
- * [ ] possibly revise description of contrast finsing and definition, refer to seminar talk 7-Nov- 2023
- * [ ] AJ: check diet definition and composition 
- * [ ] OB BS: Check challenge for ITT GTT to see if they have a metabolic syndrom
- * [ ] check communications folder for
- * [ ] consider diet descriptions and other comments NK
-  * [ ] reviewer link AH
-     
-### **manuscript work** for first submission   
-
- * [x] circulate to MB 
- * [x] revise as per MB and AH
- * [x] rename heat map plot
- * [x] export KEGG and GO terms with gene names
- * [x] format plots
- * [x] implement GO term lookup
- * [x] circulate to coauthors 
- * [x] revise results and discussion further
- * [x] copy DEG and GSEA results tables
- * [x] upload code
- * [x] upload array data upon publication
- * [x] insert array dat link
-
-### possible further anslysis work
-
- * [x] create analysis fork - `more_bars`
-   * [x] for NKB create additional version of SI Fig 1 b for main text
-   * [x] calculate weight deltas for each f1 mouse between day 0 and 100 ("A...")
-   * [x] plot weight deltas by factor
-   * [x] include in main text
-   * ˜˜˜[ ] _possibly_ omit or use obesity factors instead, where available ˜˜˜ 
- 
- * [x] create analysis fork - `slim_mouse`
-   * [x] deal with mouse 8989
-   * [x] check if it is removed form analysis as it should - if so add to main text
-   * [x] if it isn't removed re-run analysis without it
- 
-  * ~~~[ ] _possibly_ create analysis fork - `weight_deltas`~~~
-    * [ ] redefine obesity using weight deltas instead of curves and re-run everything
-    * [ ] in script `010_r_define_obesity.r`
-      * [ ] possibly define obesity using weight gain deltas instead of growth curves
-      * [ ] re-check weight gain definitions among F0 and F1
-
- * [x] manuscript work
-   * [x] see above 
-   * [ ] improve presentation of weight variables
-     * [x] add F0 weight deltas in `010_r_define_obesity.r`
-     * [x] to F1 and F0 weight deltas attempt to add assigned obesity status, e.g. via differently-colored barplot-overlays, or sub figures, in `010_r_define_obesity.r`
-       * [x] update Fig. 2 in main text, to Fig 2a and b. 
-     * ~~~[ ] add diet to F1 curve plot in `010_r_define_obesity.r`, as already done for F0~~~ **not needed, all CD, added to caption**
-     * [x] update SI Figure 1b in manuscript
-     * [x] check caption of SI Figure 1b
-     * [x] add curvature summaries to SI Fig 1
-     * [x] explore odd obesity value assignment among F1
-       * [x] commit to save state `81033ebad16be523b7096e8a841697e7fd037b33`
-       * [x] backing up `010_r_define_obesity__mice_derivatives_densities.pdf` to `010_r_define_obesity__mice_derivatives_densities_backup.pdf` 
-       * [x] create analysis fork `adjust_cutoffs` to change curve cutoff of F1 to that of F0 
-       * [x] in  `010_r_define_obesity.r`  
-         * [x] check and remove missing data among F1 - week 16
-         * [x] re-run script and look for changes, decide what to do next
-         * [x] save new version of manuscript file, named `230830_main_text_b.docx`
-         * [x] update manuscript file 
-   * [x] add count values to manuscript
-     * [x] see `010_r_define_obesity__mice_f1_slct__obesity.xlsx` and  line ~415 of `010_r_define_obesity.r`
-     * [x] add parents and their obesity status to current SI table 1 which is `040_r_h3__rna_seq_sample.xlsx`
-     * [x] update count values in text from `040_r_h3__rna_seq_sample.xlsx`
-   * [x] validate caption of Fig. 3  
-   * [x] update all analysis and text
-   * [x] revise draft with coauthor's suggestions
-   * [x] circulate to NKB
-     * [x] see `/Users/paul/Documents/HM_MouseMating/communication/230831_on_finishing.pdf`
-     * [x] meet with NKB
-     * [x] work in NKB edits
-     * [x] use commnets from `/Users/paul/Documents/HM_MouseMating/manuscript/230831_main_text_NK.docx`
-     * [x] apply commnets in file `/Users/paul/Documents/HM_MouseMating/manuscript/230831_main_text.docx`
-     * [x] add abstract
-     * [x] add acknowledgements, funding
-   
-   * [ ] communicate and **possibly** 
-     * [x] in fork `new_curvatures` 
-       * [x] implement old analysis with corrected figures
-       * [ ] explore correction of growth curve analysis
-       * [ ] and re-run analysis with corrected obesity definition
-     * [ ] in fork `weight_delta` fork explore alternative to growth curve analysis and re-run analysis, use weight deltas
-   * [ ] possibly - duplicate and load duplicated environment of `050_r_array_analysis.r`, in heatmap remove "inferred obesity status of the sequenced individual"
-   * [ ] correct figure labels - in `pdfs`'s and code - use 
-     * [ ] epigonal visceral (EVAT), 
-     * [ ] subcutaneous (SCAT), 
-     * [ ] liver (L) and 
-     * [ ] brown adipose tissue (BAT)
-   * [ ] expand SI table 1 to female and litter information 
-   * [ ] prepare submissions **or**     
-   
- * [x] always keep in mind `/HM_MouseMating/manuscript/display_items/230512_RNAseq_data_vs_h3_model_outcomes.png`(or `/Users/paul/Documents/HM_MouseMating/manuscript/communication/190916 Probenliste Clariom S.xlsx`):
-   * [x] parental diet conforms exactly with dietary variables considered by AH for array data
-   * [x] offsprings obesity statuts does not conform with dietary variables considered by AH for array data
-   * [x] the latter is needed but possibly the former data is the only one available
-
-## Additional ideas, if desired, or required
-
- * [ ] in script `050_r_array_analysis.r`
-   * [ ] check if DGE, KEGG, GO results can be interpreted automatically with some sort of comparison data
-   * [ ]  possibly use running score and preranked list of GSEA result [see here](https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html).
-   * [ ]  clean out heat map code - create function, name variables properly
-   * [ ] **someday** - possibly Upset plots
-   * [ ] **someday** - possibly network plots
-   * [ ] **someday** - possibly implement SWAMP instad of PCA
- 
- * [ ] check if maternal weight loss can be adressed with statistical analyses using mixed group
- 
- * [ ] archive old scripts and data files
-   * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/inspect_data.R`
-   * `/Users/paul/Documents/HM_MouseMating/analysis/scripts/main_analysis.R`
+     * [x] update manuscript in all sections accordingly
+     * [x] discard analysis of PCA
+     * [ ] look for DEGs for 3 contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists). 
+     * [ ] put these lists together per tissue and see which contrasts differentially express unique genes.
+     * [ ] I then look for the obesity genes in these unique genes
+     * [ ] Where the search as described in 3. is successful, look at the full list using Gene Set Enrichment analysis. 
+  * [ ] manuscript work
+      * [ ] revise from start
+      * [ ] improve figure 1 - diet labelling
+      * [ ] move PCA analysis out of the way
+      * [ ] adjust manuscript for obesity genes
+      * [ ] adjust manuscript for 3 contrsts
+      * [ ] adjust methods and results descriptin 
+      * [ ] refresh results with PCA analysis sucessor and tested contrasts
+      * [ ] refresh results with DEG analysis results
+      * ~~[x] no signal among litter size among any tissues~~
+      * ~~[x] signal among parental diet between these and those dietary treatments~~a
+      * [ ] **hopefully** no correlation between litter size and diet - otherwise justify non-consideration by small sample size
+      * [ ] reimplement contrast description - use three contrasts - ~~use all contrasts after discussion with NKB~~
+      * [ ] consider the rebuttal document on or after 25.3.2025
+      * [ ] **check articles:** met with NKB who suggests parental HFD will lower offsprings body weight -  
+      * [ ] revise methods
+      * [ ] revise results
