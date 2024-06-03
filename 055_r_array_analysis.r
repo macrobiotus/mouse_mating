@@ -327,7 +327,7 @@ get_deg_lists = function(se_ob, peval = 0.05, logfc = 2.0){
   # Fit linear model for each gene given a series of arrays
   fit_limma <- lmFit(assay(se_ob), model_matrix)
   
-  # Defining contrasts (not finished) 
+  # Defining contrasts
   contrast_list <- vector(mode = "list", length = 6)
   names(contrast_list) <- c("CD CD - WD WD", "CD CD - CD WD", "CD CD - WD CD", "WD WD - CD CD", "WD WD - WD CD", "WD CD - CD WD")
   contrast_list[[1]]  <- makeContrasts("CD CD - WD WD" =  CD.CD - WD.WD, levels = model_matrix)
@@ -343,9 +343,45 @@ get_deg_lists = function(se_ob, peval = 0.05, logfc = 2.0){
   fit_limma_contrast_list_ebayes_toptable <- lapply(fit_limma_contrast_list_ebayes, function (x) topTable(x, p.value = peval, lfc = logfc, number = Inf))
   names(fit_limma_contrast_list_ebayes_toptable) <- names(contrast_list)
   
-  message(paste0("Returning list of top tables with log fold-chnage ", logfc , " and adjusted p-value below ", peval , "."))
+  # Adding gene symbols to nested lists
+  fit_limma_contrast_list_ebayes_toptable <- lapply(fit_limma_contrast_list_ebayes_toptable, function(top_table)
+    as.data.frame( merge(top_table, rowData(se_ob)[c("SYMBOL", "GENENAME")][which(rownames(rowData(se_ob)) %in% rownames(top_table)), ], by = "row.names")))
   
-  return(fit_limma_contrast_list_ebayes_toptable)
+  # Storing list in in Summarized experiment objects 
+  metadata(se_ob)$toptable_list <- fit_limma_contrast_list_ebayes_toptable  
+  
+  message(paste0("Returning list of top tables with log fold-chnage ", logfc , " and adjusted p-value below ", peval , " in Summarized Experiment object"))
+  return(se_ob)
+}
+
+# Flatten DEG lists
+get_flat_deg_lists = function(se_ob){
+  
+  # stop("Remove function building code")
+  # se_ob <- SE_list[[1]]
+  
+  # isolate top table list
+  toptable_list <- metadata(se_ob)$toptable_list
+  # isolate tissue name
+  tissue <- unique(colData(se_ob)[["Tissue"]])
+  
+  # basic input tests
+  # pluck depth should be one - otherwise function will crash
+  stopifnot(purrr:::pluck_depth(toptable_list) == 3 )
+  # there should only be one tissue tipe in the input object
+  stopifnot(length(tissue) == 1)
+  
+  # build tibble from tiblle
+  flat_list <- as_tibble(bind_rows(toptable_list, .id = "Contrasts"))
+  flat_list[["Tissue"]] = unique(colData(se_ob)[["Tissue"]])
+  
+  # format tiblle
+  names(flat_list) <- base::toupper(names(flat_list)) 
+  
+  flat_list %<>% relocate(TISSUE, .before = "CONTRASTS") %>% dplyr::rename(PROBEID = ROW.NAMES) %>% relocate(SYMBOL, .before = PROBEID)
+  
+  return(flat_list)
+  
 }
 
 # All functions below are unrevised ----
@@ -588,7 +624,6 @@ save_go_plots <- function(ggplot_list_item, ggplot_list_item_name){
   try(ggsave(plot = ggplot_list_item, path = here("../manuscript/display_items"), filename, scale = 1.75, height = 210, width = 210, units = c("mm")))
   
 }
-
 
 # Load, fomat, and shape data ----
 
@@ -985,7 +1020,7 @@ ggsave(plot = plot_pca_summ, path = here("plots"),
        filename = "055_r_array_analysis__plot_pca_summ.pdf",  
        width = 500, height = 275, units = "mm", dpi = 300,  limitsize = TRUE, scale = 0.75)
 
-# Show obesity-related genes among tissues ----
+# Inspect obesity-related genes among tissues ----
 
 # Will be  used to warrant DEG search, PCA analysis will move to supplement. As
 # per 10.3390/ijms231911005 using: Leptin (LEP), the leptin receptor (LEPR),
@@ -996,111 +1031,145 @@ ggsave(plot = plot_pca_summ, path = here("plots"),
 
 # _1.) Compile data ----
 
-SE_list <- list(BRAT, IWAT, LIVT, EVAT)
-names(SE_list) <- c("BRAT", "IWAT", "LIVT", "EVAT")
+# __a) SE objects
+
+SE_all_tissues_all_genes <- list(BRAT, IWAT, LIVT, EVAT)
+names(SE_all_tissues_all_genes) <- c("BRAT", "IWAT", "LIVT", "EVAT")
+
+# __b) Obesity genes 
+
 # genes from Mahmoud, Ranim, Virginia Kimonis, and Merlin G. Butler. 2022. “Genetics of Obesity in Humans: A Clinical Review.” International Journal of Molecular Sciences 23 (19): 11005. https://doi.org/10.3390/ijms231911005.
 obesity_genes <- c("LEP", "LEPR", "POMC", "PCSK1", "MC4R", "SIM1", "BDNF", "NTRK2") # from 10.3390/ijms231911005
 
-warning(c("Confirm that these genes are relvany for fat: ", paste(obesity_genes,  sep=" ", collapse=" ")))
+# genes from Hua, Yuchen, Danyingzhu Xie, Yugang Zhang, Ming Wang, Weiheng Wen, and Jia Sun. 2023. “Identification and Analysis of Key Genes in Adipose Tissue for Human Obesity Based on Bioinformatics.” Gene 888 (December):147755. https://doi.org/10.1016/j.gene.2023.147755.
+obesity_genes <- c("EGR2", "GREM1", "NPY1R", obesity_genes)
+
+# genes from Dahlman, Ingrid, and Peter Arner. 2010. “Chapter 3 - Genetics of Adipose Tissue Biology.” In Progress in Molecular Biology and Translational Science, edited by Claude Bouchard, 94:39–74. Genes and Obesity. Academic Press. https://doi.org/10.1016/B978-0-12-375003-7.00003-0.
+obesity_genes <- c("ADRB2","GPR74", "GPR74", "PPARG", "SREBP1", "ADIPOQ","ARL15", obesity_genes)
+
+warning(c("Confirm that these genes are relevant for fat: ", paste(obesity_genes,  sep=" ", collapse=" ")))
 
 # _2.) Filter data to obesity genes and check ----
 
-SE_list_og <- lapply(SE_list, function(seob) seob[   which( rowData(seob)[["SYMBOL"]] %in% obesity_genes ) ] )
-lapply(SE_list_og,  function(seob) toupper(rowData(seob)[["SYMBOL"]]))
+SE_all_tissues_obs_genes <- lapply(SE_all_tissues_all_genes, function(seob) seob[   which( rowData(seob)[["SYMBOL"]] %in% obesity_genes ) ] )
+lapply(SE_all_tissues_obs_genes,  function(seob) toupper(rowData(seob)[["SYMBOL"]]))
 
-# _3.) Show obesity genes ----
+# _3.) Show and plot obesity genes ----
 
 # https://github.com/plger/sechm
 # https://www.bioconductor.org/packages/release/bioc/vignettes/sechm/inst/doc/sechm.html
 
-# get a compiund plot
-plot_heatmap_all_tissues_oebesity_genes <- ggarrange(
-  grid.grabExpr(draw(get_one_heatmap(SE_list_og[[1]]))),
-  grid.grabExpr(draw(get_one_heatmap(SE_list_og[[2]]))),
-  grid.grabExpr(draw(get_one_heatmap(SE_list_og[[3]]))),
-  grid.grabExpr(draw(get_one_heatmap(SE_list_og[[4]]))),
+# get a compound plot
+plot_heatmap_all_tissues_obesity_genes <- ggarrange(
+  grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[1]]))),
+  grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[2]]))),
+  grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[3]]))),
+  grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[4]]))),
   labels = list("a: BRAT", "b: IWAT", "c: LIVT", "d: EVAT"),
   font.label = list(size = 14, face = "bold"),
   ncol = 2, nrow = 2, hjust = "0", vjust = "0")
 
 # show plot
-plot_heatmap_all_tissues_oebesity_genes
+plot_heatmap_all_tissues_obesity_genes
 
 # save plot
-ggsave(plot = plot_heatmap_all_tissues_oebesity_genes, path = here("plots"), 
+ggsave(plot = plot_heatmap_all_tissues_obesity_genes, path = here("plots"), 
        filename = "055_r_array_analysis__plot_expr_obesity_flat.pdf",  
        width = 180, height = 85, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
-ggsave(plot = plot_heatmap_all_tissues_oebesity_genes, path = here("../manuscript/display_items"), 
+ggsave(plot = plot_heatmap_all_tissues_obesity_genes, path = here("../manuscript/display_items"), 
        filename = "055_r_array_analysis__plot_expr_obesity_flat_unassigned.pdf",  
        width = 180, height = 85, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# >>> Code construction in progress - implementing new analysis flow here. ----
-
-warning("Code construction in progress.")
-
-# Look for DEGs using contrasts among all  tissues ---- 
+# Inspect DEGs  ---- 
 
 # Get Suppl. Tables 1-6.  Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
 
 # _1.) Compile data ----
 
-# __a) Use these full objects 
-SE_list
-names(SE_list) 
+# __a) Use these full objects ----
 
-# __b) Use these obesity genes if needed
+SE_all_tissues_all_genes
+names(SE_all_tissues_all_genes) 
+
+# __b) Use these obesity genes if needed ----
 
 obesity_genes 
 warning(c("Confirm that these genes are relvant for fat: ", paste(obesity_genes,  sep=" ", collapse=" ")))
 
-# __c) Use these objects which only contain obesity-relevant genes  
+# __c) Use these objects which only contain obesity-relevant genes  ----
 
-SE_list_og
-names(SE_list_og) 
+SE_all_tissues_obs_genes
+names(SE_all_tissues_obs_genes) 
 
-# _2.) Get differential expressed genes  ----
+# _2.) Isolate DEGs  ----
 
 # __a) For all genes ----
-SE_list_degs <- lapply(SE_list, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 2))
 
-# __b) For genes of interest, related to obesity  ----
-SE_list_og_degs <- lapply(SE_list_og, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 2))
+SE_all_tissues_all_genes <- lapply(SE_all_tissues_all_genes, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 2))
 
-# in IWAT LEPR is deferentially expressed when father is on western diet (CD CD - CD WD)
-# see DEGS: TC0400001039.mm.2 and see: rowData(SE_list_og[["IWAT"]])
+# __b) For genes of interest related to obesity  ----
 
-# __c) export as Excel table ----
+SE_all_tissues_obs_genes <- lapply(SE_all_tissues_obs_genes, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 2))
+
+# __c) Flatten DEG lists to tibbles ----
+
+warning("List of tissues is flatetned here.")
+DEGs_all_tissues_all_genes <- bind_rows(lapply(SE_all_tissues_all_genes, get_flat_deg_lists))
+DEGs_all_tissues_obs_genes <- bind_rows(lapply(SE_all_tissues_obs_genes, get_flat_deg_lists))
+
+# _3.) Check DEG lists ----
+
+# __a) Look at lists ----
+
+DEGs_all_tissues_all_genes %>% arrange(TISSUE, CONTRASTS, abs(LOGFC)) %>% print(n = Inf) 
+DEGs_all_tissues_obs_genes %>% arrange(TISSUE, CONTRASTS, abs(LOGFC)) %>% print(n = Inf) 
+
+# __b) Establish whether there is an intersection between full DEG lists and DEG list derived from obesity - only gene lists ----
+
+if (identical(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_all_genes[["SYMBOL"]])], character(0))){
+  message("No obesity relavent genes found among full DEG list, consider providing more target genes.")
+  } else {
+  message("Found ", paste(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_all_genes[["SYMBOL"]])], sep=" ", collapse=" " ) )
+  
+}
+
+if (identical(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_obs_genes[["SYMBOL"]])], character(0))){
+  message("No obesity relavent genes found among full DEG list, consider providing more target genes.")
+} else {
+  message("Found ", paste(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_obs_genes[["SYMBOL"]])], sep=" ", collapse=" " ), " in obesity specific lists." )
+  
+}
+
+# >>> Code below needs outlining again ----
+stop("No obesity genes found differentially expressed - reoutline code below.")
+
+# __c) Export as Excel table ----
 
 # [continue here]
 
-# Describe intersections of full DEG lists, including possible obesity related genes  ----
+# __d) Get Upset Plot ----
+
+# [continue here]
 
 # Get Fig. 3: Upset plot of intersections of full list for all contrasts
 
-# [continue here]
+# Subset DEG  lists to set differences among all contrasts in each of the 4 tissues. ----
 
-# Subest DEG  lists to set differences among all contrasts in each of the 4 tissues. ----
+# Get Suppl. Tables 6-12. Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
 
-# Get Suppl. Tables 6-12.  Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
-
-# Decsribe  besity related genes in intersections of set different DEG lists ----
+# Describe obesity related genes in intersections of set different DEG lists ----
 
 #  Get Fig. 4: Upset plot of intersections of full list for all contrasts
 
-# GSEA of set differencess with unique obesity genes
+# GSEA of set differences with unique obesity genes
 
 # Get Suppl. Tab 12-n 
 
 # Save Environment ----
 
-
-
 stop("Unadjusted old analysis code below - possibly integrate into code above. ")
 
-
 # >>> Unadjusted old analysis code below - possibly integrate into code above. ----
-
-
 
 # _2.) DGE analysis using Limma ----
 

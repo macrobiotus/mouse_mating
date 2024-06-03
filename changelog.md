@@ -1027,6 +1027,18 @@
    * erased superseded functions, committed
    * purged experimental code, committed
    * finished DEG search function, committed
+   * updated gene list
+
+## 03-06-2024 - work day 92 - revising manuscript and array analysis
+  
+ * working in `055_r_array_analysis.r`
+   * starting to work on list flattering code
+   * finished list flattening code
+   * re-outlined
+   * No obesity genes found differentially expressed - discuss with NKB.
+   * commit 
+
+
 
 ## Todo queue (last updated 30-05-2024)
 
@@ -1037,6 +1049,7 @@
      * [ ] encode new analysis after PCA
      * [x] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues 
        * [ ] **check again which obesity - relavant genes  are worthy of inspection in fat**
+       * [ ] compare full and obesity-only gene lists, are they congruent?
      * [ ] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists). 
      * [ ] 3.) **Fig. 3**: Upset plot of intersections of full list - highlight obesity related genes
      * [ ] 4.) **Supple Tables 6-12**: put these lists together per tissue and see which contrasts differentially express unique genes.
@@ -1061,7 +1074,7 @@
    * [ ] revise from start
    * [ ] improve figure 1 - diet labelling
    * [ ] move PCA analysis out of the way
-   * [ ] adjust manuscript for obesity genes
+   * [ ] adjust manuscript for obesity genes - **reimport figure**
    * [ ] adjust manuscript for 3 contrsts
    * [ ] adjust methods and results descriptin 
    * [ ] refresh results with PCA analysis sucessor and tested contrasts
