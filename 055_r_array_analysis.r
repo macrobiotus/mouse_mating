@@ -329,11 +329,11 @@ get_deg_lists = function(se_ob, peval = 0.05, logfc = 2.0){
   
   # Defining contrasts
   contrast_list <- vector(mode = "list", length = 6)
-  names(contrast_list) <- c("CD CD - WD WD", "CD CD - CD WD", "CD CD - WD CD", "WD WD - CD CD", "WD WD - WD CD", "WD CD - CD WD")
+  names(contrast_list) <- c("CD CD - WD WD", "CD CD - CD WD", "CD CD - WD CD", "WD WD - CD WD", "WD WD - WD CD", "WD CD - CD WD")
   contrast_list[[1]]  <- makeContrasts("CD CD - WD WD" =  CD.CD - WD.WD, levels = model_matrix)
   contrast_list[[2]]  <- makeContrasts("CD CD - CD WD" =  CD.CD - CD.WD, levels = model_matrix)
   contrast_list[[3]]  <- makeContrasts("CD CD - WD CD" =  CD.CD - WD.CD, levels = model_matrix)
-  contrast_list[[4]]  <- makeContrasts("WD WD - CD WD" =  WD.WD - CD.CD, levels = model_matrix)
+  contrast_list[[4]]  <- makeContrasts("WD WD - CD WD" =  WD.WD - CD.WD, levels = model_matrix)
   contrast_list[[5]]  <- makeContrasts("WD WD - WD CD" =  WD.WD - WD.CD, levels = model_matrix)
   contrast_list[[6]]  <- makeContrasts("WD CD - CD WD" =  WD.CD - CD.WD, levels = model_matrix)
   
@@ -1121,8 +1121,13 @@ DEGs_all_tissues_obs_genes <- bind_rows(lapply(SE_all_tissues_obs_genes, get_fla
 
 # __a) Look at lists ----
 
-DEGs_all_tissues_all_genes %>% arrange(TISSUE, CONTRASTS, abs(LOGFC)) %>% print(n = Inf) 
-DEGs_all_tissues_obs_genes %>% arrange(TISSUE, CONTRASTS, abs(LOGFC)) %>% print(n = Inf) 
+DEGs_all_tissues_all_genes %<>% arrange(TISSUE, CONTRASTS, abs(LOGFC)) 
+DEGs_all_tissues_obs_genes %<>% arrange(TISSUE, CONTRASTS, abs(LOGFC)) 
+
+DEGs_all_tissues_all_genes %>% print(n = Inf) 
+DEGs_all_tissues_obs_genes %>% print(n = Inf)
+
+# for nkb look at numerical values
 
 # __b) Establish whether there is an intersection between full DEG lists and DEG list derived from obesity - only gene lists ----
 
@@ -1140,14 +1145,33 @@ if (identical(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_obs_genes[
   
 }
 
+# __c) Export results as Excel table ----
+
+write_xlsx(DEGs_all_tissues_all_genes, path = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__degs_all_tissues_all_genes.xlsx", col_names = TRUE, format_headers = TRUE)
+write_xlsx(DEGs_all_tissues_obs_genes, path = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__degs_all_tissues_obs_genes.xlsx", col_names = TRUE, format_headers = TRUE)
+
+get_raw_summaries <- function(se) {
+  
+  require("SummarizedExperiment")
+  
+  # se <- SE_all_tissues_obs_genes[[1]]
+  
+  rownames(assays(se, withDimnames=FALSE)[["exprs"]])  <- rowData(se)[which(rownames(assay(se)) %in% rownames(rowData(se))) ,"SYMBOL"]
+  colnames(assays(se, withDimnames=FALSE)[["exprs"]])  <- colData(se)[which(colnames(assay(se)) %in% rownames(colData(se))) ,"ParentalDietMoFa"]
+  
+  return(assays(se, withDimnames=FALSE)[["exprs"]])
+}
+
+# extra export for NKB only
+raw_expression__all_tissues_obs_genes <- lapply(SE_all_tissues_obs_genes, get_raw_summaries)
+capture.output(raw_expression__all_tissues_obs_genes, file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__raw_summary__all_tissues_obs_genes.txt")
+
+# __d) Get Upset Plot ----
+
 # >>> Code below needs outlining again ----
 stop("No obesity genes found differentially expressed - reoutline code below.")
 
-# __c) Export as Excel table ----
 
-# [continue here]
-
-# __d) Get Upset Plot ----
 
 # [continue here]
 

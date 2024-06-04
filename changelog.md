@@ -1038,24 +1038,33 @@
    * No obesity genes found differentially expressed - discuss with NKB.
    * commit 
 
+## 04-06-2024 - work day 92 - revising manuscript and array analysis
 
+ * meeting with NKB
+ * working in `055_r_array_analysis.r`
+   * correcting error in DEG calling function
+   * exporting DEG list as Excel for NKB
+   * exporting obesity genes as raw fro NKB
+   * commit 
 
-## Todo queue (last updated 30-05-2024)
+## Todo queue (last updated 04-06-2024)
 
  * **analysis work**
    * [x] in `015_r_use_saemix.R`
      * [ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
    * [ ] script `55_r_array_analysis.r`
      * [ ] encode new analysis after PCA
-     * [x] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues 
-       * [ ] **check again which obesity - relavant genes  are worthy of inspection in fat**
-       * [ ] compare full and obesity-only gene lists, are they congruent?
-     * [ ] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists). 
-     * [ ] 3.) **Fig. 3**: Upset plot of intersections of full list - highlight obesity related genes
-     * [ ] 4.) **Supple Tables 6-12**: put these lists together per tissue and see which contrasts differentially express unique genes.
-     * [ ] 5.) **Fig. 4**: Upset plot of intersections of setdiffs list - highlight obesity related genes
-     * [ ] 6.) **Suppl. Tab 12-n** GSEA of settdifs with unique obesity genes
-     * [ ] Where the search as described in 3. is successful, look at the full list using Gene Set Enrichment analysis. 
+     * [x] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues. 
+     * [ ] **check again which obesity - relavant genes  are worthy of inspection in fat**
+     * [ ] adjust LFC treshholds  
+     * [x] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
+     * [x] compare full and obesity-only gene lists, are they congruent? **no**
+     * [ ] wait for NKB to check gene lists - re-outline analysis steps below.
+     * ~~[ ] 3.) **Fig. 3**: Upset plot of intersections of full list - highlight obesity related genes~~ **no intersection**
+     * ~~[ ] 4.) **Supple Tables 6-12**: put these lists together per tissue and see which contrasts differentially express unique genes.~~
+     * ~~[ ] 5.) **Fig. 4**: Upset plot of intersections of setdiffs list - highlight obesity related genes.~~ **no intersection** 
+     * ~~[ ] 6.) **Suppl. Tab 12-n** GSEA of settdifs with unique obesity genes.~~
+     * ~~[ ] Where the search as described in 3. is successful, look at the full list using Gene Set Enrichment analysis.~~
  * **overall revision work**
    * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
    * [x] commit - branch repository - commit
