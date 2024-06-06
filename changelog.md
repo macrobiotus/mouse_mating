@@ -1047,7 +1047,12 @@
    * exporting obesity genes as raw fro NKB
    * commit 
 
-## Todo queue (last updated 04-06-2024)
+## 06-06-2024 - work day 93 - revising manuscript and array analysis
+
+ * relaxing lfc treshhold to 1.5
+ * met with NKB - updated todo
+
+## Todo queue (last updated 06-06-2024)
 
  * **analysis work**
    * [x] in `015_r_use_saemix.R`
@@ -1056,10 +1061,11 @@
      * [ ] encode new analysis after PCA
      * [x] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues. 
      * [ ] **check again which obesity - relavant genes  are worthy of inspection in fat**
-     * [ ] adjust LFC treshholds  
+     * [x] **raise**  LFC thresholds
+     * [ ] **consider GSEA** - see Omentin paper for resources - take contrats with most DEG and run GSEA on few of them
      * [x] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
      * [x] compare full and obesity-only gene lists, are they congruent? **no**
-     * [ ] wait for NKB to check gene lists - re-outline analysis steps below.
+     * [x] wait for NKB to check gene lists - re-outline analysis steps below.
      * ~~[ ] 3.) **Fig. 3**: Upset plot of intersections of full list - highlight obesity related genes~~ **no intersection**
      * ~~[ ] 4.) **Supple Tables 6-12**: put these lists together per tissue and see which contrasts differentially express unique genes.~~
      * ~~[ ] 5.) **Fig. 4**: Upset plot of intersections of setdiffs list - highlight obesity related genes.~~ **no intersection** 
@@ -1067,6 +1073,7 @@
      * ~~[ ] Where the search as described in 3. is successful, look at the full list using Gene Set Enrichment analysis.~~
  * **overall revision work**
    * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
+   * [ ] justify lfc raise beyond citet reference - no cancer study
    * [x] commit - branch repository - commit
    * [x] adress as many comments as reasonable without re-running code
    * [x] revise introduction - **now done up until modelling**

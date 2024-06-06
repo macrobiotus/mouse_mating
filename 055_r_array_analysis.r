@@ -1047,6 +1047,9 @@ obesity_genes <- c("EGR2", "GREM1", "NPY1R", obesity_genes)
 # genes from Dahlman, Ingrid, and Peter Arner. 2010. “Chapter 3 - Genetics of Adipose Tissue Biology.” In Progress in Molecular Biology and Translational Science, edited by Claude Bouchard, 94:39–74. Genes and Obesity. Academic Press. https://doi.org/10.1016/B978-0-12-375003-7.00003-0.
 obesity_genes <- c("ADRB2","GPR74", "GPR74", "PPARG", "SREBP1", "ADIPOQ","ARL15", obesity_genes)
 
+# genes from NKB.
+obesity_genes <- c("REPIN1", "YY1", "ITLN1", " CASKIN2", obesity_genes)
+
 warning(c("Confirm that these genes are relevant for fat: ", paste(obesity_genes,  sep=" ", collapse=" ")))
 
 # _2.) Filter data to obesity genes and check ----
@@ -1105,11 +1108,11 @@ names(SE_all_tissues_obs_genes)
 
 # __a) For all genes ----
 
-SE_all_tissues_all_genes <- lapply(SE_all_tissues_all_genes, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 2))
+SE_all_tissues_all_genes <- lapply(SE_all_tissues_all_genes, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 1.5))
 
 # __b) For genes of interest related to obesity  ----
 
-SE_all_tissues_obs_genes <- lapply(SE_all_tissues_obs_genes, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 2))
+SE_all_tissues_obs_genes <- lapply(SE_all_tissues_obs_genes, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 1.5))
 
 # __c) Flatten DEG lists to tibbles ----
 
@@ -1127,7 +1130,7 @@ DEGs_all_tissues_obs_genes %<>% arrange(TISSUE, CONTRASTS, abs(LOGFC))
 DEGs_all_tissues_all_genes %>% print(n = Inf) 
 DEGs_all_tissues_obs_genes %>% print(n = Inf)
 
-# for nkb look at numerical values
+# for NKB look at numerical values
 
 # __b) Establish whether there is an intersection between full DEG lists and DEG list derived from obesity - only gene lists ----
 
@@ -1135,15 +1138,13 @@ if (identical(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_all_genes[
   message("No obesity relavent genes found among full DEG list, consider providing more target genes.")
   } else {
   message("Found ", paste(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_all_genes[["SYMBOL"]])], sep=" ", collapse=" " ) )
-  
-}
+  }
 
 if (identical(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_obs_genes[["SYMBOL"]])], character(0))){
-  message("No obesity relavent genes found among full DEG list, consider providing more target genes.")
-} else {
+  message("No obesity relavent genes found among obesity DEG list, consider providing more target genes.")
+  } else {
   message("Found ", paste(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_obs_genes[["SYMBOL"]])], sep=" ", collapse=" " ), " in obesity specific lists." )
-  
-}
+  }
 
 # __c) Export results as Excel table ----
 
