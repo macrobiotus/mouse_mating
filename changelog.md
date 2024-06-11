@@ -1049,9 +1049,21 @@
 
 ## 06-06-2024 - work day 93 - revising manuscript and array analysis
 
- * relaxing lfc treshhold to 1.5
- * met with NKB - updated todo
+ 
+ * working in `055_r_array_analysis.r`
+   * relaxing lfc threshold to 1.5
+ * met with NKB
+ * updated todo
 
+## 11-06-2024 - work day 93 - revising manuscript and array analysis
+
+ * working in `055_r_array_analysis.r`
+   * tightening lfc threshold to 1.8
+   * implemented upset plot
+ * drafted out most profound manuscript changes
+ * updated ToDo
+ * ready to go for Gene Set Enrichment Analysis
+ 
 ## Todo queue (last updated 06-06-2024)
 
  * **analysis work**
@@ -1060,13 +1072,15 @@
    * [ ] script `55_r_array_analysis.r`
      * [ ] encode new analysis after PCA
      * [x] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues. 
-     * [ ] **check again which obesity - relavant genes  are worthy of inspection in fat**
-     * [x] **raise**  LFC thresholds
-     * [ ] **consider GSEA** - see Omentin paper for resources - take contrats with most DEG and run GSEA on few of them
      * [x] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
+     * [x] 3.) **Fig. 3**: Upset plot of intersections of full list highlight shared and uniqe genes ~~obesity related genes~~
+        * [x] upset plots with shared and unshared genes - deal with unique and duplicate genes
+     * [ ] implement GSEA
+     * [ ] 4.) **Fig. 4**: GSEA - use all DEG lists - see which return best results
+        * [ ] **check again which obesity - relavant genes  are worthy of inspection in fat**
+     * [x] **raise**  LFC thresholds
      * [x] compare full and obesity-only gene lists, are they congruent? **no**
      * [x] wait for NKB to check gene lists - re-outline analysis steps below.
-     * ~~[ ] 3.) **Fig. 3**: Upset plot of intersections of full list - highlight obesity related genes~~ **no intersection**
      * ~~[ ] 4.) **Supple Tables 6-12**: put these lists together per tissue and see which contrasts differentially express unique genes.~~
      * ~~[ ] 5.) **Fig. 4**: Upset plot of intersections of setdiffs list - highlight obesity related genes.~~ **no intersection** 
      * ~~[ ] 6.) **Suppl. Tab 12-n** GSEA of settdifs with unique obesity genes.~~

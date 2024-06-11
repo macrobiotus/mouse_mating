@@ -75,6 +75,10 @@ suppressMessages(require(igraph))
 
 library(sechm) # heatmap 
 
+library("UpSetR")
+library("ggupset")
+
+
 
 
 # _3.) Encode plotting colours  ----
@@ -382,6 +386,37 @@ get_flat_deg_lists = function(se_ob){
   
   return(flat_list)
   
+}
+
+# Export of raw values with sample annotation for NKB
+get_raw_summaries <- function(se) {
+  
+  require("SummarizedExperiment")
+  
+  # se <- SE_all_tissues_obs_genes[[1]]
+  
+  rownames(assays(se, withDimnames=FALSE)[["exprs"]])  <- rowData(se)[which(rownames(assay(se)) %in% rownames(rowData(se))) ,"SYMBOL"]
+  colnames(assays(se, withDimnames=FALSE)[["exprs"]])  <- colData(se)[which(colnames(assay(se)) %in% rownames(colData(se))) ,"ParentalDietMoFa"]
+  
+  return(assays(se, withDimnames=FALSE)[["exprs"]])
+}
+
+# Transform upset plot into grid that can be used by ggarraange and ggsave for the manuscript
+get_arrangeable_upset_plot = function(upset_plot) {
+  require("cowplot")
+  
+  return(
+    cowplot::plot_grid(
+      NULL,
+      upset_plot$Main_bar,
+      upset_plot$Sizes,
+      upset_plot$Matrix,
+      nrow = 2,
+      align = 'hv',
+      rel_heights = c(1, 1),
+      rel_widths = c(1, 1)
+    )
+  )
 }
 
 # All functions below are unrevised ----
@@ -1109,20 +1144,22 @@ names(SE_all_tissues_obs_genes)
 # __a) For all genes ----
 
 SE_all_tissues_all_genes <- lapply(SE_all_tissues_all_genes, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 1.5))
+warning("LFC treshhold justification should be justified in manuscript")
 
 # __b) For genes of interest related to obesity  ----
 
 SE_all_tissues_obs_genes <- lapply(SE_all_tissues_obs_genes, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 1.5))
+warning("LFC treshhold justification should be justified in manuscript")
+        
+# _3.) Analyse DEG lists ----
 
-# __c) Flatten DEG lists to tibbles ----
+# __a) Flatten DEG lists to tibbles ----
 
-warning("List of tissues is flatetned here.")
+warning("List of tissues is flattened here.")
 DEGs_all_tissues_all_genes <- bind_rows(lapply(SE_all_tissues_all_genes, get_flat_deg_lists))
 DEGs_all_tissues_obs_genes <- bind_rows(lapply(SE_all_tissues_obs_genes, get_flat_deg_lists))
 
-# _3.) Check DEG lists ----
-
-# __a) Look at lists ----
+# __b) Look at lists ----
 
 DEGs_all_tissues_all_genes %<>% arrange(TISSUE, CONTRASTS, abs(LOGFC)) 
 DEGs_all_tissues_obs_genes %<>% arrange(TISSUE, CONTRASTS, abs(LOGFC)) 
@@ -1130,12 +1167,10 @@ DEGs_all_tissues_obs_genes %<>% arrange(TISSUE, CONTRASTS, abs(LOGFC))
 DEGs_all_tissues_all_genes %>% print(n = Inf) 
 DEGs_all_tissues_obs_genes %>% print(n = Inf)
 
-# for NKB look at numerical values
-
-# __b) Establish whether there is an intersection between full DEG lists and DEG list derived from obesity - only gene lists ----
+# __c) Establish whether there is an intersection between full DEG lists and DEG list derived from obesity - only gene lists ----
 
 if (identical(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_all_genes[["SYMBOL"]])], character(0))){
-  message("No obesity relavent genes found among full DEG list, consider providing more target genes.")
+  message("No self-defined obesity relavent genes found among full DEG list, consider providing more target genes.")
   } else {
   message("Found ", paste(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_all_genes[["SYMBOL"]])], sep=" ", collapse=" " ) )
   }
@@ -1146,51 +1181,90 @@ if (identical(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_obs_genes[
   message("Found ", paste(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_obs_genes[["SYMBOL"]])], sep=" ", collapse=" " ), " in obesity specific lists." )
   }
 
-# __c) Export results as Excel table ----
+# __d) Export results as Excel table ----
 
 write_xlsx(DEGs_all_tissues_all_genes, path = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__degs_all_tissues_all_genes.xlsx", col_names = TRUE, format_headers = TRUE)
 write_xlsx(DEGs_all_tissues_obs_genes, path = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__degs_all_tissues_obs_genes.xlsx", col_names = TRUE, format_headers = TRUE)
 
-get_raw_summaries <- function(se) {
-  
-  require("SummarizedExperiment")
-  
-  # se <- SE_all_tissues_obs_genes[[1]]
-  
-  rownames(assays(se, withDimnames=FALSE)[["exprs"]])  <- rowData(se)[which(rownames(assay(se)) %in% rownames(rowData(se))) ,"SYMBOL"]
-  colnames(assays(se, withDimnames=FALSE)[["exprs"]])  <- colData(se)[which(colnames(assay(se)) %in% rownames(colData(se))) ,"ParentalDietMoFa"]
-  
-  return(assays(se, withDimnames=FALSE)[["exprs"]])
-}
+# __e) Export results as with raw values  ----
 
 # extra export for NKB only
 raw_expression__all_tissues_obs_genes <- lapply(SE_all_tissues_obs_genes, get_raw_summaries)
 capture.output(raw_expression__all_tissues_obs_genes, file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__raw_summary__all_tissues_obs_genes.txt")
 
-# __d) Get Upset Plot ----
+# __f) Get and export Upset Plots ----
 
-# >>> Code below needs outlining again ----
-stop("No obesity genes found differentially expressed - reoutline code below.")
+# Use upset plots of DEG results to decide opon which tissues and contrasts to discuss further.
 
+# check if there are any overlaps among data - only then upset plots are useful
+DEGs_all_tissues_all_genes %>% 
+  # filter distinct symbols from multiple probe ids
+  distinct(TISSUE, CONTRASTS, SYMBOL, .keep_all=TRUE) %>% 
+  # group by distinct symbols for each tissue and contrast
+  group_by(TISSUE, SYMBOL) %>% filter(n() != 1) %>%
+  # re-arrange for visibility
+  arrange(SYMBOL, CONTRASTS, abs(LOGFC)) %>%
+  # nothing is left - ther is no overlap between 
+  print(n = Inf)
 
+upset_flat <- DEGs_all_tissues_all_genes %>%
+  distinct(TISSUE, CONTRASTS, SYMBOL) %>%
+  mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
+  pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
+  as.data.frame() %>%
+  UpSetR::upset(order.by = "freq", sets =  c("WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "CD CD - CD WD", "CD CD - WD CD", "WD CD - CD WD"), keep.order = TRUE) %>%
+  get_arrangeable_upset_plot
 
-# [continue here]
+upsp_evat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "EVAT") %>%
+  distinct(TISSUE, CONTRASTS, SYMBOL) %>%
+  mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
+  pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
+  as.data.frame() %>%
+  UpSetR::upset(order.by = "freq", sets =  c("CD CD - WD CD", "CD CD - WD WD"), keep.order = TRUE) %>%
+  get_arrangeable_upset_plot
 
-# Get Fig. 3: Upset plot of intersections of full list for all contrasts
+upsp_brat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "BRAT") %>%
+  distinct(TISSUE, CONTRASTS, SYMBOL) %>%
+  mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
+  pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
+  as.data.frame() %>%
+  UpSetR::upset(order.by = "freq", sets =  c("WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "CD CD - CD WD", "CD CD - WD CD"), keep.order = TRUE) %>%
+  get_arrangeable_upset_plot
 
-# Subset DEG  lists to set differences among all contrasts in each of the 4 tissues. ----
+upset_livt <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "LIVT") %>%
+  distinct(TISSUE, CONTRASTS, SYMBOL) %>%
+  mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
+  pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
+  as.data.frame() %>%
+  UpSetR::upset(order.by = "freq", sets =  c("CD CD - CD WD", "WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "WD CD - CD WD"), keep.order = TRUE) %>%
+  get_arrangeable_upset_plot
 
-# Get Suppl. Tables 6-12. Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
+# upsp_iwat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "IWAT") %>%
+#   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
+#   mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
+#   pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
+#   as.data.frame() %>%
+#   UpSetR::upset(order.by = "freq", sets =  c("CD CD - CD WD", "WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "WD CD - CD WD"), keep.order = TRUE) %>%
+#   get_arrangeable_upset_plot
 
-# Describe obesity related genes in intersections of set different DEG lists ----
+upset_compound <- ggarrange(upset_flat, upsp_evat, upsp_brat, upset_livt, labels = list("a: all tissues", "b: EVAT", "c: BRAT", "d: LIVT"))
 
-#  Get Fig. 4: Upset plot of intersections of full list for all contrasts
+# Get SI Fig 9.: Upset plot of intersections of full list for all contrasts
 
-# GSEA of set differences with unique obesity genes
+ggsave(upset_compound, width = 148, height = 105, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.5,
+       file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__upset_compound.pdf")
+       
+# GSEA of set differences with unique obesity genes ----
+
+warning("Continue here with coding")
 
 # Get Suppl. Tab 12-n 
 
-# Save Environment ----
+# Snapshot environment ----
+
+sessionInfo()
+save.image(file = here("scripts", "055_r_array_analysis.RData"))
+renv::snapshot()
 
 stop("Unadjusted old analysis code below - possibly integrate into code above. ")
 
@@ -1204,8 +1278,6 @@ stop("Unadjusted old analysis code below - possibly integrate into code above. "
 # **use this!** - Limma slides at  https://kasperdanielhansen.github.io/genbioconductor/html/limma.html
 # see also here for LFC shrinkage and genral procedure https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/08_practical_DE.pdf
 # see here why shrinking LFCs is considered unenecssary by the limma authors - https://support.bioconductor.org/p/100804/
-
-
 
 # __a) Test for DGE for each tissue against all others, using FLAT ----
 
@@ -1566,11 +1638,6 @@ ggsave(plot = ggarrange(plotlist =  FULL_GoPlots, ncol = 2, labels = "auto"), fi
 
 # #' Experimental: DGE-analysis using GAMs - Investigate overall tissue specific expression differences based on obesity variables
 
-# Snapshot environment ----
-
-sessionInfo()
-save.image(file = here("scripts", "050_r_array_analysis.RData"))
-renv::snapshot()
 
 # >>> Reference code from AH ----
 
