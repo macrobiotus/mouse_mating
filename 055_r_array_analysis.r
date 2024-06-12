@@ -419,6 +419,34 @@ get_arrangeable_upset_plot = function(upset_plot) {
   )
 }
 
+# get Gene Set Object from limma top table - see https://learn.gencore.bio.nyu.edu/rna-seq-analysis/gene-set-enrichment-analysis/
+get_gse_object = function(top_table, pvc = 1){
+  
+  # stop("Erase function building code")
+  # top_table <- top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]]
+  
+  # pre-processing
+  # as per https://learn.gencore.bio.nyu.edu/rna-seq-analysis/gene-set-enrichment-analysis/
+  query <- top_table[["logFC"]]
+  names(query) <- str_to_title(top_table[["SYMBOL"]])
+  query <- sort(query, decreasing = TRUE)
+  
+  # run gene set enrichment
+  # as per https://learn.gencore.bio.nyu.edu/rna-seq-analysis/gene-set-enrichment-analysis/
+  gse_result <- gseGO(geneList = query, 
+                      ont ="ALL", 
+                      keyType = "SYMBOL", 
+                      minGSSize = 3, 
+                      maxGSSize = 800, 
+                      pvalueCutoff = pvc, 
+                      verbose = TRUE, 
+                      OrgDb = "org.Mm.eg.db", 
+                      pAdjustMethod = "BH")
+  # ... 
+  return(gse_result)
+  
+}
+
 # All functions below are unrevised ----
 
 # Get Volcano plots
@@ -1085,6 +1113,12 @@ obesity_genes <- c("ADRB2","GPR74", "GPR74", "PPARG", "SREBP1", "ADIPOQ","ARL15"
 # genes from NKB.
 obesity_genes <- c("REPIN1", "YY1", "ITLN1", " CASKIN2", obesity_genes)
 
+# genes from Ginete, Catarina, Bernardo Serrasqueiro, José Silva-Nunes, Luísa Veiga, and Miguel Brito. 2021. “Identification of Genetic Variants in 65 Obesity Related Genes in a Cohort of Portuguese Obese Individuals.” Genes 12 (4): 603. https://doi.org/10.3390/genes12040603.
+obesity_genes <- c("ADRB2", "ALMS1", "BBS9", "IGF2R", "IGF2R", "IRS1", "LRP2", "NPY1R", "NTRK2", "POMC", "SPG11", "SPG11", obesity_genes)
+
+# some cleaning
+obesity_genes <- sort(unique(obesity_genes))
+
 warning(c("Confirm that these genes are relevant for fat: ", paste(obesity_genes,  sep=" ", collapse=" ")))
 
 # _2.) Filter data to obesity genes and check ----
@@ -1215,7 +1249,7 @@ upset_flat <- DEGs_all_tissues_all_genes %>%
   UpSetR::upset(order.by = "freq", sets =  c("WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "CD CD - CD WD", "CD CD - WD CD", "WD CD - CD WD"), keep.order = TRUE) %>%
   get_arrangeable_upset_plot
 
-upsp_evat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "EVAT") %>%
+upset_evat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "EVAT") %>%
   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
   mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
   pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
@@ -1223,13 +1257,22 @@ upsp_evat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "EVAT") %>%
   UpSetR::upset(order.by = "freq", sets =  c("CD CD - WD CD", "CD CD - WD WD"), keep.order = TRUE) %>%
   get_arrangeable_upset_plot
 
-upsp_brat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "BRAT") %>%
+upset_brat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "BRAT") %>%
   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
   mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
   pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
   as.data.frame() %>%
   UpSetR::upset(order.by = "freq", sets =  c("WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "CD CD - CD WD", "CD CD - WD CD"), keep.order = TRUE) %>%
   get_arrangeable_upset_plot
+
+# upset_iwat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "IWAT") %>%
+#   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
+#   mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
+#    pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
+#    as.data.frame() %>%
+#    UpSetR::upset(order.by = "freq", sets =  c("CD CD - CD WD", "WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "WD CD - CD WD"), keep.order = TRUE) %>%
+#    get_arrangeable_upset_plot
+
 
 upset_livt <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "LIVT") %>%
   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
@@ -1239,26 +1282,40 @@ upset_livt <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "LIVT") %>%
   UpSetR::upset(order.by = "freq", sets =  c("CD CD - CD WD", "WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "WD CD - CD WD"), keep.order = TRUE) %>%
   get_arrangeable_upset_plot
 
-# upsp_iwat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "IWAT") %>%
-#   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
-#   mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
-#   pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
-#   as.data.frame() %>%
-#   UpSetR::upset(order.by = "freq", sets =  c("CD CD - CD WD", "WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "WD CD - CD WD"), keep.order = TRUE) %>%
-#   get_arrangeable_upset_plot
 
-upset_compound <- ggarrange(upset_flat, upsp_evat, upsp_brat, upset_livt, labels = list("a: all tissues", "b: EVAT", "c: BRAT", "d: LIVT"))
+upset_compound <- ggarrange(upset_flat, upset_evat, upset_brat, upset_livt, labels = list("a: all tissues", "b: EVAT", "c: BRAT", "d: LIVT"))
 
 # Get SI Fig 9.: Upset plot of intersections of full list for all contrasts
 
-ggsave(upset_compound, width = 148, height = 105, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.5,
+ggsave(upset_compound, width = 200, height = 100, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.7,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__upset_compound.pdf")
        
-# GSEA of set differences with unique obesity genes ----
+# Gene Set Enrichmnet Analysis from relevant tissues and contrasts ----
 
-warning("Continue here with coding")
+# _1.) Load packages (move up) ----
 
-# Get Suppl. Tab 12-n 
+library("clusterProfiler")
+library("org.Mm.eg.db")
+library("enrichplot")
+
+# _2.) Isolate a list of DEG top tables from relevant tissues and contrasts ----
+
+# here using the strongest contrasts identified on the UpSet plot above: CD CD - WD WD, in all tissues.
+
+top_table_list_relevant_contrasts <-  vector(mode = "list", length = 4)
+names(top_table_list_relevant_contrasts) = c("EVAT: CD CD - WD WD",
+                                             "BRAT: CD CD - WD WD",
+                                             "IWAT: CD CD - WD WD",
+                                             "LIVT: CD CD - WD WD")
+
+top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes[["EVAT"]])[["toptable_list"]][["CD CD - WD WD"]]
+top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]]
+top_table_list_relevant_contrasts[["IWAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes[["IWAT"]])[["toptable_list"]][["CD CD - WD WD"]]
+top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]]
+
+# _3.) Get Gene Set Object from Limma-like top tables in a list ----
+
+gse_object_list_relevant_contrasts <-  lapply(top_table_list_relevant_contrasts, function (x) get_gse_object(x, pvc = 0.05))
 
 # Snapshot environment ----
 
@@ -1266,7 +1323,7 @@ sessionInfo()
 save.image(file = here("scripts", "055_r_array_analysis.RData"))
 renv::snapshot()
 
-stop("Unadjusted old analysis code below - possibly integrate into code above. ")
+stop("Unadjusted old analysis code below - outline further analysis - possibly integrate into code above. ")
 
 # >>> Unadjusted old analysis code below - possibly integrate into code above. ----
 

@@ -1063,6 +1063,14 @@
  * drafted out most profound manuscript changes
  * updated ToDo
  * ready to go for Gene Set Enrichment Analysis
+
+## 11-06-2024 - work day 93 - revising manuscript and array analysis
+
+  * working in `055_r_array_analysis.r`
+    * implemented Gene Set Enrichment Analysis
+    * no significant results - even after lengthening DEG lists
+    * threshold for GSEA lists needs to be lowered a lot to achieve anything
+  * commit
  
 ## Todo queue (last updated 06-06-2024)
 
@@ -1075,8 +1083,8 @@
      * [x] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
      * [x] 3.) **Fig. 3**: Upset plot of intersections of full list highlight shared and uniqe genes ~~obesity related genes~~
         * [x] upset plots with shared and unshared genes - deal with unique and duplicate genes
-     * [ ] implement GSEA - focus on `CD CD - WD WD`
-     * [ ] 4.) **Fig. 4**: GSEA - use all DEG lists - see which return best results
+     * [x] implement GSEA - focus on `CD CD - WD WD`
+     * [x] 4.) **Fig. 4**: GSEA - use all DEG lists - see which return best results
         * [ ] **check again which obesity - relavant genes  are worthy of inspection in fat**
      * [x] **raise**  LFC thresholds
      * [x] compare full and obesity-only gene lists, are they congruent? **no**
