@@ -1118,7 +1118,7 @@ ggsave(plot = plot_heatmap_all_tissues_obesity_genes, path = here("../manuscript
        filename = "055_r_array_analysis__plot_expr_obesity_flat_unassigned.pdf",  
        width = 180, height = 85, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
-# Inspect DEGs  ---- 
+# Analyse DEGs  ---- 
 
 # Get Suppl. Tables 1-6.  Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
 
@@ -1151,7 +1151,7 @@ warning("LFC treshhold justification should be justified in manuscript")
 SE_all_tissues_obs_genes <- lapply(SE_all_tissues_obs_genes, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 1.5))
 warning("LFC treshhold justification should be justified in manuscript")
         
-# _3.) Analyse DEG lists ----
+# _3.) Inspect DEG lists ----
 
 # __a) Flatten DEG lists to tibbles ----
 
@@ -1192,7 +1192,7 @@ write_xlsx(DEGs_all_tissues_obs_genes, path = "/Users/paul/Documents/HM_MouseMat
 raw_expression__all_tissues_obs_genes <- lapply(SE_all_tissues_obs_genes, get_raw_summaries)
 capture.output(raw_expression__all_tissues_obs_genes, file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__raw_summary__all_tissues_obs_genes.txt")
 
-# __f) Get and export Upset Plots ----
+# _4.) Get and export Upset Plots ----
 
 # Use upset plots of DEG results to decide opon which tissues and contrasts to discuss further.
 

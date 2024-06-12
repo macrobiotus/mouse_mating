@@ -1075,7 +1075,7 @@
      * [x] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
      * [x] 3.) **Fig. 3**: Upset plot of intersections of full list highlight shared and uniqe genes ~~obesity related genes~~
         * [x] upset plots with shared and unshared genes - deal with unique and duplicate genes
-     * [ ] implement GSEA
+     * [ ] implement GSEA - focus on `CD CD - WD WD`
      * [ ] 4.) **Fig. 4**: GSEA - use all DEG lists - see which return best results
         * [ ] **check again which obesity - relavant genes  are worthy of inspection in fat**
      * [x] **raise**  LFC thresholds
