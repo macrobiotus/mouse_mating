@@ -73,13 +73,14 @@ suppressMessages(require(scater))
 suppressMessages(require(scran))
 suppressMessages(require(igraph))
 
-library(sechm) # heatmap 
+library("sechm")    # heatmap 
 
-library("UpSetR")
+library("UpSetR")   # upset plot
 library("ggupset")
 
-
-
+library("clusterProfiler")  # upset plot
+library("org.Mm.eg.db")
+library("enrichplot")
 
 # _3.) Encode plotting colours  ----
 
@@ -419,7 +420,7 @@ get_arrangeable_upset_plot = function(upset_plot) {
   )
 }
 
-# get Gene Set Object from limma top table - see https://learn.gencore.bio.nyu.edu/rna-seq-analysis/gene-set-enrichment-analysis/
+# Get Gene Set Object from limma top table - see https://learn.gencore.bio.nyu.edu/rna-seq-analysis/gene-set-enrichment-analysis/
 get_gse_object = function(top_table, pvc = 1){
   
   # stop("Erase function building code")
@@ -447,8 +448,6 @@ get_gse_object = function(top_table, pvc = 1){
   
 }
 
-# All functions below are unrevised ----
-
 # Get Volcano plots
 get_one_volcanoplot <- function(TopTableListItem, TopTableListItemName){
   
@@ -463,7 +462,7 @@ get_one_volcanoplot <- function(TopTableListItem, TopTableListItemName){
     EnhancedVolcano(
       top_tibble,
       pCutoff = 0.05,
-      FCcutoff = 1,
+      FCcutoff = 1.5,
       x = "logFC",
       y = "P.Value",
       pCutoffCol = "adj.P.Val",
@@ -479,6 +478,8 @@ get_one_volcanoplot <- function(TopTableListItem, TopTableListItemName){
   return(evplot)
   
 }
+
+# All functions below are unrevised ----
 
 # Lookup Entrez IDs
 get_entrez_ids = function(TopTable) {
@@ -1226,11 +1227,12 @@ write_xlsx(DEGs_all_tissues_obs_genes, path = "/Users/paul/Documents/HM_MouseMat
 raw_expression__all_tissues_obs_genes <- lapply(SE_all_tissues_obs_genes, get_raw_summaries)
 capture.output(raw_expression__all_tissues_obs_genes, file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__raw_summary__all_tissues_obs_genes.txt")
 
-# _4.) Get and export Upset Plots ----
+# Get Upset Plots ----
 
 # Use upset plots of DEG results to decide opon which tissues and contrasts to discuss further.
 
-# check if there are any overlaps among data - only then upset plots are useful
+# _1.) Check if there are any overlaps among data - only then upset plots are useful ----
+
 DEGs_all_tissues_all_genes %>% 
   # filter distinct symbols from multiple probe ids
   distinct(TISSUE, CONTRASTS, SYMBOL, .keep_all=TRUE) %>% 
@@ -1240,6 +1242,8 @@ DEGs_all_tissues_all_genes %>%
   arrange(SYMBOL, CONTRASTS, abs(LOGFC)) %>%
   # nothing is left - ther is no overlap between 
   print(n = Inf)
+
+# _2.) Get Upset plots ----
 
 upset_flat <- DEGs_all_tissues_all_genes %>%
   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
@@ -1273,6 +1277,7 @@ upset_brat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "BRAT") %>%
 #    UpSetR::upset(order.by = "freq", sets =  c("CD CD - CD WD", "WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "WD CD - CD WD"), keep.order = TRUE) %>%
 #    get_arrangeable_upset_plot
 
+# _3.) Arrange and save Upset plots ----
 
 upset_livt <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "LIVT") %>%
   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
@@ -1282,7 +1287,6 @@ upset_livt <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "LIVT") %>%
   UpSetR::upset(order.by = "freq", sets =  c("CD CD - CD WD", "WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "WD CD - CD WD"), keep.order = TRUE) %>%
   get_arrangeable_upset_plot
 
-
 upset_compound <- ggarrange(upset_flat, upset_evat, upset_brat, upset_livt, labels = list("a: all tissues", "b: EVAT", "c: BRAT", "d: LIVT"))
 
 # Get SI Fig 9.: Upset plot of intersections of full list for all contrasts
@@ -1290,13 +1294,7 @@ upset_compound <- ggarrange(upset_flat, upset_evat, upset_brat, upset_livt, labe
 ggsave(upset_compound, width = 200, height = 100, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.7,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__upset_compound.pdf")
        
-# Gene Set Enrichmnet Analysis from relevant tissues and contrasts ----
-
-# _1.) Load packages (move up) ----
-
-library("clusterProfiler")
-library("org.Mm.eg.db")
-library("enrichplot")
+# Gene Set Enrichment Analysis from relevant tissues and contrasts ----
 
 # _2.) Isolate a list of DEG top tables from relevant tissues and contrasts ----
 
@@ -1317,6 +1315,136 @@ top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]] <- metadata(SE_all_ti
 
 gse_object_list_relevant_contrasts <-  lapply(top_table_list_relevant_contrasts, function (x) get_gse_object(x, pvc = 0.05))
 
+# Get Volcano Plots ----
+
+# _1.) Recreate DEG lists without cut-off - so thet Volcano plots show all genes ----
+
+SE_all_tissues_all_genes_full <- lapply(SE_all_tissues_all_genes, function(se_ob) get_deg_lists(se_ob, peval = 1.00, logfc = 0))
+
+
+# _2.) Get lists that are accepted by plotting function ----
+
+top_table_list_relevant_contrasts_full <-  vector(mode = "list", length = 2)
+names(top_table_list_relevant_contrasts_full) = c("BRAT: CD CD - WD WD",
+                                                  "LIVT: CD CD - WD WD")
+top_table_list_relevant_contrasts_full[["BRAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes_full[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]]
+top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes_full[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]]
+
+# _3.) Create Volcano plots ----
+
+# The top tables with meaningful results are BRAT: CD CD - WD WD  and LIVT: CD CD - WD WD 
+
+left_upper_volcano <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
+rght_upper_volcano <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
+
+# Get Heat maps ----
+
+# _1.) Creating first heat map ----
+
+# __a.) Copy object ---- 
+
+left_lower_heatmap_data <- SE_all_tissues_all_genes[["BRAT"]]
+
+# __b.) Subset to relevant contrasts ---- 
+
+left_lower_heatmap_data <- left_lower_heatmap_data[  , left_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
+
+# __d.) Subset to relevant genes ---- 
+
+relevant_genes <- metadata(SE_all_tissues_all_genes[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
+
+left_lower_heatmap_data <- left_lower_heatmap_data[  rownames(left_lower_heatmap_data) %in% relevant_genes ,  ]
+
+# __d.) Create heatmap  ---- 
+
+
+warning("Code under constrcution below.")
+
+sechm_heatmap <- sechm(
+  SE_all_tissues_all_genes[["BRAT"]],
+  features = rownames(SE_all_tissues_all_genes[["BRAT"]]),
+  do.scale = TRUE,
+  gaps_at = gaps_at,
+  # mark = mark,
+  show_rownames = TRUE)
+
+
+# get expression data as matrix with probe ids, subset for speed 
+right_join(
+  {as_tibble(assay(BRAT), rownames = c("PROBEID"))},
+  {metadata(SE_all_tissues_all_genes[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]] %>% rename(PROBEID = Row.names)}
+)
+
+right_join(
+  {as_tibble(assay(LIVT), rownames = c("PROBEID"))},
+  {metadata(SE_all_tissues_all_genes[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]] %>% rename(PROBEID = Row.names)}
+)
+
+
+plot_heatmap_all_tissues_obesity_genes <- ggarrange(
+  grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[1]]))),
+  grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[2]]))),
+  grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[3]]))),
+  grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[4]]))),
+  labels = list("a: BRAT", "b: IWAT", "c: LIVT", "d: EVAT"),
+  font.label = list(size = 14, face = "bold"),
+  ncol = 2, nrow = 2, hjust = "0", vjust = "0")
+
+
+
+
+
+
+
+
+             
+
+# pheatmap needs a matrix - hence converting tibble to matrix
+foo_mat <- base::as.matrix (foobar %>% dplyr::select(contains("_BRAT")))
+rownames(foo_mat) <- foobar[["SYMBOL"]]
+
+# to add more sample annotations to heat map matrix colnames - isolating this data here
+mdata_tibble <- tibble(pData(BRAT)) %>% mutate(SAMPLE = paste0(Animal,"_",Tissue))
+
+# checking possibilty to extend matrix column names
+which(colnames(foo_mat) %in% mdata_tibble$SAMPLE)
+
+# extending matrix column names (samples) with relevant metadata
+colnames(foo_mat) <- paste0(colnames(foo_mat), " | " , 
+                            mdata_tibble[which(colnames(foo_mat) %in% mdata_tibble$SAMPLE) , "ObeseParents"][["ObeseParents"]], " | " ,
+                            mdata_tibble[which(colnames(foo_mat) %in% mdata_tibble$SAMPLE) , "ObesityLgcl"][["ObesityLgcl"]]
+)
+
+# adding stars to contrast
+colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))], "*")
+
+# renaming tissues
+colnames(foo_mat) <- gsub("LIVT", "L", gsub("BRAT", "BAT", colnames(foo_mat),  fixed = TRUE), fixed = TRUE)
+
+# print heat map to script and file
+pheatmap(foo_mat, scale = "row")
+pheatmap(foo_mat, scale = "row", filename =  paste0(here("../manuscript/display_items"),"/","050_r_array_analysis__plot_heatmap_brat.pdf"))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # Snapshot environment ----
 
 sessionInfo()
@@ -1325,111 +1453,11 @@ renv::snapshot()
 
 stop("Unadjusted old analysis code below - outline further analysis - possibly integrate into code above. ")
 
-# >>> Unadjusted old analysis code below - possibly integrate into code above. ----
 
-# _2.) DGE analysis using Limma ----
 
-# see DESeq2 tutorial at https://colauttilab.github.io/RNA-Seq_Tutorial.html
-# see GCSCore tutaorial at https://www.bioconductor.org/packages/release/bioc/vignettes/GCSscore/inst/doc/GCSscore.pdf
-# see Limma slides at https://s3.amazonaws.com/assets.datacamp.com/production/course_6456/slides/chapter1.pdf
-# **use this!** - Limma slides at  https://kasperdanielhansen.github.io/genbioconductor/html/limma.html
-# see also here for LFC shrinkage and genral procedure https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/08_practical_DE.pdf
-# see here why shrinking LFCs is considered unenecssary by the limma authors - https://support.bioconductor.org/p/100804/
 
-# __a) Test for DGE for each tissue against all others, using FLAT ----
 
-# As justified per PCA results 
-
-FLAT_Tissue_TopTableList <- get_dge_for_individal_tissues(FLAT)
-
-#' ### Test for DGE among obese and non-obese offspring
-
-# __b)  Test for DGE among obese and non-obese offspring ----
-
-# No PCA signal (see above) nor DGE detected across all tissues or in any tissue based on offsprings' obesity status
-# No further work necessary - but report!
-warning("get_dge_for_offspring_obesity() has not been adjusted for 1st revisions because it is likely unenecssary.")
-
-# get_dge_for_offspring_obesity(FLAT)
-# get_dge_for_offspring_obesity(BRAT)
-# get_dge_for_offspring_obesity(LIVT)
-# get_dge_for_offspring_obesity(IWAT)
-# get_dge_for_offspring_obesity(EVAT)
-
-#' ### Test for DGE among offspring based on parental obesity
-
-# __c)  Test for DGE among offspring based on parental obesity ----
-
-stop("Update code based on methods in main text, on or after 22.05.2024, then update results")
-stop("LFC needs tp be set to 2 for most contarsts, see main text.")
-
-# Defining and applying contrasts: One of "MotherFatherNotObese", "FatherObese", "MotherFatherObese", or "MotherObese" 
-#  against all remaining three levels.
-#  Compare to PCA results, including coefficients - Expression is variable based on tissue, and within each tissue based on parental obesity
-
-FLAT_TopTableList <- get_dge_for_parent_obesity(FLAT) # analysis off all tissues together doesn't really make doesn't really make sense
-EVAT_TopTableList <- get_dge_for_parent_obesity(EVAT) # likely not needed - see manuscript results 05.07.2023
-SCAT_TopTableList <- get_dge_for_parent_obesity(IWAT) # likely not needed - see manuscript results 05.07.2023
-BRAT_TopTableList <- get_dge_for_parent_obesity(BRAT) 
-LIAT_TopTableList <- get_some_dge_for_parent_obesity(LIVT) 
-
-#' ###  Choose DGE results for further analyses
-
-# __d) Choose DGE results for further analyses ----
-
-# ___ FLAT - keeping all contrasts for all tissues ----
-
-# see file "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_FLAT.txt"
-
-names(FLAT_Tissue_TopTableList)
-          
-# ___ FLAT, BRAT, IWAT, LIVT, EVAT - not keeping any contrasts defined by offspring' obesity  ----
-
-#  see PCA results: 
-#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_EVAT.txt" # likely not needed - see manuscript results 05.07.2023
-#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_SCAT.txt" # likely not needed - see manuscript results 05.07.2023
-#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_BRAT.txt"
-#  "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_LIAT.txt"
-
-#  see DGE results - above
-
-# ___ EVAT - keeping some contrasts defined by parents' obesity  ----
-
-# no contrasts ar needed  
-# - see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_EVAT.txt"
-# - see manuscript results 05.07.2023
-
-# ___ IWAT - keeping some contrasts defined by parents' obesity  ----
-
-# no contrasts ar needed  
-# - see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_SCAT.txt"
-# - see manuscript results 05.07.2023
-
-# ___ BRAT - keeping some contrasts defined by parents' obesity  ----
-
-# some contrast are needed: 
-# - see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_BRAT.txt"
-# - see manuscript results 05.07.2023
-# - "MotherFatherObese vs FatherObese"
-
-names(BRAT_TopTableList) # check available slots 
-names(BRAT_TopTableList[c(2)]) # select slots corresponding to contrasts readout above 
-
-BRAT__Select_TopTableList <- BRAT_TopTableList[c(2)] # selecting individual and compound contrasts
-
-# ___ LIVT - keeping some contrasts defined by parents' obesity  ----
-
-# some contrast are needed: 
-# - see PCA results: "/Users/paul/Documents/HM_MouseMating/analysis/plots/050_r_array_analysis__text_pca_LIAT.txt"
-# - see manuscript results 05.07.2023
-# - "MotherFatherNotObese vs MotherFatherObese"
-
-names(LIAT_TopTableList)
-names(LIAT_TopTableList[c(2)]) 
-
-LIAT__Select_TopTableList <- LIAT_TopTableList[c(2)] 
-
-#' ### Compile a well-labelled list with all DGE results
+# KEGG and GO analysis ----
 
 # __e)  Compile a well-labelled list with all DGE results  ----
 
@@ -1466,9 +1494,6 @@ FULL_TopTableList[[2]][rowSums(is.na(FULL_TopTableList[[2]])) > 0, ]
 # Inspect data in question - green tail on Volcano plot
 FULL_TopTableList[[1]][ which(  log2(FULL_TopTableList[[1]]$logFC) > 1 ) , ]
 FULL_TopTableList[[1]][ which(  log2(FULL_TopTableList[[1]]$logFC) > 1 ) , ]
-
-
-#' ### Get, assort, arrange, and save Vulcano plots
 
 # __g)  Get, assort, arrange, and save Vulcano plots  ----
 
@@ -1628,7 +1653,6 @@ openxlsx::write.xlsx(LIAT_TTL_sign, paste0(here("tables"), "/050_r_array_analysi
 openxlsx::write.xlsx(LIAT_TTL_down, paste0(here("tables"), "/050_r_array_analysis_", "L_DEGs_down", ".xlsx"), asTable = TRUE, overwrite = TRUE)
 openxlsx::write.xlsx(LIAT_TTL_uprg, paste0(here("tables"), "/050_r_array_analysis_", "L_DEGs_uprg", ".xlsx"), asTable = TRUE, overwrite = TRUE)
 
-#' ## Gene Set Enrichment Analysis (GSEA)
 
 # _3.) Gene Set Enrichment Analysis (GSEA) ----
 
@@ -1692,48 +1716,4 @@ FULL_GoPlots[[2]]
 mapply(save_go_plots, ggplot_list_item = FULL_GoPlots, ggplot_list_item_name = names(FULL_KeggPlots), SIMPLIFY = FALSE)
 
 ggsave(plot = ggarrange(plotlist =  FULL_GoPlots, ncol = 2, labels = "auto"), filename = "050_r_array_analysis__plot_go_both.pdf", path = here("../manuscript/display_items/"), width = 280, height = 420, unit = "mm", scale = 1)
-
-# #' Experimental: DGE-analysis using GAMs - Investigate overall tissue specific expression differences based on obesity variables
-
-
-# >>> Reference code from AH ----
-
-# AH code below - UpSet plots ----
-
-# # Upset plots ############################# 
-# #hier am Beispiel für Liver
-# para <- "Liver"
-# 
-# sub1 <- subset(Liv_CD_HFD_VS_CD_CD, Col=="#d72323" | Col=="blue")[,c(1,8)]
-# colnames(sub1) <- c("RN","CD, HFD vs. CD, CD")
-# sub2 <- subset(Liv_HFD_CD_VS_CD_CD, Col=="#d72323" | Col=="blue")[,c(1,8)]
-# colnames(sub2) <- c("RN","HFD, CD vs. CD, CD")
-# sub3 <- subset(Liv_HFD_HFD_VS_CD_CD, Col=="#d72323" | Col=="blue")[,c(1,8)]
-# colnames(sub3) <- c("RN","HFD, HFD vs. CD, CD")
-# sub4 <- subset(Liv_HFD_CD_VS_CD_HFD, Col=="#d72323" | Col=="blue")[,c(1,8)]
-# colnames(sub4) <- c("RN","HFD, CD vs. CD, HFD")
-# sub5 <- subset(Liv_HFD_HFD_VS_CD_HFD, Col=="#d72323" | Col=="blue")[,c(1,8)]
-# colnames(sub5) <- c("RN","HFD, HFD vs. CD, HFD")
-# sub6 <- subset(Liv_HFD_HFD_VS_HFD_CD, Col=="#d72323" | Col=="blue")[,c(1,8)]
-# colnames(sub6) <- c("RN","HFD, HFD vs. HFD, CD")
-# 
-# mTAB <- merge(merge(merge(merge(merge(
-#   sub1,
-#   sub2, all = TRUE,by="RN"),
-#   sub3, all = TRUE,by="RN"),
-#   sub4, all = TRUE,by="RN"),
-#   sub5, all = TRUE,by="RN"),
-#   sub6, all = TRUE,by="RN")
-# 
-# mTAB$`CD, HFD vs. CD, CD` <- ifelse(is.na(mTAB$`CD, HFD vs. CD, CD`),  0,1)
-# mTAB$`HFD, CD vs. CD, CD` <- ifelse(is.na(mTAB$`HFD, CD vs. CD, CD`),  0,1)
-# mTAB$`HFD, HFD vs. CD, CD` <- ifelse(is.na(mTAB$`HFD, HFD vs. CD, CD`),  0,1)
-# mTAB$`HFD, CD vs. CD, HFD` <- ifelse(is.na(mTAB$`HFD, CD vs. CD, HFD`),  0,1)
-# mTAB$`HFD, HFD vs. CD, HFD` <- ifelse(is.na(mTAB$`HFD, HFD vs. CD, HFD`),  0,1)
-# mTAB$`HFD, HFD vs. HFD, CD` <- ifelse(is.na(mTAB$`HFD, HFD vs. HFD, CD`),  0,1)
-# 
-# pdf(paste0("Results_05.23/",para,"_Upset.pdf"),width = 9,height = 5) 
-#   UpSetR::upset(mTAB,nsets = 6, decreasing=TRUE,order.by = "freq",group.by="degree",
-#               sets.bar.color=c("maroon","blue","orange","purple","steelblue","red"))
-# dev.off()
 

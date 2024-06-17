@@ -1064,14 +1064,21 @@
  * updated ToDo
  * ready to go for Gene Set Enrichment Analysis
 
-## 11-06-2024 - work day 93 - revising manuscript and array analysis
+## 12-06-2024 - work day 93 - revising manuscript and array analysis
 
   * working in `055_r_array_analysis.r`
     * implemented Gene Set Enrichment Analysis
     * no significant results - even after lengthening DEG lists
     * threshold for GSEA lists needs to be lowered a lot to achieve anything
   * commit
- 
+
+## 17-06-2024 - work day 94 - revising manuscript and array analysis
+
+  * working in `055_r_array_analysis.r`
+    * encoding Volcano plots
+    * starting to encode heat maps - but unfinished so far
+    * updated to do
+
 ## Todo queue (last updated 06-06-2024)
 
  * **analysis work**
@@ -1093,6 +1100,8 @@
      * ~~[ ] 5.) **Fig. 4**: Upset plot of intersections of setdiffs list - highlight obesity related genes.~~ **no intersection** 
      * ~~[ ] 6.) **Suppl. Tab 12-n** GSEA of settdifs with unique obesity genes.~~
      * ~~[ ] Where the search as described in 3. is successful, look at the full list using Gene Set Enrichment analysis.~~
+     * [ ] finish heat maps
+     * [ ] get alternative analysis to GSEA - e.g. GSEA of a single gene, or parse gene list
  * **overall revision work**
    * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
    * [ ] justify lfc raise beyond citet reference - no cancer study
