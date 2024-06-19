@@ -1315,7 +1315,7 @@ top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]] <- metadata(SE_all_ti
 
 gse_object_list_relevant_contrasts <-  lapply(top_table_list_relevant_contrasts, function (x) get_gse_object(x, pvc = 0.05))
 
-# Get Volcano Plots ----
+# Get Volcano plot ----
 
 # _1.) Recreate DEG lists without cut-off - so thet Volcano plots show all genes ----
 
@@ -1337,113 +1337,68 @@ top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]] <- metadata(SE_a
 left_upper_volcano <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
 rght_upper_volcano <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
 
-# Get Heat maps ----
+# Get heat maps ----
 
-# _1.) Creating first heat map ----
-
-# __a.) Copy object ---- 
+# _1.) Copy object ---- 
 
 left_lower_heatmap_data <- SE_all_tissues_all_genes[["BRAT"]]
+right_lower_heatmap_data <- SE_all_tissues_all_genes[["LIVT"]]
 
-# __b.) Subset to relevant contrasts ---- 
+# _2.) Subset to relevant contrasts ---- 
 
 left_lower_heatmap_data <- left_lower_heatmap_data[  , left_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
+right_lower_heatmap_data <- right_lower_heatmap_data[  , right_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
 
-# __d.) Subset to relevant genes ---- 
+# _3.) Subset to relevant genes ---- 
 
 relevant_genes <- metadata(SE_all_tissues_all_genes[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
-
 left_lower_heatmap_data <- left_lower_heatmap_data[  rownames(left_lower_heatmap_data) %in% relevant_genes ,  ]
 
-# __d.) Create heatmap  ---- 
+relevant_genes <- metadata(SE_all_tissues_all_genes[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
+right_lower_heatmap_data <- right_lower_heatmap_data[  rownames(right_lower_heatmap_data) %in% relevant_genes ,  ]
 
+# _4.) Modify plotted genes names, in lack of better options ---- 
 
-warning("Code under constrcution below.")
+rownames(left_lower_heatmap_data) <- rowData(left_lower_heatmap_data)[["SYMBOL"]][which(rownames(rowData(left_lower_heatmap_data)) %in% rownames(left_lower_heatmap_data))] 
+metadata(left_lower_heatmap_data)$hmcols <- c("#0072B2","white","#D55E00")
 
-sechm_heatmap <- sechm(
-  SE_all_tissues_all_genes[["BRAT"]],
-  features = rownames(SE_all_tissues_all_genes[["BRAT"]]),
+rownames(right_lower_heatmap_data) <- rowData(right_lower_heatmap_data)[["SYMBOL"]][which(rownames(rowData(right_lower_heatmap_data)) %in% rownames(right_lower_heatmap_data))] 
+metadata(right_lower_heatmap_data)$hmcols <- c("#0072B2","white","#D55E00")
+
+# _5.) Create heat maps  ---- 
+
+left_lower_heatmap <- sechm(
+  left_lower_heatmap_data,
+  features = rownames(left_lower_heatmap_data),
   do.scale = TRUE,
-  gaps_at = gaps_at,
+  gaps_at = "ParentalDietMoFa",
+  # mark = mark,
+  show_rownames = TRUE)
+left_lower_heatmap
+
+right_lower_heatmap <- sechm(
+  right_lower_heatmap_data,
+  features = rownames(right_lower_heatmap_data),
+  do.scale = TRUE,
+  gaps_at = "ParentalDietMoFa",
   # mark = mark,
   show_rownames = TRUE)
 
+right_lower_heatmap
 
-# get expression data as matrix with probe ids, subset for speed 
-right_join(
-  {as_tibble(assay(BRAT), rownames = c("PROBEID"))},
-  {metadata(SE_all_tissues_all_genes[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]] %>% rename(PROBEID = Row.names)}
-)
+# Combine Volcano plot and heat maps ----
 
-right_join(
-  {as_tibble(assay(LIVT), rownames = c("PROBEID"))},
-  {metadata(SE_all_tissues_all_genes[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]] %>% rename(PROBEID = Row.names)}
-)
+volcano_heat_compound <- ggarrange(left_upper_volcano, rght_upper_volcano,
+          grid.grabExpr(draw( left_lower_heatmap)), grid.grabExpr(draw( right_lower_heatmap)),
+          labels = list("a", "b", "c", "d"),
+          font.label = list(size = 14, face = "bold"),
+          ncol = 2, nrow = 2, hjust = "-5", vjust = "5")
 
-
-plot_heatmap_all_tissues_obesity_genes <- ggarrange(
-  grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[1]]))),
-  grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[2]]))),
-  grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[3]]))),
-  grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[4]]))),
-  labels = list("a: BRAT", "b: IWAT", "c: LIVT", "d: EVAT"),
-  font.label = list(size = 14, face = "bold"),
-  ncol = 2, nrow = 2, hjust = "0", vjust = "0")
+volcano_heat_compound
 
 
-
-
-
-
-
-
-             
-
-# pheatmap needs a matrix - hence converting tibble to matrix
-foo_mat <- base::as.matrix (foobar %>% dplyr::select(contains("_BRAT")))
-rownames(foo_mat) <- foobar[["SYMBOL"]]
-
-# to add more sample annotations to heat map matrix colnames - isolating this data here
-mdata_tibble <- tibble(pData(BRAT)) %>% mutate(SAMPLE = paste0(Animal,"_",Tissue))
-
-# checking possibilty to extend matrix column names
-which(colnames(foo_mat) %in% mdata_tibble$SAMPLE)
-
-# extending matrix column names (samples) with relevant metadata
-colnames(foo_mat) <- paste0(colnames(foo_mat), " | " , 
-                            mdata_tibble[which(colnames(foo_mat) %in% mdata_tibble$SAMPLE) , "ObeseParents"][["ObeseParents"]], " | " ,
-                            mdata_tibble[which(colnames(foo_mat) %in% mdata_tibble$SAMPLE) , "ObesityLgcl"][["ObesityLgcl"]]
-)
-
-# adding stars to contrast
-colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))], "*")
-
-# renaming tissues
-colnames(foo_mat) <- gsub("LIVT", "L", gsub("BRAT", "BAT", colnames(foo_mat),  fixed = TRUE), fixed = TRUE)
-
-# print heat map to script and file
-pheatmap(foo_mat, scale = "row")
-pheatmap(foo_mat, scale = "row", filename =  paste0(here("../manuscript/display_items"),"/","050_r_array_analysis__plot_heatmap_brat.pdf"))
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ggsave(volcano_heat_compound, width = 200, height = 200, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.3,
+       file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__volcano_heat_compound.pdf")
 
 # Snapshot environment ----
 
