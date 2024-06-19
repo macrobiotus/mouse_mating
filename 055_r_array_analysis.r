@@ -1281,14 +1281,14 @@ ggsave(go_compound, width = 400, height = 250, units = c("mm"), dpi = 200, limit
 # _5.) Lookup of KEGG terms using enrichKEGG {clusterProfiler} ----
 
 # with lfc 1,0 there are no enriched KEGG terms found
-left_kegg_plot <- get_kegg_plot_and_table(top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]], "EVAT: CD CD - WD WD")
-midl_kegg_plot <- get_kegg_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
-rght_kegg_plot <- get_kegg_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
-
-kegg_compound <- ggarrange(left_kegg_plot, midl_kegg_plot, rght_kegg_plot, labels = list("a", "b", "c"))
-
-ggsave(kegg_compound, width = 400, height = 250, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 0.85,
-       file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__kegg_compound.pdf")
+# left_kegg_plot <- get_kegg_plot_and_table(top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]], "EVAT: CD CD - WD WD")
+# midl_kegg_plot <- get_kegg_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
+# rght_kegg_plot <- get_kegg_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
+# 
+# kegg_compound <- ggarrange(left_kegg_plot, midl_kegg_plot, rght_kegg_plot, labels = list("a", "b", "c"))
+# 
+# ggsave(kegg_compound, width = 400, height = 250, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 0.85,
+#        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__kegg_compound.pdf")
 
 # _6.) **Not done**: Gene Set Enrichment Analysis using runTest {topGO} ----
 

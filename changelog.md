@@ -1095,9 +1095,9 @@
    * ran all code
    * thinned out code
    * updated to do - committed
-   * analysis drafted with lfc 1.5 - start writing
+   * analysis drafted with `lfc` 1.5 - start writing
  * commit ("9b3c378b7b551e4799697c9aeffbae8af11ff151")
-   * relaxing lfc treshhold to 1
+   * relaxing `lfc` treshold to 1 - no KEGG terem found then.
    * updated script and manuscript draft
  * commit 
  
