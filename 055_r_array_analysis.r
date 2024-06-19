@@ -88,7 +88,7 @@ hmcol <- rev(colorRampPalette(RColorBrewer::brewer.pal(n=11, name="RdBu"))(50))
 
 # _4.) Functions ----
 
-# Updates metadata accompanying expression data (last updated 27-May-2024)
+# Updaxtes metadata accompanying expression data (last updated 27-May-2024)
 get_adjusted_array_data = function(expression_set, model_variables) {
   
   require(dplyr)
@@ -303,7 +303,7 @@ get_one_heatmap = function(se_ob, gaps_at = "ParentalDietMoFa", mark = c("LEP", 
 }
 
 # Calculate DEGs - factor is currently hardcoded.
-get_deg_lists = function(se_ob, peval = 0.05, logfc = 2.0){
+get_deg_lists = function(se_ob, peval = 0.05, logfc = 1.0){
   
   require("limma")
   require("SummarizedExperiment")
@@ -617,7 +617,7 @@ get_one_volcanoplot <- function(TopTableListItem, TopTableListItemName){
     EnhancedVolcano(
       top_tibble,
       pCutoff = 0.05,
-      FCcutoff = 1.5,
+      FCcutoff = 1.0,
       x = "logFC",
       y = "P.Value",
       pCutoffCol = "adj.P.Val",
@@ -1123,12 +1123,12 @@ names(SE_all_tissues_obs_genes)
 
 # __a) For all genes ----
 
-SE_all_tissues_all_genes <- lapply(SE_all_tissues_all_genes, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 1.5))
+SE_all_tissues_all_genes <- lapply(SE_all_tissues_all_genes, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 1.0))
 warning("LFC treshhold justification should be justified in manuscript")
 
 # __b) For genes of interest related to obesity  ----
 
-SE_all_tissues_obs_genes <- lapply(SE_all_tissues_obs_genes, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 1.5))
+SE_all_tissues_obs_genes <- lapply(SE_all_tissues_obs_genes, function(se_ob) get_deg_lists(se_ob, peval = 0.05, logfc = 1.0))
 warning("LFC treshhold justification should be justified in manuscript")
         
 # _3.) Inspect DEG lists ----
@@ -1214,13 +1214,13 @@ upset_brat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "BRAT") %>%
   UpSetR::upset(order.by = "freq", sets =  c("WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "CD CD - CD WD", "CD CD - WD CD"), keep.order = TRUE) %>%
   get_arrangeable_upset_plot
 
-# upset_iwat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "IWAT") %>%
-#   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
-#   mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
-#    pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
-#    as.data.frame() %>%
-#    UpSetR::upset(order.by = "freq", sets =  c("CD CD - CD WD", "WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "WD CD - CD WD"), keep.order = TRUE) %>%
-#    get_arrangeable_upset_plot
+ # upset_iwat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "IWAT") %>%
+ #   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
+ #   mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
+ #    pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
+ #    as.data.frame() %>%
+ #    UpSetR::upset(order.by = "freq", sets =  c("CD CD - CD WD", "WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "WD CD - CD WD"), keep.order = TRUE) %>%
+ #    get_arrangeable_upset_plot
 
 # _3.) Arrange and save Upset plots ----
 
@@ -1269,20 +1269,23 @@ gse_object_list_relevant_contrasts <-  lapply(top_table_list_relevant_contrasts,
 
 # _4.) Lookup of Gene Ontologies using enrichGO {clusterProfiler} ----
 
-left_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
+left_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]], "EVAT: CD CD - WD WD")
+midl_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
 rght_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
 
-go_compound <- ggarrange(left_go_plot, rght_go_plot, labels = list("a", "b"))
+go_compound <- ggarrange(left_go_plot, midl_go_plot,  rght_go_plot, labels = list("a", "b", "c"), nrow = 2, ncol = 2)
 
-ggsave(go_compound, width = 400, height = 250, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 0.85,
+ggsave(go_compound, width = 400, height = 250, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.2,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__go_compound.pdf")
 
 # _5.) Lookup of KEGG terms using enrichKEGG {clusterProfiler} ----
 
-left_kegg_plot <- get_kegg_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
+# with lfc 1,0 there are no enriched KEGG terms found
+left_kegg_plot <- get_kegg_plot_and_table(top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]], "EVAT: CD CD - WD WD")
+midl_kegg_plot <- get_kegg_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
 rght_kegg_plot <- get_kegg_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
 
-kegg_compound <- ggarrange(left_kegg_plot, rght_kegg_plot, labels = list("a", "b"))
+kegg_compound <- ggarrange(left_kegg_plot, midl_kegg_plot, rght_kegg_plot, labels = list("a", "b", "c"))
 
 ggsave(kegg_compound, width = 400, height = 250, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 0.85,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__kegg_compound.pdf")
@@ -1297,15 +1300,18 @@ ggsave(kegg_compound, width = 400, height = 250, units = c("mm"), dpi = 200, lim
 
 # Get Volcano plot ----
 
-# _1.) Recreate DEG lists without cut-off - so thet Volcano plots show all genes ----
+# _1.) Recreate DEG lists without cut-off - so that Volcano plots show all genes ----
 
 SE_all_tissues_all_genes_full <- lapply(SE_all_tissues_all_genes, function(se_ob) get_deg_lists(se_ob, peval = 1.00, logfc = 0))
 
 # _2.) Get lists that are accepted by plotting function ----
 
-top_table_list_relevant_contrasts_full <-  vector(mode = "list", length = 2)
-names(top_table_list_relevant_contrasts_full) = c("BRAT: CD CD - WD WD",
+top_table_list_relevant_contrasts_full <-  vector(mode = "list", length = 3)
+names(top_table_list_relevant_contrasts_full) = c("EVAT: CD CD - WD WD",
+                                                  "BRAT: CD CD - WD WD",
                                                   "LIVT: CD CD - WD WD")
+
+top_table_list_relevant_contrasts_full[["EVAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes_full[["EVAT"]])[["toptable_list"]][["CD CD - WD WD"]]
 top_table_list_relevant_contrasts_full[["BRAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes_full[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]]
 top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes_full[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]]
 
@@ -1313,25 +1319,31 @@ top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]] <- metadata(SE_a
 
 # The top tables with meaningful results are BRAT: CD CD - WD WD  and LIVT: CD CD - WD WD 
 
-left_upper_volcano <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
+left_upper_volcano <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["EVAT: CD CD - WD WD"]], "EVAT: CD CD - WD WD")
+midl_upper_volcano <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
 rght_upper_volcano <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
 
 # Get heat maps ----
 
 # _1.) Copy object ---- 
 
-left_lower_heatmap_data <- SE_all_tissues_all_genes[["BRAT"]]
+left_lower_heatmap_data  <- SE_all_tissues_all_genes[["EVAT"]]
+midl_lower_heatmap_data  <- SE_all_tissues_all_genes[["BRAT"]]
 right_lower_heatmap_data <- SE_all_tissues_all_genes[["LIVT"]]
 
 # _2.) Subset to relevant contrasts ---- 
 
-left_lower_heatmap_data <- left_lower_heatmap_data[  , left_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
-right_lower_heatmap_data <- right_lower_heatmap_data[  , right_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
+left_lower_heatmap_data  <- left_lower_heatmap_data[  ,  left_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
+midl_lower_heatmap_data  <- midl_lower_heatmap_data[  ,  midl_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
+right_lower_heatmap_data <- right_lower_heatmap_data[ , right_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
 
 # _3.) Subset to relevant genes ---- 
 
-relevant_genes <- metadata(SE_all_tissues_all_genes[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
+relevant_genes <- metadata(SE_all_tissues_all_genes[["EVAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
 left_lower_heatmap_data <- left_lower_heatmap_data[  rownames(left_lower_heatmap_data) %in% relevant_genes ,  ]
+
+relevant_genes <- metadata(SE_all_tissues_all_genes[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
+midl_lower_heatmap_data <- left_lower_heatmap_data[  rownames(left_lower_heatmap_data) %in% relevant_genes ,  ]
 
 relevant_genes <- metadata(SE_all_tissues_all_genes[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
 right_lower_heatmap_data <- right_lower_heatmap_data[  rownames(right_lower_heatmap_data) %in% relevant_genes ,  ]
