@@ -1091,18 +1091,26 @@
  * commit
    * implemented GO lookup
    * updated todo
+   * implemented KEGG lookup
+   * ran all code
+   * thinned out code
+   * updated to do - committed
+   * analysis drafted - start writing
+   * commit
  
 ## Todo queue (last updated 06-06-2024)
 
  * **analysis work**
-   * [x] in `015_r_use_saemix.R`
+  
+  * [x] in `015_r_use_saemix.R`
      * ~~[ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
+   
    * [ ] in script `55_r_array_analysis.r`
      * [x] finish heat maps
      * [x] save volcano plots
      * ~~[ ] use `enrichR`~~
      * [x] look up GO terms
-     * [ ] look up KEGG terms
+     * [x] look up KEGG terms
      * [x] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues. 
      * [x] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
      * [x] 3.) **Fig. 3**: Upset plot of intersections of full list highlight shared and uniqe genes ~~obesity related genes~~

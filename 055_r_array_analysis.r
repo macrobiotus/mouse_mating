@@ -420,6 +420,41 @@ get_arrangeable_upset_plot = function(upset_plot) {
   )
 }
 
+# Get Entrez IDs for KEGG and GO analyses
+get_entrez_ids = function(top_table, se_object) {
+  
+  require("org.Mm.eg.db")
+  require("clusterProfiler")
+  require("biomaRt")
+  
+  # stop("remove function development code")
+  # top_table <- top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]]
+  # se_object <- SE_all_tissues_all_genes[["BRAT"]]
+  
+  # rm(TopTable)
+  # rm(translations)
+  # rm(TopTableAppended)
+  
+  message(paste0("Looking up Entrez IDs for data set, storing in column \"ENTREZID\"."))  
+  
+  # create target object
+  top_table_appended <- top_table
+  
+  # add RefSeq IDs to target table
+  top_table_appended <- left_join(top_table_appended,  data.frame(rowData(se_object))[c("PROBEID", "ID")], by = c("Row.names" = "PROBEID"))
+  top_table_appended <- top_table_appended %>% dplyr::rename("REFSEQ" = "ID") 
+  
+  # lookup Entrez ID from RefSeq ID and store both columns for separtaion
+  translations <- bitr(geneID = top_table_appended[["REFSEQ"]], fromType = "REFSEQ", toType = "ENTREZID", OrgDb = "org.Mm.eg.db", drop = FALSE)
+  
+  message("Joing with \"by = c(\"ID\" = \"REFSEQ\")\": Hardcoded \"REFSEQ\" may need to be chanaged if looking at transcripts.")
+  
+  top_table_appended <- left_join(as_tibble(top_table_appended), as_tibble(translations), keep = FALSE)
+  
+  return(top_table_appended)
+  
+}
+
 # Get Gene Set Object from limma top table - see https://learn.gencore.bio.nyu.edu/rna-seq-analysis/gene-set-enrichment-analysis/
 get_gse_object = function(top_table, pvc = 1){
   
@@ -448,10 +483,7 @@ get_gse_object = function(top_table, pvc = 1){
   
 }
 
-
-# GO Enrichment Analysis of a gene set. 
-# Given a vector of genes, this function will return the enrichment GO categories after FDR control.
-
+# GO Enrichment Analysis of a gene set - Given a vector of genes, this function will return the enrichment GO categories after FDR control.
 get_go_plot_and_table <- function(top_table, top_table_name, save_to_disk = TRUE, table_path = NULL){
   
   # packages
@@ -464,7 +496,6 @@ get_go_plot_and_table <- function(top_table, top_table_name, save_to_disk = TRUE
   # top_table_name <- c("BRAT: CD CD - WD WD")
   # save_to_disk <-  TRUE
   # table_path <-  NULL
-  # rm(list(TopTableListItem, TopTableListItemName))
   
   # diagnostic
   message(paste0("Creating GO plot for data set: \"", top_table_name, "\".", sep = ""))
@@ -473,27 +504,11 @@ get_go_plot_and_table <- function(top_table, top_table_name, save_to_disk = TRUE
   go_result <- enrichGO(gene = str_to_title(top_table[["SYMBOL"]]), keyType = "SYMBOL",  OrgDb = "org.Mm.eg.db", ont = "all")
   
   # save table to disk
-  # stop("Coding of function is not finished yet")
-  
   if (isTRUE(save_to_disk)){
     
-    # old code from previous version, where top table contained Entrez ids - symbols needed to be looked up
-    # 
-    # message("Formatting results table")
-    # 
-    # go_result_tibble <- as_tibble(go_result@result)
-    # 
-    # geneID_names_list <- vector(mode = 'list', length = length(go_result_tibble[["geneID"]]))
-    # 
-    # for (i in seq(length(go_result_tibble[["geneID"]]))){
-    #   
-    #   message(paste0("Looking up line ", i," of ", length(go_result_tibble[["geneID"]]), "." ))
-    #   
-    #   geneID_names_list[[i]] <- top_table[ which( str_to_title(top_table[["SYMBOL"]]) %in% str_split(go_result_tibble[["geneID"]], pattern = "/")[[i]] ), "SYMBOL"] # %>% pull(SYMBOL)
-    #   
-    # }
-    # 
-    # go_result_tibble[["geneName"]] <- unlist(lapply(geneID_names_list,  function (x) paste(x, collapse = "/")))
+    message("Formatting results table")
+    
+    go_result_tibble <- as_tibble(go_result@result)
     
     message("Saving table to disk.")
     
@@ -502,7 +517,8 @@ get_go_plot_and_table <- function(top_table, top_table_name, save_to_disk = TRUE
       
       message("Table export path not provided, using hard-coded one.")
       
-      table_path <- paste0(here("tables"), "/055_r_array_analysis_", "GO_terms_sign__", gsub(" ", "", top_table_name)  , ".xlsx")
+      table_path <- paste0(here("tables"), "/055_r_array_analysis_", "GO_terms_sign__", gsub(" ", "", make.names(top_table_name))  , ".xlsx")
+      
     }
     
     stopifnot("Please provide a full path for the xslx output." = !is.null(table_path))
@@ -520,6 +536,72 @@ get_go_plot_and_table <- function(top_table, top_table_name, save_to_disk = TRUE
 }
 
 
+# KEGG Enrichment Analysis of a gene set - Given a vector of genes, this function will return the enrichment KEGG terms after FDR control.
+get_kegg_plot_and_table <- function(top_table, top_table_name, save_to_disk = TRUE, table_path = NULL){
+  
+  # packages
+  require("clusterProfiler")
+  require("enrichplot")
+  
+  # for function building only
+  # stop("Remove function building code")
+  # top_table <- top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]]
+  # top_table_name <- c("BRAT: CD CD - WD WD")
+  # save_to_disk <-  TRUE
+  # table_path <-  NULL
+  
+  # diagnostic
+  message(paste0("Creating KEGG plot for data set: \"", top_table_name, "\".", sep = ""))
+  
+  # look- up go pathways
+  kegg_result <- enrichKEGG(gene = str_to_title(top_table[["ENTREZID"]]), keyType = 'ncbi-geneid', organism = 'mmu', minGSSize = 5)
+  
+  # save table to disk
+  if (isTRUE(save_to_disk)){
+    
+    message("Formatting results table")
+    kegg_result_tibble <- as_tibble(kegg_result@result)
+    
+    geneID_names_list <- vector(mode = 'list', length = length(kegg_result_tibble[["geneID"]]))
+    
+    for (i in seq(length(kegg_result_tibble[["geneID"]]))){
+      
+      message(paste0("Looking up line ", i," of ", length(kegg_result_tibble[["geneID"]]), "." ))
+      
+      geneID_names_list[[i]] <- top_table[ which( str_to_title(top_table[["SYMBOL"]]) %in% str_split(kegg_result_tibble[["geneID"]], pattern = "/")[[i]] ), "SYMBOL"] %>% pull(SYMBOL)
+      
+    }
+    
+    kegg_result_tibble[["geneName"]] <- unlist(lapply(geneID_names_list,  function (x) paste(x, collapse = "/")))
+    
+    message("Saving table to disk.")
+    
+    # set table path if it isn't set
+    if(is.null(table_path)){
+      
+      message("Table export path not provided, using hard-coded one.")
+      
+      table_path <- paste0(here("tables"), "/055_r_array_analysis_", "KEGG_terms_sign__", gsub(" ", "", make.names(top_table_name))  , ".xlsx")
+    }
+    
+    stopifnot("Please provide a full path for the xslx output." = !is.null(table_path))
+    
+    openxlsx::write.xlsx(kegg_result_tibble, file = table_path, asTable = TRUE)
+    
+  }
+  
+  # check resulting object
+  print(kegg_result)
+  
+  # get dipslay item
+  kegg_plot <- enrichplot::dotplot(kegg_result, title =  paste0("KEGG pathways of data set: \"", top_table_name,
+                                                                "\"", sep = ""
+  ), showCategory = 5)
+  
+  # return plot
+  return(kegg_plot)
+  
+}
 
 # Get Volcano plots
 get_one_volcanoplot <- function(TopTableListItem, TopTableListItemName){
@@ -549,216 +631,6 @@ get_one_volcanoplot <- function(TopTableListItem, TopTableListItemName){
   
   # return plot 
   return(evplot)
-  
-}
-
-# All functions below are unrevised ----
-
-# Lookup Entrez IDs
-get_entrez_ids = function(TopTable) {
-  
-  require("org.Mm.eg.db")
-  require("clusterProfiler")
-  require("biomaRt")
-  
-  # stop("remove function development code")
-  # TopTable <- FULL_TopTableList[[2]]
-  # rm(TopTable)
-  # rm(translations)
-  # rm(TopTableAppended)
-
-  message(paste0("Looking up Entrez IDs for data set, storing in column \"ENTREZID\"."))  
-  
-  # create target object
-  TopTableAppended <- TopTable
-  
-  # lookup Entrez ID from RefSeq ID and store both columns for separtaion
-  translations <- bitr(geneID = TopTable[["ID"]], fromType = "REFSEQ", toType = "ENTREZID", OrgDb = "org.Mm.eg.db", drop = FALSE)
-  
-  # message("Debugging code")
-  # nrow(translations)
-  # head(translations)
-  # nrow(TopTableAppended)
-  # head(TopTableAppended)
-  
-  # Move second column to traget obeject 
-  # Doesn't always work: 
-  #   TopTableAppended[["ENTREZ"]] <- translations[ , 2]
-  # Using dplyr instead: 
-  
-  message("Joing with \"by = c(\"ID\" = \"REFSEQ\")\": Hardcoded \"REFSEQ\" may need to be chanaged if looking at transcripts.")
-  
-  TopTableAppended <- left_join(as_tibble(TopTableAppended), as_tibble(translations),  by = c("ID" = "REFSEQ"), keep = FALSE)
-  
-  return(TopTableAppended)
-          
-}
-
-# KEGG plot creation
-get_one_kegg_dotplot <- function(TopTableListItem, TopTableListItemName, save_to_disk = TRUE, table_path = NULL) {
-    
-  # see https://yulab-smu.top/biomedical-knowledge-mining-book/enrichplot.html
-  
-  # packages
-  require("clusterProfiler")
-  require("enrichplot")
-  require("stringr")
-  
-  # for function building only
-  # stop("Remove function building code")
-  # TopTableListItem = FULL_TopTableListAppended[[1]]
-  # TopTableListItemName = names(FULL_TopTableListAppended)[[1]]
-  # save_to_disk = TRUE
-  # table_path = NULL
-  # rm(list(TopTableListItem, TopTableListItemName))
-  
-  # diagnostic
-  message(paste0("Creating KEGG plot for data set: \"", TopTableListItemName, "\".", sep = ""))
-  
-  # look- up KEGG pathways
-  kegg_result <- enrichKEGG(gene = TopTableListItem$ENTREZID, keyType = 'ncbi-geneid', organism = 'mmu', minGSSize = 5)
-    
-  # erasing superflous descriptions
-  kegg_result@result$Description <- gsub(" - Mus musculus (house mouse)", "", kegg_result@result$Description, fixed = TRUE)
-  
-  # save table to disk
-  # stop("Coding of function is not finished yet")
-  
-  if (isTRUE(save_to_disk)) {
-      
-    message("Formatting results table")
-      
-    kegg_result_tibble <- as_tibble(kegg_result@result)
-      
-    geneID_names_list <- vector(mode = 'list', length = length(kegg_result_tibble[["geneID"]]))
-      
-    for (i in seq(length(kegg_result_tibble[["geneID"]]))){
-      
-      geneID_names_list[[i]] <- TopTableListItem[ which(TopTableListItem[["ENTREZID"]] %in% str_split(kegg_result_tibble[["geneID"]], pattern = "/")[[i]]), "SYMBOL"] %>% pull(SYMBOL)
-      
-      }
-      
-    kegg_result_tibble[["geneName"]] <- unlist(lapply(geneID_names_list,  function (x) paste(x, collapse = "/")))
-      
-    message("Saving table to disk.")
-    
-    # set table path if it isn't set
-    if(is.null(table_path)){
-      
-      message("Table export path not provided, using hard-coded one.")
-      
-      table_path <- paste0(here("tables"), "/050_r_array_analysis_", "KEGG_terms_sign__", gsub(" ", "", TopTableListItemName)  , ".xlsx")
-    }
-      
-    stopifnot("Please provide a full path for the xslx output." = !is.null(table_path))
-      
-    openxlsx::write.xlsx(data.frame(kegg_result_tibble), file = table_path, asTable = TRUE)
-      
-    }
-    
-    # check resulting object
-    print(kegg_result)
-    
-    # get dipslay item
-    kegg_plot <- enrichplot::dotplot(kegg_result, title =  paste0("KEGG pathways of data set: \"", TopTableListItemName,
-          "\"", sep = ""
-        ), showCategory = 5)
-    
-    # return plot
-    return(kegg_plot)
-    
-  }
-
-# GO plot creation
-get_one_go_plot <- function(TopTableListItem, TopTableListItemName, save_to_disk = TRUE, table_path = NULL){
-  
-  # packages
-  require("clusterProfiler")
-  require("enrichplot")
-  
-  # for function building only
-  # stop("Remove function building code")
-  # TopTableListItem = FULL_TopTableListAppended[[2]]
-  # TopTableListItemName = names(FULL_TopTableListAppended)[[2]]
-  # save_to_disk = TRUE
-  # table_path = NULL
-  # rm(list(TopTableListItem, TopTableListItemName))
-  
-  # diagnostic
-  message(paste0("Creating GO plot for data set: \"", TopTableListItemName, "\".", sep = ""))
-  
- # look- up go pathways
-  go_result <- enrichGO(gene = TopTableListItem$ENTREZID, keyType = "ENTREZID",  OrgDb = "org.Mm.eg.db", ont = "all")
-  
-  # save table to disk
-  # stop("Coding of function is not finished yet")
-  
-  if (isTRUE(save_to_disk)) {
-    message("Formatting results table")
-    
-    go_result_tibble <- as_tibble(go_result@result)
-    
-    geneID_names_list <- vector(mode = 'list', length = length(go_result_tibble[["geneID"]]))
-    
-    for (i in seq(length(go_result_tibble[["geneID"]]))){
-      
-      message(paste0("Looking up line ", i," of ", length(go_result_tibble[["geneID"]]) ," lines."))
-      
-      geneID_names_list[[i]] <- TopTableListItem[ which(TopTableListItem[["ENTREZID"]] %in% str_split(go_result_tibble[["geneID"]], pattern = "/")[[i]]), "SYMBOL"] %>% pull(SYMBOL)
-      
-    }
-    
-    go_result_tibble[["geneName"]] <- unlist(lapply(geneID_names_list,  function (x) paste(x, collapse = "/")))
-    
-    message("Saving table to disk.")
-    
-    # set table path if it isn't set
-    if(is.null(table_path)){
-      
-      message("Table export path not provided, using hard-coded one.")
-      
-      table_path <- paste0(here("tables"), "/050_r_array_analysis_", "GO_terms_sign__", gsub(" ", "", TopTableListItemName)  , ".xlsx")
-    }
-    
-    stopifnot("Please provide a full path for the xslx output." = !is.null(table_path))
-    
-    openxlsx::write.xlsx(go_result_tibble, file = table_path, asTable = TRUE)
-    
-  }
-  
-  # get display item
-  go_plot <- enrichplot::dotplot(go_result, split="ONTOLOGY", title =  paste0("GO terms of data set: \"", TopTableListItemName, "\"", sep = ""), showCategory = 5) + facet_grid(ONTOLOGY ~ ., scale="free")
-  
-  # return plot 
-  return(go_plot)
-  
-}
-
-# save GO plots
-save_kegg_plots <- function(ggplot_list_item, ggplot_list_item_name){
-  
-  require(ggplot2)
-  
-  filename <- gsub("[^[:alnum:][:space:]]","", ggplot_list_item_name)
-  filename <- gsub("\\s+","_", filename)
-  filename <- paste0("050_r_array_analysis__plot_kegg_", filename, ".pdf", collapse = "_")
-  
-  message(filename)
-  try(ggsave(plot = ggplot_list_item, path = here("../manuscript/display_items"), filename, scale = 0.75, height = 297/2, width = 210, units = c("mm")))
-  
-}
-
-# save KEGG plots
-save_go_plots <- function(ggplot_list_item, ggplot_list_item_name){
-  
-  require(ggplot2)
-  
-  filename <- gsub("[^[:alnum:][:space:]]","", ggplot_list_item_name)
-  filename <- gsub("\\s+","_", filename)
-  filename <- paste0("050_r_array_analysis__plot_go_", filename, ".pdf", collapse = "_")
-  
-  message(filename)
-  try(ggsave(plot = ggplot_list_item, path = here("../manuscript/display_items"), filename, scale = 1.75, height = 210, width = 210, units = c("mm")))
   
 }
 
@@ -862,7 +734,7 @@ mice_f1_modeled_data_with_rna_seq_data %<>% # re-code parental diet variable - s
 # __c) Get summary of sample sizes and treatments
 
 write_xlsx(mice_f1_modeled_data_with_rna_seq_data, 
-           path =  here("../manuscript/display_items", "055_r_array_analysis_mice_f1_slct__mice_f1_modeled_data_with_rna_seq_data.xlsx")) 
+           path =  here("../analysis/tables", "055_r_array_analysis_mice_f1_slct__mice_f1_modeled_data_with_rna_seq_data.xlsx")) 
 
 # __d) Adjust array data
 
@@ -1367,7 +1239,7 @@ upset_compound <- ggarrange(upset_flat, upset_evat, upset_brat, upset_livt, labe
 ggsave(upset_compound, width = 200, height = 100, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.7,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__upset_compound.pdf")
        
-# Analyse Gene Ontologies ----
+# Analyse GOs and KEGG terms ----
 
 # _1.) Isolate a list of DEG top tables from relevant tissues and contrasts ----
 
@@ -1384,29 +1256,42 @@ top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]] <- metadata(SE_all_ti
 top_table_list_relevant_contrasts[["IWAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes[["IWAT"]])[["toptable_list"]][["CD CD - WD WD"]]
 top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]]
 
-# _2.) Gene Set Enrichment Analysis using gseGO {clusterProfiler} ----
+# _2.) Lookup Entrez IDs for KEGG and GO  ----
+
+top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]] <- get_entrez_ids(top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]], SE_all_tissues_all_genes[["EVAT"]])
+top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]] <- get_entrez_ids(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], SE_all_tissues_all_genes[["BRAT"]])
+top_table_list_relevant_contrasts[["IWAT: CD CD - WD WD"]] <- get_entrez_ids(top_table_list_relevant_contrasts[["IWAT: CD CD - WD WD"]], SE_all_tissues_all_genes[["IWAT"]])
+top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]] <- get_entrez_ids(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], SE_all_tissues_all_genes[["LIVT"]])
+
+# _3.) Gene Set Enrichment Analysis using gseGO {clusterProfiler} ----
 
 gse_object_list_relevant_contrasts <-  lapply(top_table_list_relevant_contrasts, function (x) get_gse_object(x, pvc = 0.05))
 
-# _3.) Lookup of gene ontologies (GO) ----
-
-# __a) Lookup GOs ----
+# _4.) Lookup of Gene Ontologies using enrichGO {clusterProfiler} ----
 
 left_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
-right_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
+rght_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
 
-# __b) Save GO plots ----
-
-go_compound <- ggarrange(left_go_plot, right_go_plot, labels = list("a", "b"))
+go_compound <- ggarrange(left_go_plot, rght_go_plot, labels = list("a", "b"))
 
 ggsave(go_compound, width = 400, height = 250, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 0.85,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__go_compound.pdf")
 
-# _4.) **Not done**: Gene Set Enrichment Analysis using runTest {topGO} ----
+# _5.) Lookup of KEGG terms using enrichKEGG {clusterProfiler} ----
+
+left_kegg_plot <- get_kegg_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
+rght_kegg_plot <- get_kegg_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
+
+kegg_compound <- ggarrange(left_kegg_plot, rght_kegg_plot, labels = list("a", "b"))
+
+ggsave(kegg_compound, width = 400, height = 250, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 0.85,
+       file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__kegg_compound.pdf")
+
+# _6.) **Not done**: Gene Set Enrichment Analysis using runTest {topGO} ----
 
 # see https://bioconductor.org/packages/release/bioc/vignettes/topGO/inst/doc/topGO.pdf
 
-# _5.) **Not done**: Enrichr as alternative to GSEA ----
+# _7.) **Not done**: Enrichr as alternative to other GSEA approaches ----
 
 # see https://cran.r-project.org/web/packages/enrichR/vignettes/enrichR.html
 
@@ -1498,270 +1383,3 @@ ggsave(volcano_heat_compound, width = 200, height = 200, units = c("mm"), dpi = 
 sessionInfo()
 save.image(file = here("scripts", "055_r_array_analysis.RData"))
 renv::snapshot()
-
-stop("Unadjusted old analysis code below - outline further analysis - possibly integrate into code above. ")
-
-
-
-
-
-# KEGG and GO analysis ----
-
-# __e)  Compile a well-labelled list with all DGE results  ----
-
-# - these results are likley not needed
-names(FLAT_Tissue_TopTableList) <- paste0("FLAT - ", names(FLAT_Tissue_TopTableList))
-
-# - these results are undefined, as PCA didn't show structure and no DEGs were define (see 5.-Jul.2023)
-#   names(EVAT__Select_TopTableList) <- paste0("EVAT - ", names(EVAT__Select_TopTableList))
-#   names(SCAT__Select_TopTableList) <- paste0("IWAT - ", names(SCAT__Select_TopTableList))
-
-names(BRAT__Select_TopTableList) <- paste0("BRAT - ", names(BRAT__Select_TopTableList))
-names(LIAT__Select_TopTableList) <- paste0("LIVT - ", names(LIAT__Select_TopTableList))
-
-FULL_TopTableList <- c(
-  # FLAT_Tissue_TopTableList,
-  # EVAT__Select_TopTableList, 
-  BRAT__Select_TopTableList,
-  LIAT__Select_TopTableList
-  )
-
-# receiving a table with 2 slots, each containing DGE results fo a specific tissue and statistically relavent contrasts
-names(FULL_TopTableList)
-
-# __f) Filter top tables further if required ----   
-
-# check tables
-FULL_TopTableList[[1]]
-FULL_TopTableList[[2]]
-
-# check for NAs
-FULL_TopTableList[[1]][rowSums(is.na(FULL_TopTableList[[1]])) > 0, ]
-FULL_TopTableList[[2]][rowSums(is.na(FULL_TopTableList[[2]])) > 0, ]
-
-# Inspect data in question - green tail on Volcano plot
-FULL_TopTableList[[1]][ which(  log2(FULL_TopTableList[[1]]$logFC) > 1 ) , ]
-FULL_TopTableList[[1]][ which(  log2(FULL_TopTableList[[1]]$logFC) > 1 ) , ]
-
-# __g)  Get, assort, arrange, and save Vulcano plots  ----
-
-FULL_VolcanoPlots <- mapply(get_one_volcanoplot, TopTableListItem = FULL_TopTableList, TopTableListItemName = gsub("LIVT", "L", gsub("BRAT", "BAT", names(FULL_TopTableList),  fixed = TRUE), fixed = TRUE), SIMPLIFY = FALSE)
-
-# the following three sets are undefined or serve no purpose (see 5-Jul-2023)
-#  FLAT_VolcanoPlots <- FULL_VolcanoPlots[grep("FLAT", names(FULL_VolcanoPlots))]
-#  SCAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^IWAT", names(FULL_VolcanoPlots))]
-#  EVAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^EVAT", names(FULL_VolcanoPlots))]
-
-BRAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^BRAT", names(FULL_VolcanoPlots))]
-LIAT_VolcanoPlots <- FULL_VolcanoPlots[grep("^LIVT", names(FULL_VolcanoPlots))]
-
-# the following three sets are undefined or serve no purpose (see 5-Jul-2023)
-#  FLAT_VolcanoPlotsComposite <- ggarrange(plotlist = FLAT_VolcanoPlots, ncol = 2, nrow = 2, labels = "auto")
-#  SCAT_VolcanoPlotsComposite <- ggarrange(plotlist = SCAT_VolcanoPlots, ncol = 1, nrow = 1, labels = NULL)
-#  EVAT_VolcanoPlotsComposite <- ggarrange(plotlist = EVAT_VolcanoPlots, ncol = 3, nrow = 1, labels = "auto")
-BRAT_VolcanoPlotsComposite <- ggarrange(plotlist = BRAT_VolcanoPlots, ncol = 1, nrow = 1, labels = NULL)
-LIAT_VolcanoPlotsComposite <- ggarrange(plotlist = LIAT_VolcanoPlots, ncol = 1, nrow = 1, labels = NULL)
-BRLI_VolcanoPlotsComposite <- ggarrange(plotlist = c(BRAT_VolcanoPlots, LIAT_VolcanoPlots), ncol = 2, nrow = 1, labels = "auto")
-
-# ggsave(plot = FLAT_VolcanoPlotsComposite, path = here("plots"), 
-#        filename = "050_r_array_analysis__plot_volcano_flat.pdf",  
-#        width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
-# 
-# ggsave(plot = SCAT_VolcanoPlotsComposite, path = here("plots"), 
-#        filename = "050_r_array_analysis__plot_volcano_scat.pdf",  
-#        width = 180, height = 150, units = "mm", dpi = 150,  limitsize = TRUE, scale = 1.3)
-# 
-# ggsave(plot = EVAT_VolcanoPlotsComposite, path = here("plots"), 
-#        filename = "050_r_array_analysis__plot_volcano_evat.pdf",  
-#        width = 300, height = 125, units = "mm", dpi = 200,  limitsize = TRUE, scale = 3)
-
-ggsave(plot = BRAT_VolcanoPlotsComposite, path = here("../manuscript/display_items"), 
-       filename = "050_r_array_analysis__plot_volcano_brat.pdf",  
-       width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 1)
-
-ggsave(plot = LIAT_VolcanoPlotsComposite, path = here("../manuscript/display_items"), 
-       filename = "050_r_array_analysis__plot_volcano_liat.pdf",  
-       width = 180, height = 200, units = "mm", dpi = 300,  limitsize = TRUE, scale = 1)
-
-ggsave(plot = BRLI_VolcanoPlotsComposite, path = here("../manuscript/display_items"), 
-       filename = "050_r_array_analysis__plot_volcano_brli.pdf",  
-       width = 160, height = 80, units = "mm", dpi = 300,   limitsize = TRUE, scale = 2.5)
-
-#' ### Get, assort, arrange, and save heat maps (drafted)
-
-# __h) Get, assort, arrange, and save heat maps (drafted) ----
-
-# code below very dirty, could be cleaned out and made into a function
-# sample annotation can be improved using a data frame as shown here
-# https://davetang.org/muse/2018/05/15/making-a-heatmap-in-r-with-the-pheatmap-package/
-
-# ___ BRAT ----
-
-# get expression data as matrix with probe ids, subset for speed 
-foo <- as_tibble(exprs(BRAT), rownames = c("PROBEID")) %>% filter(PROBEID %in%  BRAT__Select_TopTableList[[1]][["PROBEID"]])
-foo_mat <- base::as.matrix(foo %>% dplyr::select(-PROBEID))
-rownames(foo_mat) <- (foo %>% pull(PROBEID))
-
-# isolate the DEG top table
-bar <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]]
-
-# join DEG top table and expression data to a new tibble  
-foobar <- left_join(bar, foo)
-
-# keep only relavent logFC, conforming with Volcano plots, p values do not need further adjustments
-foobar <- foobar %>% filter(logFC < -1 | logFC > 1) %>% arrange(logFC)
-foobar <- foobar %>% filter(adj.P.Val < 0.05 )%>% arrange(logFC)
-
-# pheatmap needs a matrix - hence converting tibble to matrix
-foo_mat <- base::as.matrix (foobar %>% dplyr::select(contains("_BRAT")))
-rownames(foo_mat) <- foobar[["SYMBOL"]]
-
-# to add more sample annotations to heat map matrix colnames - isolating this data here
-mdata_tibble <- tibble(pData(BRAT)) %>% mutate(SAMPLE = paste0(Animal,"_",Tissue))
-
-# checking possibilty to extend matrix column names
-which(colnames(foo_mat) %in% mdata_tibble$SAMPLE)
-
-# extending matrix column names (samples) with relevant metadata
-colnames(foo_mat) <- paste0(colnames(foo_mat), " | " , 
-       mdata_tibble[which(colnames(foo_mat) %in% mdata_tibble$SAMPLE) , "ObeseParents"][["ObeseParents"]], " | " ,
-       mdata_tibble[which(colnames(foo_mat) %in% mdata_tibble$SAMPLE) , "ObesityLgcl"][["ObesityLgcl"]]
-       )
-
-# adding stars to contrast
-colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|FatherObese", colnames(foo_mat))], "*")
-
-# renaming tissues
-colnames(foo_mat) <- gsub("LIVT", "L", gsub("BRAT", "BAT", colnames(foo_mat),  fixed = TRUE), fixed = TRUE)
-
-# print heat map to script and file
-pheatmap(foo_mat, scale = "row")
-pheatmap(foo_mat, scale = "row", filename =  paste0(here("../manuscript/display_items"),"/","050_r_array_analysis__plot_heatmap_brat.pdf"))
-
-# ___ LIVT ----
-
-# get expression data as matrix with probe ids, subset for speed 
-foo <- as_tibble(exprs(LIVT), rownames = c("PROBEID")) %>% filter(PROBEID %in%  LIAT__Select_TopTableList[[1]][["PROBEID"]])
-foo_mat <- base::as.matrix(foo %>% dplyr::select(-PROBEID))
-rownames(foo_mat) <- (foo %>% pull(PROBEID))
-
-# isolate the DEG top table
-bar <- LIAT__Select_TopTableList[["LIVT - MotherFatherObese vs MotherFatherNotObese"]]
-
-# join DEG top table and expression data to a new tibble  
-foobar <- left_join(bar, foo)
-
-# keep only relavent logFC and pValues
-foobar <- foobar %>% filter(logFC < -1 | logFC > 1) %>% arrange(logFC)
-foobar <- foobar %>% filter(adj.P.Val < 0.05 ) %>% arrange(logFC)
-
-# pheatmap needs a matrix - hence converting tibble to matrix
-foo_mat <- base::as.matrix (foobar %>% dplyr::select(contains("_LIAT")))
-rownames(foo_mat) <- foobar[["SYMBOL"]]
-
-# to add more sample annotations to heat map matrix colnames - isolating this data here
-mdata_tibble <- tibble(pData(LIVT)) %>% mutate(SAMPLE = paste0(Animal,"_",Tissue))
-
-# checking possibilty to extend matrix column names
-which(colnames(foo_mat) %in% mdata_tibble$SAMPLE)
-
-# extending matrix column names (samples) with relevant metadata
-colnames(foo_mat) <- paste0(colnames(foo_mat), " | " , 
-                            mdata_tibble[which(colnames(foo_mat) %in% mdata_tibble$SAMPLE) , "ObeseParents"][["ObeseParents"]], " | " ,
-                            mdata_tibble[which(colnames(foo_mat) %in% mdata_tibble$SAMPLE) , "ObesityLgcl"][["ObesityLgcl"]]
-)
-
-# adding stars to contrast
-colnames(foo_mat)[grep(pattern = "MotherFatherObese|MotherFatherNotObese", colnames(foo_mat))] <- paste(colnames(foo_mat)[grep(pattern = "MotherFatherObese|MotherFatherNotObese", colnames(foo_mat))], "*")
-
-# renaming tissues
-colnames(foo_mat) <- gsub("LIVT", "L", gsub("BRAT", "BAT", colnames(foo_mat),  fixed = TRUE), fixed = TRUE)
-
-# print heat map to script and file
-pheatmap(foo_mat, scale = "row")
-pheatmap(foo_mat, scale = "row", filename =  paste0(here("../manuscript/display_items"),"/","050_r_array_analysis__plot_heatmap_liat.pdf"))
-
-#' ### Save DGE lists
-
-# __i) Save DGE lists ----
-
-BRAT_TTL_sign <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(adj.P.Val < 0.05 )
-BRAT_TTL_uprg <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(logFC > 1)
-BRAT_TTL_down <- BRAT__Select_TopTableList[["BRAT - MotherFatherObese vs FatherObese"]] %>% filter(logFC < -1)
-
-LIAT_TTL_sign <- LIAT__Select_TopTableList[["LIVT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(adj.P.Val < 0.05 )
-LIAT_TTL_uprg <- LIAT__Select_TopTableList[["LIVT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC > 1)
-LIAT_TTL_down <- LIAT__Select_TopTableList[["LIVT - MotherFatherObese vs MotherFatherNotObese"]] %>% filter(logFC < -1)
-
-openxlsx::write.xlsx(BRAT_TTL_sign, paste0(here("tables"), "/050_r_array_analysis_", "BAT_DEGs_sign", ".xlsx"), asTable = TRUE, overwrite = TRUE)
-openxlsx::write.xlsx(BRAT_TTL_down, paste0(here("tables"), "/050_r_array_analysis_", "BAT_DEGs_down", ".xlsx"), asTable = TRUE, overwrite = TRUE)
-openxlsx::write.xlsx(BRAT_TTL_uprg, paste0(here("tables"), "/050_r_array_analysis_", "BAT_DEGs_uprg", ".xlsx"), asTable = TRUE, overwrite = TRUE)
-
-openxlsx::write.xlsx(LIAT_TTL_sign, paste0(here("tables"), "/050_r_array_analysis_", "L_DEGs_sign", ".xlsx"), asTable = TRUE, overwrite = TRUE)
-openxlsx::write.xlsx(LIAT_TTL_down, paste0(here("tables"), "/050_r_array_analysis_", "L_DEGs_down", ".xlsx"), asTable = TRUE, overwrite = TRUE)
-openxlsx::write.xlsx(LIAT_TTL_uprg, paste0(here("tables"), "/050_r_array_analysis_", "L_DEGs_uprg", ".xlsx"), asTable = TRUE, overwrite = TRUE)
-
-
-# _3.) Gene Set Enrichment Analysis (GSEA) ----
-
-# the following resources are useful 
-# step-by-step GSEA https://physiology.med.cornell.edu/faculty/skrabanek/lab/angsd/lecture_notes/08_practical_DE.pdf
-# step-by-step GSEA https://bioinformatics-core-shared-training.github.io/cruk-summer-school-2018/RNASeq2018/html/06_Gene_set_testing.nb.html
-# why shrinkage of LFCs is not necessary, or already done https://support.bioconductor.org/p/100804/
-
-# check test data - possibly used tissue-specific data sets
-
-#' ### Lookup Entrez ID for Clusterprofiler
-
-# __a) Lookup Entrez ID for Clusterprofiler ----
-
-FULL_TopTableListAppended <- lapply(FULL_TopTableList, get_entrez_ids) 
-
-# __b) Adjust data for KEGG and GO analysis ----
-
-# Keep only relavent logFC and pValues Clusterprofiler ----
-#  not needed - default values for `enrichGo()` and `enrichKegg()` are `pvalueCutoff = 0.05, pAdjustMethod = "BH"` # "holm"
-
-# FULL_TopTableListAppended <- lapply(FULL_TopTableListAppended, function (li) li %<>% filter(logFC < -1 | logFC > 1) %>% arrange(logFC))
-# FULL_TopTableListAppended <- lapply(FULL_TopTableListAppended, function (li) li %<>% filter(adj.P.Val < 0.05 ) %>% arrange(logFC))
-
-# Adjust names
-names(FULL_TopTableListAppended) <- gsub("BRAT", "BAT", names(FULL_TopTableListAppended), fixed = TRUE )
-names(FULL_TopTableListAppended) <- gsub("LIVT", "L", names(FULL_TopTableListAppended), fixed = TRUE )
-
-#' ### Get plots of KEEG pathways
-
-# __c) Get plots of KEEG pathways ----
-
-FULL_KeggPlots <- mapply(get_one_kegg_dotplot, TopTableListItem = FULL_TopTableListAppended, TopTableListItemName = names(FULL_TopTableListAppended), SIMPLIFY = FALSE)
-names(FULL_KeggPlots)
-
-#' ### Save plots of KEEG pathways
-
-# __d) Save plots of KEEG pathways ----
-
-FULL_KeggPlots[1]
-FULL_KeggPlots[2]
-
-mapply(save_kegg_plots, ggplot_list_item = FULL_KeggPlots, ggplot_list_item_name = names(FULL_KeggPlots), SIMPLIFY = FALSE)
-
-ggsave(plot = ggarrange(plotlist =  FULL_KeggPlots, ncol = 2, labels = "auto"), filename = "050_r_array_analysis__plot_kegg_both.pdf", path = here("../manuscript/display_items/"), width = 280, height = 420, unit = "mm", scale = 1)
-
-#' ### Implement GO analysis
-
-# __e) Implement GO analysis ----
-
-FULL_GoPlots <- mapply(get_one_go_plot, TopTableListItem = FULL_TopTableListAppended, TopTableListItemName = names(FULL_TopTableListAppended), SIMPLIFY = FALSE)
-names(FULL_GoPlots)
-
-#' ### Show and save plots of GO pathways
-
-# __f) Show and save plots of GO pathways ----
-
-FULL_GoPlots[[1]]
-FULL_GoPlots[[2]]
-
-mapply(save_go_plots, ggplot_list_item = FULL_GoPlots, ggplot_list_item_name = names(FULL_KeggPlots), SIMPLIFY = FALSE)
-
-ggsave(plot = ggarrange(plotlist =  FULL_GoPlots, ncol = 2, labels = "auto"), filename = "050_r_array_analysis__plot_go_both.pdf", path = here("../manuscript/display_items/"), width = 280, height = 420, unit = "mm", scale = 1)
-
