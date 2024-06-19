@@ -1088,36 +1088,35 @@
  * working in `055_r_array_analysis.r`
    * created volcano plots, heat maps, and the respective compound plot
    * added figure to manuscript 
- * commit 
+ * commit
+   * implemented GO lookup
+   * updated todo
  
 ## Todo queue (last updated 06-06-2024)
 
  * **analysis work**
    * [x] in `015_r_use_saemix.R`
-     * [ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
-   * [ ] script `55_r_array_analysis.r`
+     * ~~[ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
+   * [ ] in script `55_r_array_analysis.r`
      * [x] finish heat maps
      * [x] save volcano plots
-     * [ ] use `enrichR`
-     
-    * Enrichr via R:
-      https://cran.r-project.org/web/packages/enrichR/vignettes/enrichR.html
-      In meinem Script habe ich auch nichts anderes gemacht. Du must nur schauen, dass du es für Maus und nicht Mensch anpasst. Falls du Hilfe brauchst, sag Bescheid.
-     
-    * [x] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues. 
-    * [x] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
-    * [x] 3.) **Fig. 3**: Upset plot of intersections of full list highlight shared and uniqe genes ~~obesity related genes~~
-    * [x] upset plots with shared and unshared genes - deal with unique and duplicate genes
-    * [x] implement GSEA - focus on `CD CD - WD WD`
-    * [x] 4.) **Fig. 4**: GSEA - use all DEG lists - see which return best results
-    * [ ] **check again which obesity - relavant genes  are worthy of inspection in fat**
-    * [x] **raise**  LFC thresholds
-    * [x] compare full and obesity-only gene lists, are they congruent? **no**
-    * [x] wait for NKB to check gene lists - re-outline analysis steps below.
-    * ~~[ ] 4.) **Supple Tables 6-12**: put these lists together per tissue and see which contrasts differentially express unique genes.~~
-    * ~~[ ] 5.) **Fig. 4**: Upset plot of intersections of setdiffs list - highlight obesity related genes.~~ **no intersection** 
-    * ~~[ ] 6.) **Suppl. Tab 12-n** GSEA of settdifs with unique obesity genes.~~
-    * ~~[ ] Where the search as described in 3. is successful, look at the full list using Gene Set Enrichment analysis.~~
+     * ~~[ ] use `enrichR`~~
+     * [x] look up GO terms
+     * [ ] look up KEGG terms
+     * [x] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues. 
+     * [x] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
+     * [x] 3.) **Fig. 3**: Upset plot of intersections of full list highlight shared and uniqe genes ~~obesity related genes~~
+     * [x] upset plots with shared and unshared genes - deal with unique and duplicate genes
+     * [x] implement GSEA - focus on `CD CD - WD WD`
+     * [x] 4.) **Fig. 4**: GSEA - use all DEG lists - see which return best results
+     * [ ] **check again which obesity - relavant genes  are worthy of inspection in fat**
+     * [x] **raise**  LFC thresholds
+     * [x] compare full and obesity-only gene lists, are they congruent? **no**
+     * [x] wait for NKB to check gene lists - re-outline analysis steps below.
+     * ~~[ ] 4.) **Supple Tables 6-12**: put these lists together per tissue and see which contrasts differentially express unique genes.~~
+     * ~~[ ] 5.) **Fig. 4**: Upset plot of intersections of setdiffs list - highlight obesity related genes.~~ **no intersection** 
+     * ~~[ ] 6.) **Suppl. Tab 12-n** GSEA of settdifs with unique obesity genes.~~
+     * ~~[ ] Where the search as described in 3. is successful, look at the full list using Gene Set Enrichment analysis.~~
  
  * **overall revision work**
    * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`

@@ -448,6 +448,79 @@ get_gse_object = function(top_table, pvc = 1){
   
 }
 
+
+# GO Enrichment Analysis of a gene set. 
+# Given a vector of genes, this function will return the enrichment GO categories after FDR control.
+
+get_go_plot_and_table <- function(top_table, top_table_name, save_to_disk = TRUE, table_path = NULL){
+  
+  # packages
+  require("clusterProfiler")
+  require("enrichplot")
+  
+  # for function building only
+  # stop("Remove function building code")
+  # top_table <- top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]]
+  # top_table_name <- c("BRAT: CD CD - WD WD")
+  # save_to_disk <-  TRUE
+  # table_path <-  NULL
+  # rm(list(TopTableListItem, TopTableListItemName))
+  
+  # diagnostic
+  message(paste0("Creating GO plot for data set: \"", top_table_name, "\".", sep = ""))
+  
+  # look- up go pathways
+  go_result <- enrichGO(gene = str_to_title(top_table[["SYMBOL"]]), keyType = "SYMBOL",  OrgDb = "org.Mm.eg.db", ont = "all")
+  
+  # save table to disk
+  # stop("Coding of function is not finished yet")
+  
+  if (isTRUE(save_to_disk)){
+    
+    # old code from previous version, where top table contained Entrez ids - symbols needed to be looked up
+    # 
+    # message("Formatting results table")
+    # 
+    # go_result_tibble <- as_tibble(go_result@result)
+    # 
+    # geneID_names_list <- vector(mode = 'list', length = length(go_result_tibble[["geneID"]]))
+    # 
+    # for (i in seq(length(go_result_tibble[["geneID"]]))){
+    #   
+    #   message(paste0("Looking up line ", i," of ", length(go_result_tibble[["geneID"]]), "." ))
+    #   
+    #   geneID_names_list[[i]] <- top_table[ which( str_to_title(top_table[["SYMBOL"]]) %in% str_split(go_result_tibble[["geneID"]], pattern = "/")[[i]] ), "SYMBOL"] # %>% pull(SYMBOL)
+    #   
+    # }
+    # 
+    # go_result_tibble[["geneName"]] <- unlist(lapply(geneID_names_list,  function (x) paste(x, collapse = "/")))
+    
+    message("Saving table to disk.")
+    
+    # set table path if it isn't set
+    if(is.null(table_path)){
+      
+      message("Table export path not provided, using hard-coded one.")
+      
+      table_path <- paste0(here("tables"), "/055_r_array_analysis_", "GO_terms_sign__", gsub(" ", "", top_table_name)  , ".xlsx")
+    }
+    
+    stopifnot("Please provide a full path for the xslx output." = !is.null(table_path))
+    
+    openxlsx::write.xlsx(go_result_tibble, file = table_path, asTable = TRUE)
+    
+  }
+  
+  # get display item
+  go_plot <- enrichplot::dotplot(go_result, split="ONTOLOGY", title =  paste0("GO terms of data set: \"", top_table_name, "\"", sep = ""), showCategory = 5) + facet_grid(ONTOLOGY ~ ., scale="free")
+  
+  # return plot 
+  return(go_plot)
+  
+}
+
+
+
 # Get Volcano plots
 get_one_volcanoplot <- function(TopTableListItem, TopTableListItemName){
   
@@ -689,7 +762,7 @@ save_go_plots <- function(ggplot_list_item, ggplot_list_item_name){
   
 }
 
-# Load, fomat, and shape data ----
+# Load, format, and shape data ----
 
 # _1.) Full data of all 4 tissues ----
 
@@ -1294,9 +1367,9 @@ upset_compound <- ggarrange(upset_flat, upset_evat, upset_brat, upset_livt, labe
 ggsave(upset_compound, width = 200, height = 100, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.7,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__upset_compound.pdf")
        
-# Gene Set Enrichment Analysis from relevant tissues and contrasts ----
+# Analyse Gene Ontologies ----
 
-# _2.) Isolate a list of DEG top tables from relevant tissues and contrasts ----
+# _1.) Isolate a list of DEG top tables from relevant tissues and contrasts ----
 
 # here using the strongest contrasts identified on the UpSet plot above: CD CD - WD WD, in all tissues.
 
@@ -1311,16 +1384,37 @@ top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]] <- metadata(SE_all_ti
 top_table_list_relevant_contrasts[["IWAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes[["IWAT"]])[["toptable_list"]][["CD CD - WD WD"]]
 top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]]
 
-# _3.) Get Gene Set Object from Limma-like top tables in a list ----
+# _2.) Gene Set Enrichment Analysis using gseGO {clusterProfiler} ----
 
 gse_object_list_relevant_contrasts <-  lapply(top_table_list_relevant_contrasts, function (x) get_gse_object(x, pvc = 0.05))
+
+# _3.) Lookup of gene ontologies (GO) ----
+
+# __a) Lookup GOs ----
+
+left_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
+right_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
+
+# __b) Save GO plots ----
+
+go_compound <- ggarrange(left_go_plot, right_go_plot, labels = list("a", "b"))
+
+ggsave(go_compound, width = 400, height = 250, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 0.85,
+       file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__go_compound.pdf")
+
+# _4.) **Not done**: Gene Set Enrichment Analysis using runTest {topGO} ----
+
+# see https://bioconductor.org/packages/release/bioc/vignettes/topGO/inst/doc/topGO.pdf
+
+# _5.) **Not done**: Enrichr as alternative to GSEA ----
+
+# see https://cran.r-project.org/web/packages/enrichR/vignettes/enrichR.html
 
 # Get Volcano plot ----
 
 # _1.) Recreate DEG lists without cut-off - so thet Volcano plots show all genes ----
 
 SE_all_tissues_all_genes_full <- lapply(SE_all_tissues_all_genes, function(se_ob) get_deg_lists(se_ob, peval = 1.00, logfc = 0))
-
 
 # _2.) Get lists that are accepted by plotting function ----
 
@@ -1395,7 +1489,6 @@ volcano_heat_compound <- ggarrange(left_upper_volcano, rght_upper_volcano,
           ncol = 2, nrow = 2, hjust = "-5", vjust = "5")
 
 volcano_heat_compound
-
 
 ggsave(volcano_heat_compound, width = 200, height = 200, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.3,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__volcano_heat_compound.pdf")
