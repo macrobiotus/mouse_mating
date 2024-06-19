@@ -1327,67 +1327,84 @@ rght_upper_volcano <- get_one_volcanoplot(top_table_list_relevant_contrasts_full
 
 # _1.) Copy object ---- 
 
-left_lower_heatmap_data  <- SE_all_tissues_all_genes[["EVAT"]]
-midl_lower_heatmap_data  <- SE_all_tissues_all_genes[["BRAT"]]
-right_lower_heatmap_data <- SE_all_tissues_all_genes[["LIVT"]]
+lft_lower_heatmap_data <- SE_all_tissues_all_genes[["EVAT"]]
+mdl_lower_heatmap_data <- SE_all_tissues_all_genes[["BRAT"]]
+rgt_lower_heatmap_data <- SE_all_tissues_all_genes[["LIVT"]]
 
 # _2.) Subset to relevant contrasts ---- 
 
-left_lower_heatmap_data  <- left_lower_heatmap_data[  ,  left_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
-midl_lower_heatmap_data  <- midl_lower_heatmap_data[  ,  midl_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
-right_lower_heatmap_data <- right_lower_heatmap_data[ , right_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
+lft_lower_heatmap_data <- lft_lower_heatmap_data[ ,  lft_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
+mdl_lower_heatmap_data <- mdl_lower_heatmap_data[ ,  mdl_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
+rgt_lower_heatmap_data <- rgt_lower_heatmap_data[ , rgt_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
 
 # _3.) Subset to relevant genes ---- 
 
 relevant_genes <- metadata(SE_all_tissues_all_genes[["EVAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
-left_lower_heatmap_data <- left_lower_heatmap_data[  rownames(left_lower_heatmap_data) %in% relevant_genes ,  ]
+lft_lower_heatmap_data <- lft_lower_heatmap_data[  rownames(lft_lower_heatmap_data) %in% relevant_genes,  ]
 
 relevant_genes <- metadata(SE_all_tissues_all_genes[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
-midl_lower_heatmap_data <- left_lower_heatmap_data[  rownames(left_lower_heatmap_data) %in% relevant_genes ,  ]
+mdl_lower_heatmap_data <- mdl_lower_heatmap_data[  rownames(mdl_lower_heatmap_data) %in% relevant_genes ,  ]
 
 relevant_genes <- metadata(SE_all_tissues_all_genes[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
-right_lower_heatmap_data <- right_lower_heatmap_data[  rownames(right_lower_heatmap_data) %in% relevant_genes ,  ]
+rgt_lower_heatmap_data <- rgt_lower_heatmap_data[  rownames(rgt_lower_heatmap_data) %in% relevant_genes ,  ]
 
 # _4.) Modify plotted genes names, in lack of better options ---- 
 
-rownames(left_lower_heatmap_data) <- rowData(left_lower_heatmap_data)[["SYMBOL"]][which(rownames(rowData(left_lower_heatmap_data)) %in% rownames(left_lower_heatmap_data))] 
-metadata(left_lower_heatmap_data)$hmcols <- c("#0072B2","white","#D55E00")
+rownames(lft_lower_heatmap_data) <- rowData(lft_lower_heatmap_data)[["SYMBOL"]][which(rownames(rowData(lft_lower_heatmap_data)) %in% rownames(lft_lower_heatmap_data))] 
+metadata(lft_lower_heatmap_data)$hmcols <- c("#0072B2","white","#D55E00")
 
-rownames(right_lower_heatmap_data) <- rowData(right_lower_heatmap_data)[["SYMBOL"]][which(rownames(rowData(right_lower_heatmap_data)) %in% rownames(right_lower_heatmap_data))] 
-metadata(right_lower_heatmap_data)$hmcols <- c("#0072B2","white","#D55E00")
+rownames(mdl_lower_heatmap_data) <- rowData(mdl_lower_heatmap_data)[["SYMBOL"]][which(rownames(rowData(mdl_lower_heatmap_data)) %in% rownames(mdl_lower_heatmap_data))] 
+metadata(mdl_lower_heatmap_data)$hmcols <- c("#0072B2","white","#D55E00")
+
+rownames(rgt_lower_heatmap_data) <- rowData(rgt_lower_heatmap_data)[["SYMBOL"]][which(rownames(rowData(rgt_lower_heatmap_data)) %in% rownames(rgt_lower_heatmap_data))] 
+metadata(rgt_lower_heatmap_data)$hmcols <- c("#0072B2","white","#D55E00")
 
 # _5.) Create heat maps  ---- 
 
 left_lower_heatmap <- sechm(
-  left_lower_heatmap_data,
-  features = rownames(left_lower_heatmap_data),
+  lft_lower_heatmap_data,
+  features = rownames(lft_lower_heatmap_data),
   do.scale = TRUE,
   gaps_at = "ParentalDietMoFa",
   # mark = mark,
-  show_rownames = TRUE)
+  show_rownames = TRUE,
+  cluster_cols = TRUE,
+  cluster_rows = TRUE)
 left_lower_heatmap
 
-right_lower_heatmap <- sechm(
-  right_lower_heatmap_data,
-  features = rownames(right_lower_heatmap_data),
+middle_lower_heatmap <- sechm(
+  mdl_lower_heatmap_data,
+  features = rownames(mdl_lower_heatmap_data),
   do.scale = TRUE,
   gaps_at = "ParentalDietMoFa",
   # mark = mark,
-  show_rownames = TRUE)
+  show_rownames = TRUE,
+  cluster_cols = TRUE,
+  cluster_rows = TRUE)
+middle_lower_heatmap
 
+right_lower_heatmap <- sechm(
+  rgt_lower_heatmap_data,
+  features = rownames(rgt_lower_heatmap_data),
+  do.scale = TRUE,
+  gaps_at = "ParentalDietMoFa",
+  # mark = mark,
+  show_rownames = TRUE,
+  cluster_cols = TRUE,
+  cluster_rows = TRUE)
 right_lower_heatmap
 
 # Combine Volcano plot and heat maps ----
 
-volcano_heat_compound <- ggarrange(left_upper_volcano, rght_upper_volcano,
-          grid.grabExpr(draw( left_lower_heatmap)), grid.grabExpr(draw( right_lower_heatmap)),
-          labels = list("a", "b", "c", "d"),
+volcano_heat_compound <- ggarrange(left_upper_volcano, midl_upper_volcano, rght_upper_volcano,
+          grid.grabExpr(draw( left_lower_heatmap)), grid.grabExpr(draw( middle_lower_heatmap)), grid.grabExpr(draw( right_lower_heatmap)),
+          labels = list("a", "b", "c", "d", "e", "f"),
           font.label = list(size = 14, face = "bold"),
-          ncol = 2, nrow = 2, hjust = "-5", vjust = "5")
+          ncol = 3, nrow = 2, hjust = "-5", vjust = "5")
 
 volcano_heat_compound
 
-ggsave(volcano_heat_compound, width = 200, height = 200, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.3,
+ggsave(volcano_heat_compound, width = 297, height = 210, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.3,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__volcano_heat_compound.pdf")
 
 # Snapshot environment ----
