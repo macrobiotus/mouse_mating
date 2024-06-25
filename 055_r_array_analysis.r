@@ -1251,15 +1251,15 @@ names(top_table_list_relevant_contrasts) = c("EVAT: CD CD - WD WD",
                                              "IWAT: CD CD - WD WD",
                                              "LIVT: CD CD - WD WD")
 
-top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes[["EVAT"]])[["toptable_list"]][["CD CD - WD WD"]]
 top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]]
+top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes[["EVAT"]])[["toptable_list"]][["CD CD - WD WD"]]
 top_table_list_relevant_contrasts[["IWAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes[["IWAT"]])[["toptable_list"]][["CD CD - WD WD"]]
 top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]]
 
 # _2.) Lookup Entrez IDs for KEGG and GO  ----
 
-top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]] <- get_entrez_ids(top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]], SE_all_tissues_all_genes[["EVAT"]])
 top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]] <- get_entrez_ids(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], SE_all_tissues_all_genes[["BRAT"]])
+top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]] <- get_entrez_ids(top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]], SE_all_tissues_all_genes[["EVAT"]])
 top_table_list_relevant_contrasts[["IWAT: CD CD - WD WD"]] <- get_entrez_ids(top_table_list_relevant_contrasts[["IWAT: CD CD - WD WD"]], SE_all_tissues_all_genes[["IWAT"]])
 top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]] <- get_entrez_ids(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], SE_all_tissues_all_genes[["LIVT"]])
 
@@ -1269,13 +1269,16 @@ gse_object_list_relevant_contrasts <-  lapply(top_table_list_relevant_contrasts,
 
 # _4.) Lookup of Gene Ontologies using enrichGO {clusterProfiler} ----
 
-left_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]], "EVAT: CD CD - WD WD")
-midl_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
-rght_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
+left_upper_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
+rght_upper_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]], "EVAT: CD CD - WD WD")
+left_lower_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["IWAT: CD CD - WD WD"]], "IWAT: CD CD - WD WD")
+rght_lower_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
 
-go_compound <- ggarrange(left_go_plot, midl_go_plot,  rght_go_plot, labels = list("a", "b", "c"), nrow = 2, ncol = 2)
+go_compound <- ggarrange(left_upper_go_plot, rght_upper_go_plot,
+                         left_lower_go_plot, rght_lower_go_plot, 
+                         labels = list("a", "b", "c", "d"), nrow = 2, ncol = 2)
 
-ggsave(go_compound, width = 400, height = 250, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.2,
+ggsave(go_compound, width = 400, height = 250, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.5,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__go_compound.pdf")
 
 # _5.) Lookup of KEGG terms using enrichKEGG {clusterProfiler} ----
@@ -1306,101 +1309,124 @@ SE_all_tissues_all_genes_full <- lapply(SE_all_tissues_all_genes, function(se_ob
 
 # _2.) Get lists that are accepted by plotting function ----
 
-top_table_list_relevant_contrasts_full <-  vector(mode = "list", length = 3)
-names(top_table_list_relevant_contrasts_full) = c("EVAT: CD CD - WD WD",
-                                                  "BRAT: CD CD - WD WD",
+top_table_list_relevant_contrasts_full <-  vector(mode = "list", length = 4)
+names(top_table_list_relevant_contrasts_full) = c("BRAT: CD CD - WD WD",
+                                                  "EVAT: CD CD - WD WD",
+                                                  "IWAT: CD CD - WD WD",
                                                   "LIVT: CD CD - WD WD")
 
-top_table_list_relevant_contrasts_full[["EVAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes_full[["EVAT"]])[["toptable_list"]][["CD CD - WD WD"]]
 top_table_list_relevant_contrasts_full[["BRAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes_full[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]]
+top_table_list_relevant_contrasts_full[["EVAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes_full[["EVAT"]])[["toptable_list"]][["CD CD - WD WD"]]
+top_table_list_relevant_contrasts_full[["IWAT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes_full[["IWAT"]])[["toptable_list"]][["CD CD - WD WD"]]
 top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]] <- metadata(SE_all_tissues_all_genes_full[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]]
 
 # _3.) Create Volcano plots ----
 
 # The top tables with meaningful results are BRAT: CD CD - WD WD  and LIVT: CD CD - WD WD 
 
-left_upper_volcano <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["EVAT: CD CD - WD WD"]], "EVAT: CD CD - WD WD")
-midl_upper_volcano <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
-rght_upper_volcano <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
+volcano_a <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
+volcano_b <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["EVAT: CD CD - WD WD"]], "EVAT: CD CD - WD WD")
+volcano_c <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["IWAT: CD CD - WD WD"]], "IWAT: CD CD - WD WD")
+volcano_d <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
 
 # Get heat maps ----
 
 # _1.) Copy object ---- 
 
-lft_lower_heatmap_data <- SE_all_tissues_all_genes[["EVAT"]]
-mdl_lower_heatmap_data <- SE_all_tissues_all_genes[["BRAT"]]
-rgt_lower_heatmap_data <- SE_all_tissues_all_genes[["LIVT"]]
+heatmap_data_a <- SE_all_tissues_all_genes[["BRAT"]]
+heatmap_data_b <- SE_all_tissues_all_genes[["EVAT"]]
+heatmap_data_c <- SE_all_tissues_all_genes[["IWAT"]]
+heatmap_data_d <- SE_all_tissues_all_genes[["LIVT"]]
 
 # _2.) Subset to relevant contrasts ---- 
 
-lft_lower_heatmap_data <- lft_lower_heatmap_data[ ,  lft_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
-mdl_lower_heatmap_data <- mdl_lower_heatmap_data[ ,  mdl_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
-rgt_lower_heatmap_data <- rgt_lower_heatmap_data[ , rgt_lower_heatmap_data[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
+heatmap_data_a <- heatmap_data_a[ ,  heatmap_data_a[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
+heatmap_data_b <- heatmap_data_b[ ,  heatmap_data_b[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
+heatmap_data_c <- heatmap_data_c[ ,  heatmap_data_c[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
+heatmap_data_d <- heatmap_data_d[ ,  heatmap_data_d[["ParentalDietMoFa"]] %in% c("CD CD", "WD WD")]
 
 # _3.) Subset to relevant genes ---- 
 
-relevant_genes <- metadata(SE_all_tissues_all_genes[["EVAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
-lft_lower_heatmap_data <- lft_lower_heatmap_data[  rownames(lft_lower_heatmap_data) %in% relevant_genes,  ]
-
 relevant_genes <- metadata(SE_all_tissues_all_genes[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
-mdl_lower_heatmap_data <- mdl_lower_heatmap_data[  rownames(mdl_lower_heatmap_data) %in% relevant_genes ,  ]
+heatmap_data_a <- heatmap_data_a[  rownames(heatmap_data_a) %in% relevant_genes ,  ]
+
+relevant_genes <- metadata(SE_all_tissues_all_genes[["EVAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
+heatmap_data_b <- heatmap_data_b[  rownames(heatmap_data_b) %in% relevant_genes ,  ]
+
+relevant_genes <- metadata(SE_all_tissues_all_genes[["IWAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
+heatmap_data_c <- heatmap_data_c[  rownames(heatmap_data_c) %in% relevant_genes ,  ]
 
 relevant_genes <- metadata(SE_all_tissues_all_genes[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
-rgt_lower_heatmap_data <- rgt_lower_heatmap_data[  rownames(rgt_lower_heatmap_data) %in% relevant_genes ,  ]
+heatmap_data_d <- heatmap_data_d[  rownames(heatmap_data_d) %in% relevant_genes ,  ]
 
-# _4.) Modify plotted genes names, in lack of better options ---- 
+# _4.) Modify plotted genes names, in lack of better options ----
 
-rownames(lft_lower_heatmap_data) <- rowData(lft_lower_heatmap_data)[["SYMBOL"]][which(rownames(rowData(lft_lower_heatmap_data)) %in% rownames(lft_lower_heatmap_data))] 
-metadata(lft_lower_heatmap_data)$hmcols <- c("#0072B2","white","#D55E00")
+rownames(heatmap_data_a) <- rowData(heatmap_data_a)[["SYMBOL"]][which(rownames(rowData(heatmap_data_a)) %in% rownames(heatmap_data_a))] 
+metadata(heatmap_data_a)$hmcols <- c("#0072B2","white","#D55E00")
 
-rownames(mdl_lower_heatmap_data) <- rowData(mdl_lower_heatmap_data)[["SYMBOL"]][which(rownames(rowData(mdl_lower_heatmap_data)) %in% rownames(mdl_lower_heatmap_data))] 
-metadata(mdl_lower_heatmap_data)$hmcols <- c("#0072B2","white","#D55E00")
+rownames(heatmap_data_b) <- rowData(heatmap_data_b)[["SYMBOL"]][which(rownames(rowData(heatmap_data_b)) %in% rownames(heatmap_data_b))] 
+metadata(heatmap_data_b)$hmcols <- c("#0072B2","white","#D55E00")
 
-rownames(rgt_lower_heatmap_data) <- rowData(rgt_lower_heatmap_data)[["SYMBOL"]][which(rownames(rowData(rgt_lower_heatmap_data)) %in% rownames(rgt_lower_heatmap_data))] 
-metadata(rgt_lower_heatmap_data)$hmcols <- c("#0072B2","white","#D55E00")
+rownames(heatmap_data_c) <- rowData(heatmap_data_c)[["SYMBOL"]][which(rownames(rowData(heatmap_data_c)) %in% rownames(heatmap_data_c))] 
+metadata(heatmap_data_c)$hmcols <- c("#0072B2","white","#D55E00")
+
+rownames(heatmap_data_d) <- rowData(heatmap_data_d)[["SYMBOL"]][which(rownames(rowData(heatmap_data_d)) %in% rownames(heatmap_data_d))] 
+metadata(heatmap_data_d)$hmcols <- c("#0072B2","white","#D55E00")
 
 # _5.) Create heat maps  ---- 
 
-left_lower_heatmap <- sechm(
-  lft_lower_heatmap_data,
-  features = rownames(lft_lower_heatmap_data),
+heatmap_a <- sechm(
+  heatmap_data_a,
+  features = rownames(heatmap_data_a),
   do.scale = TRUE,
   gaps_at = "ParentalDietMoFa",
   # mark = mark,
   show_rownames = TRUE,
   cluster_cols = TRUE,
-  cluster_rows = TRUE)
-left_lower_heatmap
+  cluster_rows = FALSE)
+heatmap_a
 
-middle_lower_heatmap <- sechm(
-  mdl_lower_heatmap_data,
-  features = rownames(mdl_lower_heatmap_data),
+heatmap_b <- sechm(
+  heatmap_data_b,
+  features = rownames(heatmap_data_b),
   do.scale = TRUE,
   gaps_at = "ParentalDietMoFa",
   # mark = mark,
   show_rownames = TRUE,
   cluster_cols = TRUE,
-  cluster_rows = TRUE)
-middle_lower_heatmap
+  cluster_rows = FALSE)
+heatmap_b
 
-right_lower_heatmap <- sechm(
-  rgt_lower_heatmap_data,
-  features = rownames(rgt_lower_heatmap_data),
+heatmap_c <- sechm(
+  heatmap_data_c,
+  features = rownames(heatmap_data_c),
   do.scale = TRUE,
   gaps_at = "ParentalDietMoFa",
   # mark = mark,
   show_rownames = TRUE,
   cluster_cols = TRUE,
-  cluster_rows = TRUE)
-right_lower_heatmap
+  cluster_rows = FALSE)
+heatmap_c
+
+heatmap_d <- sechm(
+  heatmap_data_d,
+  features = rownames(heatmap_data_d),
+  do.scale = TRUE,
+  gaps_at = "ParentalDietMoFa",
+  # mark = mark,
+  show_rownames = TRUE,
+  cluster_cols = TRUE,
+  cluster_rows = FALSE)
+heatmap_d
 
 # Combine Volcano plot and heat maps ----
 
-volcano_heat_compound <- ggarrange(left_upper_volcano, midl_upper_volcano, rght_upper_volcano,
-          grid.grabExpr(draw( left_lower_heatmap)), grid.grabExpr(draw( middle_lower_heatmap)), grid.grabExpr(draw( right_lower_heatmap)),
-          labels = list("a", "b", "c", "d", "e", "f"),
-          font.label = list(size = 14, face = "bold"),
-          ncol = 3, nrow = 2, hjust = "-5", vjust = "5")
+volcano_heat_compound <- ggarrange(
+  volcano_a, volcano_b, volcano_c, volcano_d,
+  grid.grabExpr(draw(heatmap_a)), grid.grabExpr(draw(heatmap_b)), grid.grabExpr(draw(heatmap_c)), grid.grabExpr(draw(heatmap_d)),
+  labels = list("a", "b", "c", "d", "", "", "", ""),
+  font.label = list(size = 14, face = "bold"),
+  nrow = 2, ncol = 4, hjust = "-5", vjust = "5")
 
 volcano_heat_compound
 

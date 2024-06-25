@@ -1100,7 +1100,13 @@
    * relaxing `lfc` treshold to 1 - no KEGG terem found then.
    * updated script and manuscript draft
  * commit 
- 
+
+## 25-06-2024 - work day 96 - revising manuscript and array analysis
+
+ * working in `/HM_MouseMating/manuscript/240321_submission_2_preparation/240625_main_text.docx`
+ * working in `055_r_array_analysis.r`
+   * exported DIs for all tissues
+
 ## Todo queue (last updated 06-06-2024)
 
  * **analysis work**
@@ -1131,7 +1137,7 @@
  
  * **overall revision work**
    * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
-   * [ ] justify lfc raise beyond citet reference - no cancer study
+   * [ ] justify lfc raise beyond cited reference - no cancer study
    * [x] commit - branch repository - commit
    * [x] adress as many comments as reasonable without re-running code
    * [x] revise introduction - **now done up until modelling**
