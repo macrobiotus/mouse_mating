@@ -1057,7 +1057,7 @@ obesity_genes <- c("EGR2", "GREM1", "NPY1R", obesity_genes)
 obesity_genes <- c("ADRB2","GPR74", "GPR74", "PPARG", "SREBP1", "ADIPOQ","ARL15", obesity_genes)
 
 # genes from NKB.
-obesity_genes <- c("REPIN1", "YY1", "ITLN1", " CASKIN2", obesity_genes)
+obesity_genes <- c("REPIN1", "YY1", "ITLN1", "CASKIN2", obesity_genes)
 
 # genes from Ginete, Catarina, Bernardo Serrasqueiro, José Silva-Nunes, Luísa Veiga, and Miguel Brito. 2021. “Identification of Genetic Variants in 65 Obesity Related Genes in a Cohort of Portuguese Obese Individuals.” Genes 12 (4): 603. https://doi.org/10.3390/genes12040603.
 obesity_genes <- c("ADRB2", "ALMS1", "BBS9", "IGF2R", "IGF2R", "IRS1", "LRP2", "NPY1R", "NTRK2", "POMC", "SPG11", "SPG11", obesity_genes)

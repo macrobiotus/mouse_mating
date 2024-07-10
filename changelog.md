@@ -1107,11 +1107,57 @@
  * working in `055_r_array_analysis.r`
    * exported DIs for all tissues
 
-## Todo queue (last updated 06-06-2024)
+## 08-07-2024 - work day 97 - revising manuscript and array analysis
 
+ * working in `/HM_MouseMating/manuscript/240321_submission_2_preparation/240708_main_text.docx`
+
+## 09-07-2024 - work day 98 - revising manuscript and array analysis
+
+ * working in `/HM_MouseMating/manuscript/240321_submission_2_preparation/240709_main_text.docx`
+
+## 10-07-2024 - work day 99 - revising manuscript 
+
+ * working in `/HM_MouseMating/manuscript/240321_submission_2_preparation/240710_main_text.docx`
+ * finished results
+
+## Todo queue (last updated 10-07-2024)
+
+  * **manuscript work**
+    * [x] revise from start
+    * [x] improve figure 1 - diet labelling
+    * [x] move PCA analysis out of the way
+    * [x] adjust manuscript for obesity genes - **reimport figure**
+    * [x] adjust manuscript for all contrasts
+    * [x] adjust methods and results description 
+    * [x] refresh results with PCA analysis sucessor and tested contrasts
+    * [x] refresh results with DEG analysis results
+    * ~~[x] no signal among litter size among any tissues~~
+    * ~~[x] signal among parental diet between these and those dietary treatments~~a
+    * ~~[ ] **hopefully** no correlation between litter size and diet - otherwise justify non-consideration by small sample size~~
+    * [x] reimplement contrast description - use three contrasts - ~~use all contrasts after discussion with NKB~~
+    * [x] revise methods
+    * [x] revise results
+    * [ ] revise discussion
+      * [ ] re-eavaluate all interpretation in the context of Western vs Western Control
+    * [ ] consider the rebuttal document on or after 25.3.2025
+    * [ ] **check articles:** met with NKB who suggests parental HFD will lower offsprings body weight -  
+ 
+ * **overall revision work**
+   * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
+   * [x] commit - branch repository - commit
+   * [x] adress as many comments as reasonable without re-running code
+   * [x] revise introduction - **now done up until modelling**
+   * [x] re-run analysis - see how "diets" could be used instead of "obesity" 
+   * [x] consider litter size 
+   * [x] started to comment in revision file
+   * [x] addressed in manuscript file
+   * [x] to correct body weight after weaning consider (Zhang et al. 2012)
+   * ~~[x] possibly report on the most profound effects of the aforementioned weight adjustments~~
+   * [ ] justify lfc raise beyond cited reference - no cancer study
+   * [ ] consider NKBs comment on litter sizes - see communications folder 25-Mar-204
+ 
  * **analysis work**
-  
-  * [x] in `015_r_use_saemix.R`
+   * [x] in `015_r_use_saemix.R`
      * ~~[ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
    
    * [ ] in script `55_r_array_analysis.r`
@@ -1126,7 +1172,7 @@
      * [x] upset plots with shared and unshared genes - deal with unique and duplicate genes
      * [x] implement GSEA - focus on `CD CD - WD WD`
      * [x] 4.) **Fig. 4**: GSEA - use all DEG lists - see which return best results
-     * [ ] **check again which obesity - relavant genes  are worthy of inspection in fat**
+     * ~~[ ] **check again which obesity - relevant genes  are worthy of inspection in fat**~~
      * [x] **raise**  LFC thresholds
      * [x] compare full and obesity-only gene lists, are they congruent? **no**
      * [x] wait for NKB to check gene lists - re-outline analysis steps below.
@@ -1135,35 +1181,3 @@
      * ~~[ ] 6.) **Suppl. Tab 12-n** GSEA of settdifs with unique obesity genes.~~
      * ~~[ ] Where the search as described in 3. is successful, look at the full list using Gene Set Enrichment analysis.~~
  
- * **overall revision work**
-   * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
-   * [ ] justify lfc raise beyond cited reference - no cancer study
-   * [x] commit - branch repository - commit
-   * [x] adress as many comments as reasonable without re-running code
-   * [x] revise introduction - **now done up until modelling**
-   * [x] re-run analysis - see how "diets" could be used instead of "obesity" 
-   * [x] consider litter size 
-   * [x] started to comment in revision file
-   * [x] addressed in manuscript file
-   * [x] to correct body weight after weaning consider (Zhang et al. 2012)
-   * ~~[x] possibly report on the most profound effects of the aforementioned weight adjustments~~
-   * [ ] consider NKBs comment on litter sizes - see communications folder 25-Mar-204
-   * [ ] re-eavaluate all interpretation in the context of Western vs Western Control
-   * [ ] and known obesity genes
- * **manuscript work**
-   * [ ] revise from start
-   * [ ] improve figure 1 - diet labelling
-   * [ ] move PCA analysis out of the way
-   * [ ] adjust manuscript for obesity genes - **reimport figure**
-   * [ ] adjust manuscript for 3 contrsts
-   * [ ] adjust methods and results descriptin 
-   * [ ] refresh results with PCA analysis sucessor and tested contrasts
-   * [ ] refresh results with DEG analysis results
-   * ~~[x] no signal among litter size among any tissues~~
-   * ~~[x] signal among parental diet between these and those dietary treatments~~a
-   * [ ] **hopefully** no correlation between litter size and diet - otherwise justify non-consideration by small sample size
-   * [ ] reimplement contrast description - use three contrasts - ~~use all contrasts after discussion with NKB~~
-   * [ ] consider the rebuttal document on or after 25.3.2025
-   * [ ] **check articles:** met with NKB who suggests parental HFD will lower offsprings body weight -  
-   * [ ] revise methods
-   * [ ] revise results
