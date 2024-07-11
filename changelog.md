@@ -1120,6 +1120,12 @@
  * working in `/HM_MouseMating/manuscript/240321_submission_2_preparation/240710_main_text.docx`
  * finished results
 
+## 11-07-2024 - work day 100 - revising manuscript 
+
+ * working in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240711_main_text.docx`
+ * starting in discussion
+
+
 ## Todo queue (last updated 10-07-2024)
 
   * **manuscript work**
