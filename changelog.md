@@ -1125,6 +1125,11 @@
  * working in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240711_main_text.docx`
  * starting in discussion
 
+## 12-07-2024 - work day 100 - revising manuscript 
+
+ * finished discussion - read and corrected entire manuscript
+ * opened final version for circulation to co-authors
+ * committed and pushed repository to remote 
 
 ## Todo queue (last updated 10-07-2024)
 
