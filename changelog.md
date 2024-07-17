@@ -1140,62 +1140,21 @@
 
 ## Todo queue (last updated 10-07-2024)
 
-  * **manuscript work**
-    * [x] revise from start
-    * [x] improve figure 1 - diet labelling
-    * [x] move PCA analysis out of the way
-    * [x] adjust manuscript for obesity genes - **reimport figure**
-    * [x] adjust manuscript for all contrasts
-    * [x] adjust methods and results description 
-    * [x] refresh results with PCA analysis sucessor and tested contrasts
-    * [x] refresh results with DEG analysis results
-    * ~~[x] no signal among litter size among any tissues~~
-    * ~~[x] signal among parental diet between these and those dietary treatments~~a
-    * ~~[ ] **hopefully** no correlation between litter size and diet - otherwise justify non-consideration by small sample size~~
-    * [x] reimplement contrast description - use three contrasts - ~~use all contrasts after discussion with NKB~~
-    * [x] revise methods
-    * [x] revise results
-    * [ ] revise discussion
-      * [ ] re-eavaluate all interpretation in the context of Western vs Western Control
-    * [ ] consider the rebuttal document on or after 25.3.2025
-    * [ ] **check articles:** met with NKB who suggests parental HFD will lower offsprings body weight -  
+ * **coding**
+   * [ ] in `055_r_array_analysis.r`
+   * [ ] change abbreviations in display items
+   * [ ] export display items so that they look better
+   * [ ] in `015_r_use_saemix.R`
+   * [ ] include body fat into modelling
+   * ~~[ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
  
- * **overall revision work**
-   * based on `/HM_MouseMating/manuscript/240321_submission_2_preparation/240321_revision_notes.docx`
-   * [x] commit - branch repository - commit
-   * [x] adress as many comments as reasonable without re-running code
-   * [x] revise introduction - **now done up until modelling**
-   * [x] re-run analysis - see how "diets" could be used instead of "obesity" 
-   * [x] consider litter size 
-   * [x] started to comment in revision file
-   * [x] addressed in manuscript file
-   * [x] to correct body weight after weaning consider (Zhang et al. 2012)
-   * ~~[x] possibly report on the most profound effects of the aforementioned weight adjustments~~
-   * [ ] justify lfc raise beyond cited reference - no cancer study
-   * [ ] consider NKBs comment on litter sizes - see communications folder 25-Mar-204
- 
- * **analysis work**
-   * [x] in `015_r_use_saemix.R`
-     * ~~[ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
+ * **display items**
+   * [ ] improve Fig 1
+   * [ ] collate all tables
    
-   * [ ] in script `55_r_array_analysis.r`
-     * [x] finish heat maps
-     * [x] save volcano plots
-     * ~~[ ] use `enrichR`~~
-     * [x] look up GO terms
-     * [x] look up KEGG terms
-     * [x] 1.) **Fig. 2**: Show that obesity-related genes are in the tissues. 
-     * [x] 2.) **Supple Tables 1-6**: Look for DEGs for 3 (and all) contrasts (CD CD against WD CD, CD WD, and WD WD) in each of the 4 tissues (results in 12 lists).
-     * [x] 3.) **Fig. 3**: Upset plot of intersections of full list highlight shared and uniqe genes ~~obesity related genes~~
-     * [x] upset plots with shared and unshared genes - deal with unique and duplicate genes
-     * [x] implement GSEA - focus on `CD CD - WD WD`
-     * [x] 4.) **Fig. 4**: GSEA - use all DEG lists - see which return best results
-     * ~~[ ] **check again which obesity - relevant genes  are worthy of inspection in fat**~~
-     * [x] **raise**  LFC thresholds
-     * [x] compare full and obesity-only gene lists, are they congruent? **no**
-     * [x] wait for NKB to check gene lists - re-outline analysis steps below.
-     * ~~[ ] 4.) **Supple Tables 6-12**: put these lists together per tissue and see which contrasts differentially express unique genes.~~
-     * ~~[ ] 5.) **Fig. 4**: Upset plot of intersections of setdiffs list - highlight obesity related genes.~~ **no intersection** 
-     * ~~[ ] 6.) **Suppl. Tab 12-n** GSEA of settdifs with unique obesity genes.~~
-     * ~~[ ] Where the search as described in 3. is successful, look at the full list using Gene Set Enrichment analysis.~~
- 
+ * **manuscript work**
+   * [ ] sort tissue abbreviations to be consistent through oy the text - see Discussion
+   * [ ] move up GO terms from supplement
+   * [ ] include MRI results
+   * [ ] restructure results and discussion based on AJ suggestions (17.Jul. 2024, in in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240717_main_text_from_coauthors_revised.docx`)
+  
