@@ -1137,7 +1137,6 @@
  * started to address AJs revisions in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240717_main_text_from_coauthors_revised.docx`
  * updated ToDo queue 
 
-
 ## Todo queue (last updated 10-07-2024)
 
  * **coding**
@@ -1149,7 +1148,13 @@
    * ~~[ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
  
  * **display items**
-   * [ ] improve Fig 1
+   * [ ] revise Fig 1 (Experiment design) - redesign as per AJ suggestion
+   * [ ] revise Fig 2 (weight deltas) - add weight gain curves as sub-plot
+   * [ ] revise Fig 3 (volcano plot) - stretch figure - change tissue abbreviations - use same colours as in heat map
+   * [ ] revise SI Fig 1 (weight trajectories) - possibly add parental diet
+   * [ ] revise SI Fig 8 (heat map) - change tissue abbreviations
+   * [ ] revise SI Fig 9 (Upset plot) - change tissue abbreviations
+   * [ ] revise SI Fig 10 (combine with Fig 3, volcano plots, use the same colours as in heat map )
    * [ ] collate all tables
    
  * **manuscript work**
