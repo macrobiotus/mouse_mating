@@ -676,10 +676,11 @@ f0_mice_weights_sex_curves <- ggplot(data = mice_f0_slct_mb, aes(x = Week, y = B
   geom_line(linewidth = 0.3) +
   # geom_label_repel(max.overlaps = Inf) + 
   facet_wrap(Diet ~ . , ncol = 2) + 
-  coord_cartesian(ylim = c(0, 30)) +
+  coord_cartesian(ylim = c(0, 34)) +
   theme_bw(base_size = 12) +
   labs(x = "F0 age [week]", y = "F0 weight [g]") +
-  labs(linetype='Animal ID') 
+  theme(legend.position="none")
+  # labs(linetype='Animal ID') 
   
 f0_mice_weights_sex_curves
 
@@ -715,7 +716,7 @@ f0_mice_weights_sex_deltas <- ggplot(data = mice_f0_slct_mb, aes(x = AnimalSex, 
   geom_boxplot(width = 0.2, alpha = 0.2) +
   facet_wrap(Diet ~ . , ncol = 2) + 
   coord_cartesian(ylim = c(0, 16)) +
-  geom_label_repel(max.overlaps = Inf) + 
+  # geom_label_repel(max.overlaps = Inf) + 
   theme_bw(base_size = 12) +
   labs(x = "F0 animal sex", y = "F0 weight gain Δ [g]")
 
@@ -742,7 +743,17 @@ mice_f1_slct_mb %<>%
 
 # __c) Plot curves for each treatment  ----
 
-# [not done yet] 
+f1_mice_weights_sex_curves <- ggplot(data = mice_f1_slct_mb, aes(x = Week, y = BodyWeightG, group = AnimalId, linetype = AnimalSex, label = AnimalId)) +
+  geom_line(linewidth = 0.3) +
+  # geom_label_repel(max.overlaps = Inf) + 
+  facet_wrap(MotherDiet ~ FatherDiet, ncol = 4) + 
+  coord_cartesian(ylim = c(0, 30)) +
+  theme_bw(base_size = 12) +
+  labs(x = "F0 age [week]", y = "F0 weight [g]") +
+  theme(legend.position="none")
+  # labs(linetype='Animal sex') 
+
+f1_mice_weights_sex_curves
 
 # __d) Get weight delta ----
 
@@ -777,28 +788,23 @@ f1_mice_weights_sex_deltas <- ggplot(data = mice_f1_slct_mb, aes(x = AnimalSex, 
   coord_cartesian(ylim = c(0, 15)) +
   theme_bw(base_size = 12) +
   labs(x = "F1 animal sex", y = "F1 weight gain Δ [g]")
-  NULL
 
 f1_mice_weights_sex_deltas
 
-# _5.) Showing and exporting plot ----
+# _5.) Save F0 and F1 weight curvr and delta plots ----
 
-# __a) Save weight curve plots ----
-
-#  [17.072024 - needs redoing]
-mice_f0_slct_xyplot_final
-mice_f1_slct_xyplot_final
-
-mice_slct_xyplots_obesity <- ggarrange(mice_f0_slct_xyplot_final, mice_f1_slct_xyplot_final, labels = c("a", "b"), ncol = 1, nrow = 2, heights = c(1, 2))
-
-ggsave(plot = mice_slct_xyplots_obesity, scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__mice_weights_sex_obesity.pdf")
-
-# __b) Save F0 and F1 weight delta plots ----
 
 # add line plots here
-f0_f1_mice_weights_sex_deltas <- ggarrange(f0_mice_weights_sex_deltas, f1_mice_weights_sex_deltas, labels = c("a", "b"), ncol = 2, nrow = 1, widths =  c(2, 4))
+f0_f1_mice_weights_sex_deltas <- ggarrange(f0_mice_weights_sex_curves, f1_mice_weights_sex_curves,
+                                           f0_mice_weights_sex_deltas, f1_mice_weights_sex_deltas,
+                                           labels = c("a", "b", "c", "d"), 
+                                           ncol = 2, nrow = 2, widths =  c(2, 4), heights =  c(3, 5))
 
-ggsave(device = cairo_pdf, plot = f0_f1_mice_weights_sex_deltas, width = 210, height = 100, units = c("mm"), dpi = 300, scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__f0_f1_mice_weights_sex_deltas.pdf")
+f0_f1_mice_weights_sex_deltas
+
+
+
+ggsave(device = cairo_pdf, plot = f0_f1_mice_weights_sex_deltas, width = 210, height = 160, units = c("mm"), dpi = 300, scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__f0_f1_mice_weights_sex_deltas.pdf")
 
 # ***Finish here on or after 15.07.2024 -----
 
