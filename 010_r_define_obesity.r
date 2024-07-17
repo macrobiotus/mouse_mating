@@ -624,15 +624,19 @@ mice_f0_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, dat
 
 # __a.) Compound figure, for manuscript ----
 
-mice_f1_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, data = mice_f1_slct, type = "b", sub="F1 weights at measurement ages, with sex and obesity status, and parents obesity status",
-       panel=function(x, y,...){
-         panel.xyplot(x,y,...)
-         panel.text(35,30, cex = 0.75, labels = mice_f1_slct$AnimalSex[panel.number()])
-         # panel.text(45,30, cex = 0.75, labels = mice_f1_slct$WeightGain[panel.number()])
-         panel.text(60,30, cex = 0.75, labels = mice_f1_slct$MotherDiet[panel.number()])
-         panel.text(75,30, cex = 0.75, labels = mice_f1_slct$FatherDiet[panel.number()])
-         # panel.text(60,50, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
-         })
+
+mice_f1_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, groups = AnimalSex, data = mice_f1_slct, xlab = "day [d]", ylab = "body weight [g]", auto.key = list(title = "sex"),
+                                    panel=function(x, y,...){
+                                      panel.xyplot(x,y, ...)
+                                      # panel.text(35,30, cex = 0.75, labels = mice_f1_slct$AnimalSex[panel.number()])
+                                      panel.text(60,15, cex = 0.75, labels = mice_f1_slct$MotherDiet[panel.number()])
+                                      panel.text(85,15, cex = 0.75, labels = mice_f1_slct$FatherDiet[panel.number()])
+                                      })
+
+ggsave("015_r_use_saemix__data_check_revised_in_script_10.pdf", plot = ggarrange(mice_f1_slct_xyplot_final), path = here("../manuscript/display_items"),
+       scale = 1, width = 9, height = 5, units = c("in"), dpi = 300, limitsize = TRUE)
+
+
 
 # __b.) Male offspring, for talks ----
 
