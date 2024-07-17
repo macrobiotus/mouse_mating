@@ -624,11 +624,9 @@ mice_f0_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, dat
 
 # __a.) Compound figure, for manuscript ----
 
-
 mice_f1_slct_xyplot_final <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, groups = AnimalSex, data = mice_f1_slct, xlab = "day [d]", ylab = "body weight [g]", auto.key = list(title = "sex"),
                                     panel=function(x, y,...){
                                       panel.xyplot(x,y, ...)
-                                      # panel.text(35,30, cex = 0.75, labels = mice_f1_slct$AnimalSex[panel.number()])
                                       panel.text(60,15, cex = 0.75, labels = mice_f1_slct$MotherDiet[panel.number()])
                                       panel.text(85,15, cex = 0.75, labels = mice_f1_slct$FatherDiet[panel.number()])
                                       })
@@ -644,11 +642,8 @@ mice_f1_slct_xyplot_final_m <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, d
                                       panel=function(x, y,...){
                                         panel.xyplot(x,y,...)
                                         panel.text(35, 30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$AnimalSex[panel.number()])
-                                        # panel.text(70,30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$Obesity[panel.number()])
-                                        # panel.text(70,12, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$ObeseParents[panel.number()])
                                         panel.text(45, 30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$MotherDiet[panel.number()])
                                         panel.text(55, 30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "m"))$FatherDiet[panel.number()])
-                                        # panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
                                       })
 
 
@@ -658,21 +653,24 @@ mice_f1_slct_xyplot_final_f <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, d
                                       panel=function(x, y,...){
                                         panel.xyplot(x,y,...)
                                         panel.text(35, 22, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$AnimalSex[panel.number()])
-                                        # panel.text(70,30, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$Obesity[panel.number()])
-                                        # panel.text(70,12, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$ObeseParents[panel.number()])
                                         panel.text(45, 22, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$MotherDiet[panel.number()])
                                         panel.text(55, 22, cex = 0.75, labels = (mice_f1_slct %>% dplyr::filter(AnimalSex == "f"))$FatherDiet[panel.number()])
-                                        # panel.text(80,17, cex = 0.75, labels = signif(F1_PCurvature_Results[panel.number()]), digits = 4)
                                       })
 
 
-# _3.) Revision started 30.08.2023 - Adding new plots with weight deltas of F0 ----
+# ***Continue here on or after 15.07.2024 -----
+
+# _3.) Weight delta and curve plot F0 ----
 
 # __a) Copy object for new plot ----
 
 mice_f0_slct_mb  <- mice_f0_slct
 
-# __b) Get weight delta ----
+# __b) Plot curves for each treatment  ----
+
+# [not done yet] 
+
+# __c) Get weight deltas ----
 
 # getting time points for delta - min and max wont work as some mice don't ahve data at max weeks
 mice_f0_slct_mb %<>% mutate(Week = as.numeric(as.character(Week))) %>% group_by(AnimalId) %>% dplyr::slice(c(which.min(Week), which.max(Week))) %>% arrange 
@@ -696,19 +694,12 @@ mice_f0_slct_mb %>%
   arrange(AnimalSex, BodyWeightGainDeltaG) %>%
   print(n = Inf)
 
-# __c) Prepare plotting ----
-
-# # encode sex into the factor variable to label ggplot 2 facets without much work
-# mice_f0_slct_mb %<>% 
-#   convert(chr(MotherDiet, FatherDiet)) %>%
-#   mutate(MotherDiet = paste0("Father ", MotherDiet)) %>%
-#   mutate(FatherDiet = paste0("Mother ", FatherDiet)) %>%
-#   convert(chr(MotherDiet, FatherDiet))
+# __d) Prepare plotting ----
 
 # recode Dietary variables for plotting
 mice_f0_slct_mb %<>% mutate(Diet = recode(Diet, "HFD" = "WD", "CD" = "CD"))
 
-# __d) Plot weight delta ----
+# __e) Plot weight delta ----
 
 f0_mice_weights_sex_deltas <- ggplot(data = mice_f0_slct_mb, aes(x = AnimalSex, y = BodyWeightGainDeltaG)) +
   geom_point(position = position_jitter(seed = 1, width = 0.2), color = "black", size = 3) +
@@ -722,13 +713,17 @@ NULL
 
 f0_mice_weights_sex_deltas
 
-# _4.) Revision started 22.08.2023 - Adding new plots with weight deltas of F1 ----
+# _4.) Weight delta and curve plot F1 ----
 
 # __a) Copy object for new plot ----
 
 mice_f1_slct_mb  <- mice_f1_slct
 
-# __b) Get weight delta ----
+# __b) Plot curves for each treatment  ----
+
+# [not done yet] 
+
+# __c) Get weight delta ----
 
 # getting time points for delta - min and max wont work as some mice don't ahve data at max weeks
 mice_f1_slct_mb %<>%  mutate(Week = as.numeric(as.character(Week))) %>% group_by(AnimalId) %>% slice(c(which.min(Week), which.max(Week))) %>% arrange 
@@ -752,7 +747,7 @@ mice_f1_slct_mb %>%
   arrange(AnimalSex, BodyWeightGainDeltaG) %>%
   print(n = Inf)
 
-# __c) Prepare plotting ----
+# __d) Prepare plotting ----
 
 # encode sex into the factor variable to label ggplot 2 facets without much work
 mice_f1_slct_mb %<>% 
@@ -763,7 +758,7 @@ mice_f1_slct_mb %<>%
   mutate(FatherDiet = paste0("Mother ", FatherDiet)) %>%
   convert(chr(MotherDiet, FatherDiet))
 
-# __d) Plot weight delta ----
+# __e) Plot weight delta ----
 
 f1_mice_weights_sex_deltas <- ggplot(data = mice_f1_slct_mb, aes(x = AnimalSex, y = BodyWeightGainDeltaG)) +
   geom_point(position = position_jitter(seed = 1, width = 0.2), color = "black", size=3) +
@@ -781,6 +776,7 @@ f1_mice_weights_sex_deltas
 
 # __a) Save weight curve plots ----
 
+#  [17.072024 - needs redoing]
 mice_f0_slct_xyplot_final
 mice_f1_slct_xyplot_final
 
@@ -790,9 +786,12 @@ ggsave(plot = mice_slct_xyplots_obesity, scale = 1.2, path = here("../manuscript
 
 # __b) Save F0 and F1 weight delta plots ----
 
+# add line plots here
 f0_f1_mice_weights_sex_deltas <- ggarrange(f0_mice_weights_sex_deltas, f1_mice_weights_sex_deltas, labels = c("a", "b"), ncol = 2, nrow = 1, widths =  c(2, 4))
 
 ggsave(device = cairo_pdf, plot = f0_f1_mice_weights_sex_deltas, width = 210, height = 100, units = c("mm"), dpi = 300, scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__f0_f1_mice_weights_sex_deltas.pdf")
+
+# ***Finish here on or after 15.07.2024 -----
 
 # _6.) Table summaries ----
 
