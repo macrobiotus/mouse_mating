@@ -1131,6 +1131,13 @@
  * opened final version for circulation to co-authors
  * committed and pushed repository to remote 
 
+## 17-07-2024 - work day 101 - revising manuscript 
+
+ * received edits from AJ
+ * started to address AJs revisions in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240717_main_text_from_coauthors_revised.docx`
+ * updated ToDo queue 
+
+
 ## Todo queue (last updated 10-07-2024)
 
   * **manuscript work**
