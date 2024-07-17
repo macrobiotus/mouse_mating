@@ -1140,6 +1140,9 @@
 ## Todo queue (last updated 10-07-2024)
 
  * **coding**
+   * [ ] in `010_r_define_obesity.r`
+   * [x] ~~revise SI Fig 1 (weight trajectories) - possibly add parental diet~~
+   * [ ] revise Fig 2 (weight deltas) - add curves
    * [ ] in `055_r_array_analysis.r`
    * [ ] change abbreviations in display items
    * [ ] export display items so that they look better
@@ -1151,7 +1154,6 @@
    * [ ] revise Fig 1 (Experiment design) - redesign as per AJ suggestion
    * [ ] revise Fig 2 (weight deltas) - add weight gain curves as sub-plot
    * [ ] revise Fig 3 (volcano plot) - stretch figure - change tissue abbreviations - use same colours as in heat map
-   * [ ] revise SI Fig 1 (weight trajectories) - possibly add parental diet
    * [ ] revise SI Fig 8 (heat map) - change tissue abbreviations
    * [ ] revise SI Fig 9 (Upset plot) - change tissue abbreviations
    * [ ] revise SI Fig 10 (combine with Fig 3, volcano plots, use the same colours as in heat map )

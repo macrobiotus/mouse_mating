@@ -658,19 +658,32 @@ mice_f1_slct_xyplot_final_f <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, d
                                       })
 
 
-# ***Continue here on or after 15.07.2024 -----
+# ***Started here on or after 15.07.2024 -----
 
 # _3.) Weight delta and curve plot F0 ----
 
 # __a) Copy object for new plot ----
 
-mice_f0_slct_mb  <- mice_f0_slct
+mice_f0_slct_mb <- mice_f0_slct
 
-# __b) Plot curves for each treatment  ----
+# __b) Prepare plotting ----
 
-# [not done yet] 
+# [not needed]
 
-# __c) Get weight deltas ----
+# __c) Plot curves for each treatment  ----
+
+f0_mice_weights_sex_curves <- ggplot(data = mice_f0_slct_mb, aes(x = Week, y = BodyWeightG, group = AnimalId, linetype = AnimalId, label = AnimalId)) +
+  geom_line(linewidth = 0.3) +
+  # geom_label_repel(max.overlaps = Inf) + 
+  facet_wrap(Diet ~ . , ncol = 2) + 
+  coord_cartesian(ylim = c(0, 30)) +
+  theme_bw(base_size = 12) +
+  labs(x = "F0 age [week]", y = "F0 weight [g]") +
+  labs(linetype='Animal ID') 
+  
+f0_mice_weights_sex_curves
+
+# __d) Get weight deltas ----
 
 # getting time points for delta - min and max wont work as some mice don't ahve data at max weeks
 mice_f0_slct_mb %<>% mutate(Week = as.numeric(as.character(Week))) %>% group_by(AnimalId) %>% dplyr::slice(c(which.min(Week), which.max(Week))) %>% arrange 
@@ -694,24 +707,21 @@ mice_f0_slct_mb %>%
   arrange(AnimalSex, BodyWeightGainDeltaG) %>%
   print(n = Inf)
 
-# __d) Prepare plotting ----
-
-# recode Dietary variables for plotting
-mice_f0_slct_mb %<>% mutate(Diet = recode(Diet, "HFD" = "WD", "CD" = "CD"))
-
 # __e) Plot weight delta ----
 
-f0_mice_weights_sex_deltas <- ggplot(data = mice_f0_slct_mb, aes(x = AnimalSex, y = BodyWeightGainDeltaG)) +
+f0_mice_weights_sex_deltas <- ggplot(data = mice_f0_slct_mb, aes(x = AnimalSex, y = BodyWeightGainDeltaG, label = AnimalId)) +
   geom_point(position = position_jitter(seed = 1, width = 0.2), color = "black", size = 3) +
   # geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black", size = 3) +
   geom_boxplot(width = 0.2, alpha = 0.2) +
   facet_wrap(Diet ~ . , ncol = 2) + 
   coord_cartesian(ylim = c(0, 16)) +
+  geom_label_repel(max.overlaps = Inf) + 
   theme_bw(base_size = 12) +
   labs(x = "F0 animal sex", y = "F0 weight gain Δ [g]")
-NULL
 
 f0_mice_weights_sex_deltas
+
+# ***Continue here on or after 15.07.2024 -----
 
 # _4.) Weight delta and curve plot F1 ----
 
@@ -719,11 +729,22 @@ f0_mice_weights_sex_deltas
 
 mice_f1_slct_mb  <- mice_f1_slct
 
-# __b) Plot curves for each treatment  ----
+# __b) Prepare plotting ----
+
+# encode sex into the factor variable to label ggplot 2 facets without much work
+mice_f1_slct_mb %<>% 
+  mutate(MotherDiet = recode(MotherDiet, "HFD" = "WD", "CD" = "CD")) %>% 
+  mutate(FatherDiet = recode(FatherDiet, "HFD" = "WD", "CD" = "CD")) %>% 
+  convert(chr(MotherDiet, FatherDiet)) %>%
+  mutate(MotherDiet = paste0("Father ", MotherDiet)) %>%
+  mutate(FatherDiet = paste0("Mother ", FatherDiet)) %>%
+  convert(chr(MotherDiet, FatherDiet))
+
+# __c) Plot curves for each treatment  ----
 
 # [not done yet] 
 
-# __c) Get weight delta ----
+# __d) Get weight delta ----
 
 # getting time points for delta - min and max wont work as some mice don't ahve data at max weeks
 mice_f1_slct_mb %<>%  mutate(Week = as.numeric(as.character(Week))) %>% group_by(AnimalId) %>% slice(c(which.min(Week), which.max(Week))) %>% arrange 
@@ -737,7 +758,7 @@ mice_f1_slct_mb %<>% group_by(AnimalId) %>% slice(c(which.min(Week), which(Week 
 # calculate weight gain by subtracting weight at week 14 from weight at week 4 - add this to caption
 mice_f1_slct_mb %<>% group_by(AnimalId) %>% mutate(BodyWeightGainDeltaG = BodyWeightG - first(BodyWeightG)) %>% relocate(BodyWeightGainDeltaG, .after = BodyWeightG)
 
-# keep only rows with the relvant weight gein delta - the second column of each group
+# keep only rows with the relevant weight gein delta - the second column of each group
 mice_f1_slct_mb %<>% group_by(AnimalId) %>% slice(min(n(), 2))
 
 # sanity check - compare to `010_r_define_obesity__mice_f1_slct__obesity.xlsx` expoted above, shoul look similar
@@ -747,22 +768,10 @@ mice_f1_slct_mb %>%
   arrange(AnimalSex, BodyWeightGainDeltaG) %>%
   print(n = Inf)
 
-# __d) Prepare plotting ----
-
-# encode sex into the factor variable to label ggplot 2 facets without much work
-mice_f1_slct_mb %<>% 
-  mutate(MotherDiet = recode(MotherDiet, "HFD" = "WD", "CD" = "CD")) %>% 
-  mutate(FatherDiet = recode(FatherDiet, "HFD" = "WD", "CD" = "CD")) %>% 
-  convert(chr(MotherDiet, FatherDiet)) %>%
-  mutate(MotherDiet = paste0("Father ", MotherDiet)) %>%
-  mutate(FatherDiet = paste0("Mother ", FatherDiet)) %>%
-  convert(chr(MotherDiet, FatherDiet))
-
 # __e) Plot weight delta ----
 
 f1_mice_weights_sex_deltas <- ggplot(data = mice_f1_slct_mb, aes(x = AnimalSex, y = BodyWeightGainDeltaG)) +
   geom_point(position = position_jitter(seed = 1, width = 0.2), color = "black", size=3) +
-  # geom_point(position = position_jitter(seed = 1, width = 0.2), aes(shape = WeightGain), color = "black", size=3) +
   geom_boxplot(width = 0.2, alpha = 0.2) +
   facet_wrap(MotherDiet ~ FatherDiet, ncol = 4) + 
   coord_cartesian(ylim = c(0, 15)) +
