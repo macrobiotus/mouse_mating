@@ -1324,18 +1324,18 @@ top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]] <- metadata(SE_a
 
 # The top tables with meaningful results are BRAT: CD CD - WD WD  and LIVT: CD CD - WD WD 
 
-volcano_a <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
-volcano_b <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["EVAT: CD CD - WD WD"]], "EVAT: CD CD - WD WD")
-volcano_c <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["IWAT: CD CD - WD WD"]], "IWAT: CD CD - WD WD")
-volcano_d <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
+volcano_a <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["IWAT: CD CD - WD WD"]], "a  INGWAT: CD CD - WD WD")
+volcano_b <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["EVAT: CD CD - WD WD"]], "b  EWAT: CD CD - WD WD")
+volcano_c <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["BRAT: CD CD - WD WD"]], "c  IBAT: CD CD - WD WD")
+volcano_d <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]], "d  LIV: CD CD - WD WD")
 
 # Get heat maps ----
 
 # _1.) Copy object ---- 
 
-heatmap_data_a <- SE_all_tissues_all_genes[["BRAT"]]
+heatmap_data_a <- SE_all_tissues_all_genes[["IWAT"]]
 heatmap_data_b <- SE_all_tissues_all_genes[["EVAT"]]
-heatmap_data_c <- SE_all_tissues_all_genes[["IWAT"]]
+heatmap_data_c <- SE_all_tissues_all_genes[["BRAT"]]
 heatmap_data_d <- SE_all_tissues_all_genes[["LIVT"]]
 
 # _2.) Subset to relevant contrasts ---- 
@@ -1347,13 +1347,13 @@ heatmap_data_d <- heatmap_data_d[ ,  heatmap_data_d[["ParentalDietMoFa"]] %in% c
 
 # _3.) Subset to relevant genes ---- 
 
-relevant_genes <- metadata(SE_all_tissues_all_genes[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
+relevant_genes <- metadata(SE_all_tissues_all_genes[["IWAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
 heatmap_data_a <- heatmap_data_a[  rownames(heatmap_data_a) %in% relevant_genes ,  ]
 
 relevant_genes <- metadata(SE_all_tissues_all_genes[["EVAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
 heatmap_data_b <- heatmap_data_b[  rownames(heatmap_data_b) %in% relevant_genes ,  ]
 
-relevant_genes <- metadata(SE_all_tissues_all_genes[["IWAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
+relevant_genes <- metadata(SE_all_tissues_all_genes[["BRAT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
 heatmap_data_c <- heatmap_data_c[  rownames(heatmap_data_c) %in% relevant_genes ,  ]
 
 relevant_genes <- metadata(SE_all_tissues_all_genes[["LIVT"]])[["toptable_list"]][["CD CD - WD WD"]][["Row.names"]]
@@ -1370,7 +1370,7 @@ metadata(heatmap_data_b)$hmcols <- c("#0072B2","white","#D55E00")
 rownames(heatmap_data_c) <- rowData(heatmap_data_c)[["SYMBOL"]][which(rownames(rowData(heatmap_data_c)) %in% rownames(heatmap_data_c))] 
 metadata(heatmap_data_c)$hmcols <- c("#0072B2","white","#D55E00")
 
-rownames(heatmap_data_d) <- rowData(heatmap_data_d)[["SYMBOL"]][which(rownames(rowData(heatmap_data_d)) %in% rownames(heatmap_data_d))] 
+rownames(heatmap_data_d) <- rowData(heatmap_data_d)[["SYMBOL"]][which(rownames(rowData(heatmap_data_d)) %in% rownames(heatmap_data_d))]
 metadata(heatmap_data_d)$hmcols <- c("#0072B2","white","#D55E00")
 
 # _5.) Create heat maps  ---- 
@@ -1383,7 +1383,8 @@ heatmap_a <- sechm(
   # mark = mark,
   show_rownames = TRUE,
   cluster_cols = TRUE,
-  cluster_rows = FALSE)
+  cluster_rows = FALSE,
+  show_heatmap_legend = FALSE)
 heatmap_a
 
 heatmap_b <- sechm(
@@ -1394,7 +1395,8 @@ heatmap_b <- sechm(
   # mark = mark,
   show_rownames = TRUE,
   cluster_cols = TRUE,
-  cluster_rows = FALSE)
+  cluster_rows = FALSE,
+  show_heatmap_legend = FALSE)
 heatmap_b
 
 heatmap_c <- sechm(
@@ -1405,7 +1407,8 @@ heatmap_c <- sechm(
   # mark = mark,
   show_rownames = TRUE,
   cluster_cols = TRUE,
-  cluster_rows = FALSE)
+  cluster_rows = FALSE,
+  show_heatmap_legend = FALSE)
 heatmap_c
 
 heatmap_d <- sechm(
@@ -1416,7 +1419,8 @@ heatmap_d <- sechm(
   # mark = mark,
   show_rownames = TRUE,
   cluster_cols = TRUE,
-  cluster_rows = FALSE)
+  cluster_rows = FALSE,
+  show_heatmap_legend = TRUE)
 heatmap_d
 
 # Combine Volcano plot and heat maps ----
@@ -1424,13 +1428,12 @@ heatmap_d
 volcano_heat_compound <- ggarrange(
   volcano_a, volcano_b, volcano_c, volcano_d,
   grid.grabExpr(draw(heatmap_a)), grid.grabExpr(draw(heatmap_b)), grid.grabExpr(draw(heatmap_c)), grid.grabExpr(draw(heatmap_d)),
-  labels = list("a", "b", "c", "d", "", "", "", ""),
+  labels = list("", "", "", "", "", "", "", ""),
   font.label = list(size = 14, face = "bold"),
-  nrow = 2, ncol = 4, hjust = "-5", vjust = "5")
-
+  nrow = 2, ncol = 4, heights = c(3, 5), hjust = "-5", vjust = "5")
 volcano_heat_compound
 
-ggsave(volcano_heat_compound, width = 297, height = 210, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.3,
+ggsave(volcano_heat_compound, width = 297, height = 250, units = c("mm"), dpi = 200, limitsize = FALSE, scale = 1.5,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__volcano_heat_compound.pdf")
 
 # Snapshot environment ----

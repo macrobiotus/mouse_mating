@@ -1160,7 +1160,7 @@
  * **display items**
    * [x] revise Fig 1 (Experiment design) - redesign as per AJ suggestion
    * [x] revise Fig 2 (weight deltas) - ~~add weight gain curves as sub-plot~~ - add tests to bars - adjust caption
-   * [ ] revise Fig 3 (volcano plot) - stretch figure - change tissue abbreviations - use same colours as in heat map
+   * [x] revise Fig 3 (volcano plot) - stretch figure - change tissue abbreviations - ~~use same colours as in heat map~~
    * [ ] revise SI Fig 8 (heat map) - change tissue abbreviations
    * [ ] revise SI Fig 9 (Upset plot) - change tissue abbreviations
    * [ ] revise SI Fig 10 (combine with Fig 3, volcano plots, use the same colours as in heat map )
