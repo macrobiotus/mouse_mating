@@ -1202,7 +1202,7 @@ upset_evat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "EVAT") %>%
   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
   mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
   pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
-  as.data.frame() %>%
+  as.data.frame() %>% mutate(TISSUE = "EWAT") %>%
   UpSetR::upset(order.by = "freq", sets =  c("CD CD - WD CD", "CD CD - WD WD"), keep.order = TRUE) %>%
   get_arrangeable_upset_plot
 
@@ -1210,7 +1210,7 @@ upset_brat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "BRAT") %>%
   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
   mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
   pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
-  as.data.frame() %>%
+  as.data.frame() %>% mutate(TISSUE = "IBAT") %>%
   UpSetR::upset(order.by = "freq", sets =  c("WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "CD CD - CD WD", "CD CD - WD CD"), keep.order = TRUE) %>%
   get_arrangeable_upset_plot
 
@@ -1228,11 +1228,12 @@ upset_livt <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "LIVT") %>%
   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
   mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
   pivot_wider(names_from = CONTRASTS, values_from = TISSUE_CONTRASTS_SYMBOL, values_fill = list(TISSUE_CONTRASTS_SYMBOL = 0)) %>% 
-  as.data.frame() %>%
+  as.data.frame() %>% mutate(TISSUE = "LIV") %>%
   UpSetR::upset(order.by = "freq", sets =  c("CD CD - CD WD", "WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "WD CD - CD WD"), keep.order = TRUE) %>%
   get_arrangeable_upset_plot
 
-upset_compound <- ggarrange(upset_flat, upset_evat, upset_brat, upset_livt, labels = list("a: all tissues", "b: EVAT", "c: BRAT", "d: LIVT"))
+upset_compound <- ggarrange(upset_flat, upset_evat, upset_brat, upset_livt, labels = list("a combined\n     tissues", "b EWAT", "c IBAT", "d LIV"))
+upset_compound
 
 # Get SI Fig 9.: Upset plot of intersections of full list for all contrasts
 
