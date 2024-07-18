@@ -658,8 +658,6 @@ mice_f1_slct_xyplot_final_f <- xyplot(BodyWeightG ~ MeasurementDay | AnimalId, d
                                       })
 
 
-# ***Started here on or after 15.07.2024 -----
-
 # _3.) Weight delta and curve plot F0 ----
 
 # __a) Copy object for new plot ----
@@ -716,13 +714,11 @@ f0_mice_weights_sex_deltas <- ggplot(data = mice_f0_slct_mb, aes(x = AnimalSex, 
   geom_boxplot(width = 0.2, alpha = 0.2) +
   facet_wrap(Diet ~ . , ncol = 2) + 
   coord_cartesian(ylim = c(0, 16)) +
-  # geom_label_repel(max.overlaps = Inf) + 
   theme_bw(base_size = 12) +
   labs(x = "F0 animal sex", y = "F0 weight gain Δ [g]")
 
 f0_mice_weights_sex_deltas
 
-# ***Continue here on or after 15.07.2024 -----
 
 # _4.) Weight delta and curve plot F1 ----
 
@@ -793,7 +789,6 @@ f1_mice_weights_sex_deltas
 
 # _5.) Save F0 and F1 weight curvr and delta plots ----
 
-
 # add line plots here
 f0_f1_mice_weights_sex_deltas <- ggarrange(f0_mice_weights_sex_curves, f1_mice_weights_sex_curves,
                                            f0_mice_weights_sex_deltas, f1_mice_weights_sex_deltas,
@@ -802,11 +797,7 @@ f0_f1_mice_weights_sex_deltas <- ggarrange(f0_mice_weights_sex_curves, f1_mice_w
 
 f0_f1_mice_weights_sex_deltas
 
-
-
 ggsave(device = cairo_pdf, plot = f0_f1_mice_weights_sex_deltas, width = 210, height = 160, units = c("mm"), dpi = 300, scale = 1.2, path = here("../manuscript/display_items"), filename = "010_r_define_obesity__f0_f1_mice_weights_sex_deltas.pdf")
-
-# ***Finish here on or after 15.07.2024 -----
 
 # _6.) Table summaries ----
 
