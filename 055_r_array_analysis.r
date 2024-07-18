@@ -528,7 +528,7 @@ get_go_plot_and_table <- function(top_table, top_table_name, save_to_disk = TRUE
   }
   
   # get display item
-  go_plot <- enrichplot::dotplot(go_result, split="ONTOLOGY", title =  paste0("GO terms of data set: \"", top_table_name, "\"", sep = ""), showCategory = 5) + facet_grid(ONTOLOGY ~ ., scale="free")
+  go_plot <- enrichplot::dotplot(go_result, split="ONTOLOGY", title =  paste0("", top_table_name, "", sep = ""), showCategory = 5) + facet_grid(ONTOLOGY ~ ., scale="free")
   
   # return plot 
   return(go_plot)
@@ -1270,16 +1270,16 @@ gse_object_list_relevant_contrasts <-  lapply(top_table_list_relevant_contrasts,
 
 # _4.) Lookup of Gene Ontologies using enrichGO {clusterProfiler} ----
 
-left_upper_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "BRAT: CD CD - WD WD")
-rght_upper_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]], "EVAT: CD CD - WD WD")
-left_lower_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["IWAT: CD CD - WD WD"]], "IWAT: CD CD - WD WD")
-rght_lower_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIVT: CD CD - WD WD")
+left_upper_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["IWAT: CD CD - WD WD"]], "INGWAT: CD CD - WD WD")
+rght_upper_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]], "EWAT: CD CD - WD WD")
+left_lower_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "IBAT: CD CD - WD WD")
+rght_lower_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIV: CD CD - WD WD")
 
 go_compound <- ggarrange(left_upper_go_plot, rght_upper_go_plot,
                          left_lower_go_plot, rght_lower_go_plot, 
-                         labels = list("a", "b", "c", "d"), nrow = 2, ncol = 2)
+                         labels = list(" ", " ", " ", " "), nrow = 1, ncol = 4)
 
-ggsave(go_compound, width = 400, height = 250, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.5,
+ggsave(go_compound, width = 400, height = 150, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.2,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__go_compound.pdf")
 
 # _5.) Lookup of KEGG terms using enrichKEGG {clusterProfiler} ----

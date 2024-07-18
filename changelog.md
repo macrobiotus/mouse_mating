@@ -1141,6 +1141,7 @@
  
  * working in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240718_main_text_from_coauthors_revised.docx`
  * re-did Fig 1, and Fig 1,2 captions
+ * started on revising GO plot - **unfinished**
 
 ## Todo queue (last updated 10-07-2024)
 
@@ -1161,8 +1162,9 @@
    * [x] revise Fig 1 (Experiment design) - redesign as per AJ suggestion
    * [x] revise Fig 2 (weight deltas) - ~~add weight gain curves as sub-plot~~ - add tests to bars - adjust caption
    * [x] revise Fig 3 (volcano plot) - stretch figure - change tissue abbreviations - ~~use same colours as in heat map~~
-   * [ ] revise SI Fig 8 (heat map) - change tissue abbreviations
-   * [ ] revise SI Fig 9 (Upset plot) - change tissue abbreviations
+   * [x] revise SI Fig 8 (heat map) - change tissue abbreviations
+   * [x] revise SI Fig 9 (Upset plot) - change tissue abbreviations
+   * [ ] revise all SI plots
    * [ ] revise SI Fig 10 (combine with Fig 3, volcano plots, use the same colours as in heat map )
    * [ ] collate all tables
    
