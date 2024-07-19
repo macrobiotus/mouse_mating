@@ -1275,6 +1275,13 @@ rght_upper_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["
 left_lower_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "IBAT: CD CD - WD WD")
 rght_lower_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIV: CD CD - WD WD")
 
+
+left_upper_go_plot <- left_upper_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5), plot.title = element_blank())
+rght_upper_go_plot <- rght_upper_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5), plot.title = element_blank())
+left_lower_go_plot <- left_lower_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5), plot.title = element_blank()) 
+rght_lower_go_plot <- rght_lower_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5), plot.title = element_blank())
+
+
 go_compound <- ggarrange(left_upper_go_plot, rght_upper_go_plot,
                          left_lower_go_plot, rght_lower_go_plot, 
                          labels = list(" ", " ", " ", " "), nrow = 1, ncol = 4)
@@ -1424,7 +1431,7 @@ heatmap_d <- sechm(
   show_heatmap_legend = TRUE)
 heatmap_d
 
-# Combine Volcano plot and heat maps ----
+# Combine Volcano plot, heat maps, and GO plots  ----
 
 volcano_heat_compound <- ggarrange(
   volcano_a, volcano_b, volcano_c, volcano_d,
@@ -1436,6 +1443,14 @@ volcano_heat_compound
 
 ggsave(volcano_heat_compound, width = 297, height = 250, units = c("mm"), dpi = 200, limitsize = FALSE, scale = 1.5,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__volcano_heat_compound.pdf")
+
+volcano_heat_go_compound <- ggarrange(
+  volcano_heat_compound, go_compound,
+  nrow = 2, ncol = 1, heights = c(6, 2), hjust = "-5", vjust = "5")
+volcano_heat_go_compound
+
+ggsave(volcano_heat_go_compound, width = 300, height = 350, units = c("mm"), dpi = 200, limitsize = FALSE, scale = 1.5,
+       file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__volcano_heat_go_compound.pdf")
 
 # Snapshot environment ----
 

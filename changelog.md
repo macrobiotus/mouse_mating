@@ -1164,6 +1164,7 @@
    * [x] revise Fig 3 (volcano plot) - stretch figure - change tissue abbreviations - ~~use same colours as in heat map~~
    * [x] revise SI Fig 8 (heat map) - change tissue abbreviations
    * [x] revise SI Fig 9 (Upset plot) - change tissue abbreviations
+   * [ ] continue revising GO plot - **unfinished**
    * [ ] revise all SI plots
    * [ ] revise SI Fig 10 (combine with Fig 3, volcano plots, use the same colours as in heat map )
    * [ ] collate all tables
