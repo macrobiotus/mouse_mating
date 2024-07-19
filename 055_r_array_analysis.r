@@ -1083,8 +1083,8 @@ plot_heatmap_all_tissues_obesity_genes <- ggarrange(
   grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[2]]))),
   grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[3]]))),
   grid.grabExpr(draw(get_one_heatmap(SE_all_tissues_obs_genes[[4]]))),
-  labels = list("a: BRAT", "b: IWAT", "c: LIVT", "d: EVAT"),
-  font.label = list(size = 14, face = "bold"),
+  labels = list(".             a: IBAT", ".                  b: INGWAT", ".           c: LIV", ".               d: EWAT"),
+  font.label = list(size = 12, face = "bold", label.x = 10, label.y = 3),
   ncol = 2, nrow = 2, hjust = "0", vjust = "0")
 
 # show plot
@@ -1093,10 +1093,10 @@ plot_heatmap_all_tissues_obesity_genes
 # save plot
 ggsave(plot = plot_heatmap_all_tissues_obesity_genes, path = here("plots"), 
        filename = "055_r_array_analysis__plot_expr_obesity_flat.pdf",  
-       width = 180, height = 85, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+       width = 150, height = 150, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 ggsave(plot = plot_heatmap_all_tissues_obesity_genes, path = here("../manuscript/display_items"), 
        filename = "055_r_array_analysis__plot_expr_obesity_flat_unassigned.pdf",  
-       width = 180, height = 85, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
+       width = 150, height = 150, units = "mm", dpi = 300,  limitsize = TRUE, scale = 2)
 
 # Analyse DEGs  ---- 
 

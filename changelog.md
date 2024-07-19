@@ -1143,6 +1143,11 @@
  * re-did Fig 1, and Fig 1,2 captions
  * started on revising GO plot - **unfinished**
 
+## 18-07-2024 - work day 101 - revising manuscript
+ 
+ * working in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240719_main_text.docx`
+ * finished revising Gig 3, icorporated GO terms
+
 ## Todo queue (last updated 10-07-2024)
 
  * **coding**
@@ -1155,7 +1160,7 @@
    * [ ] change abbreviations in display items
    * [ ] export display items so that they look better
    * [ ] in `015_r_use_saemix.R`
-   * [ ] include body fat into modelling
+   * [ ] include body fat - do t test on grouped data etc and add to text
    * ~~[ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
  
  * **display items**
@@ -1164,9 +1169,9 @@
    * [x] revise Fig 3 (volcano plot) - stretch figure - change tissue abbreviations - ~~use same colours as in heat map~~
    * [x] revise SI Fig 8 (heat map) - change tissue abbreviations
    * [x] revise SI Fig 9 (Upset plot) - change tissue abbreviations
-   * [ ] continue revising GO plot - **unfinished**
-   * [ ] revise all SI plots
-   * [ ] revise SI Fig 10 (combine with Fig 3, volcano plots, use the same colours as in heat map )
+   * [x] finish revising GO plot - **unfinished**
+   * [ ] revise all SI plots (~~SI Fig 8~~, SI Fig 3)
+   * [x] revise SI Fig 10 (combine with Fig 3, volcano plots, use the same colours as in heat map)
    * [ ] collate all tables
    
  * **manuscript work**
