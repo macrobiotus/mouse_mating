@@ -903,6 +903,7 @@ qPV_EVAT <- get_percent_variation(qPCA_EVAT)
 
 # "Overall expression differences between analysed tissues among f1 offspring"
 plot_pca_flat_a <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "Tissue", legend_title = "F1 Tissue", plot_title =  "a", percent_var = PV_FLAT)
+plot_pca_flat_a <- plot_pca_flat_a + scale_color_manual(values = c("T999", "T888", "T999", "T888"))
 
 # Overall expression differences and obesity status among f1 offspring
 plot_pca_flat_b <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "b", percent_var = PV_FLAT)

@@ -1146,22 +1146,23 @@
 ## 18-07-2024 - work day 101 - revising manuscript
  
  * working in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240719_main_text.docx`
- * finished revising Gig 3, icorporated GO terms
+ * finished revising Gig 3, incorporated GO terms
+ * finished revising display items
 
 ## Todo queue (last updated 10-07-2024)
 
  * **coding**
-   * [ ] in `010_r_define_obesity.r`
-   * [x] ~~revise SI Fig 1 (weight trajectories) - possibly add parental diet~~
-   * [x] revise Fig 2 (weight deltas) 
+   * [x] in `010_r_define_obesity.r`
+     * [x] ~~revise SI Fig 1 (weight trajectories) - possibly add parental diet~~
+     * [x] revise Fig 2 (weight deltas) 
      * [x] ~~add curves~~
      * ~~[ ] add tests to bars~~
    * [ ] in `055_r_array_analysis.r`
-   * [ ] change abbreviations in display items
-   * [ ] export display items so that they look better
+     * [x] change abbreviations in display items
+     * [x] export display items so that they look better
    * [ ] in `015_r_use_saemix.R`
-   * [ ] include body fat - do t test on grouped data etc and add to text
-   * ~~[ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
+     * [ ] include body fat - do t test on grouped data etc and add to text
+     * ~~[ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
  
  * **display items**
    * [x] revise Fig 1 (Experiment design) - redesign as per AJ suggestion
@@ -1170,13 +1171,13 @@
    * [x] revise SI Fig 8 (heat map) - change tissue abbreviations
    * [x] revise SI Fig 9 (Upset plot) - change tissue abbreviations
    * [x] finish revising GO plot - **unfinished**
-   * [ ] revise all SI plots (~~SI Fig 8~~, SI Fig 3)
+   * [x] revise all SI plots (~~SI Fig 8~~, ~~SI Fig 3~~)
    * [x] revise SI Fig 10 (combine with Fig 3, volcano plots, use the same colours as in heat map)
    * [ ] collate all tables
    
  * **manuscript work**
+   * [x] move up GO terms from supplement
    * [ ] sort tissue abbreviations to be consistent through oy the text - see Discussion
-   * [ ] move up GO terms from supplement
    * [ ] include MRI results
    * [ ] restructure results and discussion based on AJ suggestions (17.Jul. 2024, in in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240717_main_text_from_coauthors_revised.docx`)
   
