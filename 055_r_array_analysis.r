@@ -903,7 +903,6 @@ qPV_EVAT <- get_percent_variation(qPCA_EVAT)
 
 # "Overall expression differences between analysed tissues among f1 offspring"
 plot_pca_flat_a <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "Tissue", legend_title = "F1 Tissue", plot_title =  "a", percent_var = PV_FLAT)
-plot_pca_flat_a <- plot_pca_flat_a + scale_color_manual(values = c("T999", "T888", "T999", "T888"))
 
 # Overall expression differences and obesity status among f1 offspring
 plot_pca_flat_b <- get_pca_plot(expr_data_pca = PCA_FLAT, expr_data_raw = FLAT , variable = "ParentalDietMoFa", legend_title = "F1 parental diet\n(mother / father)", plot_title =  "b", percent_var = PV_FLAT)
@@ -1240,7 +1239,7 @@ upset_compound
 
 ggsave(upset_compound, width = 200, height = 100, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.7,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__upset_compound.pdf")
-       
+
 # Analyse GOs and KEGG terms ----
 
 # _1.) Isolate a list of DEG top tables from relevant tissues and contrasts ----
@@ -1269,7 +1268,7 @@ top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]] <- get_entrez_ids(top
 
 gse_object_list_relevant_contrasts <-  lapply(top_table_list_relevant_contrasts, function (x) get_gse_object(x, pvc = 0.05))
 
-# _4.) Lookup of Gene Ontologies using enrichGO {clusterProfiler} ----
+# _4.) Over Representation Analysis using enrichGO {clusterProfiler} ----
 
 left_upper_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["IWAT: CD CD - WD WD"]], "INGWAT: CD CD - WD WD")
 rght_upper_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["EVAT: CD CD - WD WD"]], "EWAT: CD CD - WD WD")

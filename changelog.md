@@ -1152,11 +1152,19 @@
 ## 22-07-2024 - work day 104 - revising manuscript
  
  * working in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240722_main_text.docx`
- * updated `015_r_use_saemix.R` - added body fat graphic to manuscript
+ * in `015_r_use_saemix.R` added body fat graphic to manuscript
+ * in `055_r_array_analysis.r` started revising and checking over representation analysis - see line 1269
 
+## Todo queue (last updated 22-07-2024)
 
-
-## Todo queue (last updated 10-07-2024)
+ * **manuscript work**
+   * [x] move up GO terms from supplement
+   * [x] include MRI results
+   * [ ] sort tissue abbreviations to be consistent through oy the text - see Discussion
+   * [ ] restructure results and discussion based on AJ suggestions (17.Jul. 2024, in in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240717_main_text_from_coauthors_revised.docx`)
+     * [ ] check and revise ORA
+     * [ ] possibly keep BP only
+     * [ ] **inspect results and plots and start rewriting**
 
  * **coding**
    * [x] in `010_r_define_obesity.r`
@@ -1181,11 +1189,5 @@
    * [x] finish revising GO plot - **unfinished**
    * [x] revise all SI plots (~~SI Fig 8~~, ~~SI Fig 3~~)
    * [x] revise SI Fig 10 (combine with Fig 3, volcano plots, use the same colours as in heat map)
-   * [ ] collate all tables
-   
- * **manuscript work**
-   * [x] move up GO terms from supplement
-   * [x] include MRI results
-   * [ ] sort tissue abbreviations to be consistent through oy the text - see Discussion
-   * [ ] restructure results and discussion based on AJ suggestions (17.Jul. 2024, in in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240717_main_text_from_coauthors_revised.docx`)
+   * [ ] collate all tables     
   
