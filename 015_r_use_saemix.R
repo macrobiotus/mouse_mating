@@ -609,6 +609,62 @@ get_p_from_seamix_lrt(DecayFIT.RQ6.null, DecayFIT.RQ6.litter) # ... litter more 
 
 get_p_from_seamix_lrt(DecayFIT.RQ6.litter, DecayFIT.RQ6.litter.diet) # ... adding diet doesn't improve model
 
+# Appendix: Analyse body fat endpoints ----
+
+# _1.) Isolate body fat percent ----
+
+mice_f1_slct_body_fat <-  mice_f1_slct %>% 
+  dplyr::select(AnimalId, AnimalSex, MeasurementDay, MotherDiet, FatherDiet, BodyWeightG, FatPercent) %>% 
+  group_by(MeasurementDay) %>% filter(MeasurementDay == 84) %>% 
+  mutate(ParentalDiet = as.factor(paste0(MotherDiet," ",FatherDiet))) %>% ungroup
+
+# _2.) Plot body fat percent ----
+
+# __a) Using lattice  ----
+bwplot(BodyWeightG ~ AnimalSex | ParentalDiet,  data = mice_f1_slct_body_fat)
+
+# __b) Using ggplot  ----
+
+lu <- ggstatsplot::ggbetweenstats(mice_f1_slct_body_fat %>% filter(AnimalSex == "f"), ParentalDiet, BodyWeightG,
+                            type = "nonparametric",
+                            pairwise.display = "significant",
+                            xlab = "F0 diet combination",
+                            ylab = "F1 body weight [g]",
+                            caption = NULL,
+                            title = "F1 body weight, parental diets, females")
+
+ru <- ggstatsplot::ggbetweenstats(mice_f1_slct_body_fat %>% filter(AnimalSex == "m"), ParentalDiet, BodyWeightG,
+                            type = "nonparametric",
+                            pairwise.display = "significant",
+                            xlab = "F0 diet combination",
+                            ylab = "F1 body weight [g]",
+                            caption = NULL,
+                            title = "F1 body weight, parental diets, males")
+
+ll <- ggstatsplot::ggbetweenstats(mice_f1_slct_body_fat %>% filter(AnimalSex == "f"), ParentalDiet, FatPercent,
+                            type = "nonparametric",
+                            pairwise.display = "significant",
+                            xlab = "F0 diet combination",
+                            ylab = "F1 body fat [%]",
+                            caption = NULL,
+                            title = "F1 body fat, parental diets, females")
+
+rl <- ggstatsplot::ggbetweenstats(mice_f1_slct_body_fat %>% filter(AnimalSex == "m"), ParentalDiet, FatPercent,
+                            type = "nonparametric",
+                            pairwise.display = "significant",
+                            xlab = "F0 diet combination",
+                            ylab = "F1 body fat [%]",
+                            caption = NULL,
+                            title = "F1 body fat, parental diets, males")
+
+# __c) Combine and save plots  ----
+
+body_fat_compound <- ggarrange(lu, ru, ll, rl, ncol = 2, nrow = 2, labels = c("a ","b ","c ","d "))
+
+ggsave(plot = body_fat_compound, path = here("../manuscript/display_items"),
+       filename = "015_r_use_saemix__plot_body_fat_compound.pdf",  
+       width = 180, height = 180, units = "mm", dpi = 300,  limitsize = TRUE, scale = 1.2)
+
 # Snapshot files and environment ----
 
 saveRDS(mice_f0_slct, file = here("rds_storage", "mice_f0_slct_from_saemix.rds"))

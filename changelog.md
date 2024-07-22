@@ -1137,17 +1137,24 @@
  * started to address AJs revisions in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240717_main_text_from_coauthors_revised.docx`
  * updated ToDo queue 
 
-## 18-07-2024 - work day 101 - revising manuscript
+## 18-07-2024 - work day 102 - revising manuscript
  
  * working in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240718_main_text_from_coauthors_revised.docx`
  * re-did Fig 1, and Fig 1,2 captions
  * started on revising GO plot - **unfinished**
 
-## 18-07-2024 - work day 101 - revising manuscript
+## 19-07-2024 - work day 103 - revising manuscript
  
  * working in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240719_main_text.docx`
  * finished revising Gig 3, incorporated GO terms
  * finished revising display items
+
+## 22-07-2024 - work day 104 - revising manuscript
+ 
+ * working in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240722_main_text.docx`
+ * updated `015_r_use_saemix.R` - added body fat graphic to manuscript
+
+
 
 ## Todo queue (last updated 10-07-2024)
 
@@ -1157,11 +1164,12 @@
      * [x] revise Fig 2 (weight deltas) 
      * [x] ~~add curves~~
      * ~~[ ] add tests to bars~~
-   * [ ] in `055_r_array_analysis.r`
+     * [ ] analyse GO terms for all tissues, also limit GO terms to BP
+   * [x] in `055_r_array_analysis.r`
      * [x] change abbreviations in display items
      * [x] export display items so that they look better
-   * [ ] in `015_r_use_saemix.R`
-     * [ ] include body fat - do t test on grouped data etc and add to text
+   * [X] in `015_r_use_saemix.R`
+     * [X] include body fat - do t test on grouped data etc and add to text
      * ~~[ ] correlate litter size with diet (test in `015_r_use_saemix.R`)~~
  
  * **display items**
@@ -1177,7 +1185,7 @@
    
  * **manuscript work**
    * [x] move up GO terms from supplement
+   * [x] include MRI results
    * [ ] sort tissue abbreviations to be consistent through oy the text - see Discussion
-   * [ ] include MRI results
    * [ ] restructure results and discussion based on AJ suggestions (17.Jul. 2024, in in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240717_main_text_from_coauthors_revised.docx`)
   
