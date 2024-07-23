@@ -1161,18 +1161,19 @@
  * working in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240723_main_text.docx`
  * mat AJ - will submit now
  * preparing version for submission in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240724_main_text.docx`
+ * commit `190397a999ee3b95cb9370d5a01227ae786db35d`
+ * releasing code to Zenodo
 
-
-## Todo queue (last updated 22-07-2024)
+## Todo queue (last updated 23-07-2024)
 
  * **manuscript work**
    * [x] move up GO terms from supplement
    * [x] include MRI results
-   * [ ] sort tissue abbreviations to be consistent through oy the text - see Discussion
-   * [ ] restructure results and discussion based on AJ suggestions (17.Jul. 2024, in in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240717_main_text_from_coauthors_revised.docx`)
-     * [ ] check and revise ORA
-     * [ ] possibly keep BP only
-     * [ ] **inspect results and plots and start rewriting**
+   * [x] sort tissue abbreviations to be consistent through oy the text - see Discussion
+   * ~~[ ] restructure results and discussion based on AJ suggestions (17.Jul. 2024, in in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240717_main_text_from_coauthors_revised.docx`)~~
+     * ~~[ ] check and revise ORA~~
+     * ~~[ ] possibly keep BP only~~
+     * ~~[ ] **inspect results and plots and start rewriting**~~
 
  * **coding**
    * [x] in `010_r_define_obesity.r`
