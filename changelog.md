@@ -1159,7 +1159,8 @@
  
  * in `055_r_array_analysis.r` continued revising and checking over representation analysis - leaving as is
  * working in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240723_main_text.docx`
-
+ * mat AJ - will submit now
+ * preparing version for submission in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240724_main_text.docx`
 
 
 ## Todo queue (last updated 22-07-2024)

@@ -634,6 +634,9 @@ get_one_volcanoplot <- function(TopTableListItem, TopTableListItemName){
       x = "logFC",
       y = "P.Value",
       pCutoffCol = "adj.P.Val",
+      legendPosition = 'bottom',
+      legendLabels=c('not sign.','LogFC','p-val.',
+                     'both'),
       lab = top_tibble[["SYMBOL"]],
       title = TopTableListItemName,
       subtitle = NULL
@@ -1288,10 +1291,10 @@ rght_upper_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["
 left_lower_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "IBAT: CD CD - WD WD")
 rght_lower_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIV: CD CD - WD WD")
 
-left_upper_go_plot <- left_upper_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5), plot.title = element_blank())
-rght_upper_go_plot <- rght_upper_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5), plot.title = element_blank())
-left_lower_go_plot <- left_lower_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5), plot.title = element_blank()) 
-rght_lower_go_plot <- rght_lower_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5), plot.title = element_blank())
+left_upper_go_plot <- left_upper_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5)) #, plot.title = element_blank())
+rght_upper_go_plot <- rght_upper_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5)) #, plot.title = element_blank())
+left_lower_go_plot <- left_lower_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5)) #, plot.title = element_blank()) 
+rght_lower_go_plot <- rght_lower_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5)) #, plot.title = element_blank())
 
 go_compound <- ggarrange(left_upper_go_plot, rght_upper_go_plot,
                          left_lower_go_plot, rght_lower_go_plot, 
@@ -1344,10 +1347,14 @@ top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]] <- metadata(SE_a
 
 # The top tables with meaningful results are BRAT: CD CD - WD WD  and LIVT: CD CD - WD WD 
 
-volcano_a <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["IWAT: CD CD - WD WD"]], "a  INGWAT: CD CD - WD WD")
-volcano_b <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["EVAT: CD CD - WD WD"]], "b  EWAT: CD CD - WD WD")
-volcano_c <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["BRAT: CD CD - WD WD"]], "c  IBAT: CD CD - WD WD")
-volcano_d <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]], "d  LIV: CD CD - WD WD")
+volcano_a <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["IWAT: CD CD - WD WD"]], "a  INGWAT: CD CD - WD WD") + 
+  theme(legend.position="none")
+volcano_b <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["EVAT: CD CD - WD WD"]], "b  EWAT: CD CD - WD WD") + 
+  theme(legend.position="none")
+volcano_c <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["BRAT: CD CD - WD WD"]], "c  IBAT: CD CD - WD WD") +
+  theme(legend.position="none")
+volcano_d <- get_one_volcanoplot(top_table_list_relevant_contrasts_full[["LIVT: CD CD - WD WD"]], "d  LIV: CD CD - WD WD") +
+  theme(legend.position="none")
 
 # Get heat maps ----
 
