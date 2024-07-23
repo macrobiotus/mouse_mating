@@ -1155,6 +1155,13 @@
  * in `015_r_use_saemix.R` added body fat graphic to manuscript
  * in `055_r_array_analysis.r` started revising and checking over representation analysis - see line 1269
 
+## 23-07-2024 - work day 105 - revising manuscript
+ 
+ * in `055_r_array_analysis.r` continued revising and checking over representation analysis - leaving as is
+ * working in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240723_main_text.docx`
+
+
+
 ## Todo queue (last updated 22-07-2024)
 
  * **manuscript work**

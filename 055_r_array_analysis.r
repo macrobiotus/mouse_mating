@@ -486,6 +486,8 @@ get_gse_object = function(top_table, pvc = 1){
 # GO Enrichment Analysis of a gene set - Given a vector of genes, this function will return the enrichment GO categories after FDR control.
 get_go_plot_and_table <- function(top_table, top_table_name, save_to_disk = TRUE, table_path = NULL){
   
+  # see https://learn.gencore.bio.nyu.edu/rna-seq-analysis/over-representation-analysis/
+  
   # packages
   require("clusterProfiler")
   require("enrichplot")
@@ -500,8 +502,17 @@ get_go_plot_and_table <- function(top_table, top_table_name, save_to_disk = TRUE
   # diagnostic
   message(paste0("Creating GO plot for data set: \"", top_table_name, "\".", sep = ""))
   
+  # check top table format
+  top_table %>% arrange(logFC) %>% print(n= Inf)
+  top_table %>% arrange(adj.P.Val) %>% print(n= Inf)
+  
   # look- up go pathways
-  go_result <- enrichGO(gene = str_to_title(top_table[["SYMBOL"]]), keyType = "SYMBOL",  OrgDb = "org.Mm.eg.db", ont = "all")
+  go_result <- enrichGO(gene = str_to_title(top_table[["SYMBOL"]]),
+                        keyType = "SYMBOL",
+                        OrgDb = "org.Mm.eg.db",
+                        ont = "all")
+                        # ont = "BP")   # modified 23.07.2024
+                       
   
   # save table to disk
   if (isTRUE(save_to_disk)){
@@ -527,14 +538,16 @@ get_go_plot_and_table <- function(top_table, top_table_name, save_to_disk = TRUE
     
   }
   
-  # get display item
+  # get display item - classical GO plot
   go_plot <- enrichplot::dotplot(go_result, split="ONTOLOGY", title =  paste0("", top_table_name, "", sep = ""), showCategory = 5) + facet_grid(ONTOLOGY ~ ., scale="free")
+  
+  # get display item - net plot - currentky not used and not expeorted
+  # cnetplot(go_result, layout= "gem", categorySize="pvalue", color.params = list(foldChange = str_to_title(top_table[["SYMBOL"]])))
   
   # return plot 
   return(go_plot)
   
 }
-
 
 # KEGG Enrichment Analysis of a gene set - Given a vector of genes, this function will return the enrichment KEGG terms after FDR control.
 get_kegg_plot_and_table <- function(top_table, top_table_name, save_to_disk = TRUE, table_path = NULL){
@@ -1222,8 +1235,6 @@ upset_brat <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "BRAT") %>%
  #    UpSetR::upset(order.by = "freq", sets =  c("CD CD - CD WD", "WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "WD CD - CD WD"), keep.order = TRUE) %>%
  #    get_arrangeable_upset_plot
 
-# _3.) Arrange and save Upset plots ----
-
 upset_livt <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "LIVT") %>%
   distinct(TISSUE, CONTRASTS, SYMBOL) %>%
   mutate(TISSUE_CONTRASTS_SYMBOL = 1) %>% arrange(TISSUE, SYMBOL, CONTRASTS) %>% 
@@ -1231,6 +1242,8 @@ upset_livt <- DEGs_all_tissues_all_genes %>% filter(TISSUE == "LIVT") %>%
   as.data.frame() %>% mutate(TISSUE = "LIV") %>%
   UpSetR::upset(order.by = "freq", sets =  c("CD CD - CD WD", "WD WD - CD WD", "WD WD - WD CD", "CD CD - WD WD", "WD CD - CD WD"), keep.order = TRUE) %>%
   get_arrangeable_upset_plot
+
+# _3.) Arrange and save Upset plots ----
 
 upset_compound <- ggarrange(upset_flat, upset_evat, upset_brat, upset_livt, labels = list("a combined\n     tissues", "b EWAT", "c IBAT", "d LIV"))
 upset_compound
@@ -1275,16 +1288,15 @@ rght_upper_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["
 left_lower_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["BRAT: CD CD - WD WD"]], "IBAT: CD CD - WD WD")
 rght_lower_go_plot <- get_go_plot_and_table(top_table_list_relevant_contrasts[["LIVT: CD CD - WD WD"]], "LIV: CD CD - WD WD")
 
-
 left_upper_go_plot <- left_upper_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5), plot.title = element_blank())
 rght_upper_go_plot <- rght_upper_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5), plot.title = element_blank())
 left_lower_go_plot <- left_lower_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5), plot.title = element_blank()) 
 rght_lower_go_plot <- rght_lower_go_plot + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=0.5), plot.title = element_blank())
 
-
 go_compound <- ggarrange(left_upper_go_plot, rght_upper_go_plot,
                          left_lower_go_plot, rght_lower_go_plot, 
                          labels = list(" ", " ", " ", " "), nrow = 1, ncol = 4)
+go_compound
 
 ggsave(go_compound, width = 400, height = 150, units = c("mm"), dpi = 200, limitsize = TRUE, scale = 1.2,
        file = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__go_compound.pdf")
