@@ -1162,10 +1162,32 @@
  * mat AJ - will submit now
  * preparing version for submission in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240724_main_text.docx`
  * commit `190397a999ee3b95cb9370d5a01227ae786db35d`
- * releasing code to Zenodo
 
+## 24-07-2024 - work day 105 - revising manuscript and code for submission
+
+ * minor changes in script related to tissue naming and file export
+   * in `010_r_define_obesity.r`
+   * in `015_r_use_saemix.R`
+   * in `055_r_array_analysis.r`
+ * working in `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2_preparation/240724_main_text.docx`
+   * delete all comment, accept all changes.
+ * uploading `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2/240724_main_text_elife.docx`
+   * to Research Square
+ * starting eLife submission but account collision - halted - requested merge
+ 
 ## Todo queue (last updated 23-07-2024)
 
+ * **submission work**
+   * [x] collate high-quality figures
+   * [x] collate tables
+   * [x] rename tables and figures
+   * [x] start submission
+   * [ ] check if ResearchSquare lists latest preprint (`https://www.researchsquare.com/article/rs-3491044/v2`)
+   * [ ] finalize eLife submission once accounts have been merged
+   * [x] created release 2.0.0 on Github releasing code to Zenodo
+   * [x] check if Zenodo lists the latest version or update Zenodo record manually
+   * [ ] adjust cover letter
+ 
  * **manuscript work**
    * [x] move up GO terms from supplement
    * [x] include MRI results
@@ -1198,5 +1220,5 @@
    * [x] finish revising GO plot - **unfinished**
    * [x] revise all SI plots (~~SI Fig 8~~, ~~SI Fig 3~~)
    * [x] revise SI Fig 10 (combine with Fig 3, volcano plots, use the same colours as in heat map)
-   * [ ] collate all tables     
+   * [x] collate all tables     
   

@@ -1179,8 +1179,30 @@ if (identical(obesity_genes[which(obesity_genes %in% DEGs_all_tissues_obs_genes[
 
 # __d) Export results as Excel table ----
 
-write_xlsx(DEGs_all_tissues_all_genes, path = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__degs_all_tissues_all_genes.xlsx", col_names = TRUE, format_headers = TRUE)
-write_xlsx(DEGs_all_tissues_obs_genes, path = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__degs_all_tissues_obs_genes.xlsx", col_names = TRUE, format_headers = TRUE)
+write_xlsx({
+  DEGs_all_tissues_all_genes %>% mutate(
+    TISSUE = case_when(
+      TISSUE == 'BRAT' ~ 'IBAT',
+      TISSUE == 'EVAT' ~ 'EWAT',
+      TISSUE == 'LIVT' ~ 'LIV',
+      TISSUE == 'IWAT' ~ 'INGWAT',
+      TRUE ~ TISSUE
+    )
+  )
+}, path = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__degs_all_tissues_all_genes.xlsx", col_names = TRUE, format_headers = TRUE)
+
+
+write_xlsx({
+  DEGs_all_tissues_obs_genes %>% mutate(
+    TISSUE = case_when(
+      TISSUE == 'BRAT' ~ 'IBAT',
+      TISSUE == 'EVAT' ~ 'EWAT',
+      TISSUE == 'LIVT' ~ 'LIV',
+      TISSUE == 'IWAT' ~ 'INGWAT',
+      TRUE ~ TISSUE
+    )
+  )
+}, path = "/Users/paul/Documents/HM_MouseMating/manuscript/display_items/055_r_array_analysis__degs_all_tissues_obs_genes.xlsx", col_names = TRUE, format_headers = TRUE)
 
 # __e) Export results as with raw values  ----
 

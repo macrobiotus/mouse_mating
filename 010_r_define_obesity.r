@@ -792,8 +792,8 @@ f1_mice_weights_sex_deltas
 # add line plots here
 f0_f1_mice_weights_sex_deltas <- ggarrange(f0_mice_weights_sex_curves, f1_mice_weights_sex_curves,
                                            f0_mice_weights_sex_deltas, f1_mice_weights_sex_deltas,
-                                           labels = c("a", "b", "c", "d"), 
-                                           )ncol = 2, nrow = 2, widths =  c(2, 4), heights =  c(3, 5)
+                                           labels = c("a", "b", "c", "d"), ncol = 2, nrow = 2, widths =  c(2, 4), heights =  c(3, 5)
+                                           )
 
 f0_f1_mice_weights_sex_deltas
 
