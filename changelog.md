@@ -1174,7 +1174,12 @@
  * uploading `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2/240724_main_text_elife.docx`
    * to Research Square
  * starting eLife submission but account collision - halted - requested merge
- 
+
+## 30-07-2024 - work day 106 - finalized eLife submission
+
+  * finalized eLife submission
+  * updated ToDo
+
 ## Todo queue (last updated 23-07-2024)
 
  * **submission work**
@@ -1182,11 +1187,11 @@
    * [x] collate tables
    * [x] rename tables and figures
    * [x] start submission
-   * [ ] check if ResearchSquare lists latest preprint (`https://www.researchsquare.com/article/rs-3491044/v2`)
-   * [ ] finalize eLife submission once accounts have been merged
+   * [x] check if ResearchSquare lists latest preprint (`https://www.researchsquare.com/article/rs-3491044/v2`)
+   * [x] finalize eLife submission once accounts have been merged
    * [x] created release 2.0.0 on Github releasing code to Zenodo
-   * [x] check if Zenodo lists the latest version or update Zenodo record manually
-   * [ ] adjust cover letter
+   * [ ] check if Zenodo lists the latest version or update Zenodo record manually
+   * [x] adjust cover letter
  
  * **manuscript work**
    * [x] move up GO terms from supplement
