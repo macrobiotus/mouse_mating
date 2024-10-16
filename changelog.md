@@ -1180,6 +1180,22 @@
   * finalized eLife submission
   * updated ToDo
 
+## 22-08-2024 - work day 109 - started submission to Obesity
+
+  * see recent files around current dat in manuscript folder
+  * for reviewers see `/Users/paul/Documents/HM_MouseMating/communication/240822_reviewser.JPG`
+
+## 16-10-2024 - work day 112 - started submission to Obesity Scinece and Practice
+
+  * manuscript got transferred to Obesity Science and Practice
+  * also started submission to PlosOne
+  * revising files for Obesity Science and Practice
+    *  in `015_r_use_saemix.R` correcting `SOM_table_1_f1_mice_weights.xlsx`
+    * revising cross references in manuscript files
+      * `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2/241016_main_text_osp.docx`
+      * `/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2/241016_supplemental_information_osp.docx`
+    
+    
 ## Todo queue (last updated 23-07-2024)
 
  * **submission work**

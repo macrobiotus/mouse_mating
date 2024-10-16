@@ -114,16 +114,15 @@ ggsave("015_r_use_saemix__data_check.pdf", plot = ggarrange(plot_data_check), pa
 #         title = "F1 mice", 
 #         axisLabels = "show") 
 
-# __e) Summarize f1 data for manuscript (see 3-May-2024)
+# __e) Summarize f1 data for manuscript (see 3-May-2024, 16-Oct-2024)
 
-vars <- c("AnimalId", "LitterSize", "FatherDiet",  "MotherDiet", "AnimalSex",  "BodyWeightG")
+vars <- c("MeasurementDay", "AnimalId", "LitterSize", "FatherDiet",  "MotherDiet", "AnimalSex",  "BodyWeightG")
 
 mice_f1_slct %>% group_by(MeasurementDay) %>% dplyr::count(AnimalSex)
 
 mice_f1_slct %>% dplyr::select(all_of(vars)) %>% group_by(AnimalSex) %>% split(.$AnimalSex) %>% purrr::map(summary)
 
-mice_f1_slct %>% dplyr::select(all_of(vars)) %>% write_xlsx(path = here("../manuscript/240321_submission_2_preparation/SOM_table_1_f1_mice_weights.xlsx"), col_names = TRUE, format_headers = TRUE)
-
+mice_f1_slct %>% dplyr::select(all_of(vars)) %>% write_xlsx(path = "/Users/paul/Documents/HM_MouseMating/manuscript/240321_submission_2/SOM_Table_1__F1_mice_weights.xlsx", col_names = TRUE, format_headers = TRUE)
   
 # RQ1 Which function is best suited to model weight gain (in a null model)? Gompertz, logistic, or exponential approach curve? ----
 
